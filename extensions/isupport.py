@@ -20,6 +20,8 @@ class ISupport(BaseExtension):
             Numerics.RPL_ISUPPORT : self.parse_isupport,
         }
 
+        self.hooks = {}
+
         # State
         self.base.supported = {}
 

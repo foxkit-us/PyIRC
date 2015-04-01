@@ -36,10 +36,12 @@ class IRCSocket(IRCBase):
 
     def connect(self):
         family = self.kwargs.get("family", socket.AF_UNSPEC)
+
+        self.socket = socket.socket(family=family)
+
         if self.ssl:
-            self.socket = ssl.socket(family=family)
-        else:
-            self.socket = socket.socket(family=family)
+            self._socket = self.socket
+            self.socket = ssl.wrap_socket(self._socket)
 
         self.socket.settimeout(self.kwargs.get("socket_timeout", 10))
         self.socket.connect((self.server, self.port))

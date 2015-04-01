@@ -62,13 +62,17 @@ class IRCSocket(IRCBase):
 
         self.socket.settimeout(timeout)
         try:
-            data = self.data + self.socket.recv(512)
+            data = self.socket.recv(512)
+            if not data:
+                raise OSError("Connection reset by peer")
+
+            data = self.data + data
         except socket.timeout:
             # XXX should try harder to meet user timeout deadlines and not
             # quit early.
             return
 
-        lines = self.data.split(b'\r\n')
+        lines = data.split(b'\r\n')
         self.data = lines.pop()
 
         for line in lines:
@@ -87,6 +91,7 @@ class IRCSocket(IRCBase):
             except OSError as e:
                 # Connection closed
                 self.close()
+                raise
 
     def send(self, command, params):
         line = super().send(command, params)

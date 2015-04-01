@@ -76,7 +76,7 @@ class IRCSocket(IRCBase):
         self.data = lines.pop()
 
         for line in lines:
-            line = Line.parse(line)
+            line = Line.parse(line.decode('utf-8'))
 
             super().recv(line)
 

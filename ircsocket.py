@@ -86,7 +86,7 @@ class IRCSocket(IRCBase):
                 self.recv()
             except OSError as e:
                 # Connection closed
-                self.base.close()
+                self.close()
 
     def send(self, command, params):
         line = super().send(command, params)

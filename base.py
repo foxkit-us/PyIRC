@@ -23,7 +23,7 @@ EVENT_TERMINATE_NOW = 3  # Quit
 
 
 EVENT_CONNECTED = 1  # Connected to server
-EVENT_DISCONNECT = 2  # Disconnected
+EVENT_DISCONNECTED = 2  # Disconnected
 
 class BaseExtension:
 
@@ -52,7 +52,7 @@ class BasicRFC(BaseExtension):
 
         self.hooks = {
             EVENT_CONNECTED : self.handshake,
-            EVENT_DISCONNECT : self.disconnected,
+            EVENT_DISCONNECTED : self.disconnected,
         }
 
 

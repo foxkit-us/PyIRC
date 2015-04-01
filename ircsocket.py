@@ -76,7 +76,7 @@ class IRCSocket(IRCBase):
         self.data = lines.pop()
 
         for line in lines:
-            line = Line.parse(line)
+            line = Line.parse(line.decode('utf-8', 'ignore'))
 
             super().recv(line)
 
@@ -97,7 +97,8 @@ class IRCSocket(IRCBase):
         line = super().send(command, params)
         
         self.socket.settimeout(self.kwargs.get('send_timeout', None))
-        self.socket.send(bytes(line))
+        if self.socket.send(bytes(line)) == 0:
+            raise OSError("Connection reset by peer")
 
         logger.info("OUT: %s", str(line).rstrip())
 

@@ -17,6 +17,15 @@ class Autojoin(BaseExtension):
     """ Autojoin a bunch of channels, with some throttle """
 
     def __init__(self, base, **kwargs):
+        """ Initialise the autojoin extension
+
+        Keyword arguments:
+        - join - a mapping or list of channels to join, if a mapping, the keys
+          are the channels and the values are the channel keys
+        - autojoin_wait_start - how much time to wait for autojoin to begin
+        - autojoin_wait_interval - how long to wait between joins
+        """
+
         self.base = base
 
         self.implements = {

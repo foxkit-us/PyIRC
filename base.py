@@ -55,7 +55,6 @@ class BasicRFC(BaseExtension):
             EVENT_DISCONNECTED : self.disconnected,
         }
 
-
     def connected(self, line):
         self.base.connected = True
 
@@ -79,6 +78,19 @@ class IRCBase(metaclass=ABCMeta):
     implementations. """
 
     def __init__(self, serverport, user, nick, gecos, extensions, **kwargs):
+        """ Initialise the IRC base.
+
+        Arguments:
+        - serverport - server/port combination, like passed to socket.connect
+        - user - username to send to the server (identd may override this)
+        - nick - nickname to use
+        - extensions - list of default extensions to use (BasicRFC recommended)
+        
+        Keyword arguments:
+        - ssl - whether or not to use SSL
+        - other extensions may provide their own
+        """
+
         self.server, self.port = serverport
         self.user = user
         self.nick = nick

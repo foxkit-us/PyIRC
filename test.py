@@ -7,5 +7,5 @@ from base import BasicRFC
 from logging import basicConfig
 
 basicConfig(level="INFO")
-i = IRCSocket(('irc.interlinked.me', 9999), 'Elizabeth', 'Testbot', 'I am a test, pls ignore', extensions=[BasicRFC], family=socket.AF_INET, ssl=True)
+i = IRCSocket(('irc.interlinked.me', 6667), 'Elizabeth', 'Testbot', 'I am a test, pls ignore', extensions=[BasicRFC], family=socket.AF_INET)
 i.loop()

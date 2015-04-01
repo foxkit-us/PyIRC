@@ -77,10 +77,8 @@ class IRCSocket(IRCBase):
 
         for line in lines:
             line = Line.parse(line.decode('utf-8', 'ignore'))
-
-            super().recv(line)
-
             logger.info("IN: %s", str(line).rstrip())
+            super().recv(line)
 
     def loop(self):
         self.connect()

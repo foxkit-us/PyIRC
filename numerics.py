@@ -10,10 +10,8 @@ Conflicts should be handled by using the number directly, not the name.
 Comments will be added for conflicts.
 """
 
-try:
-    import enum
-except ImportError:
-    from .util import enum # Not available in Python 3.3 and below
+import enum
+
 
 class Numerics(enum.Enum):
     RPL_WELCOME = "001" # bahamut charybdis hybrid inspircd irc2.11.2 ircd-seven ircu plexus ratbox rfc2812 snircd unreal

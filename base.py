@@ -10,6 +10,7 @@ from operator import itemgetter
 from numerics import Numerics
 from line import Line
 
+
 PRIORITY_DONTCARE = 0
 PRIORITY_FIRST = -1
 PRIORITY_LAST = 1
@@ -33,13 +34,13 @@ class BaseExtension:
 class BasicRFC(BaseExtension):
     """ Basic RFC1459 doodads """
 
-    priority = PRIORITY_LAST
+    priority = PRIORITY_FIRST
 
     def __init__(self, base, **kwargs):
         self.base = base
 
         self.implements = {
-            None : self.connected,
+            "NOTICE" : self.connected,
             "PING" : self.pong,
             Numerics.RPL_WELCOME : self.welcome,
         }
@@ -74,15 +75,19 @@ class IRC:
 
     def build_dispatch_cache(self):
         self.dispatch = defaultdict(list)
+        self.extensions_inst = []
 
         for order, e in enumerate(self.extensions):
-            extinst = e(self, **kwargs)
+            extinst = e(self, **self.kwargs)
 
-            self.extensions.add(extinst)
+            self.extensions_inst.append(extinst)
 
             priority = extinst
 
             for command, callback in extinst.implements.items():
+                if isinstance(command, Numerics):
+                    command = command.value
+
                 command = command.lower()
 
                 self.dispatch[command].append([priority, order, callback])

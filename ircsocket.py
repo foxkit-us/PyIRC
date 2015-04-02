@@ -103,5 +103,7 @@ class IRCSocket(IRCBase):
         logger.info("OUT: %s", str(line).rstrip())
 
     def schedule(self, time, callback):
-        self.scheduler.enter(time, 0, callback)
+        return self.scheduler.enter(time, 0, callback)
 
+    def unschedule(self, sched):
+        self.scheduler.cancel(sched)

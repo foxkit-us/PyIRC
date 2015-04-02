@@ -42,6 +42,8 @@ class CapNegotiate(BaseExtension):
             "end" : self.cap_end,
         }
 
+        self.requires = ["BasicRFC"]
+
         # What we support - other extensions can add doodads to this
         self.cap_supported = set()
 

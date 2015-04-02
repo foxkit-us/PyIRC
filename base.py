@@ -5,7 +5,7 @@
 # for licensing information.
 
 from abc import ABCMeta, abstractmethod
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from operator import itemgetter
 from logging import getLogger
 
@@ -82,6 +82,8 @@ class BasicRFC(BaseExtension):
             EVENT_DISCONNECTED : self.disconnected,
         }
 
+        self.requires = []
+
     def connected(self, line):
         self.base.connected = True
 
@@ -134,14 +136,36 @@ class IRCBase(metaclass=ABCMeta):
 
         self.hooks = defaultdict(list)
         self.dispatch = defaultdict(list)
-        self.extensions_db = dict()
+        self.extensions_db = OrderedDict()
 
-        self.build_dispatch_cache()
+        self.build_extensions_db()
 
     def get_extension(self, extension):
         """ Get a given extension from the db """
 
         return self.extensions_db.get(extension, None)
+
+    def build_extensions_db(self):
+        """ Enumerate the extensions list, creating instances """
+
+        self.extensions_db.clear()
+
+        requires = set()
+
+        for e in self.extensions:
+            extinst = e(self, **self.kwargs)
+            self.extensions_db[e.__name__] = extinst
+
+            requires.update(extinst.requires)
+
+            logger.info("Loading extension: %s", e.__name__)
+
+        # Ensure all requires are met
+        for req in requires:
+            if req not in self.extensions_db:
+                raise KeyError("Required extension not found: {}".format(req))
+
+        self.build_dispatch_cache()
 
     def build_dispatch_cache(self):
         """ Enumerate present extensions and build the dispatch cache.
@@ -152,14 +176,10 @@ class IRCBase(metaclass=ABCMeta):
 
         self.hooks.clear()
         self.dispatch.clear()
-        self.extensions_db.clear()
 
-        for order, e in enumerate(self.extensions):
-            extinst = e(self, **self.kwargs)
-
-            self.extensions_db[e.__name__] = extinst
-            
-            logger.info("Loading extension: %s", extinst.__class__.__name__)
+        items = self.extensions_db.items()
+        for order, (name, extinst) in enumerate(items):
+            logger.info("Loading hooks for: %s", name)
 
             priority = extinst.priority
 
@@ -180,7 +200,7 @@ class IRCBase(metaclass=ABCMeta):
 
                 logger.debug("Hook callback added: %s", command)
             
-            logger.info("Loaded extension: %s", extinst.__class__.__name__)
+            logger.info("Loaded extension: %s", name)
 
     def dispatch_event(self, table, event, *args):
         """ Dispatch a given event from the given table """

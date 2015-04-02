@@ -21,6 +21,7 @@ class ISupport(BaseExtension):
         }
 
         self.hooks = {}
+        self.requires = []
 
         # State
         self.base.supported = {}

@@ -33,6 +33,7 @@ class Autojoin(BaseExtension):
         }
 
         self.hooks = {}
+        self.requires = []
 
         self.join_dict = kwargs['join']
 

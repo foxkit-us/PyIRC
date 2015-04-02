@@ -9,8 +9,7 @@ from collections.abc import Mapping
 from functools import partial
 from logging import getLogger
 
-from base import (BaseExtension, BasicRFC, PRIORITY_FIRST, EVENT_CONNECTED,
-                  EVENT_CANCEL)
+from base import BaseExtension, PRIORITY_FIRST, EVENT_CONNECTED, EVENT_CANCEL
 from numerics import Numerics
 
 
@@ -155,5 +154,5 @@ class CapNegotiate(BaseExtension):
             self.cap_timer = None
 
         self.base.send("CAP", ["END"])
-        BasicRFC.handshake(self)
+        self.get_extension("BasicRFC").handshake()
         self.negotiating = False

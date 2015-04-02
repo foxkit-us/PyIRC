@@ -40,6 +40,27 @@ class BaseExtension:
     
         self.implements = {}
         self.hooks = {}
+        self.requires = []
+
+    def send(self, command, params):
+        """ Mirror self.base.send """
+
+        self.base.send(command, params)
+
+    def schedule(self, time, callback):
+        """ Mirror self.base.schedule """
+
+        self.base.schedule(time, callback)
+
+    def unschedule(self, sched):
+        """ Mirror self.base.unschedule """
+
+        self.base.unschedule(sched)
+
+    def get_extension(self, extension):
+        """ Mirror self.base.get_extension """
+
+        return self.base.get_extension(extension)
 
 
 class BasicRFC(BaseExtension):
@@ -113,6 +134,11 @@ class IRCBase(metaclass=ABCMeta):
         
         self.build_dispatch_cache()
 
+    def get_extension(self, extension):
+        """ Get a given extension from the db """
+
+        return self.extensions_db.get(extension, None)
+
     def build_dispatch_cache(self):
         """ Enumerate present extensions and build the dispatch cache.
         
@@ -122,12 +148,12 @@ class IRCBase(metaclass=ABCMeta):
 
         self.hooks = defaultdict(list)
         self.dispatch = defaultdict(list)
-        self.extensions_inst = []
+        self.extensions_db = dict()
 
         for order, e in enumerate(self.extensions):
             extinst = e(self, **self.kwargs)
 
-            self.extensions_inst.append(extinst)
+            self.extensions_db[e.__name__] = extinst
             
             logger.info("Loading extension: %s", extinst.__class__.__name__)
 

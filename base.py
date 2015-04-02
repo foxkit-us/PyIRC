@@ -193,3 +193,7 @@ class IRCBase(metaclass=ABCMeta):
     @abstractmethod
     def schedule(self, time, callback):
         raise NotImplementedError()
+
+    @abstractmethod
+    def unschedule(self, sched):
+        raise NotImplementedError()

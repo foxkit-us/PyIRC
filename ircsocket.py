@@ -35,7 +35,7 @@ class IRCSocket(IRCBase):
     """
 
     def connect(self):
-        family = self.kwargs.get("family", socket.AF_UNSPEC)
+        family = self.kwargs.get("family", socket.AF_INET)
 
         self.socket = socket.socket(family=family)
 

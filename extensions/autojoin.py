@@ -51,12 +51,12 @@ class Autojoin(BaseExtension):
         # Should be sufficient for end of MOTD and such
         t = self.wait_start
 
-        for channel, key = self.join_dict.items():
+        for channel, key in self.join_dict.items():
             if key is None:
                 params = [channel]
             else:
                 params = [channel, key]
 
-            self.base.schedule(t, partial(base.send("JOIN", params)))
+            self.base.schedule(t, partial(self.base.send, "JOIN", params))
 
             t += self.wait_interval

@@ -7,6 +7,7 @@
 from abc import ABCMeta, abstractmethod
 from collections import defaultdict
 from operator import itemgetter
+from logging import getLogger
 
 from numerics import Numerics
 from line import Line
@@ -16,6 +17,7 @@ PRIORITY_DONTCARE = 0
 PRIORITY_FIRST = -1
 PRIORITY_LAST = 1
 
+
 EVENT_OK = None  # default
 EVENT_CANCEL = 1  # End processing
 EVENT_TERMINATE_SOON = 2  # Disconnect
@@ -24,6 +26,10 @@ EVENT_TERMINATE_NOW = 3  # Quit
 
 EVENT_CONNECTED = 1  # Connected to server
 EVENT_DISCONNECTED = 2  # Disconnected
+
+
+logger = getLogger(__name__)
+
 
 class BaseExtension:
 
@@ -122,8 +128,10 @@ class IRCBase(metaclass=ABCMeta):
             extinst = e(self, **self.kwargs)
 
             self.extensions_inst.append(extinst)
+            
+            logger.info("Loading extension: %s", extinst.__class__.__name__)
 
-            priority = extinst
+            priority = extinst.priority
 
             for command, callback in extinst.implements.items():
                 if isinstance(command, Numerics):
@@ -133,10 +141,16 @@ class IRCBase(metaclass=ABCMeta):
 
                 self.dispatch[command].append([priority, order, callback])
                 self.dispatch[command].sort()
+                
+                logger.debug("Command callback added: %s", command)
 
             for hook, callback in extinst.hooks.items():
                 self.hooks[hook].append([priority, order, callback])
                 self.hooks[hook].sort()
+
+                logger.debug("Hook callback added: %s", command)
+            
+            logger.info("Loaded extension: %s", extinst.__class__.__name__)
 
     def connect(self):
         """ Do the connection handshake """

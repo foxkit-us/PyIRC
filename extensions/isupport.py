@@ -30,7 +30,7 @@ class ISupport(BaseExtension):
 
         for param in line.params[-1]:
             # Split into key : value pair
-            key, _, value = param.split('=')
+            key, _, value = param.partition('=')
 
             if not value:
                 supported[key] = True

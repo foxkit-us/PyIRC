@@ -152,37 +152,35 @@ class IRCBase(metaclass=ABCMeta):
             
             logger.info("Loaded extension: %s", extinst.__class__.__name__)
 
+    def dispatch_event(self, table, event, *args):
+        """ Dispatch a given event from the given table """
+
+        for _, _, function in table[event]:
+            ret = function(*args)
+            if ret == EVENT_CANCEL:
+                return
+            elif ret == EVENT_TERMINATE_SOON:
+                self.send("QUIT", ["Hook requested termination"])
+            elif ret == EVENT_TERMINATE_NOW:
+                # XXX should we just raise?
+                quit()
+
     def connect(self):
         """ Do the connection handshake """
-
-        for hook in self.hooks[EVENT_CONNECTED]:
-            hook[2]()
+        
+        self.dispatch_event(self.hooks, EVENT_CONNECTED)
 
     def close(self):
         """ Do the connection teardown """
 
-        for hook in self.hooks[EVENT_DISCONNECTED]:
-            hook[2]()
+        self.dispatch_event(self.hooks, EVENT_DISCONNECTED)
 
     def recv(self, line):
         """ Receive a line """
 
         command = line.command.lower()
 
-        fnlist = self.dispatch[command]
-        if not fnlist:
-            return
-
-        for fn in fnlist:
-            ret = fn[2](line)
-            if ret == EVENT_CANCEL:
-                return
-            elif ret == EVENT_TERMINATE_SOON:
-                self.send("QUIT", ["Plugin requested termination"])
-                return
-            elif ret == EVENT_TERMINATE_NOW:
-                # FIXME - maybe should raise?
-                quit()
+        self.dispatch_event(self.dispatch, command, line)
 
     @abstractmethod
     def send(self, command, params):

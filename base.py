@@ -45,7 +45,7 @@ class BaseExtension:
 class BasicRFC(BaseExtension):
     """ Basic RFC1459 doodads """
 
-    priority = PRIORITY_FIRST
+    priority = PRIORITY_LAST
 
     def __init__(self, base, **kwargs):
         self.base = base

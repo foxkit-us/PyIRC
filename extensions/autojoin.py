@@ -58,6 +58,6 @@ class Autojoin(BaseExtension):
             else:
                 params = [channel, key]
 
-            self.base.schedule(t, partial(self.base.send, "JOIN", params))
+            self.schedule(t, partial(self.send, "JOIN", params))
 
             t += self.wait_interval

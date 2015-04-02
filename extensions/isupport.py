@@ -5,8 +5,14 @@
 # for licensing information.
 
 
+from logging import getLogger
+
+
 from base import BaseExtension
 from numerics import Numerics
+
+
+logger = getLogger(__name__)
 
 
 class ISupport(BaseExtension):
@@ -24,16 +30,17 @@ class ISupport(BaseExtension):
         self.requires = []
 
         # State
-        self.base.supported = {}
+        self.supported = {}
 
     def parse_isupport(self, line):
-        supported = self.base.supported
+        supported = self.supported
 
         for param in line.params[-1]:
             # Split into key : value pair
             key, _, value = param.partition('=')
 
             if not value:
+                logger.debug("ISUPPORT [k]: %s", key)
                 supported[key] = True
                 continue
 
@@ -54,4 +61,5 @@ class ISupport(BaseExtension):
 
                     value[i] = (val, data)
 
+            logger.debug("ISUPPORT [k:v]: %s:%r", key, value)
             supported[key] = value

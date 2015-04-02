@@ -35,7 +35,7 @@ class ISupport(BaseExtension):
     def parse_isupport(self, line):
         supported = self.supported
 
-        for param in line.params[-1]:
+        for param in line.params[1:-1]:
             # Split into key : value pair
             key, _, value = param.partition('=')
 
@@ -48,18 +48,17 @@ class ISupport(BaseExtension):
             value = value.split(',')
 
             # For each value, parse into pairs of val : data
-            # If val is blank but we have a separator, extend the last value.
-            # (Works around a charybdis and ratbox bug)
-            extend = None
             for i, v in enumerate(value):
                 val, sep, data = v.partition(':')
                 if sep:
-                    if data:
-                        extend = data
-                    else:
-                        data = extend
+                    if not data:
+                        data = None 
 
                     value[i] = (val, data)
+
+            if len(value) == 1:
+                # Single key
+                value = value[0]
 
             logger.debug("ISUPPORT [k:v]: %s:%r", key, value)
             supported[key] = value

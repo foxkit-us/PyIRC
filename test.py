@@ -7,6 +7,7 @@ from ircsocket import IRCSocket
 from base import BasicRFC
 from extensions.isupport import ISupport
 from extensions.autojoin import Autojoin
+from extensions.cap import CapNegotiate
 
 basicConfig(level="INFO")
 
@@ -16,7 +17,7 @@ arguments = {
     'user' : 'Testbot',
     'nick' : 'Testbot',
     'gecos' : 'I am a test, pls ignore :)',
-    'extensions' : [BasicRFC, ISupport, Autojoin],
+    'extensions' : [BasicRFC, ISupport, Autojoin, CapNegotiate],
     'join' : ['#PyIRC'],
 }
 

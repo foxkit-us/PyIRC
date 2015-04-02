@@ -131,7 +131,11 @@ class IRCBase(metaclass=ABCMeta):
         # Basic state
         self.connected = False
         self.registered = False
-        
+
+        self.hooks = defaultdict(list)
+        self.dispatch = defaultdict(list)
+        self.extensions_db = dict()
+
         self.build_dispatch_cache()
 
     def get_extension(self, extension):
@@ -146,9 +150,9 @@ class IRCBase(metaclass=ABCMeta):
         list.
         """
 
-        self.hooks = defaultdict(list)
-        self.dispatch = defaultdict(list)
-        self.extensions_db = dict()
+        self.hooks.clear()
+        self.dispatch.clear()
+        self.extensions_db.clear()
 
         for order, e in enumerate(self.extensions):
             extinst = e(self, **self.kwargs)

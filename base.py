@@ -49,7 +49,7 @@ class BaseExtension:
     def schedule(self, time, callback):
         """ Mirror self.base.schedule """
 
-        self.base.schedule(time, callback)
+        return self.base.schedule(time, callback)
 
     def unschedule(self, sched):
         """ Mirror self.base.unschedule """

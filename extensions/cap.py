@@ -102,10 +102,12 @@ class CapNegotiate(BaseExtension):
     def cap_dispatch(self, line):
         """ Dispatch the CAP command """
 
-        if self.cap_timer:
-            # Rearm the timeout
+        # Rearm the timeout
+        try:
             self.unschedule(self.cap_timer)
-            self.cap_timer = self.schedule(15, self.cap_end)
+        except ValueError:
+            pass
+        self.cap_timer = None
 
         cap_cmd = line.params[1].lower()
 
@@ -164,6 +166,8 @@ class CapNegotiate(BaseExtension):
             self.cap_local[cap] = params
 
         if self.dispatch_event(self.base.hooks, EVENT_CAP_ACK) is None:
+            # TODO - make a cap_continue to allow other things to continue the
+            # process (so other extensions besides one can run CAP ACK hooks)
             if self.negotiating:
                 # Negotiation ends
                 self.cap_end()
@@ -178,7 +182,7 @@ class CapNegotiate(BaseExtension):
 
         logger.debug("Ending CAP negotiation")
 
-        if self.cap_timer:
+        if self.cap_timer is not None:
             try:
                 self.unschedule(self.cap_timer)
             except ValueError:

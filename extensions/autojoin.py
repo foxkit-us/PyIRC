@@ -32,9 +32,6 @@ class Autojoin(BaseExtension):
             Numerics.RPL_WELCOME : self.autojoin,
         }
 
-        self.hooks = {}
-        self.requires = []
-
         self.join_dict = kwargs['join']
 
         # If a list is passed in for join_dict, we will use a comprehension

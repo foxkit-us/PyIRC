@@ -9,7 +9,7 @@ from extensions.isupport import ISupport
 from extensions.autojoin import Autojoin
 from extensions.cap import CapNegotiate
 
-basicConfig(level="INFO")
+basicConfig(level="DEBUG")
 
 arguments = {
     'serverport' : ('irc.interlinked.me', 9999),

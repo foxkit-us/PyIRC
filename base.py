@@ -34,13 +34,12 @@ logger = getLogger(__name__)
 class BaseExtension:
 
     priority = PRIORITY_DONTCARE
+    implements = {}
+    hooks = {}
+    requires = []
 
     def __init__(self, base, **kwargs):
         self.base = base
-    
-        self.implements = {}
-        self.hooks = {}
-        self.requires = []
 
     def send(self, command, params):
         """ Mirror self.base.send """
@@ -81,8 +80,6 @@ class BasicRFC(BaseExtension):
             EVENT_CONNECTED : self.handshake,
             EVENT_DISCONNECTED : self.disconnected,
         }
-
-        self.requires = []
 
     def connected(self, line):
         self.base.connected = True
@@ -208,9 +205,10 @@ class IRCBase(metaclass=ABCMeta):
         for _, _, function in table[event]:
             ret = function(*args)
             if ret == EVENT_CANCEL:
-                return
+                return EVENT_CANCEL
             elif ret == EVENT_TERMINATE_SOON:
                 self.send("QUIT", ["Hook requested termination"])
+                return EVENT_TERMINATE_SOON
             elif ret == EVENT_TERMINATE_NOW:
                 # XXX should we just raise?
                 quit()

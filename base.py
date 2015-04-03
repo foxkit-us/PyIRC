@@ -61,6 +61,11 @@ class BaseExtension:
 
         return self.base.get_extension(extension)
 
+    def dispatch_event(self, table, event, *args):
+        """ Mirror self.base.dispatch_event """
+
+        return self.base.dispatch_event(table, event, *args)
+
 
 class BasicRFC(BaseExtension):
     """ Basic RFC1459 doodads """

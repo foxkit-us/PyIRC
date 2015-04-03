@@ -13,8 +13,8 @@ from base import BaseExtension, PRIORITY_FIRST, EVENT_CONNECTED, EVENT_CANCEL
 from numerics import Numerics
 
 
-EVENT_CAP_ACK_PRE = 3  # CAP ACK (pre) event
-EVENT_CAP_ACK_POST = 4  # CAP ACK (post) event
+EVENT_CAP_LS = 3  # CAP ACK (pre) event
+EVENT_CAP_ACK = 4  # CAP ACK (post) event
 
 
 logger = getLogger(__name__)
@@ -25,9 +25,9 @@ class CapNegotiate(BaseExtension):
     """ Basic CAP negotiation (version 302) """
 
     priority = PRIORITY_FIRST
-    cap_version = "302"
-
     requires = ["BasicRFC"]
+
+    cap_version = "302"
 
     def __init__(self, base, **kwargs):
 
@@ -79,15 +79,13 @@ class CapNegotiate(BaseExtension):
 
         return (cap, param.split(','))
 
-    def create_cap_str(self, d, cap):
+    def create_cap_str(self, cap, params):
         """ Create a capability string """
 
-        if cap not in d:
-            return None
-        elif not d[cap]:
+        if params:
+            return "{}={}".format(cap, ','.join(params))
+        else:
             return cap
-
-        return "{}={}".format(cap, ','.join(d[cap]))
 
     def send_cap(self):
         """ Request capabilities from the server """
@@ -124,6 +122,10 @@ class CapNegotiate(BaseExtension):
         self.cap_remote = cap_remote = self.extract_caps(line)
 
         if self.negotiating:
+            # Allow extensions to register their own stuff
+            if self.dispatch_event(self.base.hooks, EVENT_CAP_LS) is not None:
+                return
+
             # Negotiate caps
             cap_supported = self.cap_supported
             supported = [self.create_cap_str(c, v) for c, v in
@@ -141,17 +143,13 @@ class CapNegotiate(BaseExtension):
     def cap_get_local(self, line):
         """ caps presently in use """
 
-        self.caps_local = caps = extract_caps(line)
+        self.cap_local = caps = extract_caps(line)
         logger.debug("CAPs active: %s", caps)
 
     def cap_ack(self, line):
         """ Acknowledge a CAP ACK response """
 
-        # Allow extensions to register their own stuff
-        if self.dispatch_event(self.hooks, EVENT_CAP_ACK_PRE) is not None:
-            return
-
-        for cap, params in self.extract_caps(line):
+        for cap, params in self.extract_caps(line).items():
             if cap.startswith('-'):
                 cap = cap[1:]
                 logger.debug("CAP removed: %s", cap)
@@ -165,7 +163,7 @@ class CapNegotiate(BaseExtension):
             logger.debug("Acknowledged CAP: %s", cap)
             self.cap_local[cap] = params
 
-        if self.dispatch_event(self.hooks, EVENT_CAP_ACK_POST) is None:
+        if self.dispatch_event(self.base.hooks, EVENT_CAP_ACK) is None:
             if self.negotiating:
                 # Negotiation ends
                 self.cap_end()

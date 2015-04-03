@@ -102,12 +102,12 @@ class CapNegotiate(BaseExtension):
     def cap_dispatch(self, line):
         """ Dispatch the CAP command """
 
-        # Rearm the timeout
-        try:
-            self.unschedule(self.cap_timer)
-        except ValueError:
-            pass
-        self.cap_timer = None
+        if self.cap_timer is not None:
+            try:
+                self.unschedule(self.cap_timer)
+            except ValueError:
+                pass
+            self.cap_timer = None
 
         cap_cmd = line.params[1].lower()
 

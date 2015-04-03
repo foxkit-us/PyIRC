@@ -90,8 +90,10 @@ class BasicRFC(BaseExtension):
         self.base.connected = True
 
     def handshake(self):
-        self.base.send("USER", [self.base.user, "*", "*", self.base.gecos])
-        self.base.send("NICK", [self.base.nick])
+        if not self.base.registered:
+            self.base.send("USER", [self.base.user, "*", "*",
+                                    self.base.gecos])
+            self.base.send("NICK", [self.base.nick])
 
     def disconnected(self):
         self.base.connected = False

@@ -274,7 +274,7 @@ class IRCBase(metaclass=ABCMeta):
 
         raise NotImplementedError()
 
-    def wrap_ssl(self, **kwargs):
+    def wrap_ssl(self):
         """ Wrap the socket in SSL """
 
         raise NotImplementedError()

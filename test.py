@@ -8,6 +8,7 @@ from base import BasicRFC
 from extensions.isupport import ISupport
 from extensions.autojoin import Autojoin
 from extensions.cap import CapNegotiate
+from extensions.starttls import STARTTLS
 from extensions.sasl import SASLPlain
 
 basicConfig(level="DEBUG")
@@ -18,7 +19,7 @@ arguments = {
     'user' : 'Testbot',
     'nick' : 'Testbot',
     'gecos' : 'I am a test, pls ignore :)',
-    'extensions' : [BasicRFC, ISupport, Autojoin, CapNegotiate, SASLPlain],
+    'extensions' : [BasicRFC, ISupport, Autojoin, CapNegotiate, SASLPlain, STARTTLS],
     'sasl_username' : 'Testbot',
     'sasl_password' : 'loldongs123',
     'join' : ['#PyIRC'],

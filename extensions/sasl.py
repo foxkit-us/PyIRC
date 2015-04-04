@@ -41,15 +41,16 @@ class SASLBase(BaseExtension):
 
         self.hooks = {
             EVENT_CAP_LS : self.register_sasl,
-            EVENT_CAP_ACK : self.auth_message,
+            EVENT_CAP_ACK : self.auth,
         }
 
         self.mechanisms = set()
         self.username = kwargs.get("sasl_username")
         self.password = kwargs.get("sasl_password")
 
+        self.done = False
+
     def register_sasl(self):
-        logger.debug("Registering SASL capability")
         cap_negotiate = self.get_extension("CapNegotiate")
 
         if "sasl" not in cap_negotiate.remote:
@@ -57,14 +58,24 @@ class SASLBase(BaseExtension):
             return
         elif len(cap_negotiate.remote["sasl"]):
             # 3.1 style SASL
+            logger.debug("Registering old-style SASL capability")
             cap_negotiate.register("sasl")
         else:
             # 3.2 style SASL
+            logger.debug("Registering new-style SASL capability")
             cap_negotiate.register("sasl", ["PLAIN"])
 
-    def auth_message(self):
+    def auth(self):
+        cap_negotiate = self.get_extension("CapNegotiate")
+
         if self.method == None:
             raise NotImplementedError("Need an authentication method!")
+        elif "sasl" not in cap_negotiate.local:
+            # CAP nonexistent
+            return
+        elif self.done:
+            # Finished authentication
+            return
 
         self.send("AUTHENTICATE", [self.method])
 
@@ -74,15 +85,14 @@ class SASLBase(BaseExtension):
     def success(self, line):
         logger.info("SASL authentication succeeded as %s", self.username)
 
-        # XXX may not be the best approach as other ACK hooks then can't run
-        # For now this is okay
-        self.get_extension("CapNegotiate").end()
+        self.done = True
+        self.get_extension("CapNegotiate").cont()
 
     def fail(self, line):
         logger.info("SASL authentication failed as %s", self.username)
 
-        # XXX see success method
-        self.get_extension("CapNegotiate").end()
+        self.done = True
+        self.get_extension("CapNegotiate").cont()
     
     def already(self, line):
         logger.critical("Tried to log in twice, this shouldn't happen!")

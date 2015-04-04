@@ -27,42 +27,42 @@ class CapNegotiate(BaseExtension):
     priority = PRIORITY_FIRST
     requires = ["BasicRFC"]
 
-    cap_version = "302"
+    version = "302"
 
     def __init__(self, base, **kwargs):
 
         self.base = base
 
         self.implements = {
-            "CAP" : self.cap_dispatch,
+            "CAP" : self.dispatch,
         }
 
         self.hooks = {
             EVENT_CONNECTED : self.send_cap,
         }
 
-        self.cap_dispatch_table = {
-            "ls" : self.cap_get_remote,
-            "list" : self.cap_get_local,
-            "ack" : self.cap_ack,
-            "nak" : self.cap_nak,
-            "end" : self.cap_end,
+        self.dispatch_table = {
+            "ls" : self.get_remote,
+            "list" : self.get_local,
+            "ack" : self.ack,
+            "nak" : self.nak,
+            "end" : self.end,
         }
 
         # What we support - other extensions can add doodads to this
-        self.cap_supported = dict()
+        self.supported = dict()
 
         # What they support
-        self.cap_remote = dict()
+        self.remote = dict()
 
         # What we are actually using
-        self.cap_local = dict()
+        self.local = dict()
 
         # Negotiation phase
         self.negotiating = True
 
         # Timer for CAP disarm
-        self.cap_timer = None
+        self.timer = None
 
     def extract_caps(self, line):
         """ Extract caps from a line """
@@ -79,7 +79,7 @@ class CapNegotiate(BaseExtension):
 
         return (cap, param.split(','))
 
-    def create_cap_str(self, cap, params):
+    def create_str(self, cap, params):
         """ Create a capability string """
 
         if params:
@@ -92,36 +92,36 @@ class CapNegotiate(BaseExtension):
 
         logger.debug("Requesting CAP list")
 
-        self.send("CAP", ["LS", self.cap_version])
+        self.send("CAP", ["LS", self.version])
 
-        self.cap_timer = self.schedule(15, self.cap_end)
+        self.timer = self.schedule(15, self.end)
 
         # Ensure no others get fired
         return EVENT_CANCEL
 
-    def cap_dispatch(self, line):
+    def dispatch(self, line):
         """ Dispatch the CAP command """
 
-        if self.cap_timer is not None:
+        if self.timer is not None:
             try:
-                self.unschedule(self.cap_timer)
+                self.unschedule(self.timer)
             except ValueError:
                 pass
-            self.cap_timer = None
+            self.timer = None
 
-        cap_cmd = line.params[1].lower()
+        cmd = line.params[1].lower()
 
-        if cap_cmd not in self.cap_dispatch_table:
+        if cmd not in self.dispatch_table:
             # We shouldn't get here if servers obey the spec...
-            logger.warn("Unhandled CAP command: %s", cap_cmd)
+            logger.warn("Unhandled CAP command: %s", cmd)
             return
 
-        return self.cap_dispatch_table[cap_cmd](line)
+        return self.dispatch_table[cmd](line)
 
-    def cap_get_remote(self, line):
+    def get_remote(self, line):
         """ A list of the CAPs the server supports (CAP LS) """
 
-        self.cap_remote = cap_remote = self.extract_caps(line)
+        self.remote = remote = self.extract_caps(line)
 
         if self.negotiating:
             # Allow extensions to register their own stuff
@@ -129,9 +129,9 @@ class CapNegotiate(BaseExtension):
                 return
 
             # Negotiate caps
-            cap_supported = self.cap_supported
-            supported = [self.create_cap_str(c, v) for c, v in
-                         cap_remote.items() if c in cap_supported]
+            supported = self.supported
+            supported = [self.create_str(c, v) for c, v in
+                         remote.items() if c in supported]
 
             if supported:
                 caps = ' '.join(sorted(supported))
@@ -140,56 +140,70 @@ class CapNegotiate(BaseExtension):
             else:
                 # Negotiaton ends, no caps
                 logger.debug("No CAPs to request!")
-                self.cap_end()
+                self.end()
 
-    def cap_get_local(self, line):
+    def get_local(self, line):
         """ caps presently in use """
 
-        self.cap_local = caps = extract_caps(line)
+        self.local = caps = extract_caps(line)
         logger.debug("CAPs active: %s", caps)
 
-    def cap_ack(self, line):
+    def ack(self, line):
         """ Acknowledge a CAP ACK response """
 
         for cap, params in self.extract_caps(line).items():
             if cap.startswith('-'):
                 cap = cap[1:]
                 logger.debug("CAP removed: %s", cap)
-                self.cap_local.pop(cap, None)
+                self.local.pop(cap, None)
                 continue
             elif cap.startswith(('=', '~')):
                 # Compatibility stuff
                 cap = cap[1:]
 
-            assert cap in self.cap_supported
+            assert cap in self.supported
             logger.debug("Acknowledged CAP: %s", cap)
-            self.cap_local[cap] = params
+            self.local[cap] = params
 
         if self.dispatch_event(self.base.hooks, EVENT_CAP_ACK) is None:
-            # TODO - make a cap_continue to allow other things to continue the
+            # TODO - make a continue to allow other things to continue the
             # process (so other extensions besides one can run CAP ACK hooks)
             if self.negotiating:
                 # Negotiation ends
-                self.cap_end()
+                self.end()
 
-    def cap_nak(self, line):
+    def nak(self, line):
         """ CAPs rejected """
 
         logger.warn("Rejected CAPs: %s", line.params[-1].lower())
 
-    def cap_end(self, line=None):
+    def end(self, line=None):
         """ End the CAP process """
 
         logger.debug("Ending CAP negotiation")
 
-        if self.cap_timer is not None:
+        if self.timer is not None:
             try:
-                self.unschedule(self.cap_timer)
+                self.unschedule(self.timer)
             except ValueError:
                 # Called from scheduler, ignore it
                 pass
-            self.cap_timer = None
+            self.timer = None
 
         self.send("CAP", ["END"])
         self.get_extension("BasicRFC").handshake()
         self.negotiating = False
+
+    def register(self, cap, params=list(), replace=False):
+        """ Register that we support a specific CAP """
+
+        if replace or cap not in self.supported:
+            self.supported[cap] = params
+        else:
+            self.supported[cap].extend(params)
+
+    def deregister(self, cap):
+        """ Unregister support for a specific CAP """
+
+        self.supported.pop(cap, None)
+

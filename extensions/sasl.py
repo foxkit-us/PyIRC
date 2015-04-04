@@ -48,9 +48,18 @@ class SASLBase(BaseExtension):
         self.password = kwargs.get("sasl_password")
 
     def register_sasl(self):
-        # TODO - 3.2 style SASL
         logger.debug("Registering SASL capability")
-        self.get_extension("CapNegotiate").cap_supported["sasl"] = []
+        cap_negotiate = self.get_extension("CapNegotiate")
+
+        if "sasl" not in cap_negotiate.remote:
+            # No SASL
+            return
+        elif len(cap_negotiate.remote["sasl"]):
+            # 3.1 style SASL
+            cap_negotiate.register("sasl")
+        else:
+            # 3.2 style SASL
+            cap_negotiate.register("sasl", ["PLAIN"])
 
     def auth_message(self):
         if self.method == None:
@@ -66,13 +75,13 @@ class SASLBase(BaseExtension):
 
         # XXX may not be the best approach as other ACK hooks then can't run
         # For now this is okay
-        self.get_extension("CapNegotiate").cap_end()
+        self.get_extension("CapNegotiate").end()
 
     def fail(self, line):
         logger.info("SASL authentication failed as %s", self.username)
 
         # XXX see success method
-        self.get_extension("CapNegotiate").cap_end()
+        self.get_extension("CapNegotiate").end()
     
     def already(self, line):
         logger.critical("Tried to log in twice, this shouldn't happen!")

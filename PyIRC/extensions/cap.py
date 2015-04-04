@@ -6,7 +6,6 @@
 
 
 from collections.abc import Mapping
-from functools import partial
 from logging import getLogger
 
 from PyIRC.base import (BaseExtension, PRIORITY_FIRST, EVENT_CONNECTED,

@@ -5,7 +5,6 @@
 # for licensing information.
 
 
-from functools import partial
 from logging import getLogger
 from base64 import b64encode, b64decode
 

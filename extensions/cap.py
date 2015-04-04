@@ -9,12 +9,13 @@ from collections.abc import Mapping
 from functools import partial
 from logging import getLogger
 
-from base import BaseExtension, PRIORITY_FIRST, EVENT_CONNECTED, EVENT_CANCEL
+from base import (BaseExtension, PRIORITY_FIRST, EVENT_CONNECTED,
+                  EVENT_CANCEL, event_new)
 from numerics import Numerics
 
 
-EVENT_CAP_LS = 3  # CAP ACK (pre) event
-EVENT_CAP_ACK = 4  # CAP ACK (post) event
+EVENT_CAP_LS = event_new()  # CAP ACK (pre) event
+EVENT_CAP_ACK = event_new()  # CAP ACK (post) event
 
 
 logger = getLogger(__name__)

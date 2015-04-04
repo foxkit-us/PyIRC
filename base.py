@@ -14,8 +14,8 @@ from line import Line
 
 
 PRIORITY_DONTCARE = 0
-PRIORITY_FIRST = -1
-PRIORITY_LAST = 1
+PRIORITY_FIRST = -1000
+PRIORITY_LAST = 1000
 
 
 EVENT_OK = None  # default
@@ -24,14 +24,33 @@ EVENT_TERMINATE_SOON = 2  # Disconnect
 EVENT_TERMINATE_NOW = 3  # Quit
 
 
-EVENT_CONNECTED = 1  # Connected to server
-EVENT_DISCONNECTED = 2  # Disconnected
+# Present event
+_cur_event = 0
 
+def event_new():
+    """ Register a new event type """
+
+    global _cur_event
+    event = _cur_event
+    _cur_event += 1
+    return event
+
+EVENT_CONNECTED = event_new()  # Connected to server
+EVENT_DISCONNECTED = event_new()  # Disconnected
 
 logger = getLogger(__name__)
 
 
 class BaseExtension:
+    """ The base class for extensions.
+
+    Members:
+    - implements - the set of IRC commands and numerics this extension
+      supports
+    - hooks - hooks this command supports
+    - requires - required extensions (must be a name)
+    - priority - the priority of this extension, lower is higher (like Unix)
+    """
 
     priority = PRIORITY_DONTCARE
     implements = {}

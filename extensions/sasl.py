@@ -21,7 +21,8 @@ class SASLBase(BaseExtension):
 
     """ Base SASL support """
 
-    priority = PRIORITY_FIRST
+    # We should come after things like STARTTLS
+    priority = PRIORITY_FIRST + 5
     requires = ["CapNegotiate"]
     method = None
 
@@ -93,6 +94,8 @@ class SASLBase(BaseExtension):
 
 class SASLPlain(SASLBase):
 
+    # Least preferred auth method
+    priority = PRIORITY_FIRST + 10
     method = "PLAIN"
 
     def __init__(self, base, **kwargs):

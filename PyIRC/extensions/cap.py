@@ -33,7 +33,7 @@ class CapNegotiate(BaseExtension):
 
         self.base = base
 
-        self.implements = {
+        self.commands = {
             "CAP" : self.dispatch,
         }
 

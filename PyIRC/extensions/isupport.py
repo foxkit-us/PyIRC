@@ -22,7 +22,7 @@ class ISupport(BaseExtension):
     def __init__(self, base, **kwargs):
         self.base = base
 
-        self.implements = {
+        self.commands = {
             Numerics.RPL_ISUPPORT : self.parse_isupport,
         }
 

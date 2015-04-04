@@ -30,7 +30,7 @@ class SASLBase(BaseExtension):
 
         self.base = base
 
-        self.implements = {
+        self.commands = {
             Numerics.RPL_SASLSUCCESS : self.success,
             Numerics.RPL_SASLMECHS : self.get_mechanisms,
             Numerics.ERR_SASLFAIL : self.fail,
@@ -116,7 +116,7 @@ class SASLPlain(SASLBase):
     def __init__(self, base, **kwargs):
         super().__init__(base, **kwargs)
 
-        self.implements.update({
+        self.commands.update({
             "AUTHENTICATE" : self.authenticate,
         })
 

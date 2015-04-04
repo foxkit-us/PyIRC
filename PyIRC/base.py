@@ -46,7 +46,7 @@ class BaseExtension:
     """ The base class for extensions.
 
     Members:
-    - implements - the set of IRC commands and numerics this extension
+    - commands - the set of IRC commands and numerics this extension
       supports
     - hooks - hooks this command supports
     - requires - required extensions (must be a name)
@@ -54,7 +54,7 @@ class BaseExtension:
     """
 
     priority = PRIORITY_DONTCARE
-    implements = {}
+    commands = {}
     hooks = {}
     requires = []
 
@@ -95,7 +95,7 @@ class BasicRFC(BaseExtension):
     def __init__(self, base, **kwargs):
         self.base = base
 
-        self.implements = {
+        self.commands = {
             "NOTICE" : self.connected,
             "PING" : self.pong,
             Numerics.RPL_WELCOME : self.welcome,
@@ -124,7 +124,7 @@ class BasicRFC(BaseExtension):
 
     def welcome(self, line):
         self.base.registered = True
-    
+
 
 class IRCBase(metaclass=ABCMeta):
 
@@ -139,7 +139,7 @@ class IRCBase(metaclass=ABCMeta):
         - user - username to send to the server (identd may override this)
         - nick - nickname to use
         - extensions - list of default extensions to use (BasicRFC recommended)
-        
+
         Keyword arguments:
         - ssl - whether or not to use SSL
         - other extensions may provide their own
@@ -154,13 +154,13 @@ class IRCBase(metaclass=ABCMeta):
         self.extensions = list(extensions)
 
         self.kwargs = kwargs
-        
+
         # Basic state
         self.connected = False
         self.registered = False
 
         self.hooks = defaultdict(list)
-        self.dispatch = defaultdict(list)
+        self.commands = defaultdict(list)
         self.extensions_db = OrderedDict()
 
         self.build_extensions_db()
@@ -202,7 +202,7 @@ class IRCBase(metaclass=ABCMeta):
             exttable = getattr(extinst, extmember, None)
             if exttable is None:
                 continue
-            
+
             logger.info("Loading hook %s for %s", extmember, name)
 
             for hook, callback in exttable.items():
@@ -215,16 +215,17 @@ class IRCBase(metaclass=ABCMeta):
                 logger.debug("Hook callback (%s) added: %s", extmember, hook)
 
     def build_dispatch_cache(self):
-        """ Enumerate present extensions and build the dispatch cache.
-        
+        """ Enumerate present extensions and build the commands and hooks
+        cache.
+
         You should only need to call this method if you modify the extensions
         list.
         """
 
         self.hooks.clear()
-        self.dispatch.clear()
+        self.commands.clear()
 
-        self.build_hooks(self.dispatch, "implements", 
+        self.build_hooks(self.commands, "commands",
                          lambda s : (s.lower() if isinstance(s, str) else
                                      s.value))
         self.build_hooks(self.hooks, "hooks")
@@ -248,7 +249,7 @@ class IRCBase(metaclass=ABCMeta):
 
     def connect(self):
         """ Do the connection handshake """
-        
+
         self.dispatch_event(self.hooks, EVENT_CONNECTED)
 
     def close(self):
@@ -261,7 +262,7 @@ class IRCBase(metaclass=ABCMeta):
 
         command = line.command.lower()
 
-        self.dispatch_event(self.dispatch, command, line)
+        self.dispatch_event(self.commands, command, line)
 
     @abstractmethod
     def send(self, command, params):

@@ -71,7 +71,7 @@ class CTCP(BaseExtension):
 
         self.base = base
 
-        self.implements = {
+        self.commands = {
             "PRIVMSG" : self.ctcp_in,
             "NOTICE" : self.nctcp_in,
         }
@@ -81,7 +81,7 @@ class CTCP(BaseExtension):
         }
 
         # Some default hooks
-        self.implements_ctcp = {
+        self.commands_ctcp = {
             "ping" : self.c_ping,
             "version" : self.c_version,
         }

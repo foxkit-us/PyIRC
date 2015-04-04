@@ -27,7 +27,7 @@ class STARTTLS(BaseExtension):
 
         self.base = base
 
-        self.implements = {
+        self.commands = {
             Numerics.RPL_STARTTLS : self.wrap,
             Numerics.ERR_STARTTLS : self.abort,
         }

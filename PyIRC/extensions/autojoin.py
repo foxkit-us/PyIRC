@@ -28,7 +28,7 @@ class Autojoin(BaseExtension):
 
         self.base = base
 
-        self.implements = {
+        self.commands = {
             Numerics.RPL_WELCOME : self.autojoin,
         }
 

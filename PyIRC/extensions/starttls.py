@@ -7,7 +7,8 @@
 
 from logging import getLogger
 
-from PyIRC.base import BaseExtension, PRIORITY_FIRST, EVENT_CANCEL
+from PyIRC.base import (BaseExtension, PRIORITY_FIRST, EVENT_CANCEL,
+                        EVENT_DISCONNECTED)
 from PyIRC.numerics import Numerics
 
 from PyIRC.extensions.cap import EVENT_CAP_LS, EVENT_CAP_ACK

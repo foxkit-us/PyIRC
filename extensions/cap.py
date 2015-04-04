@@ -166,17 +166,19 @@ class CapNegotiate(BaseExtension):
             logger.debug("Acknowledged CAP: %s", cap)
             self.local[cap] = params
 
-        if self.dispatch_event(self.base.hooks, EVENT_CAP_ACK) is None:
-            # TODO - make a continue to allow other things to continue the
-            # process (so other extensions besides one can run CAP ACK hooks)
-            if self.negotiating:
-                # Negotiation ends
-                self.end()
+        self.cont()
 
     def nak(self, line):
         """ CAPs rejected """
 
         logger.warn("Rejected CAPs: %s", line.params[-1].lower())
+
+    def cont(self):
+        """ Continue negotiation of caps """
+
+        if self.dispatch_event(self.base.hooks, EVENT_CAP_ACK) is None:
+            if self.negotiating:
+                self.end()
 
     def end(self, line=None):
         """ End the CAP process """

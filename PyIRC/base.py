@@ -116,6 +116,7 @@ class BasicRFC(BaseExtension):
 
     def disconnected(self):
         self.base.connected = False
+        self.base.registered = False
 
     def pong(self, line):
         self.base.send("PONG", line.params)

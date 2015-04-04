@@ -65,13 +65,16 @@ class CapNegotiate(BaseExtension):
         # Timer for CAP disarm
         self.timer = None
 
-    def extract_caps(self, line):
+    @staticmethod
+    def extract_caps(line):
         """ Extract caps from a line """
 
-        caps = (self.parse_cap(cap) for cap in line.params[-1].split())
+        caps = line.params[-1].split()
+        caps = (CapNegotiate.parse_cap(cap) for cap in caps)
         return {cap : param for cap, param in caps}
 
-    def parse_cap(self, string):
+    @staticmethod
+    def parse_cap(string):
         """ Parse a capability string """
 
         cap, sep, param = string.partition('=')
@@ -80,7 +83,8 @@ class CapNegotiate(BaseExtension):
 
         return (cap, param.split(','))
 
-    def create_str(self, cap, params):
+    @staticmethod
+    def create_str(cap, params):
         """ Create a capability string """
 
         if params:
@@ -97,8 +101,23 @@ class CapNegotiate(BaseExtension):
 
         self.timer = self.schedule(15, self.end)
 
+        self.negotiating = True
+
         # Ensure no others get fired
         return EVENT_CANCEL
+
+    def close(self):
+        """ Reset state on disconnect """
+
+        if self.timer is not None:
+            try:
+                self.unschedule(self.timer)
+            except ValueError:
+                pass
+
+        self.supported.clear()
+        self.remote.clear()
+        self.local.clear()
 
     def dispatch(self, line):
         """ Dispatch the CAP command """

@@ -35,6 +35,7 @@ class STARTTLS(BaseExtension):
         self.hooks = {
             EVENT_CAP_LS : self.register_starttls,
             EVENT_CAP_ACK : self.starttls,
+            EVENT_DISCONNECTED : self.close,
         }
 
         self.done = False
@@ -63,6 +64,9 @@ class STARTTLS(BaseExtension):
             self.send("STARTTLS", None)
 
             return EVENT_CANCEL
+
+    def close(self):
+        self.done = False
 
     def wrap(self, line):
         logger.info("Performing STARTTLS initiation...")

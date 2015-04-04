@@ -10,7 +10,7 @@ from logging import getLogger
 from base64 import b64encode, b64decode
 
 from PyIRC.base import (BaseExtension, PRIORITY_FIRST, PRIORITY_LAST,
-                        EVENT_CANCEL)
+                        EVENT_CANCEL, EVENT_DISCONNECTED)
 from PyIRC.numerics import Numerics
 
 from PyIRC.extensions.cap import EVENT_CAP_LS, EVENT_CAP_ACK
@@ -43,6 +43,7 @@ class SASLBase(BaseExtension):
         self.hooks = {
             EVENT_CAP_LS : self.register_sasl,
             EVENT_CAP_ACK : self.auth,
+            EVENT_DISCONNECTED : self.close,
         }
 
         self.mechanisms = set()
@@ -82,6 +83,10 @@ class SASLBase(BaseExtension):
 
         # Defer end of CAP
         return EVENT_CANCEL
+
+    def close(self):
+        self.mechanisms.clear()
+        self.done = False
 
     def success(self, line):
         logger.info("SASL authentication succeeded as %s", self.username)

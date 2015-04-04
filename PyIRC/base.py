@@ -37,6 +37,7 @@ def event_new():
 
 EVENT_CONNECTED = event_new()  # Connected to server
 EVENT_DISCONNECTED = event_new()  # Disconnected
+EVENT_EXTENSION_POST = event_new()  # All extensions loaded
 
 logger = getLogger(__name__)
 
@@ -191,6 +192,28 @@ class IRCBase(metaclass=ABCMeta):
 
         self.build_dispatch_cache()
 
+    def build_hooks(self, table, extmember, key=None):
+        """ Build the given hook table using the given extension member """
+
+        items = self.extensions_db.items()
+        for order, (name, extinst) in enumerate(items):
+            priority = extinst.priority
+
+            exttable = getattr(extinst, extmember, None)
+            if exttable is None:
+                continue
+            
+            logger.info("Loading hook %s for %s", extmember, name)
+
+            for hook, callback in exttable.items():
+                if key:
+                    hook = key(hook)
+
+                table[hook].append([priority, order, callback])
+                table[hook].sort()
+
+                logger.debug("Hook callback (%s) added: %s", extmember, hook)
+
     def build_dispatch_cache(self):
         """ Enumerate present extensions and build the dispatch cache.
         
@@ -201,30 +224,13 @@ class IRCBase(metaclass=ABCMeta):
         self.hooks.clear()
         self.dispatch.clear()
 
-        items = self.extensions_db.items()
-        for order, (name, extinst) in enumerate(items):
-            logger.info("Loading hooks for: %s", name)
+        self.build_hooks(self.dispatch, "implements", 
+                         lambda s : (s.lower() if isinstance(s, str) else
+                                     s.value))
+        self.build_hooks(self.hooks, "hooks")
 
-            priority = extinst.priority
-
-            for command, callback in extinst.implements.items():
-                if isinstance(command, Numerics):
-                    command = command.value
-
-                command = command.lower()
-
-                self.dispatch[command].append([priority, order, callback])
-                self.dispatch[command].sort()
-                
-                logger.debug("Command callback added: %s", command)
-
-            for hook, callback in extinst.hooks.items():
-                self.hooks[hook].append([priority, order, callback])
-                self.hooks[hook].sort()
-
-                logger.debug("Hook callback added: %s", command)
-            
-            logger.info("Loaded extension: %s", name)
+        # Post-load hook
+        self.dispatch_event(self.hooks, EVENT_EXTENSION_POST)
 
     def dispatch_event(self, table, event, *args):
         """ Dispatch a given event from the given table """

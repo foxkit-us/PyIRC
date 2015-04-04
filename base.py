@@ -264,8 +264,17 @@ class IRCBase(metaclass=ABCMeta):
 
     @abstractmethod
     def schedule(self, time, callback):
+        """ Schedule a callback for a specific time """
+
         raise NotImplementedError()
 
     @abstractmethod
     def unschedule(self, sched):
+        """ Unschedule a callback previously registered with schedule """
+
+        raise NotImplementedError()
+
+    def wrap_ssl(self, **kwargs):
+        """ Wrap the socket in SSL """
+
         raise NotImplementedError()

@@ -107,3 +107,14 @@ class IRCSocket(IRCBase):
 
     def unschedule(self, sched):
         self.scheduler.cancel(sched)
+
+    def wrap_ssl(self):
+        if self.ssl:
+            # Wrapped already
+            return False
+
+        self._socket = self.socket
+        self.socket = ssl.wrap_socket(self._socket)
+        self.ssl = True
+
+        return True

@@ -8,8 +8,8 @@
 from collections.abc import Mapping
 from functools import partial
 
-from base import BaseExtension
-from numerics import Numerics
+from PyIRC.base import BaseExtension
+from PyIRC.numerics import Numerics
 
 
 class Autojoin(BaseExtension):

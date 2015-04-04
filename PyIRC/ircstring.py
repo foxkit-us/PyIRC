@@ -7,8 +7,11 @@
 and usually follow wonky RFC1459 semantics. The only time this is not true is
 on IRCNet. """
 
-from collections import UserString
+
 import re
+
+from collections import UserString
+
 
 _upper = "[]\\"
 _lower = "{}|"
@@ -24,6 +27,7 @@ trans_lower = lambda text : text.translate(_ttable_lower)
 # Is upper/lower
 _isupper = re.compile("[{_re_upper}]".format(**locals()))
 _islower = re.compile("[{_re_lower}]".format(**locals()))
+
 
 class BaseStr(UserString):
     """ Base string class. Implements a case-agnostic string. """

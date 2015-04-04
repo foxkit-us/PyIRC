@@ -8,13 +8,13 @@ one network you probably want this """
 
 
 import socket, ssl
+
 from time import sleep
 from sched import scheduler
-from warnings import warn
 from logging import getLogger
 
-from base import IRCBase
-from line import Line
+from PyIRC.base import IRCBase
+from PyIRC.line import Line
 
 
 logger = getLogger(__name__)

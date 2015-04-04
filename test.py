@@ -1,15 +1,14 @@
 #!/usr/bin/env python3.4
 
-import socket
 from logging import basicConfig
 
-from ircsocket import IRCSocket
-from base import BasicRFC
-from extensions.isupport import ISupport
-from extensions.autojoin import Autojoin
-from extensions.cap import CapNegotiate
-from extensions.starttls import STARTTLS
-from extensions.sasl import SASLPlain
+from PyIRC.socket import IRCSocket
+from PyIRC.base import BasicRFC
+from PyIRC.extensions.isupport import ISupport
+from PyIRC.extensions.autojoin import Autojoin
+from PyIRC.extensions.cap import CapNegotiate
+from PyIRC.extensions.starttls import STARTTLS
+from PyIRC.extensions.sasl import SASLPlain
 
 basicConfig(level="DEBUG")
 

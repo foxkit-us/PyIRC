@@ -9,9 +9,9 @@ from collections.abc import Mapping
 from functools import partial
 from logging import getLogger
 
-from base import (BaseExtension, PRIORITY_FIRST, EVENT_CONNECTED,
+from PyIRC.base import (BaseExtension, PRIORITY_FIRST, EVENT_CONNECTED,
                   EVENT_CANCEL, event_new)
-from numerics import Numerics
+from PyIRC.numerics import Numerics
 
 
 EVENT_CAP_LS = event_new()  # CAP ACK (pre) event

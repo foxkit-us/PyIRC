@@ -8,9 +8,10 @@
 from functools import partial
 from logging import getLogger
 
-from base import BaseExtension, PRIORITY_FIRST, EVENT_CANCEL
-from extensions.cap import EVENT_CAP_LS, EVENT_CAP_ACK
-from numerics import Numerics
+from PyIRC.base import BaseExtension, PRIORITY_FIRST, EVENT_CANCEL
+from PyIRC.numerics import Numerics
+
+from PyIRC.extensions.cap import EVENT_CAP_LS, EVENT_CAP_ACK
 
 
 logger = getLogger(__name__)

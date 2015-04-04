@@ -9,8 +9,8 @@ from collections import defaultdict, OrderedDict
 from operator import itemgetter
 from logging import getLogger
 
-from numerics import Numerics
-from line import Line
+from PyIRC.numerics import Numerics
+from PyIRC.line import Line
 
 
 PRIORITY_DONTCARE = 0

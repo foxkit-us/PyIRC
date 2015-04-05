@@ -5,7 +5,7 @@
 """ Lag analysis and checking """
 
 
-from PyIRC.base import BaseExtension
+from PyIRC.base import BaseExtension, EVENT_DISCONNECTED
 from PyIRC.numerics import Numerics
 
 try:

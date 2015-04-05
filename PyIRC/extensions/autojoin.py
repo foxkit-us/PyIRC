@@ -12,9 +12,9 @@ from PyIRC.base import BaseExtension, EVENT_DISCONNECTED
 from PyIRC.numerics import Numerics
 
 
-class Autojoin(BaseExtension):
+class AutoJoin(BaseExtension):
 
-    """ Autojoin a bunch of channels, with some throttle """
+    """ AutoJoin a bunch of channels, with some throttle """
 
     def __init__(self, base, **kwargs):
         """ Initialise the autojoin extension

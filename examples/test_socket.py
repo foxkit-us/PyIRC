@@ -3,14 +3,8 @@
 from logging import basicConfig
 
 from PyIRC.socket import IRCSocket
-from PyIRC.base import BasicRFC
-from PyIRC.extensions.isupport import ISupport
-from PyIRC.extensions.autojoin import Autojoin
-from PyIRC.extensions.cap import CapNegotiate
-from PyIRC.extensions.starttls import STARTTLS
-from PyIRC.extensions.sasl import SASLPlain
-from PyIRC.extensions.ctcp import CTCP
-from PyIRC.extensions.lag import LagCheck
+from PyIRC.extensions import ircv3_recommended
+
 
 basicConfig(level="DEBUG")
 
@@ -20,7 +14,7 @@ arguments = {
     'user' : 'Testbot',
     'nick' : 'Testbot',
     'gecos' : 'I am a test, pls ignore :)',
-    'extensions' : [BasicRFC, ISupport, Autojoin, CapNegotiate, SASLPlain, STARTTLS, CTCP, LagCheck],
+    'extensions' : ircv3_recommended,
     'sasl_username' : 'Testbot',
     'sasl_password' : 'loldongs123',
     'join' : ['#PyIRC'],

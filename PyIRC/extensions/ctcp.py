@@ -1,5 +1,5 @@
 # Copyright © 2013 Andrew Wilcox.  All rights reserved.
-# This file is part of the PyIRC2 project. See LICENSE in the root directory
+# This file is part of the PyIRC 3 project. See LICENSE in the root directory
 # for licensing information.
 
 """ CTCP extension.  Dispatches CTCP commands similar to IRC commands. """

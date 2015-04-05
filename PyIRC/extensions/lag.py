@@ -1,0 +1,97 @@
+# Copyright © 2013-2015 Elizabeth Myers.  All rights reserved.
+# This file is part of the PyIRC2 project. See LICENSE in the root directory
+# for licensing information.
+
+""" Lag analysis and checking """
+
+
+from PyIRC.base import BaseExtension
+from PyIRC.numerics import Numerics
+
+try:
+    from time import monotonic as time
+except ImportError:
+    from time import time
+
+from random import randint, choice
+from string import ascii_letters as letters, digits
+from logging import getLogger
+
+
+logger = getLogger(__name__)
+
+
+class LagCheck(BaseExtension):
+    """ Lag measurement extension """
+
+    def __init__(self, base, **kwargs):
+
+        self.base = base
+
+        self.lagcheck = kwargs.get("lagcheck", 30)
+
+        self.commands = {
+            Numerics.RPL_WELCOME : self.start,
+            "PONG" : self.pong,
+        }
+
+        self.hooks = {
+            EVENT_DISCONNECTED : self.close,
+        }
+
+        self.last = None 
+        self.lag = None
+        self.timer = None
+
+    @staticmethod
+    def timestr(time):
+        """ Return a random string based on the current time """
+   
+        length = randint(5, 10)
+        chars = letters + digits
+        randstr = ''.join(choice(chars) for x in range(length))
+
+        return "{}-{}".format(time, randstr)
+
+    def ping(self):
+        """ Callback for ping """
+            
+        if self.last is not None:
+            raise OSError("Connection timed out")
+        
+        self.last = time()
+        s = self.timestr(self.last)
+        self.send("PING", [s])
+        self.timer = self.schedule(self.lagcheck, self.ping)
+
+    def start(self, line):
+        """ Begin sending PING requests as soon as possible """
+
+        self.ping()
+
+    def pong(self, line):
+        """ Use PONG reply to check lag """
+
+        if self.last is None:
+            return
+
+        t, sep, s = line.params[-1].partition('-')
+        if not sep or not s:
+            return
+
+        if t != str(self.last):
+            return
+
+        self.lag = round(time() - float(self.last), 3)
+        self.last = None
+        logger.info("Lag: %f", self.lag)
+
+    def close(self):
+        self.last = None 
+        self.lag = None
+
+        if self.timer is not None:
+            try:
+                self.unschedule(self.timer)
+            except ValueError:
+                pass

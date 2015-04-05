@@ -14,16 +14,25 @@ from PyIRC.numerics import Numerics
 
 class AutoJoin(BaseExtension):
 
-    """ AutoJoin a bunch of channels, with some throttle """
+    """ This extension will autojoin the channels you specify, without flooding
+    off the network.  The initial delay to first join and delay between each
+    successive channel is customisable. """
 
     def __init__(self, base, **kwargs):
-        """ Initialise the autojoin extension
+        """ Initialise the AutoJoin extension.
 
-        Keyword arguments:
-        - join - a mapping or list of channels to join, if a mapping, the keys
-          are the channels and the values are the channel keys
-        - autojoin_wait_start - how much time to wait for autojoin to begin
-        - autojoin_wait_interval - how long to wait between joins
+        join
+          A Mapping (dictionary type) or Iterable of channels to join.
+          If a Mapping is passed, keys are treated as channel names and values
+          are used as keys to join the channel.
+          If an Iterable is passed, each value is a channel and no keys are
+          specified when joining.
+        autojoin_wait_start
+          How much time, in seconds, to wait for autojoin to begin.
+          The default is 0.75 seconds.
+        autojoin_wait_interval
+          How much time, in seconds, to wait between each join.
+          The default is 0.25 seconds.
         """
 
         self.base = base

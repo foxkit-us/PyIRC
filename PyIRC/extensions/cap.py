@@ -148,11 +148,6 @@ class CapNegotiate(BaseExtension):
 
         self.remote = remote = self.extract_caps(event.line)
 
-        # XXX FIXME a cheesy hack to allow things to register support at
-        # runtime (IRCv3.1 vs. IRCv3.2 stuff)
-        # This needs to die, and a more dynamic mechanism is needed.
-        self.base.call_event("commands_cap", "reg_support", event.line)
-
         for name, extension in self.base.extensions_db.items():
             # Scan the extensions for caps, the preferred mechanism
             caps = getattr(extension, "caps", None)

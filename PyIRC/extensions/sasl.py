@@ -44,7 +44,6 @@ class SASLBase(BaseExtension):
         }
 
         self.commands_cap = {
-            "reg_support" : self.register_sasl,
             "ack" : self.auth,
         }
 
@@ -54,20 +53,21 @@ class SASLBase(BaseExtension):
 
         self.done = False
 
-    def register_sasl(self, event):
+    @property
+    def caps(self):
         cap_negotiate = self.get_extension("CapNegotiate")
 
         if "sasl" not in cap_negotiate.remote:
             # No SASL
-            return
+            return None
         elif not cap_negotiate.remote["sasl"]:
             # 3.1 style SASL
             logger.debug("Registering old-style SASL capability")
-            cap_negotiate.register("sasl")
+            return {"sasl" : []}
         else:
             # 3.2 style SASL
             logger.debug("Registering new-style SASL capability")
-            cap_negotiate.register("sasl", [m.method for m in SASLBase.__subclasses__()])
+            return {"sasl" : [m.method for m in SASLBase.__subclasses__()]}
 
     def auth(self, event):
         cap_negotiate = self.get_extension("CapNegotiate")

@@ -99,6 +99,9 @@ class CapNegotiate(BaseExtension):
     def send_cap(self, event):
         """ Request capabilities from the server """
 
+        if not self.negotiating:
+            return
+
         logger.debug("Requesting CAP list")
 
         self.send("CAP", ["LS", self.version])
@@ -215,8 +218,8 @@ class CapNegotiate(BaseExtension):
             self.timer = None
 
         self.send("CAP", ["END"])
-        self.get_extension("BasicRFC").handshake(event)
         self.negotiating = False
+        self.call_event("hooks", "connected")
 
     def register(self, cap, params=list(), replace=False):
         """ Register that we support a specific CAP """

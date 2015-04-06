@@ -8,7 +8,8 @@
 from collections.abc import Mapping
 from functools import partial
 
-from PyIRC.base import BaseExtension, EVENT_DISCONNECTED
+from PyIRC.base import BaseExtension
+from PyIRC.event import EventState
 from PyIRC.numerics import Numerics
 
 
@@ -42,7 +43,7 @@ class AutoJoin(BaseExtension):
         }
 
         self.hooks = {
-            EVENT_DISCONNECTED : self.close,
+            "disconnected" : self.close,
         }
 
         self.join_dict = kwargs['join']
@@ -65,7 +66,7 @@ class AutoJoin(BaseExtension):
         self.send("JOIN", params)
         self.sched.pop(0)
 
-    def autojoin(self, line):
+    def autojoin(self, event):
         # Should be sufficient for end of MOTD and such
         t = self.wait_start
 

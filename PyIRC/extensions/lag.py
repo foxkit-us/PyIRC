@@ -5,7 +5,7 @@
 """ Lag analysis and checking """
 
 
-from PyIRC.base import BaseExtension, EVENT_DISCONNECTED
+from PyIRC.base import BaseExtension
 from PyIRC.numerics import Numerics
 
 try:
@@ -36,7 +36,7 @@ class LagCheck(BaseExtension):
         }
 
         self.hooks = {
-            EVENT_DISCONNECTED : self.close,
+            "disconnected" : self.close,
         }
 
         self.last = None 
@@ -64,18 +64,18 @@ class LagCheck(BaseExtension):
         self.send("PING", [s])
         self.timer = self.schedule(self.lagcheck, self.ping)
 
-    def start(self, line):
+    def start(self, event):
         """ Begin sending PING requests as soon as possible """
 
         self.ping()
 
-    def pong(self, line):
+    def pong(self, event):
         """ Use PONG reply to check lag """
 
         if self.last is None:
             return
 
-        t, sep, s = line.params[-1].partition('-')
+        t, sep, s = event.line.params[-1].partition('-')
         if not sep or not s:
             return
 
@@ -86,7 +86,7 @@ class LagCheck(BaseExtension):
         self.last = None
         logger.info("Lag: %f", self.lag)
 
-    def close(self):
+    def close(self, event):
         self.last = None 
         self.lag = None
 

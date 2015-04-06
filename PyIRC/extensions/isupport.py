@@ -32,10 +32,10 @@ class ISupport(BaseExtension):
         # State
         self.supported = {}
 
-    def parse_isupport(self, line):
+    def parse_isupport(self, event):
         supported = self.supported
 
-        for param in line.params[1:-1]:
+        for param in event.line.params[1:-1]:
             # Split into key : value pair
             key, _, value = param.partition('=')
 

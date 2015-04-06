@@ -8,11 +8,10 @@
 from logging import getLogger
 from base64 import b64encode, b64decode
 
-from PyIRC.base import (BaseExtension, PRIORITY_FIRST, PRIORITY_LAST,
-                        EVENT_CANCEL, EVENT_DISCONNECTED)
+from PyIRC.base import BaseExtension, PRIORITY_FIRST, PRIORITY_LAST
+from PyIRC.event import EventState
 from PyIRC.numerics import Numerics
 
-from PyIRC.extensions.cap import EVENT_CAP_LS, EVENT_CAP_ACK
 
 logger = getLogger(__name__)
 
@@ -40,9 +39,12 @@ class SASLBase(BaseExtension):
         }
 
         self.hooks = {
-            EVENT_CAP_LS : self.register_sasl,
-            EVENT_CAP_ACK : self.auth,
-            EVENT_DISCONNECTED : self.close,
+            "disconnected" : self.close,
+        }
+
+        self.commands_cap = {
+            "reg_support" : self.register_sasl,
+            "ack" : self.auth,
         }
 
         self.mechanisms = set()
@@ -51,13 +53,13 @@ class SASLBase(BaseExtension):
 
         self.done = False
 
-    def register_sasl(self):
+    def register_sasl(self, event):
         cap_negotiate = self.get_extension("CapNegotiate")
 
         if "sasl" not in cap_negotiate.remote:
             # No SASL
             return
-        elif len(cap_negotiate.remote["sasl"]):
+        elif not cap_negotiate.remote["sasl"]:
             # 3.1 style SASL
             logger.debug("Registering old-style SASL capability")
             cap_negotiate.register("sasl")
@@ -66,44 +68,49 @@ class SASLBase(BaseExtension):
             logger.debug("Registering new-style SASL capability")
             cap_negotiate.register("sasl", ["PLAIN"])
 
-    def auth(self):
+    def auth(self, event):
         cap_negotiate = self.get_extension("CapNegotiate")
 
         if self.method == None:
             raise NotImplementedError("Need an authentication method!")
-        elif "sasl" not in cap_negotiate.local:
+        elif "sasl" not in cap_negotiate.remote:
             # CAP nonexistent
             return
         elif self.done:
             # Finished authentication
             return
 
+        if cap_negotiate.remote["sasl"]:
+            # 3.2 style
+            self.mechanisms = set(c.lower() for c in
+                                  cap_negotiate.remote["sasl"])
+
         self.send("AUTHENTICATE", [self.method])
 
         # Defer end of CAP
-        return EVENT_CANCEL
+        event.status = EventState.cancel
 
-    def close(self):
+    def close(self, event):
         self.mechanisms.clear()
         self.done = False
 
-    def success(self, line):
+    def success(self, event):
         logger.info("SASL authentication succeeded as %s", self.username)
 
         self.done = True
-        self.get_extension("CapNegotiate").cont()
+        self.get_extension("CapNegotiate").cont(event)
 
-    def fail(self, line):
+    def fail(self, event):
         logger.info("SASL authentication failed as %s", self.username)
 
         self.done = True
-        self.get_extension("CapNegotiate").cont()
+        self.get_extension("CapNegotiate").cont(event)
     
-    def already(self, line):
+    def already(self, event):
         logger.critical("Tried to log in twice, this shouldn't happen!")
 
-    def get_mechanisms(self, line):
-        self.mechanisms = set(line.params[1].lower().split(','))
+    def get_mechanisms(self, event):
+        self.mechanisms = set(event.line.params[1].lower().split(','))
         logger.info("Supported SASL mechanisms: %r", self.mechanisms)
 
 
@@ -120,12 +127,12 @@ class SASLPlain(SASLBase):
             "AUTHENTICATE" : self.authenticate,
         })
 
-    def authenticate(self, line):
+    def authenticate(self, event):
         """ Implement the plaintext authentication method """
     
         logger.info("Logging in with PLAIN method as %s", self.username)
 
-        if line.params[-1] != '+':
+        if event.line.params[-1] != '+':
             return
 
         # Generate the string for sending
@@ -139,4 +146,4 @@ class SASLPlain(SASLBase):
         for l in (sendstr[i:i+400] for i in range(0, len(sendstr), 400)):
             self.send("AUTHENTICATE", [l])
 
-        return EVENT_CANCEL
+        event.status = EventState.cancel

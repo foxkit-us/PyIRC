@@ -7,11 +7,9 @@
 
 from logging import getLogger
 
-from PyIRC.base import (BaseExtension, PRIORITY_FIRST, EVENT_CANCEL,
-                        EVENT_DISCONNECTED)
+from PyIRC.base import BaseExtension, PRIORITY_FIRST
+from PyIRC.event import EventState
 from PyIRC.numerics import Numerics
-
-from PyIRC.extensions.cap import EVENT_CAP_LS, EVENT_CAP_ACK
 
 
 logger = getLogger(__name__)
@@ -33,14 +31,17 @@ class STARTTLS(BaseExtension):
         }
 
         self.hooks = {
-            EVENT_CAP_LS : self.register_starttls,
-            EVENT_CAP_ACK : self.starttls,
-            EVENT_DISCONNECTED : self.close,
+            "disconnected" : self.close,
+        }
+
+        self.commands_cap = {
+            "reg_support" : self.register_starttls,
+            "ack" : self.starttls,
         }
 
         self.done = False
 
-    def register_starttls(self):
+    def register_starttls(self, event):
         if self.base.ssl:
             # Unnecessary
             return
@@ -53,7 +54,7 @@ class STARTTLS(BaseExtension):
             logger.debug("Beginning STARTTLS negotiation")
             cap_negotiate.register("tls")
 
-    def starttls(self):
+    def starttls(self, event):
         if self.base.ssl:
             # Unnecessary
             return
@@ -63,25 +64,25 @@ class STARTTLS(BaseExtension):
         if "tls" in cap_negotiate.local and not self.done:
             self.send("STARTTLS", None)
 
-            return EVENT_CANCEL
+            event.status = EventState.cancel
 
-    def close(self):
+    def close(self, event):
         self.done = False
 
-    def wrap(self, line):
+    def wrap(self, event):
         logger.info("Performing STARTTLS initiation...")
         self.base.wrap_ssl()
         
         self.done = True
         cap_negotiate = self.get_extension("CapNegotiate")
-        cap_negotiate.cont()
+        cap_negotiate.cont(event)
 
-    def abort(self):
+    def abort(self, event):
         logger.critical("STARTTLS initiation failed, connection not secure")
         self.base.socket = self.base._socket
         del self.base._socket
 
         self.done = True
         cap_negotiate = self.get_extension("CapNegotiate")
-        cap_negotiate.cont()
+        cap_negotiate.cont(event)
 

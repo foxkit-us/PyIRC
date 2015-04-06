@@ -14,7 +14,8 @@ except ImportError:
 from collections import defaultdict
 from logging import getLogger
 
-from PyIRC.base import BaseExtension, EVENT_EXTENSION_POST
+from PyIRC.base import BaseExtension
+from PyIRC.event import EventState, LineEvent
 from PyIRC.numerics import Numerics
 
 
@@ -39,13 +40,20 @@ except (pkg_resources.DistributionNotFound, IndexError, AttributeError,
     _version = "PyIRC Git {}".format(_gitvers)
 
 
+class CTCPEvent(LineEvent):
+    """ A CTCP event """
+
+    def __init__(self, event, ctcp, line):
+        super().__init__(event, line)
+        self.ctcp = ctcp
+
+
 class CTCPMessage:
     """ Represent a CTCP message. """
 
     __slots__ = ('line', 'command', 'target', 'param')
 
-    def __init__(self, line, command, target, param):
-        self.line = line
+    def __init__(self, command, target, param):
         self.command = command
         self.target = target
         self.param = param
@@ -61,7 +69,7 @@ class CTCPMessage:
         message = message[1:-1]  # chop off \x01 at beginning and end
         (command, _, param) = message.partition(' ')
 
-        return cls(line, command.upper(), line.hostmask.nick, param)
+        return cls(command.upper(), event.line.hostmask.nick, param)
 
 
 class CTCP(BaseExtension):
@@ -77,7 +85,7 @@ class CTCP(BaseExtension):
         }
 
         self.hooks = {
-            EVENT_EXTENSION_POST : self.register_ctcp_hooks,
+            "extension_post" : self.register_ctcp_hooks,
         }
 
         # Some default hooks
@@ -88,17 +96,12 @@ class CTCP(BaseExtension):
 
         self.version = kwargs.get("ctcp_version", _version)
 
-        # Hooks for CTCP
-        self.dispatch_ctcp = defaultdict(list)
-        self.dispatch_nctcp = defaultdict(list)
-    
-    def register_ctcp_hooks(self):
+    def register_ctcp_hooks(self, event):
         """ Register CTCP hooks """
 
-        self.base.build_hooks(self.dispatch_ctcp, "implements_ctcp",
-                              lambda s : s.lower())
-        self.base.build_hooks(self.dispatch_nctcp, "implements_nctcp",
-                              lambda s : s.lower())
+        self.base.events.register_class("hooks_ctcp", CTCPEvent)
+        self.base.build_hooks("hooks_ctcp", "implements_ctcp", str.upper)
+        self.base.build_hooks("hooks_ctcp", "implements_nctcp", str.upper)
 
     def ctcp(self, target, command, params=None):
         """ CTCP a target a given command """
@@ -118,32 +121,32 @@ class CTCP(BaseExtension):
         message = "\x01{0}\x01".format(command)
         self.send("NOTICE", [target, message])
 
-    def ctcp_in(self, line):
+    def ctcp_in(self, event):
         """ Check message for CTCP (incoming) and dispatch if necessary. """
 
-        ctcp_msg = CTCPMessage.parse(line)
-        if not ctcp_msg:
+        ctcp = CTCPMessage.parse(event.line)
+        if not ctcp:
             return
 
-        command = ctcp_msg.command.lower()
-        self.dispatch_event(self.dispatch_ctcp, command, ctcp_msg)
+        command = ctcp.command
+        self.call_event("hooks_ctcp", command, ctcp, event.line)
 
-    def nctcp_in(self, line):
+    def nctcp_in(self, event):
         """ Check message for NCTCP (incoming) and dispatch if necessary. """
 
-        ctcp_msg = CTCPMessage.parse(line)
-        if not ctcp_msg:
+        ctcp = CTCPMessage.parse(event.line)
+        if not ctcp:
             return
 
-        command = ctcp_msg.command.lower()
-        self.dispatch_event(self.dispatch_nctcp, command, ctcp_msg)
+        command = ctcp.command
+        self.call_event("hooks_ctcp", command, ctcp, event.line)
 
-    def c_ping(self, message):
+    def c_ping(self, event):
         """ Respond to CTCP ping """
 
-        self.nctcp(message.target, "PING", message.param)
+        self.nctcp(event.ctcp.target, "PING", message.param)
 
-    def c_version(self, message):
+    def c_version(self, event):
         """ Respond to CTCP version """
 
-        self.nctcp(message.target, "VERSION", self.version)
+        self.nctcp(event.ctcp.target, "VERSION", self.version)

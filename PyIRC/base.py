@@ -11,33 +11,13 @@ from logging import getLogger
 
 from PyIRC.numerics import Numerics
 from PyIRC.line import Line
+from PyIRC.event import EventManager, HookEvent, LineEvent
 
 
 PRIORITY_DONTCARE = 0
 PRIORITY_FIRST = -1000
 PRIORITY_LAST = 1000
 
-
-EVENT_OK = None  # default
-EVENT_CANCEL = 1  # End processing
-EVENT_TERMINATE_SOON = 2  # Disconnect
-EVENT_TERMINATE_NOW = 3  # Quit
-
-
-# Present event
-_cur_event = 0
-
-def event_new():
-    """ Register a new event type """
-
-    global _cur_event
-    event = _cur_event
-    _cur_event += 1
-    return event
-
-EVENT_CONNECTED = event_new()  # Connected to server
-EVENT_DISCONNECTED = event_new()  # Disconnected
-EVENT_EXTENSION_POST = event_new()  # All extensions loaded
 
 logger = getLogger(__name__)
 
@@ -81,10 +61,10 @@ class BaseExtension:
 
         return self.base.get_extension(extension)
 
-    def dispatch_event(self, table, event, *args):
-        """ Mirror self.base.dispatch_event """
+    def call_event(self, cls, event, *args):
+        """ Mirror self.base.call_event """
 
-        return self.base.dispatch_event(table, event, *args)
+        return self.base.call_event(cls, event, *args)
 
 
 class BasicRFC(BaseExtension):
@@ -102,27 +82,27 @@ class BasicRFC(BaseExtension):
         }
 
         self.hooks = {
-            EVENT_CONNECTED : self.handshake,
-            EVENT_DISCONNECTED : self.disconnected,
+            "connected" : self.handshake,
+            "disconnected" : self.disconnected,
         }
 
-    def connected(self, line):
+    def connected(self, event):
         self.base.connected = True
 
-    def handshake(self):
+    def handshake(self, event):
         if not self.base.registered:
             self.base.send("USER", [self.base.user, "*", "*",
                                     self.base.gecos])
             self.base.send("NICK", [self.base.nick])
 
-    def disconnected(self):
+    def disconnected(self, event):
         self.base.connected = False
         self.base.registered = False
 
-    def pong(self, line):
-        self.base.send("PONG", line.params)
+    def pong(self, event):
+        self.base.send("PONG", event.line.params)
 
-    def welcome(self, line):
+    def welcome(self, event):
         self.base.registered = True
 
 
@@ -155,12 +135,13 @@ class IRCBase(metaclass=ABCMeta):
 
         self.kwargs = kwargs
 
+        # Event state
+        self.events = EventManager()
+
         # Basic state
         self.connected = False
         self.registered = False
 
-        self.hooks = defaultdict(list)
-        self.commands = defaultdict(list)
         self.extensions_db = OrderedDict()
 
         self.build_extensions_db()
@@ -174,6 +155,18 @@ class IRCBase(metaclass=ABCMeta):
         """ Enumerate the extensions list, creating instances """
 
         self.extensions_db.clear()
+        self.events.clear()
+        
+        # Commands
+        self.events.register_class("commands", LineEvent)
+
+        # Hooks
+        self.events.register_class("hooks", HookEvent)
+
+        # Some default hooks
+        self.events.register_event("hooks", "connected")
+        self.events.register_event("hooks", "disconnected")
+        self.events.register_event("hooks", "extension_post")
 
         requires = set()
 
@@ -190,79 +183,66 @@ class IRCBase(metaclass=ABCMeta):
             if req not in self.extensions_db:
                 raise KeyError("Required extension not found: {}".format(req))
 
-        self.build_dispatch_cache()
+        self.build_call_cache()
 
-    def build_hooks(self, table, extmember, key=None):
-        """ Build the given hook table using the given extension member """
+    def build_hooks(self, cls, attr, key=None):
+        """ Register hooks from extensions with the given member for hooks """
 
         items = self.extensions_db.items()
         for order, (name, extinst) in enumerate(items):
             priority = extinst.priority
 
-            exttable = getattr(extinst, extmember, None)
+            exttable = getattr(extinst, attr, None)
             if exttable is None:
                 continue
 
-            logger.info("Loading hook %s for %s", extmember, name)
+            logger.info("Loading hook %s for %s", attr, name)
 
             for hook, callback in exttable.items():
                 if key:
                     hook = key(hook)
 
-                table[hook].append([priority, order, callback])
-                table[hook].sort()
+                self.events.register_callback(cls, hook, priority, callback)
 
-                logger.debug("Hook callback (%s) added: %s", extmember, hook)
+                logger.debug("Hook callback (%s) added: %s", cls, hook)
 
-    def build_dispatch_cache(self):
+    def build_call_cache(self):
         """ Enumerate present extensions and build the commands and hooks
         cache.
 
         You should only need to call this method if you modify the extensions
         list.
         """
-
-        self.hooks.clear()
-        self.commands.clear()
-
-        self.build_hooks(self.commands, "commands",
-                         lambda s : (s.lower() if isinstance(s, str) else
-                                     s.value))
-        self.build_hooks(self.hooks, "hooks")
+        
+        commands_key = lambda s : (s.lower() if isinstance(s, str) else
+                                   s.value)
+        self.build_hooks("commands", "commands", commands_key)
+        self.build_hooks("hooks", "hooks")
 
         # Post-load hook
-        self.dispatch_event(self.hooks, EVENT_EXTENSION_POST)
+        self.call_event("hooks", "extension_post")
 
-    def dispatch_event(self, table, event, *args):
-        """ Dispatch a given event from the given table """
+    def call_event(self, event, *args):
+        """ Dispatch a given event """
 
-        for _, _, function in table[event]:
-            ret = function(*args)
-            if ret == EVENT_CANCEL:
-                return EVENT_CANCEL
-            elif ret == EVENT_TERMINATE_SOON:
-                self.send("QUIT", ["Hook requested termination"])
-                return EVENT_TERMINATE_SOON
-            elif ret == EVENT_TERMINATE_NOW:
-                # XXX should we just raise?
-                quit()
+        return self.events.call_event(event, *args)
 
     def connect(self):
         """ Do the connection handshake """
 
-        self.dispatch_event(self.hooks, EVENT_CONNECTED)
+        self.call_event("hooks", "connected")
 
     def close(self):
         """ Do the connection teardown """
 
-        self.dispatch_event(self.hooks, EVENT_DISCONNECTED)
+        self.call_event("hooks", "disconnected")
 
     def recv(self, line):
         """ Receive a line """
 
         command = line.command.lower()
 
-        self.dispatch_event(self.commands, command, line)
+        self.call_event("commands", command, line)
 
     @abstractmethod
     def send(self, command, params):

@@ -23,6 +23,7 @@ class SASLBase(BaseExtension):
     # We should come after things like STARTTLS
     priority = PRIORITY_FIRST + 5
     requires = ["CapNegotiate"]
+
     method = None
 
     def __init__(self, base, **kwargs):
@@ -66,18 +67,18 @@ class SASLBase(BaseExtension):
         else:
             # 3.2 style SASL
             logger.debug("Registering new-style SASL capability")
-            cap_negotiate.register("sasl", ["PLAIN"])
+            cap_negotiate.register("sasl", [m.method for m in SASLBase.__subclasses__()])
 
     def auth(self, event):
         cap_negotiate = self.get_extension("CapNegotiate")
 
-        if self.method == None:
+        if self.done:
+            # Finished authentication
+            return
+        elif self.method == None:
             raise NotImplementedError("Need an authentication method!")
         elif "sasl" not in cap_negotiate.remote:
             # CAP nonexistent
-            return
-        elif self.done:
-            # Finished authentication
             return
 
         if cap_negotiate.remote["sasl"]:
@@ -118,6 +119,7 @@ class SASLPlain(SASLBase):
 
     # Least preferred auth method
     priority = PRIORITY_FIRST + 10
+
     method = "PLAIN"
 
     def __init__(self, base, **kwargs):

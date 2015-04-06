@@ -35,24 +35,15 @@ class STARTTLS(BaseExtension):
         }
 
         self.commands_cap = {
-            "reg_support" : self.register_starttls,
             "ack" : self.starttls,
         }
 
         self.done = False
 
-    def register_starttls(self, event):
-        if self.base.ssl:
-            # Unnecessary
-            return
-
-        cap_negotiate = self.get_extension("CapNegotiate")
-
-        if "tls" not in cap_negotiate.remote:
-            return
-        else:
-            logger.debug("Beginning STARTTLS negotiation")
-            cap_negotiate.register("tls")
+        if not self.base.ssl:
+            self.caps = {
+                "tls" : [],
+            }
 
     def starttls(self, event):
         if self.base.ssl:

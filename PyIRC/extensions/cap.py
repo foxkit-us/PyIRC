@@ -18,7 +18,11 @@ logger = getLogger(__name__)
 
 class CapNegotiate(BaseExtension):
 
-    """ Basic CAP negotiation (version 302) """
+    """ Basic CAP negotiation
+    
+    IRCv3.2 negotiation is attempted, but earlier specifications will be used
+    in a backwards compatible manner.
+    """
 
     priority = PRIORITY_FIRST
     requires = ["BasicRFC"]

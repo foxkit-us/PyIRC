@@ -147,7 +147,7 @@ class CapNegotiate(BaseExtension):
         remote = self.extract_caps(event.line)
         self.remote.update(remote)
 
-        for name, extension in self.base.extensions_db.items():
+        for extension in self.base.extensions_db.values():
             # Scan the extensions for caps
             caps = getattr(extension, "caps", None)
             if not caps:
@@ -165,9 +165,10 @@ class CapNegotiate(BaseExtension):
             supported = self.supported
             supported = [self.create_str(c, v) for c, v in
                          remote.items() if c in supported]
+            supported.sort()
 
             if supported:
-                caps = ' '.join(sorted(supported))
+                caps = ' '.join(supported)
                 logger.debug("Requesting caps: %s", caps)
                 self.send("CAP", ["REQ", caps])
             else:

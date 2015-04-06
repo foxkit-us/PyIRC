@@ -50,8 +50,6 @@ class CapNegotiate(BaseExtension):
             "end" : self.end,
         }
 
-        self.caps_parsed = False
-
         # What we support - other extensions can add doodads to this
         self.supported = dict()
 
@@ -146,17 +144,18 @@ class CapNegotiate(BaseExtension):
     def get_remote(self, event):
         """ A list of the CAPs the server supports (CAP LS) """
 
-        self.remote = remote = self.extract_caps(event.line)
+        remote = self.extract_caps(event.line)
+        self.remote.update(remote)
 
         for name, extension in self.base.extensions_db.items():
-            # Scan the extensions for caps, the preferred mechanism
+            # Scan the extensions for caps
             caps = getattr(extension, "caps", None)
             if not caps:
                 # Unsupported
                 continue
 
             for cap, param in caps.items():
-                if cap.lower() not in self.remote:
+                if cap.lower() not in remote:
                     continue
 
                 self.register(cap, param)
@@ -185,9 +184,11 @@ class CapNegotiate(BaseExtension):
     def ack(self, event):
         """ Acknowledge a CAP ACK response """
 
-        if not self.caps_parsed:
-            self.caps_parsed = True
-        else:
+        if not hasattr(event, "line"):
+            return
+        elif not event.line.command.lower() == "cap":
+            return
+        elif not event.line.command.params[-1].lower() == "ack":
             return
 
         for cap, params in self.extract_caps(event.line).items():

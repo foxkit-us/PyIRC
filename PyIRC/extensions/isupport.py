@@ -26,11 +26,15 @@ class ISupport(BaseExtension):
             Numerics.RPL_ISUPPORT : self.parse_isupport,
         }
 
-        self.hooks = {}
-        self.requires = []
+        self.hooks = {
+            "disconnected" : self.close,
+        }
 
         # State
         self.supported = {}
+
+    def close(self, event):
+        self.supported.clear()
 
     def parse_isupport(self, event):
         supported = self.supported

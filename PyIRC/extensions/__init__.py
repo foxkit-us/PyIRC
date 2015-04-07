@@ -4,6 +4,7 @@
 # This file is part of the PyIRC3 project. See LICENSE in the root directory
 # for licensing information.
 
+
 from PyIRC.base import BasicRFC
 
 from PyIRC.extensions.autojoin import AutoJoin
@@ -13,10 +14,16 @@ from PyIRC.extensions.isupport import ISupport
 from PyIRC.extensions.lag import LagCheck
 from PyIRC.extensions.sasl import SASLPlain
 from PyIRC.extensions.starttls import STARTTLS
+from PyIRC.extensions.usertrack import UserTrack
 
 
 """ Baseline recommended extensions """
 base_recommended = [BasicRFC, AutoJoin, CTCP, ISupport, LagCheck]
 
+
 """ IRCv3 recommended extensions """
 ircv3_recommended = base_recommended + [CapNegotiate, SASLPlain, STARTTLS]
+
+
+""" Recommended for bots """
+bot_recommended = ircv3_recommended + [UserTrack]

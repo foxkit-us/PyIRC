@@ -320,7 +320,7 @@ class UserTrack(BaseExtension):
 
         elif not user.chan_status:
             # No more channels and not us, delete in 30 seconds
-            sched = self.schedule(30, partial(self.remove_user
+            sched = self.schedule(30, partial(self.remove_user,
                                               event.line.hostmask.nick))
             self.user_expire_timers[event.line.hostmask.nick] = sched
 

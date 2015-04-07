@@ -111,6 +111,15 @@ class UserTrack(BaseExtension):
         self.users = dict()
         self.whoxsend = list()
 
+    def remove_user(self, user):
+        """ Callback to remove a user """
+
+        if user not in self.users:
+            logger.warning("Deleting nonexistent user: %s", user)
+            return
+
+        del self.users[user]
+
     def update_user_host(self, line):
         """ Update a user's basic info """
 
@@ -281,9 +290,8 @@ class UserTrack(BaseExtension):
             expire = False
 
         if expire:
-            expire_fn = (lambda u : del self.users[u])
             self.user_expire_timers[hostmask.nick] = self.schedule(30,
-                partial(expire_fn, hostmask.nick))
+                partial(self.remove_user, hostmask.nick))
 
     def part(self, event):
         """ Exit a user """
@@ -297,20 +305,23 @@ class UserTrack(BaseExtension):
 
         del user.chan_status[channel]
 
-        expire_fn = (lambda u : del self.users[u])
-
         if event.line.hostmask.nick == self.base.nick:
             # Left the channel, scan all users
             for u_nick, u_user in self.users.items():
-                if (channel in u_user.chan_status and
-                        len(u_user.chan_status) == 1):
+                if len(u_user.chan_status) > 1:
+                    # Not interested
+                    continue
+
+                if channel in u_user.chan_status:
                     # Expire in 30 seconds if they are the only channel we
                     # know about that has them
-                    sched = self.schedule(30, partial(expire_fn, u_nick))
+                    sched = self.schedule(30, partial(self.remove_user,
+                                                      u_nick))
                     self.user_expire_timers[u_nick] = sched
+
         elif not user.chan_status:
             # No more channels and not us, delete in 30 seconds
-            sched = self.schedule(30, partial(expire_fn,
+            sched = self.schedule(30, partial(self.remove_user
                                               event.line.hostmask.nick))
             self.user_expire_timers[event.line.hostmask.nick] = sched
 

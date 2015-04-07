@@ -59,7 +59,7 @@ class UserTrack(BaseExtension):
     def __init__(self, base, **kwargs):
 
         self.base = base
-        
+
         self.commands = {
             "ACCOUNT" : self.account,
             "AWAY" : self.away,
@@ -72,7 +72,6 @@ class UserTrack(BaseExtension):
             "PART" : self.part,
             "PRIVMSG" : self.message,
             "QUIT" : self.quit,
-            Numerics.RPL_ISON : self.ison,
             Numerics.RPL_NAMREPLY : self.names,
             Numerics.RPL_ENDOFWHO : self.who_end,
             Numerics.RPL_WHOISUSER : self.whois_user,
@@ -239,6 +238,26 @@ class UserTrack(BaseExtension):
 
         self.update_user_host(event.line)
 
+        hostmask = event.line.hostmask
+
+        expire = True
+        if event.line.hostmask.nick in self.user_expire_timers:
+            # Rearm any expiry timers
+            self.unschedule(self.user_expire_timers[hostmask.nick])
+        elif hostmask.nick not in self.users:
+            # Obtain more information about the user
+            user = User(hostmask.nick, user=hostmask.user, host=hostmask.host)
+            self.users[hostmask.nick] = user
+
+            self.send("WHOIS", [hostmask.nick] * 2)
+        else:
+            expire = False
+
+        if expire:
+            expire_fn = (lambda u : del self.users[u])
+            self.user_expire_timers[hostmask.nick] = self.schedule(30,
+                partial(expire_fn, hostmask.nick))
+
     def part(self, event):
         """ Exit a user """
 
@@ -274,3 +293,6 @@ class UserTrack(BaseExtension):
         assert event.line.hostmask.nick in self.users
 
         del self.users[event.line.hostmask.nick]
+
+    def names(self, event):
+        """ Process a channel NAMES event """   

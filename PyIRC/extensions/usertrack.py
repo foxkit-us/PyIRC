@@ -524,7 +524,7 @@ class UserTrack(BaseExtension):
 
         if account == '0':
             # Not logged in
-            account = ''
+            account = None
 
         if ip == '255.255.255.255':
             # Cloaked
@@ -589,7 +589,7 @@ class UserTrack(BaseExtension):
 
         if account == '0':
             # Not logged in
-            account = ''
+            account = None
 
         if ip == '255.255.255.255':
             # Cloaked

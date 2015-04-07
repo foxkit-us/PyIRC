@@ -122,6 +122,9 @@ class UserTrack(BaseExtension):
 
     def update_user_host(self, line):
         """ Update a user's basic info """
+        
+        if not line.hostmask or not line.hostmask.nick:
+            return
 
         hostmask = line.hostmask
         user = self.users[hostmask.nick]
@@ -193,7 +196,7 @@ class UserTrack(BaseExtension):
             # It's us!
             isupport = self.get_extension("ISupport")
 
-            params = ["WHO", channel]
+            params = [channel]
             if "WHOX" in isupport.supported:
                 # Use WHOX if possible
                 num = ''.join(str(randint(0, 9)) for x in range(randint(1, 3)))
@@ -220,7 +223,7 @@ class UserTrack(BaseExtension):
         channel = event.line.params[0]
 
         # Don't care if user-directed, as that means us most of the time
-        if not channel.startswith(c for c in chantypes):
+        if not channel.startswith(*chantypes):
             return
 
         mode_add, mode_del = mode_parse(event.line.params[1],
@@ -272,12 +275,16 @@ class UserTrack(BaseExtension):
     def message(self, event):
         """ Got a message from a user """
 
-        self.update_user_host(event.line)
-
         hostmask = event.line.hostmask
+
+        if event.line.params[0] == '*':
+            # Us before reg.
+            return
 
         expire = True
         if event.line.hostmask.nick in self.user_expire_timers:
+            self.update_user_host(event.line)
+
             # Rearm any expiry timers
             self.unschedule(self.user_expire_timers[hostmask.nick])
         elif hostmask.nick not in self.users:
@@ -346,8 +353,8 @@ class UserTrack(BaseExtension):
             mode = set()
             while user[0] in pmap:
                 # Accomodate multi-prefix
-                mode, user = user[0], user[1:]
-                mode.add(pmap[mode])
+                prefix, user = user[0], user[1:]
+                mode.add(pmap[prefix])
 
             # userhost-in-names (no need to check, nick goes through this
             # just fine)
@@ -411,8 +418,8 @@ class UserTrack(BaseExtension):
             mode = set()
             while user[0] in pmap:
                 # Accomodate multi-prefix
-                mode, user = user[0], user[1:]
-                mode.add(pmap[mode])
+                prefix, user = user[0], user[1:]
+                mode.add(pmap[prefix])
 
             self.users[nick].chan_status[channel] = mode
 
@@ -438,6 +445,15 @@ class UserTrack(BaseExtension):
             return
 
         self.users[nick].signon = event.line.params[3]
+
+    def whois_operator(self, event):
+        """ User is an operator according to WHOIS """
+        
+        nick = event.line.params[1]
+        if nick not in self.users:
+            return
+
+        self.users[nick].operator = True
 
     def whois_secure(self, event):
         """ User is known to be using SSL from WHOIS """
@@ -482,7 +498,7 @@ class UserTrack(BaseExtension):
         host = event.line.params[3]
         server = event.line.params[4]
         nick = event.line.params[5]
-        flags = parse_who_flags(event.line.params[6])
+        flags = who_flag_parse(event.line.params[6])
         other = event.line.params[7]
         hopcount, _, other = other.partition(' ')
 
@@ -512,7 +528,7 @@ class UserTrack(BaseExtension):
             pmap = {v : k for k, v in prefix.items()}
 
             mode = set()
-            for m in flags.mode:
+            for m in flags.modes:
                 m = pmap.get(m)
                 if m is not None:
                     mode.add(m)
@@ -552,7 +568,7 @@ class UserTrack(BaseExtension):
         host = event.line.params[5]
         server = event.line.params[6]
         nick = event.line.params[7]
-        flags = parse_who_flags(event.line.params[8])
+        flags = who_flag_parse(event.line.params[8])
         #idle = event.line.params[9]
         account = event.line.params[10]
         gecos = event.line.params[11]
@@ -577,7 +593,7 @@ class UserTrack(BaseExtension):
             pmap = {v : k for k, v in prefix.items()}
 
             mode = set()
-            for m in flags.mode:
+            for m in flags.modes:
                 m = pmap.get(m)
                 if m is not None:
                     mode.add(m)

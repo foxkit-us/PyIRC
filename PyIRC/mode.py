@@ -54,7 +54,7 @@ def who_flag_parse(flags):
 
     ret = SimpleNamespace()
     ret.operator = False
-    ret.away = false
+    ret.away = False
     ret.modes = set()
 
     for char in flags:

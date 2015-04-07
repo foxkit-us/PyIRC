@@ -9,6 +9,7 @@ from functools import partial
 from logging import getLogger
 
 from PyIRC.base import BaseExtension
+from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
 from PyIRC.mode import mode_parse, prefix_parse
 
@@ -183,9 +184,12 @@ class UserTrack(BaseExtension):
 
         isupport = self.get_extension("ISupport")
         chantypes = isupport.supported.get("CHANTYPES", '#+!&')
+        
         prefix = isupport.supported.get("PREFIX", None)
         if prefix is None:
-            prefix = prefix_parse(prefix)
+            prefix = "(ov)@+"
+
+        prefix = prefix_parse(prefix)
 
         channel = event.line.params[0]
 
@@ -207,7 +211,7 @@ class UserTrack(BaseExtension):
                     "nonexistent user: %s", mode, user)
                 continue
 
-            self.users[user].chan_status[channel].add(mode)
+            self.users[user].chan_status[channel].update(mode)
 
         for user, mode in mode_del.items():
             if mode not in prefix:
@@ -218,7 +222,13 @@ class UserTrack(BaseExtension):
                     "nonexistent user: %s", mode, user)
                 continue
 
-            self.users[user].chan_status[channel].discard(mode)
+            self.users[user].chan_status[channel].difference_update(mode)
+
+        cap_negotiate = self.get_extension("CapNegotiate")
+        if mode_del and not (cap_negotiate and 'multi-prefix' in
+                             cap_negotiate.local):
+            # Reissue a names request if we don't have multi-prefix
+            self.send("NAMES", [channel])
 
     def nick(self, event):
         """ User changed nick """
@@ -296,3 +306,39 @@ class UserTrack(BaseExtension):
 
     def names(self, event):
         """ Process a channel NAMES event """   
+
+        isupport = self.get_extension("ISupport")
+        prefix = isupport.supported.get("PREFIX", None)
+        if prefix is None:
+            prefix = "(ov)@+"
+
+        prefix = prefix_parse(prefix)
+        pmap = {v : k for k, v in prefix.items()}
+
+        for user in event.line.params[-1].split():
+            mode = set()
+            while user[0] in pmap:
+                # Accomodate multi-prefix
+                mode, user = user[0], user[1:]
+                mode.add(pmap[mode])
+
+            # userhost-in-names (no need to check, nick goes through this
+            # just fine)
+            hostmask = Hostmask.parse(user)
+            user = hostmask.user if hostmask.user else None
+            host = hostmask.host if hostmask.host else None
+
+            if hostmask.nick in self.users:
+                # Update user info
+                if user:
+                    self.users[hostmask.nick].user = user
+
+                if host:
+                    self.users[hostmask.nick].host = host
+            else:
+                self.users[hostmask.nick] = User(hostmask.nick, user=user,
+                                                 host=host)
+
+            if mode:
+                # Apply modes
+                self.users[hostmask.nick].chan_status.update(mode)

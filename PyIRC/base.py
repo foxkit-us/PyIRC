@@ -78,6 +78,7 @@ class BasicRFC(BaseExtension):
         self.commands = {
             "NOTICE" : self.connected,
             "PING" : self.pong,
+            "NICK" : self.nick,
             Numerics.RPL_WELCOME : self.welcome,
         }
 
@@ -85,6 +86,8 @@ class BasicRFC(BaseExtension):
             "connected" : self.handshake,
             "disconnected" : self.disconnected,
         }
+
+        self.prev_nick = None
 
     def connected(self, event):
         self.base.connected = True
@@ -101,6 +104,14 @@ class BasicRFC(BaseExtension):
 
     def pong(self, event):
         self.base.send("PONG", event.line.params)
+
+    def nick(self, event):
+        if event.line.hostmask.nick != self.base.nick:
+            return
+
+        # Set nick
+        self.prev_nick = self.nick
+        self.nick = event.line.params[0]
 
     def welcome(self, event):
         self.base.registered = True

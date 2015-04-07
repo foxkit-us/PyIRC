@@ -21,6 +21,8 @@ class User:
     """ A user entity. """
 
     def __init__(self, nick, **kwargs):
+        assert nick is not None
+
         self.nick = nick
         self.user = kwargs.get("user", None)
         self.host = kwargs.get("host", None)
@@ -35,6 +37,8 @@ class User:
 
         # Statuses in channels
         self.chan_status = dict()
+
+        logger.debug("Created user: %s", self.nick)
 
     def __repr__(self):
         nick = self.nick
@@ -111,6 +115,10 @@ class UserTrack(BaseExtension):
         self.users = dict()
         self.whoxsend = list()
 
+        # Create ourselves
+        self.users[self.base.nick] = User(self.base.nick, user=self.base.user,
+                                          gecos=self.base.gecos)
+
     def remove_user(self, user):
         """ Callback to remove a user """
 
@@ -118,11 +126,13 @@ class UserTrack(BaseExtension):
             logger.warning("Deleting nonexistent user: %s", user)
             return
 
+        logger.debug("Deleted user: %s", user)
+
         del self.users[user]
 
     def update_user_host(self, line):
         """ Update a user's basic info """
-        
+
         if not line.hostmask or not line.hostmask.nick:
             return
 
@@ -343,6 +353,8 @@ class UserTrack(BaseExtension):
     def names(self, event):
         """ Process a channel NAMES event """
 
+        channel = event.line.params[2]
+
         isupport = self.get_extension("ISupport")
         prefix = isupport.supported.get("PREFIX", None)
         if prefix is None:
@@ -376,7 +388,7 @@ class UserTrack(BaseExtension):
                                                  host=host)
 
             # Apply modes
-            self.users[hostmask.nick].chan_status = mode
+            self.users[hostmask.nick].chan_status[channel] = mode
 
     def who_end(self, event):
         """ Process end of WHO reply """
@@ -450,7 +462,7 @@ class UserTrack(BaseExtension):
 
     def whois_operator(self, event):
         """ User is an operator according to WHOIS """
-        
+
         nick = event.line.params[1]
         if nick not in self.users:
             return

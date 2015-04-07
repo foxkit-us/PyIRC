@@ -56,7 +56,7 @@ class ISupport(BaseExtension):
                 val, sep, data = v.partition(':')
                 if sep:
                     if not data:
-                        data = None 
+                        data = None
 
                     value[i] = (val, data)
 

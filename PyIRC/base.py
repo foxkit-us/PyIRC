@@ -167,7 +167,7 @@ class IRCBase(metaclass=ABCMeta):
 
         self.extensions_db.clear()
         self.events.clear()
-        
+
         # Commands
         self.events.register_class("commands", LineEvent)
 
@@ -224,7 +224,7 @@ class IRCBase(metaclass=ABCMeta):
         You should only need to call this method if you modify the extensions
         list.
         """
-        
+
         commands_key = lambda s : (s.lower() if isinstance(s, str) else
                                    s.value)
         self.build_hooks("commands", "commands", commands_key)

@@ -106,7 +106,7 @@ class SASLBase(BaseExtension):
 
         self.done = True
         self.get_extension("CapNegotiate").cont(event)
-    
+
     def already(self, event):
         logger.critical("Tried to log in twice, this shouldn't happen!")
 
@@ -131,7 +131,7 @@ class SASLPlain(SASLBase):
 
     def authenticate(self, event):
         """ Implement the plaintext authentication method """
-    
+
         logger.info("Logging in with PLAIN method as %s", self.username)
 
         if event.line.params[-1] != '+':

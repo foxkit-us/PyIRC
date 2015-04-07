@@ -60,7 +60,7 @@ class EventManager:
 
     def __init__(self):
         # Contains event classes
-        self.events_reg = dict() 
+        self.events_reg = dict()
 
     def register_class(self, cls, type):
         """ Register a given event """

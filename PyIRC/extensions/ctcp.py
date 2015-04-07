@@ -74,7 +74,7 @@ class CTCPMessage:
 
 class CTCP(BaseExtension):
     """ Add CTCP dispatch functionaltiy.
-    
+
     Hooks may be added by having a commands_ctcp or commands_nctcp mapping in
     your base class.
 
@@ -83,7 +83,7 @@ class CTCP(BaseExtension):
     """
 
     def __init__(self, base, **kwargs):
-        
+
 
         self.base = base
 

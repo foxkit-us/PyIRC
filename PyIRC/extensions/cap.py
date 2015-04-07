@@ -19,7 +19,7 @@ logger = getLogger(__name__)
 class CapNegotiate(BaseExtension):
 
     """ Basic CAP negotiation
-    
+
     IRCv3.2 negotiation is attempted, but earlier specifications will be used
     in a backwards compatible manner.
     """
@@ -91,7 +91,7 @@ class CapNegotiate(BaseExtension):
             return "{}={}".format(cap, ','.join(params))
         else:
             return cap
-    
+
     def register_cap_hooks(self, event):
         """ Register CAP hooks """
 

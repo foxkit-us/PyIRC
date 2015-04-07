@@ -145,7 +145,7 @@ class Line:
         self.linestr = kwargs.get('line', None)
         self.direction = kwargs.get('direction', self.OUT)
 
-        if self.linestr and not any((self.tags, self.hostmask, self.command, 
+        if self.linestr and not any((self.tags, self.hostmask, self.command,
                                      self.params)):
             self = self.parse(self.linestr)
         else:

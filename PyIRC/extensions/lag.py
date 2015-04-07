@@ -39,14 +39,14 @@ class LagCheck(BaseExtension):
             "disconnected" : self.close,
         }
 
-        self.last = None 
+        self.last = None
         self.lag = None
         self.timer = None
 
     @staticmethod
     def timestr(time):
         """ Return a random string based on the current time """
-   
+
         length = randint(5, 10)
         chars = letters + digits
         randstr = ''.join(choice(chars) for x in range(length))
@@ -55,10 +55,10 @@ class LagCheck(BaseExtension):
 
     def ping(self):
         """ Callback for ping """
-            
+
         if self.last is not None:
             raise OSError("Connection timed out")
-        
+
         self.last = time()
         s = self.timestr(self.last)
         self.send("PING", [s])
@@ -87,7 +87,7 @@ class LagCheck(BaseExtension):
         logger.info("Lag: %f", self.lag)
 
     def close(self, event):
-        self.last = None 
+        self.last = None
         self.lag = None
 
         if self.timer is not None:

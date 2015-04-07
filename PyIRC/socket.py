@@ -22,8 +22,8 @@ logger = getLogger(__name__)
 
 class IRCSocket(IRCBase):
     """ The socket implementation of the IRC protocol. No asynchronous I/O is
-    done. All scheduling is done with timeouts. 
-    
+    done. All scheduling is done with timeouts.
+
     Enhanced arguments:
     - socket_timeout - timeout for connect (default 10)
     - send_timeout - default send timeout (default None)
@@ -95,7 +95,7 @@ class IRCSocket(IRCBase):
 
     def send(self, command, params):
         line = super().send(command, params)
-        
+
         self.socket.settimeout(self.kwargs.get('send_timeout', None))
         if self.socket.send(bytes(line)) == 0:
             raise OSError("Connection reset by peer")

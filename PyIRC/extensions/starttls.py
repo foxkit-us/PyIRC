@@ -20,7 +20,7 @@ class STARTTLS(BaseExtension):
 
     priority = PRIORITY_FIRST
     requires = ["CapNegotiate"]
-    
+
     def __init__(self, base, **kwargs):
 
         self.base = base
@@ -63,7 +63,7 @@ class STARTTLS(BaseExtension):
     def wrap(self, event):
         logger.info("Performing STARTTLS initiation...")
         self.base.wrap_ssl()
-        
+
         self.done = True
         cap_negotiate = self.get_extension("CapNegotiate")
         cap_negotiate.cont(event)

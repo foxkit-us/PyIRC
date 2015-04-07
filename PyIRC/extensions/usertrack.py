@@ -3,7 +3,6 @@
 # This file is part of the PyIRC 3 project. See LICENSE in the root directory
 # for licensing information.
 
-from collections import defaultdict
 from random import randint
 from functools import partial
 from logging import getLogger
@@ -11,7 +10,7 @@ from logging import getLogger
 from PyIRC.base import BaseExtension
 from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
-from PyIRC.mode import mode_parse, prefix_parse
+from PyIRC.mode import mode_parse, prefix_parse, who_flag_parse
 
 
 logger = getLogger(__name__)
@@ -20,10 +19,6 @@ logger = getLogger(__name__)
 class User:
 
     """ A user entity. """
-
-    # There might be a lot of these, so best to use slots
-    __slots__ = ["nick", "user", "host", "gecos", "account", "server",
-                 "secure", "operator", "chan_status"]
 
     def __init__(self, nick, **kwargs):
         self.nick = nick
@@ -34,14 +29,35 @@ class User:
         self.server = kwargs.get("server", None)
         self.secure = kwargs.get("secure", None)
         self.operator = kwargs.get("operator", None)
+        self.signon = kwargs.get("signon", None)
+        self.ip = kwargs.get("ip", None)
+        self.realhost = kwargs.get("realhost", None)
 
         # Statuses in channels
-        self.chan_status = defaultdict(set)
+        self.chan_status = dict()
 
     def __repr__(self):
-        return "User(nick={}, user={}, host={}, gecos={}, account={}, " \
-            "server={})".format(self.nick, self.user, self.host, self.gecos,
-                                self.account, self.server)
+        nick = self.nick
+        user = self.user
+        host = self.host
+        gecos = self.gecos
+        account = self.account
+        server = self.server
+        secure = self.secure
+        operator = self.operator
+        signon = self.signon
+        ip = self.ip
+        realhost = self.realhost
+
+        # Build format string
+        fmt = []
+        for k, v in locals().items():
+            if v is None or k in ('k', 'v', 'fmt'):
+                continue
+
+            fmt.append('{}={}'.format(k, v))
+
+        return "User({})".format(', '.join(fmt))
 
 
 class UserTrack(BaseExtension):
@@ -50,7 +66,7 @@ class UserTrack(BaseExtension):
 
     caps = {
         "account-notify" : [],
-        "away-notify" : []
+        "away-notify" : [],
         "chghost" : [],
         "extended-join" : [],
         "multi-prefix" : [],
@@ -77,6 +93,7 @@ class UserTrack(BaseExtension):
             Numerics.RPL_ENDOFWHO : self.who_end,
             Numerics.RPL_WHOISUSER : self.whois_user,
             Numerics.RPL_WHOISCHANNELS : self.whois_channels,
+            Numerics.RPL_WHOISHOST : self.whois_host,
             Numerics.RPL_WHOISIDLE : self.whois_idle,
             Numerics.RPL_WHOISOPERATOR : self.whois_operator,
             Numerics.RPL_WHOISSECURE : self.whois_secure,
@@ -92,7 +109,7 @@ class UserTrack(BaseExtension):
         self.who_timers = dict()
 
         self.users = dict()
-        self.whoxsend = set()
+        self.whoxsend = list()
 
     def update_user_host(self, line):
         """ Update a user's basic info """
@@ -154,7 +171,7 @@ class UserTrack(BaseExtension):
                 account = event.line.params[1]
                 if account == '*':
                     account = ''
-            
+
             gecos = event.line.params[2]
 
             user = User(event.line.hostmask.nick, account=account,
@@ -162,7 +179,7 @@ class UserTrack(BaseExtension):
             self.users[event.line.hostmask.nick] = user
 
         self.update_user_host(event.line)
-        
+
         if event.line.hostmask.nick == self.base.nick:
             # It's us!
             isupport = self.get_extension("ISupport")
@@ -172,7 +189,7 @@ class UserTrack(BaseExtension):
                 # Use WHOX if possible
                 num = ''.join(str(randint(0, 9)) for x in range(randint(1, 3)))
                 params.append("%tcuihsnflar,"+num)
-                self.whoxset.add(num)
+                self.whoxsend.append(num)
 
             sched = self.schedule(2, partial(self.send, "WHO", params))
             self.who_timers[channel] = sched
@@ -184,7 +201,7 @@ class UserTrack(BaseExtension):
 
         isupport = self.get_extension("ISupport")
         chantypes = isupport.supported.get("CHANTYPES", '#+!&')
-        
+
         prefix = isupport.supported.get("PREFIX", None)
         if prefix is None:
             prefix = "(ov)@+"
@@ -305,7 +322,7 @@ class UserTrack(BaseExtension):
         del self.users[event.line.hostmask.nick]
 
     def names(self, event):
-        """ Process a channel NAMES event """   
+        """ Process a channel NAMES event """
 
         isupport = self.get_extension("ISupport")
         prefix = isupport.supported.get("PREFIX", None)
@@ -339,6 +356,241 @@ class UserTrack(BaseExtension):
                 self.users[hostmask.nick] = User(hostmask.nick, user=user,
                                                  host=host)
 
-            if mode:
-                # Apply modes
-                self.users[hostmask.nick].chan_status.update(mode)
+            # Apply modes
+            self.users[hostmask.nick].chan_status = mode
+
+    def end_who(self, event):
+        """ Process end of WHO reply """
+
+        if not self.whoxsend:
+            return
+
+        del self.whoxsend[0]
+
+    def whois_user(self, event):
+        """ The nickname/user/host/gecos of a user """
+
+        nick = event.line.params[1]
+        if nick not in self.users:
+            return
+
+        user = event.line.params[2]
+        host = event.line.params[3]
+        gecos = event.line.params[5]
+
+        self.users[nick].user = user
+        self.users[nick].host = host
+        self.users[nick].gecos = gecos
+
+    def whois_channels(self, event):
+        """ Channels user is on from WHOIS """
+
+        nick = event.line.params[1]
+        if nick not in self.users:
+            return
+
+        isupport = self.get_extension("ISupport")
+        prefix = isupport.supported.get("PREFIX", None)
+        if prefix is None:
+            prefix = "(ov)@+"
+
+        prefix = prefix_parse(prefix)
+        pmap = {v : k for k, v in prefix.items()}
+
+        for channel in event.line.params[-1].split():
+            mode = set()
+            while user[0] in pmap:
+                # Accomodate multi-prefix
+                mode, user = user[0], user[1:]
+                mode.add(pmap[mode])
+
+            self.users[nick].chan_status[channel] = mode
+
+    def whois_host(self, event):
+        """ Real host of the user (usually oper only) in WHOIS """
+
+        nick = event.line.params[1]
+        if nick not in self.users:
+            return
+
+        # Fucking unreal.
+        string, _, ip = event.line.params[-1].rpartition(' ')
+        string, _, realhost = string.rpartition(' ')
+
+        self.users[nick].ip = ip
+        self.users[nick].realhost = realhost
+
+    def whois_idle(self, event):
+        """ Idle and signon time for user from WHOIS  """
+
+        nick = event.line.params[1]
+        if nick not in self.users:
+            return
+
+        self.users[nick].signon = event.line.params[3]
+
+    def whois_secure(self, event):
+        """ User is known to be using SSL from WHOIS """
+
+        nick = event.line.params[1]
+        if nick not in self.users:
+            return
+
+        self.users[nick].secure = True
+
+    def whois_server(self, event):
+        """ Server the user is logged in on from WHOIS """
+
+        nick = event.line.params[1]
+        if nick not in self.users:
+            return
+
+        self.users[nick].server = event.line.params[2]
+        self.users[nick].server_desc = event.line.params[3]
+
+    def whois_login(self, event):
+        """ Services account name of user according to WHOIS """
+
+        # FIXME - users account names aren't unset if not found in whois.
+
+        nick = event.line.params[1]
+        if nick not in self.users:
+            return
+
+        self.users[nick].account = event.line.params[2]
+
+    def who(self, event):
+        """ Process a response to WHO """
+
+        if len(event.line.params) < 8:
+            # Some bizarre RFC breaking server
+            logger.warn("Malformed WHO from server")
+            return
+
+        channel = event.line.params[1]
+        user = event.line.params[2]
+        host = event.line.params[3]
+        server = event.line.params[4]
+        nick = event.line.params[5]
+        flags = parse_who_flags(event.line.params[6])
+        other = event.line.params[7]
+        hopcount, _, other = other.partition(' ')
+
+        if nick == '*' or nick not in self.users:
+            # *shrug*
+            return
+
+        isupport = self.get_extension("ISupport")
+
+        if isupport.supported.get("RFC2812", False):
+            # IRCNet, for some stupid braindead reason, sends SID here. Why? I
+            # don't know. They mentioned it might break clients in the commit
+            # log. I really have no idea why it exists, why it's useful to
+            # anyone, or anything like that. But honestly, WHO sucks enough...
+            sid, _, realname = other.partition(' ')
+        else:
+            sid = None
+            realname = other
+
+        if channel != '*':
+            # Convert symbols to modes
+            prefix = isupport.supported.get("PREFIX", None)
+            if prefix is None:
+                prefix = "(ov)@+"
+
+            prefix = prefix_parse(prefix)
+            pmap = {v : k for k, v in prefix.items()}
+
+            mode = set()
+            for m in flags.mode:
+                m = pmap.get(m)
+                if m is not None:
+                    mode.add(m)
+
+            self.users[nick].chan_status[channel] = mode
+
+        away = flags.away
+        operator = flags.operator
+
+        if account == '0':
+            # Not logged in
+            account = ''
+
+        if ip == '255.255.255.255':
+            # Cloaked
+            ip = None
+
+        self.users[nick].user = user
+        self.users[nick].host = host
+        self.users[nick].gecos = gecos
+        self.users[nick].away = away
+        self.users[nick].operator = operator
+        self.users[nick].account = account
+        self.users[nick].ip = ip
+
+    def whox(self, event):
+        """ Parse WHOX responses """
+
+        if len(event.line.params) != 12:
+            # Not from us!
+            return
+
+        whoxid = event.line.params[1]
+        channel = event.line.params[2]
+        user = event.line.params[3]
+        ip = event.line.params[4]
+        host = event.line.params[5]
+        server = event.line.params[6]
+        nick = event.line.params[7]
+        flags = parse_who_flags(event.line.params[8])
+        #idle = event.line.params[9]
+        account = event.line.params[10]
+        gecos = event.line.params[11]
+
+        if nick == '*' or nick not in self.users:
+            # *shrug*
+            return
+
+        if whoxid not in self.whoxsend:
+            # Not sent by us, weird!
+            return
+
+        if channel != '*':
+            # Convert symbols to modes
+            isupport = self.get_extension("ISupport")
+
+            prefix = isupport.supported.get("PREFIX", None)
+            if prefix is None:
+                prefix = "(ov)@+"
+
+            prefix = prefix_parse(prefix)
+            pmap = {v : k for k, v in prefix.items()}
+
+            mode = set()
+            for m in flags.mode:
+                m = pmap.get(m)
+                if m is not None:
+                    mode.add(m)
+
+            self.users[nick].chan_status[channel] = mode
+
+        away = flags.away
+        operator = flags.operator
+
+        if account == '0':
+            # Not logged in
+            account = ''
+
+        if ip == '255.255.255.255':
+            # Cloaked
+            ip = None
+
+        self.users[nick].user = user
+        self.users[nick].host = host
+        self.users[nick].server = server
+        self.users[nick].gecos = gecos
+        self.users[nick].away = away
+        self.users[nick].operator = operator
+        self.users[nick].account = account
+        self.users[nick].ip = ip
+

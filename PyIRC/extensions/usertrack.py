@@ -140,7 +140,7 @@ class UserTrack(BaseExtension):
         self.update_user_host(event.line)
 
         user = self.users[event.line.hostmask.nick]
-        user.account = '' if account == '*' else account
+        user.account = None if account == '*' else account
 
     def away(self, event):
         """ Get away status changes """
@@ -179,7 +179,7 @@ class UserTrack(BaseExtension):
             if cap_negotiate and 'extended-join' in cap_negotiate.local:
                 account = event.line.params[1]
                 if account == '*':
-                    account = ''
+                    account = None
 
             gecos = event.line.params[2]
 

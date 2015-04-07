@@ -317,8 +317,10 @@ class UserTrack(BaseExtension):
                 if len(u_user.chan_status) > 1:
                     # Not interested
                     continue
-
-                if channel in u_user.chan_status:
+                elif u_nick == self.base.nick:
+                    # Don't expire ourselves!
+                    continue
+                elif channel in u_user.chan_status:
                     # Expire in 30 seconds if they are the only channel we
                     # know about that has them
                     sched = self.schedule(30, partial(self.remove_user,

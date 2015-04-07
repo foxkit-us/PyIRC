@@ -299,10 +299,9 @@ class UserTrack(BaseExtension):
         channel = event.line.params[0]
 
         assert event.line.hostmask.nick in self.users
-
         user = self.users[event.line.hostmask.nick]
-        assert channel in user.chan_status
 
+        assert channel in user.chan_status
         del user.chan_status[channel]
 
         if event.line.hostmask.nick == self.base.nick:

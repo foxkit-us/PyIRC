@@ -46,6 +46,7 @@ class CapNegotiate(BaseExtension):
             "ls" : self.get_remote,
             "list" : self.get_local,
             "ack" : self.ack,
+            "new" : self.get_remote,
             "nak" : self.nak,
             "end" : self.end,
         }
@@ -185,11 +186,12 @@ class CapNegotiate(BaseExtension):
     def ack(self, event):
         """ Acknowledge a CAP ACK response """
 
+        # XXX ghetto hack to avoid calling us again
         if not hasattr(event, "line"):
             return
-        elif not event.line.command.lower() == "cap":
+        if event.line.command.lower() != "cap":
             return
-        elif not event.line.command.params[-1].lower() == "ack":
+        if event.line.params[1].lower() != "ack":
             return
 
         for cap, params in self.extract_caps(event.line).items():

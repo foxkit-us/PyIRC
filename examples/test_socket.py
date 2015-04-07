@@ -3,7 +3,7 @@
 from logging import basicConfig
 
 from PyIRC.socket import IRCSocket
-from PyIRC.extensions import ircv3_recommended
+from PyIRC.extensions import bot_recommended
 
 
 basicConfig(level="DEBUG")
@@ -14,7 +14,7 @@ arguments = {
     'user' : 'Testbot',
     'nick' : 'Testbot',
     'gecos' : 'I am a test, pls ignore :)',
-    'extensions' : ircv3_recommended,
+    'extensions' : bot_recommended,
     'sasl_username' : 'Testbot',
     'sasl_password' : 'loldongs123',
     'join' : ['#PyIRC'],

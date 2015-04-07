@@ -369,7 +369,7 @@ class UserTrack(BaseExtension):
             # Apply modes
             self.users[hostmask.nick].chan_status = mode
 
-    def end_who(self, event):
+    def who_end(self, event):
         """ Process end of WHO reply """
 
         if not self.whoxsend:

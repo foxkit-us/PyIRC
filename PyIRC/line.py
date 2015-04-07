@@ -66,15 +66,17 @@ class Hostmask:
     @classmethod
     def parse(cls, raw):
         """ Parse a raw hostmask into a nice object. """
+
         if not raw:
             logger.debug("No hostmask found")
             return
 
         host_sep = raw.find('@')
-        has_other = (host_sep != -1)
-
-        if not has_other:
-            return cls(host=raw, mask=raw)
+        if host_sep == -1:
+            if(raw.find('.') != -1):
+                return cls(host=raw, mask=raw)
+            else:
+                return cls(nick=raw, mask=raw)
 
         nick_sep = raw.find('!')
         has_user = (nick_sep != -1)

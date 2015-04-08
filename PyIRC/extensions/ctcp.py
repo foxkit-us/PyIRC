@@ -77,7 +77,8 @@ class CTCP(BaseExtension):
             "version" : self.c_version,
         }
 
-        self.version = kwargs.get("ctcp_version", versionstr)
+        default_version = "Powered by PyIRC v{}".format(versionstr)
+        self.version = kwargs.get("ctcp_version", default_version)
 
     def register_ctcp_hooks(self, event):
         """ Register CTCP hooks """

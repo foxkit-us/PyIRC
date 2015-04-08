@@ -108,8 +108,8 @@ class CTCP(BaseExtension):
         """ Register CTCP hooks """
 
         self.base.events.register_class("hooks_ctcp", CTCPEvent)
-        self.base.build_hooks("hooks_ctcp", "implements_ctcp", str.upper)
-        self.base.build_hooks("hooks_ctcp", "implements_nctcp", str.upper)
+        self.base.build_hooks("hooks_ctcp", "commands_ctcp", str.upper)
+        self.base.build_hooks("hooks_ctcp", "commands_nctcp", str.upper)
 
     def ctcp(self, target, command, params=None):
         """ CTCP a target a given command """

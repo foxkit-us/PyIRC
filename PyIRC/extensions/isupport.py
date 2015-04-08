@@ -7,9 +7,9 @@
 
 from logging import getLogger
 
-
 from PyIRC.extension import BaseExtension
 from PyIRC.numerics import Numerics
+from PyIRC.mode import parse_isupport
 
 
 logger = getLogger(__name__)
@@ -23,7 +23,7 @@ class ISupport(BaseExtension):
         self.base = base
 
         self.commands = {
-            Numerics.RPL_ISUPPORT : self.parse_isupport,
+            Numerics.RPL_ISUPPORT : self.isupport,
         }
 
         self.hooks = {
@@ -36,33 +36,16 @@ class ISupport(BaseExtension):
     def close(self, event):
         self.supported.clear()
 
-    def parse_isupport(self, event):
-        supported = self.supported
+    def isupport(self, event):
+        """ Handle ISUPPORT event """
 
-        for param in event.line.params[1:-1]:
-            # Split into key : value pair
-            key, _, value = param.partition('=')
+        # To differentiate between really old ircd servers
+        # (RPL_BOUNCE=005 on those)
+        if not event.line.params[-1].endswith('server'):
+            logger.warning("Really old IRC server detected!")
+            logger.warning("It's probably fine but things might break.")
+            return
 
-            if not value:
-                logger.debug("ISUPPORT [k]: %s", key)
-                supported[key] = True
-                continue
+        values = event.line.params[1:-1]
+        self.supported.update(parse_isupport(values))
 
-            # Parse into CSV
-            value = value.split(',')
-
-            # For each value, parse into pairs of val : data
-            for i, v in enumerate(value):
-                val, sep, data = v.partition(':')
-                if sep:
-                    if not data:
-                        data = None
-
-                    value[i] = (val, data)
-
-            if len(value) == 1:
-                # Single key
-                value = value[0]
-
-            logger.debug("ISUPPORT [k:v]: %s:%r", key, value)
-            supported[key] = value

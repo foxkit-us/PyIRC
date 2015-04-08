@@ -19,6 +19,7 @@ logger = getLogger(__name__)
 prefix_match = compile(r"\(([A-Za-z0-9]+)\)(.+)")
 numletters = ascii_letters + digits
 
+
 def prefix_parse(prefix):
     """ Parse ISUPPORT prefix """
 
@@ -30,7 +31,7 @@ def prefix_parse(prefix):
 
 
 def mode_parse(modes, params):
-    """ Parse IRC modes using the IRC state machine """
+    """ Parse IRC mode strings """
 
     # Return value (user : modes}
     mode_add = defaultdict(set)
@@ -48,6 +49,7 @@ def mode_parse(modes, params):
         op[params.pop(0)].add(c)
 
     return (mode_add, mode_del)
+
 
 def who_flag_parse(flags):
     """ Parse WHO flags """
@@ -70,3 +72,39 @@ def who_flag_parse(flags):
             logger.debug("No known way to handle WHO flag %s", char)
 
     return ret
+
+
+def parse_isupport(params):
+    """ Parse an ISUPPORT string """
+
+    supported = dict() 
+
+    for param in params:
+        # Split into key : value pair
+        key, _, value = param.partition('=')
+
+        if not value:
+            logger.debug("ISUPPORT [k]: %s", key)
+            supported[key] = True
+            continue
+
+        # Parse into CSV
+        value = value.split(',')
+
+        # For each value, parse into pairs of val : data
+        for i, v in enumerate(value):
+            val, sep, data = v.partition(':')
+            if sep:
+                if not data:
+                    data = None
+
+                value[i] = (val, data)
+
+        if len(value) == 1:
+            # Single key
+            value = value[0]
+
+        logger.debug("ISUPPORT [k:v]: %s:%r", key, value)
+        supported[key] = value
+
+    return supported

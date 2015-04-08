@@ -4,40 +4,15 @@
 
 """ CTCP extension.  Dispatches CTCP commands similar to IRC commands. """
 
-import subprocess
-
-try:
-    import pkg_resources
-except ImportError:
-    pkg_resources = None
-
-from collections import defaultdict
 from logging import getLogger
 
 from PyIRC.extension import BaseExtension
 from PyIRC.event import EventState, LineEvent
 from PyIRC.numerics import Numerics
+from PyIRC.util.version import versionstr
 
 
 logger = getLogger(__name__)
-
-
-def gitversion():
-    command = ["git","log","-1","--pretty=format:%h"]
-    return subprocess.check_output(command).decode()
-
-try:
-    _gitvers = gitversion()
-except (OSError, subprocess.SubprocessError):
-    _gitvers = "UNKNOWN"
-
-try:
-    _version = "PyIRC {}-{}".format(pkg_resources.require("PyIRC")[0].version,
-                                    _gitvers)
-except (pkg_resources.DistributionNotFound, IndexError, AttributeError,
-        NameError):
-
-    _version = "PyIRC Git {}".format(_gitvers)
 
 
 class CTCPEvent(LineEvent):
@@ -102,7 +77,7 @@ class CTCP(BaseExtension):
             "version" : self.c_version,
         }
 
-        self.version = kwargs.get("ctcp_version", _version)
+        self.version = kwargs.get("ctcp_version", versionstr)
 
     def register_ctcp_hooks(self, event):
         """ Register CTCP hooks """

@@ -52,15 +52,15 @@ class Hostmask:
     'Hostmask(lol.org)'
     """
 
-    __slots__ = ('nick', 'user', 'host', 'maskstr')
+    __slots__ = ('nick', 'username', 'host', 'maskstr')
 
     def __init__(self, **kwargs):
         self.nick = kwargs.get('nick', None)
-        self.user = kwargs.get('user', None)
+        self.username = kwargs.get('username', None)
         self.host = kwargs.get('host', None)
         self.maskstr = kwargs.get('mask', None)
 
-        if not any((self.nick, self.user, self.host)) and self.maskstr:
+        if not any((self.nick, self.username, self.host)) and self.maskstr:
             self = self.parse(self.maskstr)
 
     @classmethod
@@ -79,18 +79,18 @@ class Hostmask:
                 return cls(nick=raw, mask=raw)
 
         nick_sep = raw.find('!')
-        has_user = (nick_sep != -1)
-        if not has_user:
+        has_username = (nick_sep != -1)
+        if not has_username:
             return cls(nick=raw[:host_sep], host=raw[host_sep + 1:],
                        mask=raw)
         else:
             return cls(nick=raw[:nick_sep],
-                       user=raw[nick_sep + 1:host_sep],
+                       username=raw[nick_sep + 1:host_sep],
                        host=raw[host_sep + 1:], mask=raw)
 
     def __str__(self):
         if not self.maskstr:
-            if not any((self.nick, self.user, self.host)):
+            if not any((self.nick, self.username, self.host)):
                 self.maskstr = ''
 
             if self.nick and not self.host:
@@ -102,10 +102,11 @@ class Hostmask:
                 self.maskstr = self.host
             else:
                 # Both
-                if self.user:
-                    self.maskstr = self.nick + '!' + self.user + '@' + self.host
+                if self.username:
+                    self.maskstr = '{}!{}@{}'.format(self.nick, self.username,
+                                                     self.host)
                 else:
-                    self.maskstr = self.nick + '@' + self.host
+                    self.maskstr = '{}@{}'.format(self.nick, self.host)
 
         return self.maskstr
 

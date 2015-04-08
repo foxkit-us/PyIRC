@@ -95,7 +95,7 @@ class BasicRFC(BaseExtension):
 
     def handshake(self, event):
         if not self.base.registered:
-            self.base.send("USER", [self.base.user, "*", "*",
+            self.base.send("USER", [self.base.username, "*", "*",
                                     self.base.gecos])
             self.base.send("NICK", [self.base.nick])
 
@@ -123,12 +123,13 @@ class IRCBase(metaclass=ABCMeta):
     """ The base IRC class meant to be used as a base for more concrete
     implementations. """
 
-    def __init__(self, serverport, user, nick, gecos, extensions, **kwargs):
+    def __init__(self, serverport, username, nick, gecos, extensions,
+                 **kwargs):
         """ Initialise the IRC base.
 
         Arguments:
         - serverport - server/port combination, like passed to socket.connect
-        - user - username to send to the server (identd may override this)
+        - username - username to send to the server (identd may override this)
         - nick - nickname to use
         - extensions - list of default extensions to use (BasicRFC recommended)
 
@@ -138,7 +139,7 @@ class IRCBase(metaclass=ABCMeta):
         """
 
         self.server, self.port = serverport
-        self.user = user
+        self.username = username
         self.nick = nick
         self.gecos = gecos
         self.ssl = kwargs.get("ssl", False)

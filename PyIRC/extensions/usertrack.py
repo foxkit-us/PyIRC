@@ -8,6 +8,7 @@ from functools import partial
 from logging import getLogger
 
 from PyIRC.base import BaseExtension
+from PyIRC.casemapping import IRCString
 from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
 from PyIRC.mode import mode_parse, prefix_parse, who_flag_parse
@@ -24,7 +25,7 @@ class User:
         assert nick is not None
 
         self.nick = nick
-        self.user = kwargs.get("user", None)
+        self.username = kwargs.get("username", None)
         self.host = kwargs.get("host", None)
         self.gecos = kwargs.get("gecos", None)
         self.account = kwargs.get("account", None)
@@ -42,7 +43,7 @@ class User:
 
     def __repr__(self):
         nick = self.nick
-        user = self.user
+        username = self.username
         host = self.host
         gecos = self.gecos
         account = self.account
@@ -110,29 +111,48 @@ class UserTrack(BaseExtension):
 
         self.requires = ["ISupport"]
 
-        self.user_expire_timers = dict()
+        self.u_expire_timers = dict()
         self.who_timers = dict()
 
         self.users = dict()
-        self.whoxsend = list()
+        self.whox_send = list()
 
         # Create ourselves
-        self.add_user(self.base.nick, user=self.base.user,
+        self.add_user(self.base.nick, user=self.base.username,
                       gecos=self.base.gecos)
+
+    def casefold(self, nick):
+        # TODO - move this into a lower class like base
+
+        isupport = self.get_extension("ISupport")
+        casefold = isupport.supported.get("CASEMAPPING", "RFC1459")
+
+        if casefold == "ASCII":
+            return IRCString.ascii_casefold(nick)
+        elif casefold == "RFC1459":
+            return IRCString.rfc1459_casefold(nick)
+        else:
+            return nick.casefold()
+
+    def get_user(self, nick):
+        """ Get a user, or None if nonexistent """
+
+        return self.users.get(self.casefold(nick))
 
     def add_user(self, nick, **kwargs):
         """ Add a user """
 
-        if nick in self.users:
-            return self.users[nick]
+        user = self.get_user(nick)
+        if not user:
+            user = User(nick, **kwargs)
+            self.users[self.casefold(nick)] = user
 
-        user = User(nick, **kwargs)
-        self.users[nick] = user
         return user
 
     def remove_user(self, nick):
         """ Callback to remove a user """
 
+        nick = self.casefold(nick)
         if nick not in self.users:
             logger.warning("Deleting nonexistent user: %s", user)
             return
@@ -144,23 +164,26 @@ class UserTrack(BaseExtension):
     def timeout_user(self, nick):
         """ Time a user out, cancelling existing timeouts """
 
-        if nick in self.user_expire_timers:
-            self.unschedule(self.user_expire_timers[nick])
+        nick = self.casefold(nick)
+        if nick in self.u_expire_timers:
+            self.unschedule(self.u_expire_timers[nick])
 
         callback = partial(self.remove_user, nick)
-        self.user_expire_timers[nick] = self.schedule(30, callback)
+        self.u_expire_timers[nick] = self.schedule(30, callback)
 
-    def update_user_host(self, line):
+    def update_username_host(self, line):
         """ Update a user's basic info """
 
         if not line.hostmask or not line.hostmask.nick:
             return
 
         hostmask = line.hostmask
-        user = self.users[hostmask.nick]
+        user = self.get_user(hostmask.nick)
+        if not user:
+            return
 
-        if hostmask.user:
-            user.user = hostmask.user
+        if hostmask.username:
+            user.username = hostmask.username
 
         if hostmask.host:
             user.host = hostmask.host
@@ -168,44 +191,44 @@ class UserTrack(BaseExtension):
     def account(self, event):
         """ Get account changes """
 
-        assert event.line.hostmask.nick in self.users
+        self.update_username_host(event.line)
 
-        self.update_user_host(event.line)
+        user = self.get_user(event.line.hostmask.nick)
+        assert user
 
-        user = self.users[event.line.hostmask.nick]
         user.account = '' if account == '*' else account
 
     def away(self, event):
         """ Get away status changes """
 
-        assert event.line.hostmask.nick in self.users
+        self.update_username_host(event.line)
 
-        self.update_user_host(event.line)
+        user = self.get_user(event.line.hostmask.nick)
+        assert user
 
-        user = self.users[event.line.hostmask.nick]
         user.away = bool(event.line.params)
 
     def chghost(self, event):
         """ Update a user's host """
 
-        assert event.line.hostmask.nick in self.users
+        self.update_username_host(event.line)
 
-        self.update_user_host(event.line)
+        user = self.get_user(event.line.hostmask.nick)
+        assert user
 
-        user = self.users[event.line.hostmask.nick]
-        user.user = event.line.params[0]
+        user.username = event.line.params[0]
         user.host = event.line.params[1]
 
     def join(self, event):
         """ Introduce a user """
 
         channel = event.line.params[0]
+        nick = event.line.hostmask.nick
 
-        if event.line.hostmask.nick in self.users:
-            user = self.users[event.line.hostmask.nick]
-
-            # Also remove any pending expiration timer
-            self.user_expire_timers.pop(event.line.hostmask.nick, None)
+        user = self.get_user(nick)
+        if user:
+            # Remove any pending expiration timer
+            self.u_expire_timers.pop(self.casefold(nick), None)
         else:
             # Create a new user with available info
             cap_negotiate = self.get_extension("CapNegotiate")
@@ -214,14 +237,14 @@ class UserTrack(BaseExtension):
                 if account == '*':
                     account = ''
 
-            gecos = event.line.params[2]
+                gecos = event.line.params[2]
 
-            user = self.add_user(event.line.hostmask.nick, account=account,
-                                 gecos=gecos)
+            user = self.add_user(nick, account=account, gecos=gecos)
 
-        self.update_user_host(event.line)
+        # Update info
+        self.update_username_host(event.line)
 
-        if event.line.hostmask.nick == self.base.nick:
+        if self.casefold(nick) == self.casefold(self.base.nick):
             # It's us!
             isupport = self.get_extension("ISupport")
 
@@ -230,15 +253,18 @@ class UserTrack(BaseExtension):
                 # Use WHOX if possible
                 num = ''.join(str(randint(0, 9)) for x in range(randint(1, 3)))
                 params.append("%tcuihsnflar,"+num)
-                self.whoxsend.append(num)
+                self.whox_send.append(num)
 
             sched = self.schedule(2, partial(self.send, "WHO", params))
-            self.who_timers[channel] = sched
+            self.who_timers[self.casefold(channel)] = sched
+
+        # Add the channel
+        user.chan_status[self.casefold(channel)] = set()
 
     def mode(self, event):
         """ Got a channel mode """
 
-        self.update_user_host(event.line)
+        self.update_username_host(event.line)
 
         isupport = self.get_extension("ISupport")
         chantypes = isupport.supported.get("CHANTYPES", '#+!&')
@@ -249,7 +275,7 @@ class UserTrack(BaseExtension):
 
         prefix = prefix_parse(prefix)
 
-        channel = event.line.params[0]
+        channel = self.casefold(event.line.params[0])
 
         # Don't care if user-directed, as that means us most of the time
         if not channel.startswith(*chantypes):
@@ -258,29 +284,32 @@ class UserTrack(BaseExtension):
         mode_add, mode_del = mode_parse(event.line.params[1],
                                         event.line.params[2:])
 
-        for user, mode in mode_add.items():
-            if mode not in prefix:
+        for nick, mode in mode_add.items():
+            if not mode.intersection(prefix.keys()):
                 # Status modes are what we care about
                 continue
 
-            if user not in self.users:
-                # Some buggy IRC server might send this
+            user = self.get_user(nick)
+            if not user:
                 logger.warn("Buggy IRC server sent us mode %s for " \
                     "nonexistent user: %s", mode, user)
                 continue
 
-            self.users[user].chan_status[channel].update(mode)
+            chan_status = user.chan_status[channel]
+            chan_status.update(mode)
 
         for user, mode in mode_del.items():
             if mode not in prefix:
                 continue
 
-            if user not in self.users:
+            user = self.get_user(nick)
+            if not user:
                 logger.warn("Buggy IRC server sent us mode %s for " \
                     "nonexistent user: %s", mode, user)
                 continue
 
-            self.users[user].chan_status[channel].difference_update(mode)
+            chan_status = user.chan_status[channel]
+            chan_status.difference_update(mode)
 
         cap_negotiate = self.get_extension("CapNegotiate")
         if mode_del and not (cap_negotiate and 'multi-prefix' in
@@ -291,24 +320,22 @@ class UserTrack(BaseExtension):
     def nick(self, event):
         """ User changed nick """
 
-        self.update_user_host(event.line)
+        self.update_username_host(event.line)
 
         oldnick = event.line.hostmask.nick
         newnick = event.line.params[0]
 
-        self.users[newnick] = self.users[oldnick]
-        self.users[newnick].nick = newnick
+        assert self.get_user(oldnick)
 
-        del self.users[oldnick]
+        self.users[self.casefold(newnick)] = self.get_user(oldnick)
+        self.users[self.casefold(newnick)].nick = newnick
+
+        del self.users[self.casefold(oldnick)]
 
     def notfound(self, event):
         """ User is gone """
 
-        nick = event.line.params[1]
-        if nick not in self.users:
-            return
-
-        del self.users[nick]
+        self.remove_user(event.line.params[1])
 
     def message(self, event):
         """ Got a message from a user """
@@ -319,64 +346,66 @@ class UserTrack(BaseExtension):
             # Us before reg.
             return
 
-        if hostmask.nick in self.user_expire_timers:
-            user = self.users[hostmask.nick]
-            if hostmask.user != user.user or hostmask.host != user.host:
+        if self.casefold(hostmask.nick) in self.u_expire_timers:
+            # User is expiring
+            user = self.get_user(hostmask.nick)
+            if hostmask.username != user.username or hostmask.host != user.host:
                 # User is suspect, delete and find out more.
                 self.remove_user(hostmask.nick)
             else:
                 # Rearm timeout
                 self.timeout_user(hostmask.nick)
-        if hostmask.nick not in self.users:
+
+        if not self.get_user(hostmask.nick):
             # Obtain more information about the user
-            user = self.add_user(hostmask.nick, user=hostmask.user,
+            user = self.add_user(hostmask.nick, user=hostmask.username,
                                  host=hostmask.host)
 
             self.send("WHOIS", ['*', hostmask.nick])
 
-            sef.timeout_user(hostmask.nick)
+            self.timeout_user(hostmask.nick)
 
     def part(self, event):
         """ Exit a user """
 
-        channel = event.line.params[0]
+        channel = self.casefold(event.line.params[0])
 
-        assert event.line.hostmask.nick in self.users
-        user = self.users[event.line.hostmask.nick]
+        user = self.get_user(event.line.hostmask.nick)
+        assert user
 
         assert channel in user.chan_status
         del user.chan_status[channel]
 
         if event.line.hostmask.nick == self.base.nick:
             # We left the channel, scan all users to remove unneeded ones
-            for u_nick, u_user in self.users.items():
+            for u_nick, u_user in list(self.users.items()):
                 if len(u_user.chan_status) > 1:
                     # Not interested
                     continue
-                elif u_nick == self.base.nick:
+                elif self.casefold(u_nick) == self.casefold(self.base.nick):
                     # Don't expire ourselves!
                     continue
                 elif channel in u_user.chan_status:
-                    # Delete the user outright to avoid races later
-                    # TODO - possible ISON/MONITOR support?
-                    self.remove_user(event.line.hostmask.nick)
+                    # Delete the user outright to purge any cached data
+                    # The data must be considered invalid when we leave
+                    # TODO - possible MONITOR support?
+                    self.remove_user(u_nick)
 
         elif not user.chan_status:
             # No more channels and not us, delete
-            # TODO - possible ISON/MONITOR support?
+            # TODO - possible MONITOR support?
             self.remove_user(event.line.hostmask.nick)
 
     def quit(self, event):
         """ Exit a user for real """
 
-        assert event.line.hostmask.nick in self.users
-
+        assert self.casefold(event.line.hostmask.nick) in self.users
         self.remove_user(event.line.hostmask.nick)
 
     def names(self, event):
         """ Process a channel NAMES event """
 
-        channel = event.line.params[2]
+        channel = self.casefold(event.line.params[2])
 
         isupport = self.get_extension("ISupport")
         prefix = isupport.supported.get("PREFIX", None)
@@ -396,50 +425,52 @@ class UserTrack(BaseExtension):
             # userhost-in-names (no need to check, nick goes through this
             # just fine)
             hostmask = Hostmask.parse(user)
-            user = hostmask.user if hostmask.user else None
+            username = hostmask.username if hostmask.username else None
             host = hostmask.host if hostmask.host else None
 
-            if hostmask.nick in self.users:
+            user = self.get_user(hostmask.nick)
+            if user:
                 # Update user info
-                if user:
-                    self.users[hostmask.nick].user = user
+                if username:
+                    user.username = username
 
                 if host:
-                    self.users[hostmask.nick].host = host
+                    user.host = host
             else:
-                self.add_user(hostmask.nick, user=user, host=host)
+                user = self.add_user(hostmask.nick, user=username, host=host)
 
             # Apply modes
-            self.users[hostmask.nick].chan_status[channel] = mode
+            user.chan_status[channel] = mode
 
     def who_end(self, event):
         """ Process end of WHO reply """
 
-        if not self.whoxsend:
+        if not self.whox_send:
             return
 
-        del self.whoxsend[0]
+        del self.whox_send[0]
 
     def whois_user(self, event):
         """ The nickname/user/host/gecos of a user """
 
         nick = event.line.params[1]
-        if nick not in self.users:
-            return
-
-        user = event.line.params[2]
+        username = event.line.params[2]
         host = event.line.params[3]
         gecos = event.line.params[5]
 
-        self.users[nick].user = user
-        self.users[nick].host = host
-        self.users[nick].gecos = gecos
+        user = self.get_user(nick)
+        if not user:
+            return
+
+        user.username = username
+        user.host = host
+        user.gecos = gecos
 
     def whois_channels(self, event):
         """ Channels user is on from WHOIS """
 
-        nick = event.line.params[1]
-        if nick not in self.users:
+        user = self.get_user(event.line.params[1])
+        if not user:
             return
 
         isupport = self.get_extension("ISupport")
@@ -457,69 +488,69 @@ class UserTrack(BaseExtension):
                 prefix, user = user[0], user[1:]
                 mode.add(pmap[prefix])
 
-            self.users[nick].chan_status[channel] = mode
+            user.chan_status[self.casefold(channel)] = mode
 
     def whois_host(self, event):
         """ Real host of the user (usually oper only) in WHOIS """
 
-        nick = event.line.params[1]
-        if nick not in self.users:
+        user = self.get_user(event.line.params[1])
+        if not user:
             return
 
         # Fucking unreal.
         string, _, ip = event.line.params[-1].rpartition(' ')
         string, _, realhost = string.rpartition(' ')
 
-        self.users[nick].ip = ip
-        self.users[nick].realhost = realhost
+        user.ip = ip
+        user.realhost = realhost
 
     def whois_idle(self, event):
         """ Idle and signon time for user from WHOIS  """
 
-        nick = event.line.params[1]
-        if nick not in self.users:
+        user = self.get_user(event.line.params[1])
+        if not user:
             return
 
-        self.users[nick].signon = event.line.params[3]
+        user.signon = event.line.params[3]
 
     def whois_operator(self, event):
         """ User is an operator according to WHOIS """
 
-        nick = event.line.params[1]
-        if nick not in self.users:
+        user = self.get_user(event.line.params[1])
+        if not user:
             return
 
-        self.users[nick].operator = True
+        user.operator = True
 
     def whois_secure(self, event):
         """ User is known to be using SSL from WHOIS """
 
-        nick = event.line.params[1]
-        if nick not in self.users:
+        user = self.get_user(event.line.params[1])
+        if not user:
             return
 
-        self.users[nick].secure = True
+        user.secure = True
 
     def whois_server(self, event):
         """ Server the user is logged in on from WHOIS """
 
-        nick = event.line.params[1]
-        if nick not in self.users:
+        user = self.get_user(event.line.params[1])
+        if not user:
             return
 
-        self.users[nick].server = event.line.params[2]
-        self.users[nick].server_desc = event.line.params[3]
+        user.server = event.line.params[2]
+        user.server_desc = event.line.params[3]
 
     def whois_login(self, event):
         """ Services account name of user according to WHOIS """
 
         # FIXME - users account names aren't unset if not found in whois.
 
-        nick = event.line.params[1]
-        if nick not in self.users:
+        user = self.get_user(event.line.params[1])
+        if not user:
             return
 
-        self.users[nick].account = event.line.params[2]
+        user.account = event.line.params[2]
 
     def who(self, event):
         """ Process a response to WHO """
@@ -529,8 +560,8 @@ class UserTrack(BaseExtension):
             logger.warn("Malformed WHO from server")
             return
 
-        channel = event.line.params[1]
-        user = event.line.params[2]
+        channel = self.casefold(event.line.params[1])
+        username = event.line.params[2]
         host = event.line.params[3]
         server = event.line.params[4]
         nick = event.line.params[5]
@@ -538,8 +569,8 @@ class UserTrack(BaseExtension):
         other = event.line.params[7]
         hopcount, _, other = other.partition(' ')
 
-        if nick == '*' or nick not in self.users:
-            # *shrug*
+        user = self.get_user(nick)
+        if not user:
             return
 
         isupport = self.get_extension("ISupport")
@@ -569,7 +600,7 @@ class UserTrack(BaseExtension):
                 if m is not None:
                     mode.add(m)
 
-            self.users[nick].chan_status[channel] = mode
+            user.chan_status[channel] = mode
 
         away = flags.away
         operator = flags.operator
@@ -582,13 +613,13 @@ class UserTrack(BaseExtension):
             # Cloaked
             ip = None
 
-        self.users[nick].user = user
-        self.users[nick].host = host
-        self.users[nick].gecos = gecos
-        self.users[nick].away = away
-        self.users[nick].operator = operator
-        self.users[nick].account = account
-        self.users[nick].ip = ip
+        user.username = username
+        user.host = host
+        user.gecos = gecos
+        user.away = away
+        user.operator = operator
+        user.account = account
+        user.ip = ip
 
     def whox(self, event):
         """ Parse WHOX responses """
@@ -598,8 +629,8 @@ class UserTrack(BaseExtension):
             return
 
         whoxid = event.line.params[1]
-        channel = event.line.params[2]
-        user = event.line.params[3]
+        channel = self.casefold(event.line.params[2])
+        username = event.line.params[3]
         ip = event.line.params[4]
         host = event.line.params[5]
         server = event.line.params[6]
@@ -609,11 +640,11 @@ class UserTrack(BaseExtension):
         account = event.line.params[10]
         gecos = event.line.params[11]
 
-        if nick == '*' or nick not in self.users:
-            # *shrug*
+        user = self.get_user(nick)
+        if not user:
             return
 
-        if whoxid not in self.whoxsend:
+        if whoxid not in self.whox_send:
             # Not sent by us, weird!
             return
 
@@ -634,7 +665,7 @@ class UserTrack(BaseExtension):
                 if m is not None:
                     mode.add(m)
 
-            self.users[nick].chan_status[channel] = mode
+            user.chan_status[channel] = mode
 
         away = flags.away
         operator = flags.operator
@@ -647,12 +678,11 @@ class UserTrack(BaseExtension):
             # Cloaked
             ip = None
 
-        self.users[nick].user = user
-        self.users[nick].host = host
-        self.users[nick].server = server
-        self.users[nick].gecos = gecos
-        self.users[nick].away = away
-        self.users[nick].operator = operator
-        self.users[nick].account = account
-        self.users[nick].ip = ip
-
+        user.username = username
+        user.host = host
+        user.server = server
+        user.gecos = gecos
+        user.away = away
+        user.operator = operator
+        user.account = account
+        user.ip = ip

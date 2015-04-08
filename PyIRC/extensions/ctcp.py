@@ -152,7 +152,7 @@ class CTCP(BaseExtension):
     def c_ping(self, event):
         """ Respond to CTCP ping """
 
-        self.nctcp(event.ctcp.target, "PING", message.param)
+        self.nctcp(event.ctcp.target, "PING", event.ctcp.param)
 
     def c_version(self, event):
         """ Respond to CTCP version """

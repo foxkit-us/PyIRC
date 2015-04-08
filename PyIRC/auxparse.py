@@ -43,11 +43,7 @@ def prefix_parse(prefix):
 def mode_parse(modes, params, modegroups):
     """ Parse IRC mode strings """
 
-    # Return value (user : modes)
-    mode_add = defaultdict(set)
-    mode_del = defaultdict(set)
     adding = True
-
     for c in modes:
         if c == '+':
             adding = True
@@ -56,32 +52,15 @@ def mode_parse(modes, params, modegroups):
             adding = False
             continue
 
+        param = None
         if adding:
             if c in modegroups[0] + modegroups[1] + modegroups[2]:
                 param = params.pop(0)
-            else:
-                param = None
-
-            # Add mode
-            mode_add[c].add(param)
-            if param is not None::
-                mode_del[c].discard(param)
-            else:
-                mode_del.pop(c, None)
         else:
             if c in modegroups[0] + modegroups[2]:
                 param = params.pop(0)
-            else:
-                param = None
 
-            # Remove mode
-            mode_del[c].add(param)
-            if param is not None:
-                mode_add[c].discard(param)
-            else:
-                mode_add.pop(c, None)
-
-    return (mode_add, mode_del)
+        yield (c, param, adding)
 
 
 def who_flag_parse(flags):

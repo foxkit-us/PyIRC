@@ -308,37 +308,23 @@ class UserTrack(BaseExtension):
         if not channel.startswith(*chantypes):
             return
 
-        mode_add, mode_del = mode_parse(event.line.params[1],
-                                        event.line.params[2:],
-                                        modegroups)
-
-        for mode, params in mode_add.items():
+        modes, params = event.line.params[1], event.line.params[2:]
+        for mode, nick, adding in mode_parse(modes, params, modegroups):
             if mode not in prefix:
                 continue
 
-            for nick in params.get(mode):
-                user = self.get_user(nick)
-                if not user:
-                    logger.warn("Buggy IRC server sent us mode %s for " \
-                        "nonexistent user: %s", mode, user)
-                    continue
-
-                channels = user.channels[channel]
-                channels.update(mode)
-
-        for mode, params in mode_del.items():
-            if mode not in prefix:
+            user = self.get_user(nick)
+            if not user:
+                logger.warn("IRC server sent us mode %s for nonexistent " \
+                    "user: %s", mode, user)
                 continue
 
-            for nick in params.get(mode):
-                user = self.get_user(nick)
-                if not user:
-                    logger.warn("Buggy IRC server sent us mode %s for " \
-                        "nonexistent user: %s", mode, user)
-                    continue
-
-                channels = user.channels[channel]
-                channels.difference_update(mode)
+            if adding:
+                channel = user.channels[channel]
+                channel.update(mode)
+            else:
+                channel = user.channels[channel]
+                channel.difference_update(mode)
 
         cap_negotiate = self.get_extension("CapNegotiate")
         if mode_del and not (cap_negotiate and 'multi-prefix' in

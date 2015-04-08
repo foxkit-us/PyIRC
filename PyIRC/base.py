@@ -79,6 +79,7 @@ class BasicRFC(BaseExtension):
             "NOTICE" : self.connected,
             "PING" : self.pong,
             "NICK" : self.nick,
+            Numerics.RPL_HELLO : self.connected, # IRCNet
             Numerics.RPL_WELCOME : self.welcome,
         }
 

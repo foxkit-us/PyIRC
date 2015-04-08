@@ -69,7 +69,7 @@ class CTCPMessage:
         message = message[1:-1]  # chop off \x01 at beginning and end
         (command, _, param) = message.partition(' ')
 
-        return cls(command.upper(), event.line.hostmask.nick, param)
+        return cls(command.upper(), line.hostmask.nick, param)
 
 
 class CTCP(BaseExtension):

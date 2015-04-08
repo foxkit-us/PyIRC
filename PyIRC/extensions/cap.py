@@ -35,6 +35,7 @@ class CapNegotiate(BaseExtension):
 
         self.commands = {
             "CAP" : self.dispatch,
+            Numerics.RPL_HELLO : self.end,  # IRCNet compat
         }
 
         self.hooks = {

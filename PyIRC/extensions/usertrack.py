@@ -308,7 +308,11 @@ class UserTrack(BaseExtension):
         if not channel.startswith(*chantypes):
             return
 
-        modes, params = event.line.params[1], event.line.params[2:]
+        modes = event.line.params[1]
+        if len(event.line.params) >= 3:
+            params = event.line.params[2:]
+        else:
+            params = []
         for mode, nick, adding in mode_parse(modes, params, modegroups):
             if mode not in prefix:
                 continue

@@ -9,7 +9,7 @@ from logging import getLogger
 
 from PyIRC.extension import BaseExtension
 from PyIRC.numerics import Numerics
-from PyIRC.mode import parse_isupport
+from PyIRC.auxparse import parse_isupport
 
 
 logger = getLogger(__name__)

@@ -12,7 +12,7 @@ from logging import getLogger
 from PyIRC.extension import BaseExtension
 from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
-from PyIRC.mode import mode_parse, prefix_parse, who_flag_parse
+from PyIRC.auxparse import mode_parse, prefix_parse, who_flag_parse
 
 
 logger = getLogger(__name__)

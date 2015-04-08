@@ -3,8 +3,18 @@
 # for licensing information.
 
 
-""" Basic modes parser """
+""" Parsing for various IRC mini-languages.
 
+IRC has a mini-language/grammar fetish and uses them extensively to compensate
+for the fact that RFC1459 frames are deficient, to be excessively generous.
+
+This module has various parsers for some of them (by no means exhaustive - and
+that's probably not even possible, given everyone and their dog seems to love
+inventing new ones for no discernible reason).
+
+Hopefully one day this module will disappear, when IRC gets a sane framing
+format. Until that day comes, this needs to be here.
+"""
 
 from collections import defaultdict
 from re import compile

@@ -11,7 +11,7 @@ basicConfig(level="DEBUG")
 arguments = {
     'serverport' : ('irc.interlinked.me', 9999),
     'ssl' : True,
-    'user' : 'Testbot',
+    'username' : 'Testbot',
     'nick' : 'Testbot',
     'gecos' : 'I am a test, pls ignore :)',
     'extensions' : bot_recommended,

@@ -93,6 +93,7 @@ class UserTrack(BaseExtension):
             "PART" : self.part,
             "PRIVMSG" : self.message,
             "QUIT" : self.quit,
+            Numerics.ERR_NOSUCHNICK : self.notfound,
             Numerics.RPL_NAMREPLY : self.names,
             Numerics.RPL_ENDOFWHO : self.who_end,
             Numerics.RPL_WHOISUSER : self.whois_user,
@@ -300,6 +301,15 @@ class UserTrack(BaseExtension):
 
         del self.users[oldnick]
 
+    def notfound(self, event):
+        """ User is gone """
+
+        nick = event.line.params[1]
+        if nick not in self.users:
+            return
+
+        del self.users[nick]
+
     def message(self, event):
         """ Got a message from a user """
 
@@ -322,7 +332,7 @@ class UserTrack(BaseExtension):
             user = self.add_user(hostmask.nick, user=hostmask.user,
                                  host=hostmask.host)
 
-            self.send("WHOIS", [hostmask.nick] * 2)
+            self.send("WHOIS", ['*', hostmask.nick])
 
             sef.timeout_user(hostmask.nick)
 

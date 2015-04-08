@@ -8,7 +8,6 @@ from functools import partial
 from logging import getLogger
 
 from PyIRC.base import BaseExtension
-from PyIRC.casemapping import IRCString
 from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
 from PyIRC.mode import mode_parse, prefix_parse, who_flag_parse
@@ -121,23 +120,10 @@ class UserTrack(BaseExtension):
         self.add_user(self.base.nick, user=self.base.username,
                       gecos=self.base.gecos)
 
-    def casefold(self, nick):
-        # TODO - move this into a lower class like base
-
-        isupport = self.get_extension("ISupport")
-        casefold = isupport.supported.get("CASEMAPPING", "RFC1459")
-
-        if casefold == "ASCII":
-            return IRCString.ascii_casefold(nick)
-        elif casefold == "RFC1459":
-            return IRCString.rfc1459_casefold(nick)
-        else:
-            return nick.casefold()
-
     def get_user(self, nick):
         """ Get a user, or None if nonexistent """
 
-        return self.users.get(self.casefold(nick))
+        return self.users.get(self.base.casefold(nick))
 
     def add_user(self, nick, **kwargs):
         """ Add a user """
@@ -145,14 +131,14 @@ class UserTrack(BaseExtension):
         user = self.get_user(nick)
         if not user:
             user = User(nick, **kwargs)
-            self.users[self.casefold(nick)] = user
+            self.users[self.base.casefold(nick)] = user
 
         return user
 
     def remove_user(self, nick):
         """ Callback to remove a user """
 
-        nick = self.casefold(nick)
+        nick = self.base.casefold(nick)
         if nick not in self.users:
             logger.warning("Deleting nonexistent user: %s", user)
             return
@@ -164,7 +150,7 @@ class UserTrack(BaseExtension):
     def timeout_user(self, nick):
         """ Time a user out, cancelling existing timeouts """
 
-        nick = self.casefold(nick)
+        nick = self.base.casefold(nick)
         if nick in self.u_expire_timers:
             self.unschedule(self.u_expire_timers[nick])
 
@@ -228,7 +214,7 @@ class UserTrack(BaseExtension):
         user = self.get_user(nick)
         if user:
             # Remove any pending expiration timer
-            self.u_expire_timers.pop(self.casefold(nick), None)
+            self.u_expire_timers.pop(self.base.casefold(nick), None)
         else:
             # Create a new user with available info
             cap_negotiate = self.get_extension("CapNegotiate")
@@ -244,7 +230,7 @@ class UserTrack(BaseExtension):
         # Update info
         self.update_username_host(event.line)
 
-        if self.casefold(nick) == self.casefold(self.base.nick):
+        if self.base.casefold(nick) == self.base.casefold(self.base.nick):
             # It's us!
             isupport = self.get_extension("ISupport")
 
@@ -256,10 +242,10 @@ class UserTrack(BaseExtension):
                 self.whox_send.append(num)
 
             sched = self.schedule(2, partial(self.send, "WHO", params))
-            self.who_timers[self.casefold(channel)] = sched
+            self.who_timers[self.base.casefold(channel)] = sched
 
         # Add the channel
-        user.chan_status[self.casefold(channel)] = set()
+        user.chan_status[self.base.casefold(channel)] = set()
 
     def mode(self, event):
         """ Got a channel mode """
@@ -275,7 +261,7 @@ class UserTrack(BaseExtension):
 
         prefix = prefix_parse(prefix)
 
-        channel = self.casefold(event.line.params[0])
+        channel = self.base.casefold(event.line.params[0])
 
         # Don't care if user-directed, as that means us most of the time
         if not channel.startswith(*chantypes):
@@ -327,10 +313,10 @@ class UserTrack(BaseExtension):
 
         assert self.get_user(oldnick)
 
-        self.users[self.casefold(newnick)] = self.get_user(oldnick)
-        self.users[self.casefold(newnick)].nick = newnick
+        self.users[self.base.casefold(newnick)] = self.get_user(oldnick)
+        self.users[self.base.casefold(newnick)].nick = newnick
 
-        del self.users[self.casefold(oldnick)]
+        del self.users[self.base.casefold(oldnick)]
 
     def notfound(self, event):
         """ User is gone """
@@ -346,7 +332,7 @@ class UserTrack(BaseExtension):
             # Us before reg.
             return
 
-        if self.casefold(hostmask.nick) in self.u_expire_timers:
+        if self.base.casefold(hostmask.nick) in self.u_expire_timers:
             # User is expiring
             user = self.get_user(hostmask.nick)
             if hostmask.username != user.username or hostmask.host != user.host:
@@ -368,7 +354,7 @@ class UserTrack(BaseExtension):
     def part(self, event):
         """ Exit a user """
 
-        channel = self.casefold(event.line.params[0])
+        channel = self.base.casefold(event.line.params[0])
 
         user = self.get_user(event.line.hostmask.nick)
         assert user
@@ -382,7 +368,8 @@ class UserTrack(BaseExtension):
                 if len(u_user.chan_status) > 1:
                     # Not interested
                     continue
-                elif self.casefold(u_nick) == self.casefold(self.base.nick):
+                elif (self.base.casefold(u_nick) ==
+                      self.base.casefold(self.base.nick)):
                     # Don't expire ourselves!
                     continue
                 elif channel in u_user.chan_status:
@@ -399,13 +386,13 @@ class UserTrack(BaseExtension):
     def quit(self, event):
         """ Exit a user for real """
 
-        assert self.casefold(event.line.hostmask.nick) in self.users
+        assert self.base.casefold(event.line.hostmask.nick) in self.users
         self.remove_user(event.line.hostmask.nick)
 
     def names(self, event):
         """ Process a channel NAMES event """
 
-        channel = self.casefold(event.line.params[2])
+        channel = self.base.casefold(event.line.params[2])
 
         isupport = self.get_extension("ISupport")
         prefix = isupport.supported.get("PREFIX", None)
@@ -488,7 +475,7 @@ class UserTrack(BaseExtension):
                 prefix, user = user[0], user[1:]
                 mode.add(pmap[prefix])
 
-            user.chan_status[self.casefold(channel)] = mode
+            user.chan_status[self.base.casefold(channel)] = mode
 
     def whois_host(self, event):
         """ Real host of the user (usually oper only) in WHOIS """
@@ -560,7 +547,7 @@ class UserTrack(BaseExtension):
             logger.warn("Malformed WHO from server")
             return
 
-        channel = self.casefold(event.line.params[1])
+        channel = self.base.casefold(event.line.params[1])
         username = event.line.params[2]
         host = event.line.params[3]
         server = event.line.params[4]
@@ -629,7 +616,7 @@ class UserTrack(BaseExtension):
             return
 
         whoxid = event.line.params[1]
-        channel = self.casefold(event.line.params[2])
+        channel = self.base.casefold(event.line.params[2])
         username = event.line.params[3]
         ip = event.line.params[4]
         host = event.line.params[5]

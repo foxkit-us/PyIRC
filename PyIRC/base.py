@@ -10,6 +10,7 @@ from operator import itemgetter
 from logging import getLogger
 
 from PyIRC.numerics import Numerics
+from PyIRC.casemapping import IRCString
 from PyIRC.line import Line
 from PyIRC.event import EventManager, HookEvent, LineEvent
 
@@ -239,6 +240,19 @@ class IRCBase(metaclass=ABCMeta):
         """ Dispatch a given event """
 
         return self.events.call_event(event, *args)
+
+    def casefold(self, string):
+        """ Fold a nick according to server case folding rules """
+
+        isupport = self.get_extension("ISupport")
+        casefold = isupport.supported.get("CASEMAPPING", "RFC1459")
+
+        if casefold == "ASCII":
+            return IRCString.ascii_casefold(string)
+        elif casefold == "RFC1459":
+            return IRCString.rfc1459_casefold(string)
+        else:
+            return string.casefold()
 
     def connect(self):
         """ Do the connection handshake """

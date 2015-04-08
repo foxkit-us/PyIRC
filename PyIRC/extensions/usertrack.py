@@ -9,7 +9,7 @@ from random import randint
 from functools import partial
 from logging import getLogger
 
-from PyIRC.base import BaseExtension
+from PyIRC.extension import BaseExtension
 from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
 from PyIRC.mode import mode_parse, prefix_parse, who_flag_parse

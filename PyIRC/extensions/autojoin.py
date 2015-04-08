@@ -8,7 +8,7 @@
 from collections.abc import Mapping
 from functools import partial
 
-from PyIRC.base import BaseExtension
+from PyIRC.extension import BaseExtension
 from PyIRC.event import EventState
 from PyIRC.numerics import Numerics
 

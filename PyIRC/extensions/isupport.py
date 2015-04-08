@@ -8,7 +8,7 @@
 from logging import getLogger
 
 
-from PyIRC.base import BaseExtension
+from PyIRC.extension import BaseExtension
 from PyIRC.numerics import Numerics
 
 

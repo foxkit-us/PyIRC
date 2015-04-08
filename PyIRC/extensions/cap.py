@@ -8,7 +8,7 @@
 from functools import partial
 from logging import getLogger
 
-from PyIRC.base import BaseExtension, PRIORITY_FIRST
+from PyIRC.extension import BaseExtension, PRIORITY_FIRST
 from PyIRC.event import EventState, HookEvent, LineEvent
 from PyIRC.numerics import Numerics
 

@@ -14,7 +14,7 @@ except ImportError:
 from collections import defaultdict
 from logging import getLogger
 
-from PyIRC.base import BaseExtension
+from PyIRC.extension import BaseExtension
 from PyIRC.event import EventState, LineEvent
 from PyIRC.numerics import Numerics
 

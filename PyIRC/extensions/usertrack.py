@@ -405,7 +405,9 @@ class UserTrack(BaseExtension):
         assert channel in user.channels
         del user.channels[channel]
 
-        if event.line.hostmask.nick == self.base.nick:
+        if (self.base.casemap(event.line.hostmask.nick) ==
+                self.base.casemap(self.base.nick)):
+
             # We left the channel, scan all users to remove unneeded ones
             for u_nick, u_user in list(self.users.items()):
                 if len(u_user.channels) > 1:

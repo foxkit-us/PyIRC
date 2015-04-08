@@ -38,7 +38,7 @@ class User:
         self.realhost = kwargs.get("realhost", None)
 
         # Statuses in channels
-        self.chan_status = dict()
+        self.channels = dict()
 
         logger.debug("Created user: %s", self.nick)
 
@@ -285,7 +285,7 @@ class UserTrack(BaseExtension):
             self.who_timers[self.base.casefold(channel)] = sched
 
         # Add the channel
-        user.chan_status[self.base.casefold(channel)] = set()
+        user.channels[self.base.casefold(channel)] = set()
 
     def mode(self, event):
         """ Got a channel mode """
@@ -321,8 +321,8 @@ class UserTrack(BaseExtension):
                     "nonexistent user: %s", mode, user)
                 continue
 
-            chan_status = user.chan_status[channel]
-            chan_status.update(mode)
+            channels = user.channels[channel]
+            channels.update(mode)
 
         for user, mode in mode_del.items():
             if mode not in prefix:
@@ -334,8 +334,8 @@ class UserTrack(BaseExtension):
                     "nonexistent user: %s", mode, user)
                 continue
 
-            chan_status = user.chan_status[channel]
-            chan_status.difference_update(mode)
+            channels = user.channels[channel]
+            channels.difference_update(mode)
 
         cap_negotiate = self.get_extension("CapNegotiate")
         if mode_del and not (cap_negotiate and 'multi-prefix' in
@@ -409,26 +409,26 @@ class UserTrack(BaseExtension):
         user = self.get_user(event.line.hostmask.nick)
         assert user
 
-        assert channel in user.chan_status
-        del user.chan_status[channel]
+        assert channel in user.channels
+        del user.channels[channel]
 
         if event.line.hostmask.nick == self.base.nick:
             # We left the channel, scan all users to remove unneeded ones
             for u_nick, u_user in list(self.users.items()):
-                if len(u_user.chan_status) > 1:
+                if len(u_user.channels) > 1:
                     # Not interested
                     continue
                 elif (self.base.casefold(u_nick) ==
                       self.base.casefold(self.base.nick)):
                     # Don't expire ourselves!
                     continue
-                elif channel in u_user.chan_status:
+                elif channel in u_user.channels:
                     # Delete the user outright to purge any cached data
                     # The data must be considered invalid when we leave
                     # TODO - possible MONITOR support?
                     self.remove_user(u_nick)
 
-        elif not user.chan_status:
+        elif not user.channels:
             # No more channels and not us, delete
             # TODO - possible MONITOR support?
             self.remove_user(event.line.hostmask.nick)
@@ -477,7 +477,7 @@ class UserTrack(BaseExtension):
                 user = self.add_user(hostmask.nick, user=username, host=host)
 
             # Apply modes
-            user.chan_status[channel] = mode
+            user.channels[channel] = mode
 
     def who_end(self, event):
         """ Process end of WHO reply """
@@ -543,7 +543,7 @@ class UserTrack(BaseExtension):
                 prefix, user = user[0], user[1:]
                 mode.add(pmap[prefix])
 
-            user.chan_status[self.base.casefold(channel)] = mode
+            user.channels[self.base.casefold(channel)] = mode
 
     def whois_host(self, event):
         """ Real host of the user (usually oper only) in WHOIS """
@@ -661,7 +661,7 @@ class UserTrack(BaseExtension):
                 if m is not None:
                     mode.add(m)
 
-            user.chan_status[channel] = mode
+            user.channels[channel] = mode
 
         away = flags.away
         operator = flags.operator
@@ -726,7 +726,7 @@ class UserTrack(BaseExtension):
                 if m is not None:
                     mode.add(m)
 
-            user.chan_status[channel] = mode
+            user.channels[channel] = mode
 
         away = flags.away
         operator = flags.operator

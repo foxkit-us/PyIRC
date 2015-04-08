@@ -84,7 +84,7 @@ def who_flag_parse(flags):
     return ret
 
 
-def parse_isupport(params):
+def isupport_parse(params):
     """ Parse an ISUPPORT string """
 
     supported = dict() 

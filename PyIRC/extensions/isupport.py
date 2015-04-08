@@ -9,7 +9,7 @@ from logging import getLogger
 
 from PyIRC.extension import BaseExtension
 from PyIRC.numerics import Numerics
-from PyIRC.auxparse import parse_isupport
+from PyIRC.auxparse import isupport_parse
 
 
 logger = getLogger(__name__)
@@ -47,5 +47,5 @@ class ISupport(BaseExtension):
             return
 
         values = event.line.params[1:-1]
-        self.supported.update(parse_isupport(values))
+        self.supported.update(isupport_parse(values))
 

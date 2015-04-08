@@ -297,8 +297,7 @@ class UserTrack(BaseExtension):
         modegroups = list(isupport.supported.get("CHANMODES",
                                                  ["b", "k", "l", "imnstp"]))
 
-        prefix = isupport.supported.get("PREFIX", "(ov)@+")
-        prefix = prefix_parse(prefix)
+        prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
 
         # Parse prefixes like list modes
         modegroups[0] += ''.join(prefix.keys())
@@ -309,9 +308,9 @@ class UserTrack(BaseExtension):
         if not channel.startswith(*chantypes):
             return
 
-        mode_add, mode_del = (event.line.params[1],
-                              event.line.params[2:],
-                              modegroups)
+        mode_add, mode_del = mode_parse(event.line.params[1],
+                                        event.line.params[2:],
+                                        modegroups)
 
         for mode, nick in mode_add.items():
             if not mode.intersection(prefix.keys()):
@@ -327,7 +326,7 @@ class UserTrack(BaseExtension):
             channels = user.channels[channel]
             channels.update(mode)
 
-        for user, mode in mode_del.items():
+        for mode, nick in mode_del.items():
             if mode not in prefix:
                 continue
 
@@ -448,8 +447,7 @@ class UserTrack(BaseExtension):
         channel = self.base.casefold(event.line.params[2])
 
         isupport = self.get_extension("ISupport")
-        prefix = isupport.supported.get("PREFIX", "(ov)@+")
-        prefix = prefix_parse(prefix)
+        prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
         pmap = {v : k for k, v in prefix.items()}
 
         for user in event.line.params[-1].split():
@@ -529,8 +527,7 @@ class UserTrack(BaseExtension):
             return
 
         isupport = self.get_extension("ISupport")
-        prefix = isupport.supported.get("PREFIX", "(ov)@+")
-        prefix = prefix_parse(prefix)
+        prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
         pmap = {v : k for k, v in prefix.items()}
 
         for channel in event.line.params[-1].split():
@@ -645,8 +642,7 @@ class UserTrack(BaseExtension):
 
         if channel != '*':
             # Convert symbols to modes
-            prefix = isupport.supported.get("PREFIX", "(ov)@+")
-            prefix = prefix_parse(prefix)
+            prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
             pmap = {v : k for k, v in prefix.items()}
 
             mode = set()
@@ -706,9 +702,8 @@ class UserTrack(BaseExtension):
         if channel != '*':
             # Convert symbols to modes
             isupport = self.get_extension("ISupport")
-
-            prefix = isupport.supported.get("PREFIX", "(ov)@+")
-            prefix = prefix_parse(prefix)
+            
+            prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
             pmap = {v : k for k, v in prefix.items()}
 
             mode = set()

@@ -40,23 +40,40 @@ def prefix_parse(prefix):
     return {k : v for k, v in zip(*match.groups())}
 
 
-def mode_parse(modes, params):
+def mode_parse(modes, params, modegroups):
     """ Parse IRC mode strings """
 
-    # Return value (user : modes}
+    # Return value (user : modes)
     mode_add = defaultdict(set)
     mode_del = defaultdict(set)
+    adding = True
 
-    op = mode_add
     for c in modes:
         if c == '+':
-            op = mode_add
+            adding = True
             continue
         elif c == '-':
-            op = mode_del
+            adding = False
             continue
 
-        op[params.pop(0)].add(c)
+        if adding:
+            if c in modegroups[0] + modegroups[1] + modegroups[2]:
+                param = params.pop(0)
+            else:
+                param = None
+
+            # Add mode
+            mode_add[c] = param
+            mode_del.pop(c, None)
+        else:
+            if c in modegroups[0] + modegroups[2]:
+                param = params.pop(0)
+            else:
+                param = None
+
+            # Remove mode
+            mode_del[c] = param
+            mode_add.pop(c, None)
 
     return (mode_add, mode_del)
 

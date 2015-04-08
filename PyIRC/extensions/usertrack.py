@@ -129,16 +129,25 @@ class UserTrack(BaseExtension):
         self.users[nick] = user
         return user
 
-    def remove_user(self, user):
+    def remove_user(self, nick):
         """ Callback to remove a user """
 
-        if user not in self.users:
+        if nick not in self.users:
             logger.warning("Deleting nonexistent user: %s", user)
             return
 
-        logger.debug("Deleted user: %s", user)
+        logger.debug("Deleted user: %s", nick)
 
-        del self.users[user]
+        del self.users[nick]
+
+    def timeout_user(self, nick):
+        """ Time a user out, cancelling existing timeouts """
+
+        if nick in self.user_expire_timers:
+            self.unschedule(self.user_expire_timers[nick])
+
+        callback = partial(self.remove_user, nick)
+        self.user_expire_timers[nick] = self.schedule(30, callback)
 
     def update_user_host(self, line):
         """ Update a user's basic info """
@@ -300,24 +309,22 @@ class UserTrack(BaseExtension):
             # Us before reg.
             return
 
-        expire = True
-        if event.line.hostmask.nick in self.user_expire_timers:
-            self.update_user_host(event.line)
-
-            # Rearm any expiry timers
-            self.unschedule(self.user_expire_timers[hostmask.nick])
-        elif hostmask.nick not in self.users:
+        if hostmask.nick in self.user_expire_timers:
+            user = self.users[hostmask.nick]
+            if hostmask.user != user.user or hostmask.host != user.host:
+                # User is suspect, delete and find out more.
+                self.remove_user(hostmask.nick)
+            else:
+                # Rearm timeout
+                self.timeout_user(hostmask.nick)
+        if hostmask.nick not in self.users:
             # Obtain more information about the user
             user = self.add_user(hostmask.nick, user=hostmask.user,
                                  host=hostmask.host)
 
             self.send("WHOIS", [hostmask.nick] * 2)
-        else:
-            expire = False
 
-        if expire:
-            self.user_expire_timers[hostmask.nick] = self.schedule(30,
-                partial(self.remove_user, hostmask.nick))
+            sef.timeout_user(hostmask.nick)
 
     def part(self, event):
         """ Exit a user """
@@ -331,7 +338,7 @@ class UserTrack(BaseExtension):
         del user.chan_status[channel]
 
         if event.line.hostmask.nick == self.base.nick:
-            # Left the channel, scan all users
+            # We left the channel, scan all users to remove unneeded ones
             for u_nick, u_user in self.users.items():
                 if len(u_user.chan_status) > 1:
                     # Not interested
@@ -340,24 +347,21 @@ class UserTrack(BaseExtension):
                     # Don't expire ourselves!
                     continue
                 elif channel in u_user.chan_status:
-                    # Expire in 30 seconds if they are the only channel we
-                    # know about that has them
-                    sched = self.schedule(30, partial(self.remove_user,
-                                                      u_nick))
-                    self.user_expire_timers[u_nick] = sched
+                    # Delete the user outright to avoid races later
+                    # TODO - possible ISON/MONITOR support?
+                    self.remove_user(event.line.hostmask.nick)
 
         elif not user.chan_status:
-            # No more channels and not us, delete in 30 seconds
-            sched = self.schedule(30, partial(self.remove_user,
-                                              event.line.hostmask.nick))
-            self.user_expire_timers[event.line.hostmask.nick] = sched
+            # No more channels and not us, delete
+            # TODO - possible ISON/MONITOR support?
+            self.remove_user(event.line.hostmask.nick)
 
     def quit(self, event):
         """ Exit a user for real """
 
         assert event.line.hostmask.nick in self.users
 
-        del self.users[event.line.hostmask.nick]
+        self.remove_user(event.line.hostmask.nick)
 
     def names(self, event):
         """ Process a channel NAMES event """

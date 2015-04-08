@@ -79,6 +79,8 @@ class UserTrack(BaseExtension):
         "userhost-in-names" : [],
     }
 
+    requires = ["ISupport"]
+
     def __init__(self, base, **kwargs):
 
         self.base = base
@@ -114,8 +116,6 @@ class UserTrack(BaseExtension):
         self.hooks = {
             "disconnected" : self.close,
         }
-
-        self.requires = ["ISupport"]
 
         self.u_expire_timers = dict()
         self.who_timers = dict()

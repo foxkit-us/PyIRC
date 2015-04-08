@@ -3,7 +3,7 @@
 # for licensing information.
 
 
-""" IRC casemapping """
+""" IRC casefoldping """
 
 
 from string import ascii_lowercase, ascii_uppercase
@@ -34,16 +34,16 @@ class IRCString(str):
         if case == IRCString.ASCII:
             self.irc_lower = self.ascii_lower
             self.irc_upper = self.ascii_upper
-            self.irc_casemap = self.ascii_casemap
+            self.irc_casefold = self.ascii_casefold
         elif case == IRCString.RFC1459:
             self.irc_lower = self.rfc1459_lower
             self.irc_upper = self.rfc1459_upper
-            self.irc_casemap = self.rfc1459_casemap
+            self.irc_casefold = self.rfc1459_casefold
         else:
             # yay unicode
             self.irc_lower = self.lower
             self.irc_upper = self.upper
-            self.irc_casemap = self.casemap
+            self.irc_casefold = self.casefold
 
         return self
 
@@ -53,7 +53,7 @@ class IRCString(str):
     def ascii_upper(self):
         return str.translate(self, ascii_toupper)
 
-    def ascii_casemap(self):
+    def ascii_casefold(self):
         return str.translate(self, ascii_tolower)
 
     def rfc1459_lower(self):
@@ -62,6 +62,6 @@ class IRCString(str):
     def rfc1459_upper(self):
         return str.translate(self, rfc1459_toupper)
 
-    def rfc1459_casemap(self):
+    def rfc1459_casefold(self):
         return str.translate(self, rfc1459_tolower)
 

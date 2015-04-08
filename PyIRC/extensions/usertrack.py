@@ -395,9 +395,9 @@ class UserTrack(BaseExtension):
             user = self.add_user(hostmask.nick, user=hostmask.username,
                                  host=hostmask.host)
 
-            if self.casefold(hostmask.nick) not in self.whois_send:
+            if self.base.casefold(hostmask.nick) not in self.whois_send:
                 self.send("WHOIS", ['*', hostmask.nick])
-                self.whois_send.add(self.casefold(hostmask.nick))
+                self.whois_send.add(self.base.casefold(hostmask.nick))
 
             self.timeout_user(hostmask.nick)
 

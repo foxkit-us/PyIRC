@@ -466,7 +466,10 @@ class UserTrack(BaseExtension):
                 user = self.add_user(nick, user=username, host=host)
 
             # Apply modes
-            user.channels[channel] = mode
+            if channel in user.channels:
+                user.channels[channel].update(mode)
+            else:
+                user.channels[channel] = mode
 
     def who_end(self, event):
         """ Process end of WHO reply """

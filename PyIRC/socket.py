@@ -79,7 +79,7 @@ class IRCSocket(IRCBase):
 
         for line in lines:
             line = Line.parse(line.decode('utf-8', 'ignore'))
-            logger.info("IN: %s", str(line).rstrip())
+            logger.debug("IN: %s", str(line).rstrip())
             super().recv(line)
 
     def loop(self):
@@ -100,7 +100,7 @@ class IRCSocket(IRCBase):
         if self.socket.send(bytes(line)) == 0:
             raise OSError("Connection reset by peer")
 
-        logger.info("OUT: %s", str(line).rstrip())
+        logger.debug("OUT: %s", str(line).rstrip())
 
     def schedule(self, time, callback):
         return self.scheduler.enter(time, 0, callback)

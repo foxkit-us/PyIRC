@@ -88,7 +88,7 @@ class IRCBase(metaclass=ABCMeta):
 
             requires.update(extinst.requires)
 
-            logger.info("Loading extension: %s", e.__name__)
+            logger.debug("Loading extension: %s", e.__name__)
 
         # Ensure all requires are met
         for req in requires:
@@ -108,15 +108,11 @@ class IRCBase(metaclass=ABCMeta):
             if exttable is None:
                 continue
 
-            logger.info("Loading hook %s for %s", attr, name)
-
             for hook, callback in exttable.items():
                 if key:
                     hook = key(hook)
 
                 self.events.register_callback(cls, hook, priority, callback)
-
-                logger.debug("Hook callback (%s) added: %s", cls, hook)
 
     def build_call_cache(self):
         """ Enumerate present extensions and build the commands and hooks

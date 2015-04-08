@@ -98,7 +98,6 @@ class EventManager:
         if event in events:
             return
 
-        logger.debug("Creating event (class %s): %s", cls, event)
         events[event] = SimpleNamespace()
         events[event].items = []
         events[event].cur_id = 0
@@ -113,7 +112,6 @@ class EventManager:
         if event not in events:
             return
 
-        logger.debug("Unregistering event (class %s): %s", cls, event)
         del events[event]
 
     def register_callback(self, cls, event, priority, callback):

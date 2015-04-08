@@ -3,6 +3,8 @@
 # This file is part of the PyIRC 3 project. See LICENSE in the root directory
 # for licensing information.
 
+
+from itertools import chain
 from random import randint
 from functools import partial
 from logging import getLogger
@@ -106,6 +108,10 @@ class UserTrack(BaseExtension):
             Numerics.RPL_WHOISLOGGEDIN : self.whois_login,
             Numerics.RPL_WHOREPLY : self.who,
             Numerics.RPL_WHOSPCRPL : self.whox,
+        }
+
+        self.hooks = {
+            "disconnected" : self.close,
         }
 
         self.requires = ["ISupport"]
@@ -435,6 +441,8 @@ class UserTrack(BaseExtension):
         if not self.whox_send:
             return
 
+        channel = self.base.casefold(event.line.params[1])
+        del self.who_timers[channel]
         del self.whox_send[0]
 
     def whois_user(self, event):
@@ -673,3 +681,15 @@ class UserTrack(BaseExtension):
         user.operator = operator
         user.account = account
         user.ip = ip
+
+    def close(self):
+        timers = chain(self.u_expire_timers.values(),
+                       self.who_timers.values())
+        for timer in timers:
+            try:
+                self.unschedule(timer)
+            except ValueError:
+                pass
+
+        self.users.clear()
+        self.whox_send.clear()

@@ -441,20 +441,20 @@ class UserTrack(BaseExtension):
         prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
         pmap = {v : k for k, v in prefix.items()}
 
-        for user in event.line.params[-1].split():
+        for nick in event.line.params[-1].split():
             mode = set()
-            while user[0] in pmap:
+            while nick[0] in pmap:
                 # Accomodate multi-prefix
-                prefix, user = user[0], user[1:]
+                prefix, nick = nick[0], nick[1:]
                 mode.add(pmap[prefix])
 
             # userhost-in-names (no need to check, nick goes through this
             # just fine)
-            hostmask = Hostmask.parse(user)
+            hostmask = Hostmask.parse(nick)
             username = hostmask.username if hostmask.username else None
             host = hostmask.host if hostmask.host else None
 
-            user = self.get_user(hostmask.nick)
+            user = self.get_user(nick)
             if user:
                 # Update user info
                 if username:
@@ -463,7 +463,7 @@ class UserTrack(BaseExtension):
                 if host:
                     user.host = host
             else:
-                user = self.add_user(hostmask.nick, user=username, host=host)
+                user = self.add_user(nick, user=username, host=host)
 
             # Apply modes
             user.channels[channel] = mode

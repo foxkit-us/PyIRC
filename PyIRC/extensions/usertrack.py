@@ -116,8 +116,18 @@ class UserTrack(BaseExtension):
         self.whoxsend = list()
 
         # Create ourselves
-        self.users[self.base.nick] = User(self.base.nick, user=self.base.user,
-                                          gecos=self.base.gecos)
+        self.add_user(self.base.nick, user=self.base.user,
+                      gecos=self.base.gecos)
+
+    def add_user(self, nick, **kwargs):
+        """ Add a user """
+
+        if nick in self.users:
+            return self.users[nick]
+
+        user = User(nick, **kwargs)
+        self.users[nick] = user
+        return user
 
     def remove_user(self, user):
         """ Callback to remove a user """
@@ -196,9 +206,8 @@ class UserTrack(BaseExtension):
 
             gecos = event.line.params[2]
 
-            user = User(event.line.hostmask.nick, account=account,
-                        gecos=gecos)
-            self.users[event.line.hostmask.nick] = user
+            user = self.add_user(event.line.hostmask.nick, account=account,
+                                 gecos=gecos)
 
         self.update_user_host(event.line)
 
@@ -299,8 +308,8 @@ class UserTrack(BaseExtension):
             self.unschedule(self.user_expire_timers[hostmask.nick])
         elif hostmask.nick not in self.users:
             # Obtain more information about the user
-            user = User(hostmask.nick, user=hostmask.user, host=hostmask.host)
-            self.users[hostmask.nick] = user
+            user = self.add_user(hostmask.nick, user=hostmask.user,
+                                 host=hostmask.host)
 
             self.send("WHOIS", [hostmask.nick] * 2)
         else:
@@ -384,8 +393,7 @@ class UserTrack(BaseExtension):
                 if host:
                     self.users[hostmask.nick].host = host
             else:
-                self.users[hostmask.nick] = User(hostmask.nick, user=user,
-                                                 host=host)
+                self.add_user(hostmask.nick, user=user, host=host)
 
             # Apply modes
             self.users[hostmask.nick].chan_status[channel] = mode

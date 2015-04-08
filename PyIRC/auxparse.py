@@ -63,8 +63,11 @@ def mode_parse(modes, params, modegroups):
                 param = None
 
             # Add mode
-            mode_add[c] = param
-            mode_del.pop(c, None)
+            mode_add[c].add(param)
+            if param is not None::
+                mode_del[c].discard(param)
+            else:
+                mode_del.pop(c, None)
         else:
             if c in modegroups[0] + modegroups[2]:
                 param = params.pop(0)
@@ -72,8 +75,11 @@ def mode_parse(modes, params, modegroups):
                 param = None
 
             # Remove mode
-            mode_del[c] = param
-            mode_add.pop(c, None)
+            mode_del[c].add(param)
+            if param is not None:
+                mode_add[c].discard(param)
+            else:
+                mode_add.pop(c, None)
 
     return (mode_add, mode_del)
 

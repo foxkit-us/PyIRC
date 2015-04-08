@@ -312,32 +312,33 @@ class UserTrack(BaseExtension):
                                         event.line.params[2:],
                                         modegroups)
 
-        for mode, nick in mode_add.items():
-            if not mode.intersection(prefix.keys()):
-                # Status modes are what we care about
-                continue
-
-            user = self.get_user(nick)
-            if not user:
-                logger.warn("Buggy IRC server sent us mode %s for " \
-                    "nonexistent user: %s", mode, user)
-                continue
-
-            channels = user.channels[channel]
-            channels.update(mode)
-
-        for mode, nick in mode_del.items():
+        for mode, params in mode_add.items():
             if mode not in prefix:
                 continue
 
-            user = self.get_user(nick)
-            if not user:
-                logger.warn("Buggy IRC server sent us mode %s for " \
-                    "nonexistent user: %s", mode, user)
+            for nick in params.get(mode):
+                user = self.get_user(nick)
+                if not user:
+                    logger.warn("Buggy IRC server sent us mode %s for " \
+                        "nonexistent user: %s", mode, user)
+                    continue
+
+                channels = user.channels[channel]
+                channels.update(mode)
+
+        for mode, params in mode_del.items():
+            if mode not in prefix:
                 continue
 
-            channels = user.channels[channel]
-            channels.difference_update(mode)
+            for nick in params.get(mode):
+                user = self.get_user(nick)
+                if not user:
+                    logger.warn("Buggy IRC server sent us mode %s for " \
+                        "nonexistent user: %s", mode, user)
+                    continue
+
+                channels = user.channels[channel]
+                channels.difference_update(mode)
 
         cap_negotiate = self.get_extension("CapNegotiate")
         if mode_del and not (cap_negotiate and 'multi-prefix' in

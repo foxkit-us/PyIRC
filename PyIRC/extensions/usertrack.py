@@ -98,6 +98,7 @@ class UserTrack(BaseExtension):
             Numerics.ERR_NOSUCHNICK : self.notfound,
             Numerics.RPL_NAMREPLY : self.names,
             Numerics.RPL_ENDOFWHO : self.who_end,
+            Numerics.RPL_ENDOFWHOIS : self.whois_end,
             Numerics.RPL_WHOISUSER : self.whois_user,
             Numerics.RPL_WHOISCHANNELS : self.whois_channels,
             Numerics.RPL_WHOISHOST : self.whois_host,
@@ -105,7 +106,7 @@ class UserTrack(BaseExtension):
             Numerics.RPL_WHOISOPERATOR : self.whois_operator,
             Numerics.RPL_WHOISSECURE : self.whois_secure,
             Numerics.RPL_WHOISSERVER : self.whois_server,
-            Numerics.RPL_WHOISLOGGEDIN : self.whois_login,
+            Numerics.RPL_WHOISLOGGEDIN : self.whois_account,
             Numerics.RPL_WHOREPLY : self.who,
             Numerics.RPL_WHOSPCRPL : self.whox,
         }
@@ -121,10 +122,32 @@ class UserTrack(BaseExtension):
 
         self.users = dict()
         self.whox_send = list()
+        self.whois_send = set()
+
+        # Authentication callbacks
+        self.auth_cb = dict()
 
         # Create ourselves
         self.add_user(self.base.nick, user=self.base.username,
                       gecos=self.base.gecos)
+
+    def authenticate(self, nick, callback, kwargs):
+        """ Get authentication for a user """
+        
+        fold_nick = self.base.casefold(user.nick)
+
+        user = self.get_user(nick)
+        if not user:
+            # Add a user for now, get details later.
+            self.users[fold_nick] = User(nick)
+
+        if user.account is not None:
+            # User account is known
+            callback(user, **kwargs)
+        elif fold_nick not in self.whois_send:
+            # Defer for a whois
+            self.send("WHOIS", ["*", user.nick])
+            self.whois_send.add(fold_nick)
 
     def get_user(self, nick):
         """ Get a user, or None if nonexistent """
@@ -174,6 +197,9 @@ class UserTrack(BaseExtension):
         if not user:
             return
 
+        # Update
+        user.nick = hostmask.nick
+
         if hostmask.username:
             user.username = hostmask.username
 
@@ -189,6 +215,14 @@ class UserTrack(BaseExtension):
         assert user
 
         user.account = '' if account == '*' else account
+
+        nick = self.base.casefold(user.nick)
+        if nick in self.auth_cb:
+            # User is awaiting authentication
+            for callback, kwargs in self.auth_cb[nick]:
+                callback(user, **kwargs)
+
+            del self.auth_cb[nick]
 
     def away(self, event):
         """ Get away status changes """
@@ -326,8 +360,16 @@ class UserTrack(BaseExtension):
 
     def notfound(self, event):
         """ User is gone """
+        
+        nick = self.base.casefold(event.line.params[1])
+        if nick in self.auth_cb:
+            # User doesn't exist, call back
+            for callback, kwargs in self.auth_cb[nick]:
+                callback(None, **kwargs)
 
-        self.remove_user(event.line.params[1])
+            del self.auth_cb[nick]
+
+        self.remove_user(nick)
 
     def message(self, event):
         """ Got a message from a user """
@@ -353,7 +395,9 @@ class UserTrack(BaseExtension):
             user = self.add_user(hostmask.nick, user=hostmask.username,
                                  host=hostmask.host)
 
-            self.send("WHOIS", ['*', hostmask.nick])
+            if self.casefold(hostmask.nick) not in self.whois_send:
+                self.send("WHOIS", ['*', hostmask.nick])
+                self.whois_send.add(self.casefold(hostmask.nick))
 
             self.timeout_user(hostmask.nick)
 
@@ -445,6 +489,21 @@ class UserTrack(BaseExtension):
         del self.who_timers[channel]
         del self.whox_send[0]
 
+    def whois_end(self, event):
+        """ Process end of WHOIS """
+
+        nick = self.base.casefold(event.line.params[1])
+
+        self.whois_send.discard(nick)
+
+        user = self.get_user(nick)
+        if nick in self.auth_cb:
+            # User is awaiting authentication
+            for callback, kwargs in self.auth_cb[nick]:
+                callback(user, **kwargs)
+
+            del self.auth_cb[nick]
+
     def whois_user(self, event):
         """ The nickname/user/host/gecos of a user """
 
@@ -457,6 +516,7 @@ class UserTrack(BaseExtension):
         if not user:
             return
 
+        user.nick = nick
         user.username = username
         user.host = host
         user.gecos = gecos
@@ -536,16 +596,22 @@ class UserTrack(BaseExtension):
         user.server = event.line.params[2]
         user.server_desc = event.line.params[3]
 
-    def whois_login(self, event):
+    def whois_account(self, event):
         """ Services account name of user according to WHOIS """
-
-        # FIXME - users account names aren't unset if not found in whois.
 
         user = self.get_user(event.line.params[1])
         if not user:
             return
 
         user.account = event.line.params[2]
+
+        nick = self.base.casefold(user.nick)
+        if nick in self.auth_cb:
+            # User is awaiting authentication
+            for callback, kwargs in self.auth_cb[nick]:
+                callback(user, **kwargs)
+
+            del self.auth_cb[nick]
 
     def who(self, event):
         """ Process a response to WHO """

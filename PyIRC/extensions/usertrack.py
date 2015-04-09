@@ -134,7 +134,7 @@ class UserTrack(BaseExtension):
     def authenticate(self, nick, callback, kwargs):
         """ Get authentication for a user """
         
-        fold_nick = self.base.casefold(user.nick)
+        fold_nick = self.casefold(user.nick)
 
         user = self.get_user(nick)
         if not user:
@@ -152,7 +152,7 @@ class UserTrack(BaseExtension):
     def get_user(self, nick):
         """ Get a user, or None if nonexistent """
 
-        return self.users.get(self.base.casefold(nick))
+        return self.users.get(self.casefold(nick))
 
     def add_user(self, nick, **kwargs):
         """ Add a user """
@@ -160,14 +160,14 @@ class UserTrack(BaseExtension):
         user = self.get_user(nick)
         if not user:
             user = User(nick, **kwargs)
-            self.users[self.base.casefold(nick)] = user
+            self.users[self.casefold(nick)] = user
 
         return user
 
     def remove_user(self, nick):
         """ Callback to remove a user """
 
-        nick = self.base.casefold(nick)
+        nick = self.casefold(nick)
         if nick not in self.users:
             logger.warning("Deleting nonexistent user: %s", user)
             return
@@ -179,7 +179,7 @@ class UserTrack(BaseExtension):
     def timeout_user(self, nick):
         """ Time a user out, cancelling existing timeouts """
 
-        nick = self.base.casefold(nick)
+        nick = self.casefold(nick)
         if nick in self.u_expire_timers:
             self.unschedule(self.u_expire_timers[nick])
 
@@ -216,7 +216,7 @@ class UserTrack(BaseExtension):
 
         user.account = '' if account == '*' else account
 
-        nick = self.base.casefold(user.nick)
+        nick = self.casefold(user.nick)
         if nick in self.auth_cb:
             # User is awaiting authentication
             for callback, kwargs in self.auth_cb[nick]:
@@ -254,7 +254,7 @@ class UserTrack(BaseExtension):
         user = self.get_user(nick)
         if user:
             # Remove any pending expiration timer
-            self.u_expire_timers.pop(self.base.casefold(nick), None)
+            self.u_expire_timers.pop(self.casefold(nick), None)
         else:
             # Create a new user with available info
             cap_negotiate = self.get_extension("CapNegotiate")
@@ -270,7 +270,7 @@ class UserTrack(BaseExtension):
         # Update info
         self.update_username_host(event.line)
 
-        if self.base.casefold(nick) == self.base.casefold(self.base.nick):
+        if self.casefold(nick) == self.casefold(self.base.nick):
             # It's us!
             isupport = self.get_extension("ISupport")
 
@@ -282,10 +282,10 @@ class UserTrack(BaseExtension):
                 self.whox_send.append(num)
 
             sched = self.schedule(2, partial(self.send, "WHO", params))
-            self.who_timers[self.base.casefold(channel)] = sched
+            self.who_timers[self.casefold(channel)] = sched
 
         # Add the channel
-        user.channels[self.base.casefold(channel)] = set()
+        user.channels[self.casefold(channel)] = set()
 
     def mode(self, event):
         """ Got a channel mode """
@@ -302,7 +302,7 @@ class UserTrack(BaseExtension):
         # Parse prefixes like list modes
         modegroups[0] += ''.join(prefix.keys())
 
-        channel = self.base.casefold(event.line.params[0])
+        channel = self.casefold(event.line.params[0])
 
         # Don't care if user-directed, as that means us most of the time
         if not channel.startswith(*chantypes):
@@ -350,15 +350,15 @@ class UserTrack(BaseExtension):
 
         assert self.get_user(oldnick)
 
-        self.users[self.base.casefold(newnick)] = self.get_user(oldnick)
-        self.users[self.base.casefold(newnick)].nick = newnick
+        self.users[self.casefold(newnick)] = self.get_user(oldnick)
+        self.users[self.casefold(newnick)].nick = newnick
 
-        del self.users[self.base.casefold(oldnick)]
+        del self.users[self.casefold(oldnick)]
 
     def notfound(self, event):
         """ User is gone """
         
-        nick = self.base.casefold(event.line.params[1])
+        nick = self.casefold(event.line.params[1])
         if nick in self.auth_cb:
             # User doesn't exist, call back
             for callback, kwargs in self.auth_cb[nick]:
@@ -377,7 +377,7 @@ class UserTrack(BaseExtension):
             # Us before reg.
             return
 
-        if self.base.casefold(hostmask.nick) in self.u_expire_timers:
+        if self.casefold(hostmask.nick) in self.u_expire_timers:
             # User is expiring
             user = self.get_user(hostmask.nick)
             if hostmask.username != user.username or hostmask.host != user.host:
@@ -392,16 +392,16 @@ class UserTrack(BaseExtension):
             user = self.add_user(hostmask.nick, user=hostmask.username,
                                  host=hostmask.host)
 
-            if self.base.casefold(hostmask.nick) not in self.whois_send:
+            if self.casefold(hostmask.nick) not in self.whois_send:
                 self.send("WHOIS", ['*', hostmask.nick])
-                self.whois_send.add(self.base.casefold(hostmask.nick))
+                self.whois_send.add(self.casefold(hostmask.nick))
 
             self.timeout_user(hostmask.nick)
 
     def part(self, event):
         """ Exit a user """
 
-        channel = self.base.casefold(event.line.params[0])
+        channel = self.casefold(event.line.params[0])
 
         user = self.get_user(event.line.hostmask.nick)
         assert user
@@ -409,16 +409,16 @@ class UserTrack(BaseExtension):
         assert channel in user.channels
         del user.channels[channel]
 
-        if (self.base.casefold(event.line.hostmask.nick) ==
-                self.base.casefold(self.base.nick)):
+        if (self.casefold(event.line.hostmask.nick) ==
+                self.casefold(self.base.nick)):
 
             # We left the channel, scan all users to remove unneeded ones
             for u_nick, u_user in list(self.users.items()):
                 if len(u_user.channels) > 1:
                     # Not interested
                     continue
-                elif (self.base.casefold(u_nick) ==
-                      self.base.casefold(self.base.nick)):
+                elif (self.casefold(u_nick) ==
+                      self.casefold(self.base.nick)):
                     # Don't expire ourselves!
                     continue
                 elif channel in u_user.channels:
@@ -435,13 +435,13 @@ class UserTrack(BaseExtension):
     def quit(self, event):
         """ Exit a user for real """
 
-        assert self.base.casefold(event.line.hostmask.nick) in self.users
+        assert self.casefold(event.line.hostmask.nick) in self.users
         self.remove_user(event.line.hostmask.nick)
 
     def names(self, event):
         """ Process a channel NAMES event """
 
-        channel = self.base.casefold(event.line.params[2])
+        channel = self.casefold(event.line.params[2])
 
         isupport = self.get_extension("ISupport")
         prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
@@ -483,14 +483,14 @@ class UserTrack(BaseExtension):
         if not self.whox_send:
             return
 
-        channel = self.base.casefold(event.line.params[1])
+        channel = self.casefold(event.line.params[1])
         del self.who_timers[channel]
         del self.whox_send[0]
 
     def whois_end(self, event):
         """ Process end of WHOIS """
 
-        nick = self.base.casefold(event.line.params[1])
+        nick = self.casefold(event.line.params[1])
 
         self.whois_send.discard(nick)
 
@@ -537,7 +537,7 @@ class UserTrack(BaseExtension):
                 prefix, user = user[0], user[1:]
                 mode.add(pmap[prefix])
 
-            user.channels[self.base.casefold(channel)] = mode
+            user.channels[self.casefold(channel)] = mode
 
     def whois_host(self, event):
         """ Real host of the user (usually oper only) in WHOIS """
@@ -599,7 +599,7 @@ class UserTrack(BaseExtension):
 
         user.account = event.line.params[2]
 
-        nick = self.base.casefold(user.nick)
+        nick = self.casefold(user.nick)
         if nick in self.auth_cb:
             # User is awaiting authentication
             for callback, kwargs in self.auth_cb[nick]:
@@ -615,7 +615,7 @@ class UserTrack(BaseExtension):
             logger.warn("Malformed WHO from server")
             return
 
-        channel = self.base.casefold(event.line.params[1])
+        channel = self.casefold(event.line.params[1])
         username = event.line.params[2]
         host = event.line.params[3]
         server = event.line.params[4]
@@ -680,7 +680,7 @@ class UserTrack(BaseExtension):
             return
 
         whoxid = event.line.params[1]
-        channel = self.base.casefold(event.line.params[2])
+        channel = self.casefold(event.line.params[2])
         username = event.line.params[3]
         ip = event.line.params[4]
         host = event.line.params[5]

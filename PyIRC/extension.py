@@ -61,6 +61,11 @@ class BaseExtension:
 
         return self.base.call_event(cls, event, *args)
 
+    def casefold(self, string):
+        """ Mirror self.base.casefold """
+
+        return self.base.casefold(string)
+
 
 class BasicRFC(BaseExtension):
     """ Basic RFC1459 doodads """

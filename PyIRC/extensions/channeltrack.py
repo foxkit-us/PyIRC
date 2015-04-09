@@ -79,7 +79,7 @@ class ChannelTrack(BaseExtension):
     def get_channel(self, name):
         """ Get the Channel instance associated with a channel name """
 
-        return self.channels.get(self.base.casefold(name))
+        return self.channels.get(self.casefold(name))
 
     def add_channel(self, name, **kwargs):
         """ Add a channel to our list """
@@ -89,7 +89,7 @@ class ChannelTrack(BaseExtension):
             logger.debug("Adding channel: %s", name)
 
             channel = Channel(name, **kwargs)
-            self.channels[self.base.casefold(name)] = channel
+            self.channels[self.casefold(name)] = channel
 
         return channel
 
@@ -100,7 +100,7 @@ class ChannelTrack(BaseExtension):
         if not channel:
             return
 
-        del self.channels[self.base.casefold(name)]
+        del self.channels[self.casefold(name)]
 
     def close(self, event):
         """ Disconnecting from server """
@@ -119,12 +119,12 @@ class ChannelTrack(BaseExtension):
         channel = self.get_channel(event.line.params[0])
         if not channel:
             # We are joining
-            assert (self.base.casefold(hostmask.nick) ==
-                    self.base.casefold(self.base.nick))
+            assert (self.casefold(hostmask.nick) ==
+                    self.casefold(self.base.nick))
 
             channel = self.add_channel(event.line.params[0])
         
-        channel.users[self.base.casefold(hostmask.nick)] = set()
+        channel.users[self.casefold(hostmask.nick)] = set()
 
     def part(self, event):
         """ Track a channel PART event """
@@ -133,11 +133,11 @@ class ChannelTrack(BaseExtension):
         channel = self.get_channel(event.line.params[0])
         assert channel
 
-        if (self.base.casefold(hostmask.nick) ==
-                self.base.casefold(self.base.nick)):
+        if (self.casefold(hostmask.nick) ==
+                self.casefold(self.base.nick)):
             # We are leaving
             self.remove_channel(channel.name)
-            timer = self.mode_timers.pop(self.base.casefold(channel.name),
+            timer = self.mode_timers.pop(self.casefold(channel.name),
                                          None)
             if timer is not None:
                 try:
@@ -146,7 +146,7 @@ class ChannelTrack(BaseExtension):
                     pass
             return
 
-        del channel.users[self.base.casefold(hostmask.nick)]
+        del channel.users[self.casefold(hostmask.nick)]
 
     def mode(self, event):
         """ Track a channel MODE effect """
@@ -174,7 +174,7 @@ class ChannelTrack(BaseExtension):
             params = []
         for mode, param, adding in mode_parse(modes, params, modegroups):
             if mode in prefix:
-                user = channel.users[self.base.casefold(param)]
+                user = channel.users[self.casefold(param)]
                 if adding:
                     logger.debug("Adding mode for nick %s: %s", param, mode)
                     user.add(mode)
@@ -223,7 +223,7 @@ class ChannelTrack(BaseExtension):
             params = []
         for mode, param, adding in mode_parse(modes, params, modegroups):
             if mode in prefix:
-                user = channel.users[self.base.casefold(param)]
+                user = channel.users[self.casefold(param)]
                 if adding:
                     logger.debug("Adding mode %s to %s in %s", mode, param, channel)
                     user.add(mode)
@@ -300,7 +300,7 @@ class ChannelTrack(BaseExtension):
         channel.timestamp = int(event.line.params[-1])
 
         # Cancel
-        timer = self.mode_timers.pop(self.base.casefold(channel.name),
+        timer = self.mode_timers.pop(self.casefold(channel.name),
                                      None)
         if timer is not None:
             try:
@@ -326,7 +326,7 @@ class ChannelTrack(BaseExtension):
                 mode.add(pmap[prefix])
 
             # userhost-in-names is why we do this dance
-            nick = self.base.casefold(Hostmask.parse(nick).nick)
+            nick = self.casefold(Hostmask.parse(nick).nick)
             if nick not in channel.users:
                 channel.users[nick] = set()
 
@@ -342,13 +342,13 @@ class ChannelTrack(BaseExtension):
 
         timer = self.schedule(5, partial(self.send, "MODE",
                                          [event.line.params[1]]))
-        self.mode_timers[self.base.casefold(channel.name)] = timer
+        self.mode_timers[self.casefold(channel.name)] = timer
 
     def nick(self, event):
         """ Handle a nick change """
 
-        oldnick = self.base.casemap(event.line.hostmask.nick)
-        newnick = self.base.casemap(event.line.params[-1])
+        oldnick = self.base.casefold(event.line.hostmask.nick)
+        newnick = self.base.casefold(event.line.params[-1])
 
         # Change the nick in all channels
         for channel in self.channels.values():
@@ -361,7 +361,7 @@ class ChannelTrack(BaseExtension):
     def quit(self, event):
         """ Quit a user """
 
-        nick = self.base.casemap(event.line.hostmask.nick)
+        nick = self.base.casefold(event.line.hostmask.nick)
 
         for channel in self.channels.values():
             channel.users.pop(nick, None)

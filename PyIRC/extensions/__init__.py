@@ -5,8 +5,7 @@
 # for licensing information.
 
 
-from PyIRC.extension import BasicRFC
-
+from PyIRC.extensions.basicrfc import BasicRFC
 from PyIRC.extensions.autojoin import AutoJoin
 from PyIRC.extensions.cap import CapNegotiate
 from PyIRC.extensions.ctcp import CTCP

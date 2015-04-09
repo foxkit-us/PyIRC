@@ -403,29 +403,32 @@ class UserTrack(BaseExtension):
 
         channel = self.casefold(event.line.params[0])
 
-        user = self.get_user(event.line.hostmask.nick)
+        if event.line.command.lower() == 'part':
+            user = self.get_user(event.line.hostmask.nick)
+        elif event.line.command.lower() == 'kick':
+            user = self.get_user(event.line.params[1])
         assert user
 
         assert channel in user.channels
         del user.channels[channel]
 
-        if (self.casefold(event.line.hostmask.nick) ==
-                self.casefold(self.base.nick)):
-
+        if (self.casefold(user.nick) == self.casefold(self.base.nick)):
             # We left the channel, scan all users to remove unneeded ones
             for u_nick, u_user in list(self.users.items()):
-                if len(u_user.channels) > 1:
-                    # Not interested
+                if channel in u_user.channels:
+                    # Purge from the cache since we don't know for certain.
+                    del u_user.channels[channel]
+
+                if self.casefold(u_nick) == self.casefold(self.base.nick):
+                    # Don't delete ourselves!
                     continue
-                elif (self.casefold(u_nick) ==
-                      self.casefold(self.base.nick)):
-                    # Don't expire ourselves!
-                    continue
-                elif channel in u_user.channels:
+
+                if not u_user.channels:
                     # Delete the user outright to purge any cached data
                     # The data must be considered invalid when we leave
                     # TODO - possible MONITOR support?
                     self.remove_user(u_nick)
+                    continue
 
         elif not user.channels:
             # No more channels and not us, delete

@@ -19,7 +19,51 @@ PRIORITY_LAST = 1000
 logger = getLogger(__name__)
 
 
-class BaseExtension:
+def hook(hclass, hook, priority=None):
+    """ Decorator to add a class hook
+
+    Arguments:
+        hclass: hook class to use
+        hook: name of the hook to use
+        priority: optional priority value of this hook
+    """
+    def dec(func):
+        _hooks = getattr(func, 'hooks', list())
+
+        _hooks.append((hclass, hook, priority))
+
+        func.hooks = _hooks
+        return func
+
+    return dec
+
+
+class HookGenerator(type):
+    def __new__(meta, name, bases, dct):
+        callables = [c for c in dct.values() if callable(c)]
+        for val in callables:
+            # Get decorated stuff
+            _hooks = getattr(val, 'hooks', None)
+            if _hooks is None:
+                continue
+
+            for hclass, hook, priority in _hooks:
+                # Get the hooks attribute for this hook class
+                hdict = dct.get(hclass + '_hooks')
+                if hdict is None:
+                    # Create attribute
+                    hdict = dct[hclass + '_hooks'] = dict()
+
+                if priority is None:
+                    # Set to class default priority
+                    priority = dct.get('priority', PRIORITY_DONTCARE)
+
+                hdict[hook] = (val, priority)
+
+        return super(HookGenerator, meta).__new__(meta, name, bases, dct)
+
+
+class BaseExtension(metaclass=HookGenerator):
     """ The base class for extensions.
 
     Members:
@@ -106,21 +150,22 @@ class ExtensionManager:
 
         commands_key = lambda s : (s.lower() if isinstance(s, str) else
                                    s.value)
-        self.create_hooks("commands", "commands", commands_key)
-        self.create_hooks("hooks", "hooks")
+        self.create_hooks("commands", commands_key)
+        self.create_hooks("hooks")
 
-    def create_hooks(self, cls, attr, key=None):
-        """ Register hooks from extensions with the given member for hooks """
+    def create_hooks(self, cls, key=None):
+        """ Register hooks contained in the given attribute from loaded
+        extensions """
+
+        attr = cls + '_hooks'
 
         items = self.db.items()
         for order, (name, extension_inst) in enumerate(items):
-            priority = extension_inst.priority
-
             extension_table = getattr(extension_inst, attr, None)
             if extension_table is None:
                 continue
 
-            for hook, callback in extension_table.items():
+            for hook, (callback, priority) in extension_table.items():
                 if key:
                     hook = key(hook)
 

@@ -121,6 +121,9 @@ class EventManager:
     def register_callback(self, cls, event, priority, callback):
         """ Register a callback for the given event """
 
+        logger.debug("Registering callback %s (group %s) priority %s: %r",
+                     event, cls, priority, callback)
+
         # Does nothing if not needed
         self.register_event(cls, event)
 

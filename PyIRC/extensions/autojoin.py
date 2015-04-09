@@ -8,7 +8,7 @@
 from collections.abc import Mapping
 from functools import partial
 
-from PyIRC.extension import BaseExtension
+from PyIRC.extension import BaseExtension, hook
 from PyIRC.event import EventState
 from PyIRC.numerics import Numerics
 
@@ -38,14 +38,6 @@ class AutoJoin(BaseExtension):
 
         self.base = base
 
-        self.commands = {
-            Numerics.RPL_WELCOME : self.autojoin,
-        }
-
-        self.hooks = {
-            "disconnected" : self.close,
-        }
-
         self.join_dict = kwargs['join']
 
         # If a list is passed in for join_dict, we will use a comprehension
@@ -66,6 +58,7 @@ class AutoJoin(BaseExtension):
         self.send("JOIN", params)
         self.sched.pop(0)
 
+    @hook("commands", Numerics.RPL_WELCOME)
     def autojoin(self, event):
         # Should be sufficient for end of MOTD and such
         t = self.wait_start
@@ -81,6 +74,7 @@ class AutoJoin(BaseExtension):
 
             t += self.wait_interval
 
+    @hook("hooks", "disconnected")
     def close(self):
         for sched in self.sched:
             try:

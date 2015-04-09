@@ -39,6 +39,11 @@ def hook(hclass, hook, priority=None):
 
 
 class HookGenerator(type):
+
+    """ Internal metaclass for hook generation in `BaseExtension`.
+
+    Do not use this unless you know what you are doing and how this works. """
+
     def __call__(cls, *args, **kwargs):
         inst =  type.__call__(cls, *args, **kwargs)
         for func in dir(inst):
@@ -76,17 +81,16 @@ class HookGenerator(type):
 class BaseExtension(metaclass=HookGenerator):
     """ The base class for extensions.
 
+    Hooks may exist in this, in a hclass_hooks dictionary. These can be
+    created by hand, but it is recommended to let them be created by the
+    HookGenerator metaclass and the `hook` decorator.
+
     Members:
-    - commands - the set of IRC commands and numerics this extension
-      supports
-    - hooks - hooks this command supports
     - requires - required extensions (must be a name)
     - priority - the priority of this extension, lower is higher (like Unix)
     """
 
     priority = PRIORITY_DONTCARE
-    commands = {}
-    hooks = {}
     requires = []
 
     def __init__(self, base, **kwargs):

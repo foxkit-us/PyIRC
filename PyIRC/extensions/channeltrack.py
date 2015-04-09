@@ -347,8 +347,8 @@ class ChannelTrack(BaseExtension):
     def nick(self, event):
         """ Handle a nick change """
 
-        oldnick = self.base.casefold(event.line.hostmask.nick)
-        newnick = self.base.casefold(event.line.params[-1])
+        oldnick = self.casefold(event.line.hostmask.nick)
+        newnick = self.casefold(event.line.params[-1])
 
         # Change the nick in all channels
         for channel in self.channels.values():
@@ -361,7 +361,7 @@ class ChannelTrack(BaseExtension):
     def quit(self, event):
         """ Quit a user """
 
-        nick = self.base.casefold(event.line.hostmask.nick)
+        nick = self.casefold(event.line.hostmask.nick)
 
         for channel in self.channels.values():
             channel.users.pop(nick, None)

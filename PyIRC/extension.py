@@ -185,9 +185,10 @@ class ExtensionManager:
         extensions = list(self.extensions)
         for i, name in enumerate(e.__name__ for e in extensions):
             if name == extension:
+                logger.debug("Removing extension: %s")
                 del self.extensions[i]
 
-        if len(extensions) < len(self.extensions):
+        if len(extensions) > len(self.extensions):
             # List length changed
             self.create_db()
             return True

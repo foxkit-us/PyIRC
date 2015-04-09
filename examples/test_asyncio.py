@@ -11,8 +11,8 @@ from PyIRC.extensions import bot_recommended
 basicConfig(level="DEBUG")
 
 args = {
-    'serverport' : ('irc.interlinked.me', 9999),
-    'ssl' : True,
+    'serverport' : ('irc.interlinked.me', 6667),
+    'ssl' : False,
     'username' : 'Testbot',
     'nick' : 'Testbot',
     'gecos' : 'I am a test, pls ignore :)',

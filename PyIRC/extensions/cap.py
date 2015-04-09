@@ -241,7 +241,7 @@ class CapNegotiate(BaseExtension):
         """ Unregister support for a specific CAP """
 
         self.supported.pop(cap, None)
-    
+
     def cont(self, event):
         """ Continue negotiation of caps """
 

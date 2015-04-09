@@ -22,7 +22,7 @@ class BasicRFC(BaseExtension):
         self.base = base
 
         self.prev_nick = None
-    
+
     @hook("hooks", "connected")
     def handshake(self, event):
         if not self.base.registered:

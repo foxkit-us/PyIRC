@@ -1,8 +1,11 @@
-# Copyright © 2013 Andrew Wilcox.  All rights reserved.
+# Copyright © 2013-2015 Andrew Wilcox and Elizabeth Myers.
+# All rights reserved.
 # This file is part of the PyIRC 3 project. See LICENSE in the root directory
 # for licensing information.
 
+
 """ CTCP extension.  Dispatches CTCP commands similar to IRC commands. """
+
 
 from logging import getLogger
 

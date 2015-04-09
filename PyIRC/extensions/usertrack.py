@@ -68,7 +68,8 @@ class User:
 
 class UserTrack(BaseExtension):
 
-    """ Track various user metrics, such as account info """
+    """ Track various user metrics, such as account info, and some channel
+    tracking. """
 
     caps = {
         "account-notify" : [],

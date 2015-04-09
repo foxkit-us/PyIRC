@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Copyright © 2015 Andrew Wilcox and Elizabeth Myers.
 # All rights reserved.
-# This file is part of the PyIRC3 project. See LICENSE in the root directory
+# This file is part of the PyIRC 3 project. See LICENSE in the root directory
 # for licensing information.
 
 
@@ -17,7 +17,12 @@ logger = getLogger(__name__)
 
 class ISupport(BaseExtension):
 
-    """ Parse ISUPPORT attributes into useful things """
+    """ Parse ISUPPORT attributes into useful things.
+    
+    Members:
+    - supported: parsed ISUPPORT data from the server. Because ISUPPORT is
+      technically non-standard, users should be prepared for unexpected data.
+    """
 
     def __init__(self, base, **kwargs):
         self.base = base

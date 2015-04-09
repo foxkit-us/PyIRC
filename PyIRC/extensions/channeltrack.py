@@ -36,7 +36,8 @@ class Channel:
 
 class ChannelTrack(BaseExtension):
 
-    """ Tracks channels and the like """
+    """ Tracks channels and their users. For more elaborate user tracking, see
+    usertrack.UserTrack. """
 
     caps = {
         "multi-prefix" : [],

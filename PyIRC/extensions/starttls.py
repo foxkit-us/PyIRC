@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Copyright © 2015 Andrew Wilcox and Elizabeth Myers.
 # All rights reserved.
-# This file is part of the PyIRC3 project. See LICENSE in the root directory
+# This file is part of the PyIRC 3 project. See LICENSE in the root directory
 # for licensing information.
 
 
@@ -16,7 +16,8 @@ logger = getLogger(__name__)
 
 
 class STARTTLS(BaseExtension):
-    """ Support STARTTLS """
+
+    """ Support STARTTLS extension. Not all I/O backends support this."""
 
     priority = PRIORITY_FIRST
     requires = ["CapNegotiate"]

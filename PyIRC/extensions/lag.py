@@ -22,7 +22,12 @@ logger = getLogger(__name__)
 
 
 class LagCheck(BaseExtension):
-    """ Lag measurement extension """
+
+    """ Lag measurement extension
+    
+    Members:
+    - lag: current lag measurements from the server
+    """
 
     def __init__(self, base, **kwargs):
 

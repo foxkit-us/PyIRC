@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Copyright © 2015 Andrew Wilcox and Elizabeth Myers.
 # All rights reserved.
-# This file is part of the PyIRC3 project. See LICENSE in the root directory
+# This file is part of the PyIRC 3 project. See LICENSE in the root directory
 # for licensing information.
 
 
@@ -22,6 +22,8 @@ class CapNegotiate(BaseExtension):
 
     IRCv3.2 negotiation is attempted, but earlier specifications will be used
     in a backwards compatible manner.
+
+    This extension does little on its own, but provides a public API.
     """
 
     priority = PRIORITY_FIRST

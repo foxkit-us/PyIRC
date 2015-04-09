@@ -1,5 +1,5 @@
 # Copyright © 2013-2015 Elizabeth Myers.  All rights reserved.
-# This file is part of the PyIRC3 project. See LICENSE in the root directory
+# This file is part of the PyIRC 3 project. See LICENSE in the root directory
 # for licensing information.
 
 """IRC numerics derived from Inspircd, Charybdis, Bahamut, and any others.

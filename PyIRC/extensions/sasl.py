@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Copyright © 2015 Andrew Wilcox and Elizabeth Myers.
 # All rights reserved.
-# This file is part of the PyIRC3 project. See LICENSE in the root directory
+# This file is part of the PyIRC 3 project. See LICENSE in the root directory
 # for licensing information.
 
 
@@ -18,7 +18,7 @@ logger = getLogger(__name__)
 
 class SASLBase(BaseExtension):
 
-    """ Base SASL support """
+    """ Base SASL support. Does nothing on its own. """
 
     # We should come after things like STARTTLS
     priority = PRIORITY_FIRST + 5

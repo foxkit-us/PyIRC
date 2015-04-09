@@ -1,32 +1,32 @@
 # Tracking
-- [ ] Channel tracking
-- [ ] User tracking
-- [ ] Introspection (what the server sees us as)
+- [x] Channel tracking
+- [x] User tracking
+- [ ] Introspection (what the server sees us as) (partial)
 
 ## Channel tracking
-- [ ] Known channels we've joined
+- [x] Known channels we've joined (mostly)
 - [ ] Autorejoin on kick/remove
-- [ ] Basic support for known users (see user tracking)
+- [x] Basic support for known users (see user tracking)
 
 ## User tracking
-- [ ] NAMES tracking
+- [x] NAMES tracking
 - [ ] NAMESX support (?)
-- [ ] multi-prefix support (CAP and *maybe* CLICAP?)
-- [ ] WHO/WHOX usage for enhanced user information
-- [ ] WHOIS support
-- [ ] account-notify/away-notify
+- [x] multi-prefix support
+- [x] WHO/WHOX usage for enhanced user information
+- [x] WHOIS support
+- [x] account-notify/away-notify
 - [ ] Various forms of services account tracking
 - [ ] MONITOR support for online/offline detection
 
 ## Introspection
-- [ ] Our present nick (knowing about SANICK/FORCENICK/SVSNICK)
-- [ ] Present hostname
+- [x] Our present nick (knowing about SANICK/FORCENICK/SVSNICK)
+- [x] Present hostname (mostly)
 - [ ] Present cloak
-- [ ] Lag checking
+- [x] Lag checking
 
 # Standards compliance
-- [ ] IRCv3.x
-- [ ] CTCP
+- [x] IRCv3.x (mostly)
+- [x] CTCP
 - [ ] DCC
 - [ ] NickServ/Q support
 
@@ -37,18 +37,18 @@
 - [ ] Examine other features and add them
 
 ## CTCP
-- [ ] Hooks for CTCP/NCTCP events
+- [x] Hooks for CTCP/NCTCP events
 
 ## DCC
 - [ ] Hooks for DCC events
 - [ ] Handle DCC connections including PASV
 
 # Architectural
-- [ ] Real event structures passed to callbacks (that have event status,
+- [x] Real event structures passed to callbacks (that have event status,
       data, etc).
 - [ ] Outgoing command hooks
 - [ ] Automatic dependency loading
-- [ ] Generic canned sets of extensions
+- [x] Generic canned sets of extensions
 - [ ] Unit tests
 - [ ] asyncio support
 - [ ] gevent support

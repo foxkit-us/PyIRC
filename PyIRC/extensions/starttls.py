@@ -19,25 +19,11 @@ class StartTLS(BaseExtension):
 
     """ Support STARTTLS extension. Not all I/O backends support this."""
 
-    priority = PRIORITY_FIRST
     requires = ["CapNegotiate"]
 
     def __init__(self, base, **kwargs):
 
         self.base = base
-
-        self.commands = {
-            Numerics.RPL_STARTTLS : self.wrap,
-            Numerics.ERR_STARTTLS : self.abort,
-        }
-
-        self.hooks = {
-            "disconnected" : self.close,
-        }
-
-        self.commands_cap = {
-            "ack" : self.starttls,
-        }
 
         self.done = False
 
@@ -45,7 +31,12 @@ class StartTLS(BaseExtension):
             self.caps = {
                 "tls" : [],
             }
+    
+    @hook("hooks", "disconnected")
+    def close(self, event):
+        self.done = False
 
+    @hook("commands_cap", "ack", PRIORITY_FIRST)
     def starttls(self, event):
         if self.base.ssl:
             # Unnecessary
@@ -58,9 +49,7 @@ class StartTLS(BaseExtension):
 
             event.status = EventState.cancel
 
-    def close(self, event):
-        self.done = False
-
+    @hook("commands", Numerics.RPL_STARTTLS)
     def wrap(self, event):
         logger.info("Performing STARTTLS initiation...")
         self.base.wrap_ssl()
@@ -69,6 +58,7 @@ class StartTLS(BaseExtension):
         cap_negotiate = self.get_extension("CapNegotiate")
         cap_negotiate.cont(event)
 
+    @hook("commands", Numerics.ERR_STARTTLS)
     def abort(self, event):
         logger.critical("STARTTLS initiation failed, connection not secure")
         self.base.socket = self.base._socket

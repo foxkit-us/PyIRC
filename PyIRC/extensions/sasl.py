@@ -30,23 +30,6 @@ class SASLBase(BaseExtension):
 
         self.base = base
 
-        self.commands = {
-            Numerics.RPL_SASLSUCCESS : self.success,
-            Numerics.RPL_SASLMECHS : self.get_mechanisms,
-            Numerics.ERR_SASLFAIL : self.fail,
-            Numerics.ERR_SASLTOOLONG : self.fail,
-            Numerics.ERR_SASLABORTED : self.fail,
-            Numerics.ERR_SASLALREADY : self.already,
-        }
-
-        self.hooks = {
-            "disconnected" : self.close,
-        }
-
-        self.commands_cap = {
-            "ack" : self.auth,
-        }
-
         self.mechanisms = set()
         self.username = kwargs.get("sasl_username")
         self.password = kwargs.get("sasl_password")
@@ -69,6 +52,12 @@ class SASLBase(BaseExtension):
             logger.debug("Registering new-style SASL capability")
             return {"sasl" : [m.method for m in SASLBase.__subclasses__()]}
 
+    @hook("hooks", "disconnected")
+    def close(self, event):
+        self.mechanisms.clear()
+        self.done = False
+
+    @hook("commands_cap", "ack")
     def auth(self, event):
         cap_negotiate = self.get_extension("CapNegotiate")
 
@@ -91,25 +80,27 @@ class SASLBase(BaseExtension):
         # Defer end of CAP
         event.status = EventState.cancel
 
-    def close(self, event):
-        self.mechanisms.clear()
-        self.done = False
-
+    @hook("commands", Numerics.RPL_SASLSUCCESS)
     def success(self, event):
         logger.info("SASL authentication succeeded as %s", self.username)
 
         self.done = True
         self.get_extension("CapNegotiate").cont(event)
 
+    @hook("commands", Numerics.ERR_SASLFAIL)
+    @hook("commands", Numerics.ERR_SASLTOOLONG)
+    @hook("commands", Numerics.ERR_SASLABORTED)
     def fail(self, event):
         logger.info("SASL authentication failed as %s", self.username)
 
         self.done = True
         self.get_extension("CapNegotiate").cont(event)
 
+    @hook("commands", Numerics.ERR_SASLALREADY)
     def already(self, event):
         logger.critical("Tried to log in twice, this shouldn't happen!")
 
+    @hook("commands", Numerics.RPL_SASLMECHS)
     def get_mechanisms(self, event):
         self.mechanisms = set(event.line.params[1].lower().split(','))
         logger.info("Supported SASL mechanisms: %r", self.mechanisms)
@@ -125,10 +116,7 @@ class SASLPlain(SASLBase):
     def __init__(self, base, **kwargs):
         super().__init__(base, **kwargs)
 
-        self.commands.update({
-            "AUTHENTICATE" : self.authenticate,
-        })
-
+    @hook("commands", "AUTHENTICATE")
     def authenticate(self, event):
         """ Implement the plaintext authentication method """
 

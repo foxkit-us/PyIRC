@@ -51,6 +51,6 @@
 - [ ] Automatic dependency loading
 - [x] Generic canned sets of extensions
 - [ ] Unit tests
-- [ ] asyncio support
+- [x] asyncio support
 - [ ] gevent support
 - [ ] stackless (?)

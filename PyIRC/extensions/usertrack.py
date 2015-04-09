@@ -9,7 +9,7 @@ from random import randint
 from functools import partial
 from logging import getLogger
 
-from PyIRC.extension import BaseExtension
+from PyIRC.extension import BaseExtension, hook
 from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
 from PyIRC.auxparse import mode_parse, prefix_parse, who_flag_parse
@@ -520,7 +520,7 @@ class UserTrack(BaseExtension):
         user.host = host
         user.gecos = gecos
 
-    @hook("commands", Numerics.RPL_WHOISCHANNEL)
+    @hook("commands", Numerics.RPL_WHOISCHANNELS)
     def whois_channels(self, event):
         """ Channels user is on from WHOIS """
 

@@ -8,7 +8,7 @@
 from logging import getLogger
 from base64 import b64encode, b64decode
 
-from PyIRC.extension import BaseExtension, PRIORITY_FIRST
+from PyIRC.extension import BaseExtension, hook, PRIORITY_FIRST
 from PyIRC.event import EventState
 from PyIRC.numerics import Numerics
 

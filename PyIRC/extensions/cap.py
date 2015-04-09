@@ -8,7 +8,7 @@
 from functools import partial
 from logging import getLogger
 
-from PyIRC.extension import BaseExtension, PRIORITY_FIRST
+from PyIRC.extension import BaseExtension, hook, PRIORITY_FIRST
 from PyIRC.event import EventState, HookEvent, LineEvent
 from PyIRC.numerics import Numerics
 
@@ -85,7 +85,7 @@ class CapNegotiate(BaseExtension):
         events = self.base.events
 
         events.register_class("commands_cap", LineEvent)
-        extensions.create_hooks("commands_cap", "commands_cap", str.lower)
+        extensions.create_hooks("commands_cap", str.lower)
 
     @hook("hooks", "connected")
     def send_cap(self, event):

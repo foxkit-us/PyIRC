@@ -5,7 +5,7 @@
 """ Lag analysis and checking """
 
 
-from PyIRC.extension import BaseExtension
+from PyIRC.extension import BaseExtension, hook
 from PyIRC.numerics import Numerics
 
 try:

@@ -9,7 +9,7 @@ from collections import defaultdict
 from functools import partial
 from logging import getLogger
 
-from PyIRC.extension import BaseExtension
+from PyIRC.extension import BaseExtension, hook
 from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
 from PyIRC.auxparse import mode_parse, prefix_parse
@@ -326,7 +326,7 @@ class ChannelTrack(BaseExtension):
 
             channel.users[nick].update(mode)
 
-    @hook("commands", RPL_ENDOFNAMES)
+    @hook("commands", Numerics.RPL_ENDOFNAMES)
     def names_end(self, event):
         """ Process an end of NAMES event """
 

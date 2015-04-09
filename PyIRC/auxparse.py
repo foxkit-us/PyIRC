@@ -16,11 +16,14 @@ Hopefully one day this module will disappear, when IRC gets a sane framing
 format. Until that day comes, this needs to be here.
 """
 
+
 from collections import defaultdict
 from re import compile
 from string import ascii_letters, digits
 from types import SimpleNamespace
 from logging import getLogger
+
+from PyIRC.line import Line
 
 
 logger = getLogger(__name__)
@@ -120,3 +123,37 @@ def isupport_parse(params):
         supported[key] = value
 
     return supported
+
+
+class CTCPMessage:
+    """ Represent a CTCP message. """
+
+    __slots__ = ('msgtype', 'command', 'target', 'param')
+
+    def __init__(self, type, command, target, param):
+        self.msgtype = type
+        self.command = command
+        self.target = target
+        self.param = param
+
+    @classmethod
+    def parse(cls, line):
+        """ Return a new CTCPMessage from the line specified. """
+
+        message = line.params[1]
+
+        if not message.startswith("\x01") or not message.endswith("\x01"):
+            return None
+
+        message = message[1:-1]  # chop off \x01 at beginning and end
+        (command, _, param) = message.partition(' ')
+
+        return cls(line.command.upper(), command.upper(), line.hostmask.nick,
+                   param)
+
+    def line(self):
+        """ Return a Line instance representing this CTCP message """
+
+        str = '\x01{} {}\x01'.format(self.command, self.param)
+        return Line(command=self.msgtype, params=[self.target, str])
+

@@ -12,6 +12,7 @@ from logging import getLogger
 from PyIRC.extension import BaseExtension
 from PyIRC.event import EventState, LineEvent
 from PyIRC.numerics import Numerics
+from PyIRC.auxparse import CTCPMessage
 from PyIRC.util.version import versionstr
 
 
@@ -24,30 +25,6 @@ class CTCPEvent(LineEvent):
     def __init__(self, event, ctcp, line):
         super().__init__(event, line)
         self.ctcp = ctcp
-
-
-class CTCPMessage:
-    """ Represent a CTCP message. """
-
-    __slots__ = ('line', 'command', 'target', 'param')
-
-    def __init__(self, command, target, param):
-        self.command = command
-        self.target = target
-        self.param = param
-
-    @classmethod
-    def parse(cls, line):
-        """ Return a new CTCPMessage from the line specified. """
-        message = line.params[1]
-
-        if not message.startswith("\x01") or not message.endswith("\x01"):
-            return None
-
-        message = message[1:-1]  # chop off \x01 at beginning and end
-        (command, _, param) = message.partition(' ')
-
-        return cls(command.upper(), line.hostmask.nick, param)
 
 
 class CTCP(BaseExtension):
@@ -90,23 +67,21 @@ class CTCP(BaseExtension):
         self.base.build_hooks("hooks_ctcp", "commands_ctcp", str.upper)
         self.base.build_hooks("hooks_ctcp", "commands_nctcp", str.upper)
 
-    def ctcp(self, target, command, params=None):
+    def ctcp(self, target, command, param=None):
         """ CTCP a target a given command """
-        command = command.upper()
-        if params:
-            command = "{0} {1}".format(command, params)
 
-        message = "\x01{0}\x01".format(command)
-        self.send("PRIVMSG", [target, message])
+        ctcp = CTCPMessage("PRIVMSG", command.upper(), param)
+        line = ctcp.line()
 
-    def nctcp(self, target, command, params=None):
+        self.send(line.command, line.params)
+
+    def nctcp(self, target, command, param=None):
         """ Reply to a CTCP """
-        command = command.upper()
-        if params:
-            command = "{0} {1}".format(command, params)
+        
+        ctcp = CTCPMessage("NOTICE", command.upper(), param)
+        line = ctcp.line()
 
-        message = "\x01{0}\x01".format(command)
-        self.send("NOTICE", [target, message])
+        self.send(line.command, line.params)
 
     def ctcp_in(self, event):
         """ Check message for CTCP (incoming) and dispatch if necessary. """

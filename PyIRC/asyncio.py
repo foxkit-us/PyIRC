@@ -1,0 +1,61 @@
+# Copyright © 2013-2010 Elizabeth Myers.  All rights reserved.
+# This file is part of the PyIRC3 project. See LICENSE in the root directory
+# for licensing information.
+
+
+""" Support for asyncio, available in Python 3.4 and later (and 3.3 via a
+backport)
+"""
+
+import asyncio
+
+from logging import getLogger
+
+from PyIRC.base import IRCBase
+from PyIRC.line import Line
+
+
+logger = getLogger(__name__)
+
+
+class IRCProtocol(IRCBase, asyncio.Protocol):
+    """ The asyncio implementation of the IRC protocol. Available only with
+    Python 3.4 and above in the standard library, and 3.3 via an external
+    module.
+    """
+
+    def connection_made(self, transport):
+        self.transport = transport
+        self.data = b''
+        super().connect()
+
+    def data_received(self, data):
+        data = self.data + data
+
+        lines = data.split(b'\r\n')
+        self.data = lines.pop()
+
+        for line in lines:
+            line = Line.parse(line.decode('utf-8', 'ignore'))
+            logger.debug("IN: %s", str(line).rstrip())
+            super().recv(line)
+
+    def connection_closed(self, exc):
+        logger.info("Connection lost: %s", str(e))
+        super().close()
+
+    def send(self, command, params):
+        line = super().send(command, params)
+        self.transport.write(bytes(line))
+        logger.debug("OUT: %s", str(line).rstrip())
+
+    def schedule(self, time, callback):
+        loop = asyncio.get_event_loop()
+        return loop.call_later(time, callback)
+
+    def unschedule(self, sched):
+        sched.cancel()
+
+    def wrap_ssl(self):
+        raise NotImplementedError("Cannot wrap SSL after connect due to " \
+            "asyncio limitations (see https://bugs.python.org/issue23749)")

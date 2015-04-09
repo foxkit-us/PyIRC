@@ -15,7 +15,7 @@ from PyIRC.numerics import Numerics
 logger = getLogger(__name__)
 
 
-class STARTTLS(BaseExtension):
+class StartTLS(BaseExtension):
 
     """ Support STARTTLS extension. Not all I/O backends support this."""
 

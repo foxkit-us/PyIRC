@@ -92,7 +92,7 @@ def who_flag_parse(flags):
 def isupport_parse(params):
     """ Parse an ISUPPORT string """
 
-    supported = dict() 
+    supported = dict()
 
     for param in params:
         # Split into key : value pair

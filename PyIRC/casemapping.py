@@ -12,7 +12,7 @@ from string import ascii_lowercase, ascii_uppercase
 # Translation tables
 # NB - IRC is only ASCII-aware, not unicode-aware!
 rfc1459_lower = ascii_lowercase + "{}|~"  # I don't make the rules,
-rfc1459_upper = ascii_uppercase + "[]\\^" # I just enforce them. 
+rfc1459_upper = ascii_uppercase + "[]\\^" # I just enforce them.
 
 rfc1459_tolower = str.maketrans(rfc1459_upper, rfc1459_lower)
 rfc1459_toupper = str.maketrans(rfc1459_lower, rfc1459_upper)

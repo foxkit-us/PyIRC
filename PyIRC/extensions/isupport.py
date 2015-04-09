@@ -18,7 +18,7 @@ logger = getLogger(__name__)
 class ISupport(BaseExtension):
 
     """ Parse ISUPPORT attributes into useful things.
-    
+
     Members:
     - supported: parsed ISUPPORT data from the server. Because ISUPPORT is
       technically non-standard, users should be prepared for unexpected data.

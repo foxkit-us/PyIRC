@@ -12,9 +12,16 @@ from PyIRC.extensions.ctcp import CTCP
 from PyIRC.extensions.isupport import ISupport
 from PyIRC.extensions.lag import LagCheck
 from PyIRC.extensions.sasl import SASLPlain
-from PyIRC.extensions.starttls import STARTTLS
+from PyIRC.extensions.starttls import StartTLS
 from PyIRC.extensions.usertrack import UserTrack
 from PyIRC.extensions.channeltrack import ChannelTrack
+
+
+__all__ = [BasicRFC, AutoJoin, CapNegotiate, CTCP, ISupport, LagCheck,
+           SASLPlain, StartTLS, UserTrack, ChannelTrack]
+
+
+extensions_db = {cls.__name__ : cls for cls in __all__}
 
 
 """ Baseline recommended extensions """
@@ -22,7 +29,7 @@ base_recommended = [BasicRFC, AutoJoin, CTCP, ISupport, LagCheck]
 
 
 """ IRCv3 recommended extensions """
-ircv3_recommended = base_recommended + [CapNegotiate, SASLPlain, STARTTLS]
+ircv3_recommended = base_recommended + [CapNegotiate, SASLPlain, StartTLS]
 
 
 """ Recommended for bots """

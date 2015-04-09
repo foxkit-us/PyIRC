@@ -124,7 +124,7 @@ class ChannelTrack(BaseExtension):
                     self.casefold(self.base.nick))
 
             channel = self.add_channel(event.line.params[0])
-        
+
         channel.users[self.casefold(hostmask.nick)] = set()
 
     def part(self, event):
@@ -204,7 +204,7 @@ class ChannelTrack(BaseExtension):
         channel = self.get_channel(event.line.params[1])
         if not channel:
             return
-        
+
         isupport = self.get_extension("ISupport")
 
         # Build mode groups
@@ -267,7 +267,7 @@ class ChannelTrack(BaseExtension):
 
     def no_topic(self, event):
         """ Process the numeric symbolising no topic """
-        
+
         channel = self.get_channel(event.line.params[0])
         if not channel:
             return

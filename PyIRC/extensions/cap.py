@@ -99,8 +99,11 @@ class CapNegotiate(BaseExtension):
     def register_cap_hooks(self, event):
         """ Register CAP hooks """
 
-        self.base.events.register_class("commands_cap", LineEvent)
-        self.base.build_hooks("commands_cap", "commands_cap", str.lower)
+        extensions = self.base.extensions
+        events = self.base.events
+
+        events.register_class("commands_cap", LineEvent)
+        extensions.create_hooks("commands_cap", "commands_cap", str.lower)
 
     def send_cap(self, event):
         """ Request capabilities from the server """
@@ -143,7 +146,7 @@ class CapNegotiate(BaseExtension):
             self.timer = None
 
         cap_command = event.line.params[1].lower()
-        self.base.call_event("commands_cap", cap_command, event.line)
+        self.call_event("commands_cap", cap_command, event.line)
 
     def get_remote(self, event):
         """ A list of the CAPs the server supports (CAP LS) """
@@ -151,7 +154,8 @@ class CapNegotiate(BaseExtension):
         remote = self.extract_caps(event.line)
         self.remote.update(remote)
 
-        for extension in self.base.extensions_db.values():
+        extensions = self.base.extensions
+        for extension in extensions.db.values():
             # Scan the extensions for caps
             caps = getattr(extension, "caps", None)
             if not caps:

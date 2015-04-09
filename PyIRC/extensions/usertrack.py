@@ -134,7 +134,7 @@ class UserTrack(BaseExtension):
 
     def authenticate(self, nick, callback, kwargs):
         """ Get authentication for a user """
-        
+
         fold_nick = self.casefold(user.nick)
 
         user = self.get_user(nick)
@@ -358,7 +358,7 @@ class UserTrack(BaseExtension):
 
     def notfound(self, event):
         """ User is gone """
-        
+
         nick = self.casefold(event.line.params[1])
         if nick in self.auth_cb:
             # User doesn't exist, call back
@@ -706,7 +706,7 @@ class UserTrack(BaseExtension):
         if channel != '*':
             # Convert symbols to modes
             isupport = self.get_extension("ISupport")
-            
+
             prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
             pmap = {v : k for k, v in prefix.items()}
 

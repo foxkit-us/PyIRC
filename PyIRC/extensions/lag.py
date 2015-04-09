@@ -35,15 +35,6 @@ class LagCheck(BaseExtension):
 
         self.lagcheck = kwargs.get("lagcheck", 30)
 
-        self.commands = {
-            Numerics.RPL_WELCOME : self.start,
-            "PONG" : self.pong,
-        }
-
-        self.hooks = {
-            "disconnected" : self.close,
-        }
-
         self.last = None
         self.lag = None
         self.timer = None
@@ -69,11 +60,24 @@ class LagCheck(BaseExtension):
         self.send("PING", [s])
         self.timer = self.schedule(self.lagcheck, self.ping)
 
+    @hook("hooks", "close")
+    def close(self, event):
+        self.last = None
+        self.lag = None
+
+        if self.timer is not None:
+            try:
+                self.unschedule(self.timer)
+            except ValueError:
+                pass
+
+    @hook("commands", Numerics.RPL_WELCOME)
     def start(self, event):
         """ Begin sending PING requests as soon as possible """
 
         self.ping()
 
+    @hook("commands", "PONG")
     def pong(self, event):
         """ Use PONG reply to check lag """
 
@@ -91,12 +95,3 @@ class LagCheck(BaseExtension):
         self.last = None
         logger.info("Lag: %f", self.lag)
 
-    def close(self, event):
-        self.last = None
-        self.lag = None
-
-        if self.timer is not None:
-            try:
-                self.unschedule(self.timer)
-            except ValueError:
-                pass

@@ -313,6 +313,7 @@ class UserTrack(BaseExtension):
             params = event.line.params[2:]
         else:
             params = []
+        remove = False
         for mode, nick, adding in mode_parse(modes, params, modegroups):
             if mode not in prefix:
                 continue
@@ -326,13 +327,16 @@ class UserTrack(BaseExtension):
             if adding:
                 channel = user.channels[channel]
                 channel.update(mode)
+                logger.debug("Adding mode for nick %s: %s", user.nick, mode)
             else:
                 channel = user.channels[channel]
                 channel.difference_update(mode)
+                logger.debug("Deleting mode for nick %s: %s", user.nick, mode)
+                remove = True
 
         cap_negotiate = self.get_extension("CapNegotiate")
-        if mode_del and not (cap_negotiate and 'multi-prefix' in
-                             cap_negotiate.local):
+        if remove and not (cap_negotiate and 'multi-prefix' in
+                           cap_negotiate.local):
             # Reissue a names request if we don't have multi-prefix
             self.send("NAMES", [channel])
 

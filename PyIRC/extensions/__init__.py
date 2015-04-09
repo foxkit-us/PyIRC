@@ -15,6 +15,7 @@ from PyIRC.extensions.lag import LagCheck
 from PyIRC.extensions.sasl import SASLPlain
 from PyIRC.extensions.starttls import STARTTLS
 from PyIRC.extensions.usertrack import UserTrack
+from PyIRC.extensions.channeltrack import ChannelTrack
 
 
 """ Baseline recommended extensions """
@@ -26,4 +27,4 @@ ircv3_recommended = base_recommended + [CapNegotiate, SASLPlain, STARTTLS]
 
 
 """ Recommended for bots """
-bot_recommended = ircv3_recommended + [UserTrack]
+bot_recommended = ircv3_recommended + [UserTrack, ChannelTrack]

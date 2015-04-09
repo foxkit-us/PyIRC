@@ -29,6 +29,7 @@ gitversion = _gitversion()
 
 Version = namedtuple("Version", "major minor status gitversion")
 
+
 """ Current PyIRC version
 
 Attributes:
@@ -47,5 +48,6 @@ def _versionstr():
         return "{major}.{minor}-{status[0]}[{gitversion}]".format(**globals())
 
 
-""" Current PyIRC version string """
+""" Current PyIRC version string, freeform. Obtained from the package whenever
+possible, but may be generated from constants. """
 versionstr = _versionstr()

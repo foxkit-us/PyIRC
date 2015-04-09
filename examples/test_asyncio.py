@@ -4,7 +4,7 @@
 import asyncio
 from logging import basicConfig
 
-from PyIRC.asyncio import IRCProtocol
+from PyIRC.io.asyncio import IRCProtocol
 from PyIRC.extensions import bot_recommended
 
 

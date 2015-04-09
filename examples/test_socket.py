@@ -2,7 +2,7 @@
 
 from logging import basicConfig
 
-from PyIRC.socket import IRCSocket
+from PyIRC.io.socket import IRCSocket
 from PyIRC.extensions import bot_recommended
 
 

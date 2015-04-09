@@ -8,7 +8,7 @@ setup(name="PyIRC",
       author="Elizabeth Myers",
       author_email="elizabeth@interlinked.me",
       url="https://github.com/Elizabeth/PyIRC3",
-      packages=["PyIRC", "PyIRC.extensions", "PyIRC.util"],
+      packages=["PyIRC", "PyIRC.extensions", "PyIRC.util", "PyIRC.io"],
       classifiers=[
           "Development Status :: 3 - Alpha",
           "Intended Audience :: Developers",

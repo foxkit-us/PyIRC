@@ -10,10 +10,13 @@ Conflicts should be handled by using the number directly, not the name.
 Comments will be added for conflicts.
 """
 
-import enum
+try:
+    from enum import Enum
+except ImportError:
+    from PyIRC.util.enum import Enum
 
 
-class Numerics(enum.Enum):
+class Numerics(Enum):
     RPL_WELCOME = "001" # bahamut charybdis hybrid inspircd irc2.11.2 ircd-seven ircu plexus ratbox rfc2812 snircd unreal
     RPL_YOURHOST = "002" # bahamut charybdis hybrid inspircd irc2.11.2 ircd-seven ircu plexus ratbox rfc2812 snircd unreal
     RPL_YOURHOSTIS = "002" # inspircd

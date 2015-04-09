@@ -4,7 +4,11 @@
 # for licensing information.
 
 
-from enum import Enum
+try:
+    from enum import Enum
+except ImportError:
+    from PyIRC.util.enum import Enum
+
 from types import SimpleNamespace
 from collections import namedtuple
 from logging import getLogger

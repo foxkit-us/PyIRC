@@ -35,25 +35,6 @@ class CapNegotiate(BaseExtension):
 
         self.base = base
 
-        self.commands = {
-            "CAP" : self.dispatch,
-            Numerics.RPL_HELLO : self.end,  # IRCNet compat
-        }
-
-        self.hooks = {
-            "connected" : self.send_cap,
-            "extension_post" : self.register_cap_hooks,
-        }
-
-        self.commands_cap = {
-            "ls" : self.get_remote,
-            "list" : self.get_local,
-            "ack" : self.ack,
-            "new" : self.get_remote,
-            "nak" : self.nak,
-            "end" : self.end,
-        }
-
         # What we support - other extensions can add doodads to this
         self.supported = dict()
 
@@ -96,6 +77,7 @@ class CapNegotiate(BaseExtension):
         else:
             return cap
 
+    @hook("hooks", "extension_post")
     def register_cap_hooks(self, event):
         """ Register CAP hooks """
 
@@ -105,6 +87,7 @@ class CapNegotiate(BaseExtension):
         events.register_class("commands_cap", LineEvent)
         extensions.create_hooks("commands_cap", "commands_cap", str.lower)
 
+    @hook("hooks", "connected")
     def send_cap(self, event):
         """ Request capabilities from the server """
 
@@ -122,6 +105,7 @@ class CapNegotiate(BaseExtension):
         # Ensure no others get fired
         event.status = EventState.cancel
 
+    @hook("hooks", "disconnected")
     def close(self, event):
         """ Reset state on disconnect """
 
@@ -135,6 +119,7 @@ class CapNegotiate(BaseExtension):
         self.remote.clear()
         self.local.clear()
 
+    @hook("commands", "CAP")
     def dispatch(self, event):
         """ Dispatch the CAP command """
 
@@ -148,6 +133,8 @@ class CapNegotiate(BaseExtension):
         cap_command = event.line.params[1].lower()
         self.call_event("commands_cap", cap_command, event.line)
 
+    @hook("commands_cap", "new")
+    @hook("commands_cap", "ls")
     def get_remote(self, event):
         """ A list of the CAPs the server supports (CAP LS) """
 
@@ -184,12 +171,14 @@ class CapNegotiate(BaseExtension):
                 logger.debug("No CAPs to request!")
                 self.end(event)
 
+    @hook("commands_cap", "list")
     def get_local(self, event):
         """ caps presently in use """
 
         self.local = caps = extract_caps(event.line)
         logger.debug("CAPs active: %s", caps)
 
+    @hook("commands_cap", "ack")
     def ack(self, event):
         """ Acknowledge a CAP ACK response """
 
@@ -215,19 +204,14 @@ class CapNegotiate(BaseExtension):
             logger.debug("Acknowledged CAP: %s", cap)
             self.local[cap] = params
 
+    @hook("commands_cap", "nak")
     def nak(self, event):
         """ CAPs rejected """
 
         logger.warn("Rejected CAPs: %s", event.line.params[-1].lower())
 
-    def cont(self, event):
-        """ Continue negotiation of caps """
-
-        status = self.call_event("commands_cap", "ack", event.line).status
-        if status == EventState.ok:
-            if self.negotiating:
-                self.end(event)
-
+    @hook("commands_cap", "end")
+    @hook("commands", Numerics.RPL_HELLO)
     def end(self, event):
         """ End the CAP process """
 
@@ -257,4 +241,13 @@ class CapNegotiate(BaseExtension):
         """ Unregister support for a specific CAP """
 
         self.supported.pop(cap, None)
+    
+    def cont(self, event):
+        """ Continue negotiation of caps """
+
+        status = self.call_event("commands_cap", "ack", event.line).status
+        if status == EventState.ok:
+            if self.negotiating:
+                self.end(event)
+
 

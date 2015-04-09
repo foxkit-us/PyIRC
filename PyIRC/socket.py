@@ -3,8 +3,16 @@
 # for licensing information.
 
 
-""" A socket implementation for IRC, if you just want a shit simple bot for
-one network you probably want this """
+""" A basic socket/ssl/sched-based module implementation for IRC.
+
+If you just want a simple bot for one network, this is what you want.
+
+Note all socket stuff is blocking, if you want non-blocking operation, you
+may want to subclass this and modify things for your application.
+
+This also serves as a useful example.
+
+"""
 
 
 import socket, ssl

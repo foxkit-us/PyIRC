@@ -15,7 +15,7 @@
 - [x] WHO/WHOX usage for enhanced user information
 - [x] WHOIS support
 - [x] account-notify/away-notify
-- [ ] Various forms of services account tracking
+- [x] Various forms of services account tracking
 - [ ] MONITOR support for online/offline detection
 
 ## Introspection
@@ -29,6 +29,7 @@
 - [x] CTCP
 - [ ] DCC
 - [ ] NickServ/Q support
+- [ ] PROTOCTL (?)
 
 ## IRCv3.x
 - [ ] Metadata

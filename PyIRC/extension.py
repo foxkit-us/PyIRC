@@ -39,28 +39,38 @@ def hook(hclass, hook, priority=None):
 
 
 class HookGenerator(type):
-    def __new__(meta, name, bases, dct):
-        callables = [c for c in dct.values() if callable(c)]
-        for val in callables:
+    def __call__(cls, *args, **kwargs):
+        inst =  type.__call__(cls, *args, **kwargs)
+        for func in dir(inst):
+            if func.startswith('__'):
+                # Uninterested
+                continue
+
+            func = getattr(inst, func)
+            if not callable(func):
+                # Uninterested
+                continue
+
             # Get decorated stuff
-            _hooks = getattr(val, 'hooks', None)
+            _hooks = getattr(func, 'hooks', None)
             if _hooks is None:
                 continue
 
             for hclass, hook, priority in _hooks:
                 # Get the hooks attribute for this hook class
-                hdict = dct.get(hclass + '_hooks')
+                hdict = getattr(inst, hclass + '_hooks', None)
                 if hdict is None:
                     # Create attribute
-                    hdict = dct[hclass + '_hooks'] = dict()
+                    hdict = dict()
+                    setattr(inst, hclass + '_hooks', hdict)
 
                 if priority is None:
                     # Set to class default priority
-                    priority = dct.get('priority', PRIORITY_DONTCARE)
+                    priority = getattr(inst, 'priority', PRIORITY_DONTCARE)
 
-                hdict[hook] = (val, priority)
+                hdict[hook] = (func, priority)
 
-        return super(HookGenerator, meta).__new__(meta, name, bases, dct)
+        return inst
 
 
 class BaseExtension(metaclass=HookGenerator):

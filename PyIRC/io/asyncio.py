@@ -7,7 +7,16 @@
 backport)
 """
 
-import asyncio
+
+try:
+    import asyncio
+except ImportError as e:
+    from sys import version_info
+    if version_info < (3, 3):
+        raise ImportError("Must have Python 3.3 or greater to use this " \
+            "module") from e
+    else:
+        raise ImportError("Must install asyncio module from PyPI")
 
 from logging import getLogger
 

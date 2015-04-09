@@ -49,28 +49,6 @@ class ChannelTrack(BaseExtension):
 
         self.base = base
 
-        self.commands = {
-            "JOIN" : self.join,
-            "KICK" : self.part,
-            "MODE" : self.mode,
-            "NICK" : self.nick,
-            "PART" : self.part,
-            "QUIT" : self.quit,
-            "TOPIC" : self.topic,
-            Numerics.RPL_CHANNELMODEIS : self.channel_modes,
-            Numerics.RPL_CHANNELURL : self.url,
-            Numerics.RPL_CREATIONTIME : self.timestamp,
-            Numerics.RPL_NOTOPIC : self.no_topic,
-            Numerics.RPL_NAMREPLY : self.names,
-            Numerics.RPL_TOPIC : self.topic,
-            Numerics.RPL_TOPICWHOTIME : self.topic_who_time,
-            Numerics.RPL_ENDOFNAMES : self.names_end,
-        }
-
-        self.hooks = {
-            "disconnected" : self.close,
-        }
-
         # Our channel set
         self.channels = dict()
 
@@ -103,6 +81,7 @@ class ChannelTrack(BaseExtension):
 
         del self.channels[self.casefold(name)]
 
+    @hook("hooks", "disconnected")
     def close(self, event):
         """ Disconnecting from server """
 
@@ -113,6 +92,7 @@ class ChannelTrack(BaseExtension):
             except ValueError:
                 pass
 
+    @hook("commands", "JOIN")
     def join(self, event):
         """ Track a channel JOIN event """
 
@@ -127,6 +107,8 @@ class ChannelTrack(BaseExtension):
 
         channel.users[self.casefold(hostmask.nick)] = set()
 
+    @hook("commands", "KICK")
+    @hook("commands", "PART")
     def part(self, event):
         """ Track a channel PART event """
 
@@ -149,6 +131,7 @@ class ChannelTrack(BaseExtension):
 
         del channel.users[self.casefold(hostmask.nick)]
 
+    @hook("commands", "MODE")
     def mode(self, event):
         """ Track a channel MODE effect """
 
@@ -198,6 +181,7 @@ class ChannelTrack(BaseExtension):
                 channel.modes.pop(mode, None)
                 logger.debug("Removing mode %s (%s)", mode, param)
 
+    @hook("commands", Numerics.RPL_CHANNELMODEIS)
     def channel_modes(self, event):
         """ Process the RPL_CHANNELMODEIS numeric """
 
@@ -247,6 +231,8 @@ class ChannelTrack(BaseExtension):
                 logger.debug("Removing mode %s (%s)", mode, param)
                 channel.modes.pop(mode, None)
 
+    @hook("commands", Numerics.RPL_TOPIC)
+    @hook("commands", "TOPIC")
     def topic(self, event):
         """ Process a TOPIC command """
 
@@ -265,6 +251,7 @@ class ChannelTrack(BaseExtension):
 
         channel.topic = event.line.params[-1]
 
+    @hook("commands", Numerics.RPL_NOTOPIC)
     def no_topic(self, event):
         """ Process the numeric symbolising no topic """
 
@@ -274,6 +261,7 @@ class ChannelTrack(BaseExtension):
 
         channel.topic = ''
 
+    @hook("commands", Numerics.RPL_TOPICWHOTIME)
     def topic_who_time(self, event):
         """ Process the topic who/time numeric """
 
@@ -284,6 +272,7 @@ class ChannelTrack(BaseExtension):
         channel.topicwho = Hostmask.parse(event.line.params[2])
         channel.topictime = int(event.line.params[3])
 
+    @hook("commands", Numerics.RPL_CHANNELURL)
     def url(self, event):
         """ Process a URL numeric """
 
@@ -292,6 +281,7 @@ class ChannelTrack(BaseExtension):
 
         channel.url = event.line.params[-1]
 
+    @hook("commands", Numerics.RPL_CREATIONTIME)
     def timestamp(self, event):
         """ Process a channel timestamp numeric """
 
@@ -309,6 +299,7 @@ class ChannelTrack(BaseExtension):
             except ValueError:
                 pass
 
+    @hook("commands", Numerics.RPL_NAMREPLY)
     def names(self, event):
         """ Process a channel NAMES event """
 
@@ -335,6 +326,7 @@ class ChannelTrack(BaseExtension):
 
             channel.users[nick].update(mode)
 
+    @hook("commands", RPL_ENDOFNAMES)
     def names_end(self, event):
         """ Process an end of NAMES event """
 
@@ -345,6 +337,7 @@ class ChannelTrack(BaseExtension):
                                          [event.line.params[1]]))
         self.mode_timers[self.casefold(channel.name)] = timer
 
+    @hook("commands", "NICK")
     def nick(self, event):
         """ Handle a nick change """
 
@@ -359,6 +352,7 @@ class ChannelTrack(BaseExtension):
             # Change the nick
             channel.users[newnick] = channel.users.pop(oldnick)
 
+    @hook("commands", "QUIT")
     def quit(self, event):
         """ Quit a user """
 

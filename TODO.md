@@ -54,3 +54,50 @@
 - [x] asyncio support
 - [ ] gevent support
 - [ ] stackless (?)
+
+# Docs
+- [ ] extensions
+- [ ] io
+- [ ] base
+- [ ] util
+
+## Extension docs
+- [ ] autojoin.AutoJoin
+- [ ] basicrfc.BasicRFC
+- [ ] cap.CapNegotiate
+- [ ] channeltrack.Channel
+- [ ] channeltrack.ChannelTrack
+- [ ] ctcp.CTCP
+- [ ] isupport.ISupport
+- [ ] lag.LagCheck
+- [ ] sasl.SASLBase
+- [ ] sasl.SASLPlain
+- [ ] services.ServicesLogin
+- [ ] starttls.StartTLS
+- [ ] usertrack.User
+- [ ] usertrack.UserTrack
+
+## IO docs
+- [ ] asyncio.IRCProtocol
+- [ ] socket.IRCSocket
+
+## Base docs
+- [ ] auxparse.prefix\_parse
+- [ ] auxparse.mode\_parse
+- [ ] auxparse.who\_flag\_parse
+- [ ] auxparse.isupport\_parse
+- [ ] auxparse.CTCPMessage
+- [ ] base.IRCBase
+- [ ] casemapping.IRCString
+- [ ] event.EventState
+- [ ] event.Event
+- [ ] event.HookEvent
+- [ ] event.LineEvent
+- [ ] event.EventManager
+- [ ] extension.HookGenerator
+- [ ] extension.BaseExtension
+- [ ] extension.ExtensionManager
+- [ ] line.Tags
+- [ ] line.Hostmask
+- [ ] line.Line
+- [ ] numerics.Numerics (perhaps not all the members...)

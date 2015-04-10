@@ -4,6 +4,7 @@
 # for licensing information.
 
 
+from operator import attrgetter
 from collections import OrderedDict, deque
 from logging import getLogger
 
@@ -44,36 +45,55 @@ class HookGenerator(type):
 
     Do not use this unless you know what you are doing and how this works. """
 
-    def __call__(cls, *args, **kwargs):
-        inst =  type.__call__(cls, *args, **kwargs)
-        for func in dir(inst):
-            if func.startswith('__'):
-                # Uninterested
+    def __new__(meta, name, bases, dct):
+        # Cache all the members with hooks
+
+        hook_caches = dict()
+
+        for key, val in dct.items():
+            if key.startswith('__') or not callable(val):
                 continue
 
-            func = getattr(inst, func)
-            if not callable(func):
-                # Uninterested
-                continue
-
-            # Get decorated stuff
-            _hooks = getattr(func, 'hooks', None)
-            if _hooks is None:
+            _hooks = getattr(val, 'hooks', None)
+            if not _hooks:
                 continue
 
             for hclass, hook, priority in _hooks:
-                # Get the hooks attribute for this hook class
-                hdict = getattr(inst, hclass + '_hooks', None)
+                # Build the hooks cache
+                hdict = hook_caches.get(hclass)
                 if hdict is None:
-                    # Create attribute
-                    hdict = dict()
-                    setattr(inst, hclass + '_hooks', hdict)
+                    hdict = hook_caches[hclass] = dict()
 
                 if priority is None:
                     # Set to class default priority
-                    priority = getattr(inst, 'priority', PRIORITY_DONTCARE)
+                    priority = dct.get('priority', PRIORITY_DONTCARE)
 
-                hdict[hook] = (func, priority)
+                hdict[hook] = (key, priority)
+
+        # Private member
+        member_name = '_{}__hook_caches'.format(name)
+        dct[member_name] = hook_caches
+
+        return super(HookGenerator, meta).__new__(meta, name, bases, dct)
+
+    def __call__(cls, *args, **kwargs):
+        # Bind the names from the hook cache to the instance
+
+        inst = type.__call__(cls, *args, **kwargs)
+
+        # Get hook cache instance (private member)
+        member_name = '_{}__hook_caches'.format(cls.__name__)
+        hook_caches = getattr(inst, member_name)
+        for hclass, hook in hook_caches.items():
+            name = '{}_hooks'.format(hclass)
+
+            # Create hooks table
+            htable = dict()
+            setattr(inst, name, htable)
+
+            # Go through the hooks table, adding bound functions
+            for hook_name, (func, priority) in hook.items():
+                htable[hook_name] = (getattr(inst, func), priority)
 
         return inst
 

@@ -5,6 +5,9 @@
 # for licensing information.
 
 
+""" Join channels on connection automatically """
+
+
 from collections.abc import Mapping
 from functools import partial
 

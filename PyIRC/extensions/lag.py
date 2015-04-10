@@ -3,7 +3,7 @@
 # for licensing information.
 
 
-""" Lag analysis and checking """
+"""Latency measurements to the server"""
 
 
 from PyIRC.extension import BaseExtension, hook

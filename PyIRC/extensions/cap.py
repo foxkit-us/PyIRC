@@ -5,7 +5,7 @@
 # for licensing information.
 
 
-""" IRC CAP negotation sub-protocol extensions.
+""" IRC CAP negotation sub-protocol extensions
 
 For more information, see:
 http://ircv3.atheme.org/specification/capability-negotiation-3.1

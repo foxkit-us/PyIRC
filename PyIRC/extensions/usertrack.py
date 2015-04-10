@@ -4,9 +4,11 @@
 # for licensing information.
 
 
-""" Track users we know about, whether on channels or through private messages
+"""Track users we have seen and their associated data
 
-Maintains various useful state on users via the User class.
+Tracks users we know about, whether on channels or through private messages.
+Maintains state such as nicknames, channel statuses, away status, and the
+like.
 """
 
 

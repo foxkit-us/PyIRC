@@ -5,7 +5,7 @@
 # for licensing information.
 
 
-""" Services identification through SASL
+"""Identification to services
 
 SASL is a mechanism used by IRCv3 to authenticate clients to services in a
 standard and user-friendly way. A variety of mechanisms are supported by most

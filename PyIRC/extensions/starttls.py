@@ -5,7 +5,7 @@
 # for licensing information.
 
 
-""" Automatic SSL negotiation with STARTTLS extension
+"""Automatic SSL negotiation
 
 It's a little like the ESMTP STARTTLS command, but the server does not forget
 all of the client state after it is issued. Therefore, it should be issued as

@@ -4,7 +4,7 @@
 # for licensing information.
 
 
-""" Bare minimum IRC RFC standards support. Nothing more. """
+""" Bare minimum IRC RFC standards support """
 
 
 from logging import getLogger

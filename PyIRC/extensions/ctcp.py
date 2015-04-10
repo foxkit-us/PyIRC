@@ -4,7 +4,7 @@
 # for licensing information.
 
 
-""" CTCP extension.  Dispatches CTCP commands similar to IRC commands. """
+""" Client to Client Protocol extensions and events """
 
 
 from logging import getLogger

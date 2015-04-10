@@ -5,7 +5,7 @@
 # for licensing information.
 
 
-""" ISUPPORT information from the server
+"""Enumeration of IRC server features and extensions
 
 ISUPPORT is a non-standard but widely supported IRC extension that is used to
 advertise what a server supports to a client. Whilst non-standard, most

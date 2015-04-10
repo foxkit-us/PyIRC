@@ -4,8 +4,10 @@
 # for licensing information.
 
 
-""" Track channels that we have joined, and a variety of metrics associated
-with them. """
+""" Track channels that we have joined and their associated data
+
+This data includes ops, modes, the topic, and associated data.
+"""
 
 
 from time import time

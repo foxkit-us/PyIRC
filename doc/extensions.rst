@@ -44,8 +44,8 @@ ctcp - Better CTCP message handling
 .. autoclass:: PyIRC.extensions.ctcp.CTCPEvent
    :members:
 
-isupport - the ISUPPORT extension
----------------------------------
+isupport - enumeration of IRC server features and extensions
+------------------------------------------------------------
 
 .. autoclass:: PyIRC.extensions.isupport.ISupport
    :special-members:
@@ -76,3 +76,9 @@ services - utilities for interacting with IRC services
    :special-members:
    :members:
 
+starttls - Automatic SSL negotiation
+------------------------------------
+
+.. autoclass:: PyIRC.extensions.starttls.StartTLS
+    :special-members:
+    :members:

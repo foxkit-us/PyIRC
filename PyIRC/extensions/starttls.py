@@ -5,6 +5,14 @@
 # for licensing information.
 
 
+""" Automatic SSL negotiation with STARTTLS extension
+
+It's a little like the ESMTP STARTTLS command, but the server does not forget
+all of the client state after it is issued. Therefore, it should be issued as
+quickly as possible.
+"""
+
+
 from logging import getLogger
 
 from PyIRC.extension import BaseExtension, hook, PRIORITY_FIRST
@@ -17,12 +25,14 @@ logger = getLogger(__name__)
 
 class StartTLS(BaseExtension):
 
-    """ Support STARTTLS extension. Not all I/O backends support this."""
+    """ Support for the STARTTLS extension.
+    
+    Not all I/O backends support this, notably io.asyncio.
+    """
 
     requires = ["CapNegotiate"]
 
     def __init__(self, base, **kwargs):
-
         self.base = base
 
         self.done = False

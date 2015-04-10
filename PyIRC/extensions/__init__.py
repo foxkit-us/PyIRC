@@ -15,10 +15,11 @@ from PyIRC.extensions.sasl import SASLPlain
 from PyIRC.extensions.starttls import StartTLS
 from PyIRC.extensions.usertrack import UserTrack
 from PyIRC.extensions.channeltrack import ChannelTrack
+from PyIRC.extensions.serviceslogin import ServicesLogin
 
 
 __all__ = [BasicRFC, AutoJoin, CapNegotiate, CTCP, ISupport, LagCheck,
-           SASLPlain, StartTLS, UserTrack, ChannelTrack]
+           SASLPlain, StartTLS, UserTrack, ChannelTrack, ServicesLogin]
 
 
 extensions_db = {cls.__name__ : cls for cls in __all__}

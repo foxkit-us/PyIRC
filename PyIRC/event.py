@@ -18,19 +18,19 @@ logger = getLogger(__name__)
 
 
 class EventState(Enum):
-    """ State an event is in
-
-    States:
-    - ok - proceed
-    - cancel - event is cancelled
-    - terminate_soon - send a QUIT to the IRC server
-    - terminate_now - abort library
-    """
+    """ The current state of an event. """
 
     ok = 0
+    """ Proceed with other callbacks, if any. """
     cancel = 1
+    """ Event is cancelled; do not run any further callbacks. """
     terminate_soon = 2
+    """ Send a QUIT to the IRC server. """
     terminate_now = 3
+    """ Abort the entire library immediately.
+
+    .. warning:: This state should only be used if data loss may occur.
+    """
 
 
 class Event:
@@ -60,14 +60,25 @@ EventRegistry = namedtuple("EventRegistry", "events type")
 
 
 class EventManager:
-    """ Manages event registration and calling """
+    """ EventManager manages event registration and dispatch. """
 
     def __init__(self):
         # Contains event classes
         self.events_reg = dict()
 
     def register_class(self, cls, type):
-        """ Register a given event """
+        """ Register a class of events.
+
+        cls
+            The name of the event class.
+        type
+            The type of :py:class:`Event` that will be passed to event handlers.
+
+        If ``cls`` is already a registered event class, this method is a no-op.
+        To change the type of :py:class:`Event` that will be passed to handlers,
+        you must unregister the class using :py:meth:`unregister_class` and
+        re-register it with the new type.
+	"""
 
         if cls in self.events_reg:
             return
@@ -78,7 +89,7 @@ class EventManager:
         self.events_reg[cls] = EventRegistry(dict(), type)
 
     def unregister_class(self, cls):
-        """ Unregister a given event type """
+        """ Unregister a class of events. """
 
         assert cls in self.events_reg
 
@@ -87,13 +98,26 @@ class EventManager:
         del self.events_reg[cls]
 
     def clear(self):
-        """ Clear all classes """
+        """ Unregister all event classes.
+
+        .. warning::
+            This will clear all callbacks, events, and event classes.
+            Do not use unless you really know what you're doing.
+        """
 
         logger.debug("Clearing hooks")
         self.events_reg.clear()
 
     def register_event(self, cls, event):
-        """ Register a given event """
+        """ Register an event to a given class.
+
+        cls
+            The class of the event to register.
+        event
+            The name of the event to register.
+
+        If ``event`` is already registered in ``cls``, this method is a no-op.
+        """
 
         assert cls in self.events_reg
 
@@ -107,7 +131,15 @@ class EventManager:
         events[event].cur_id = 0
 
     def unregister_event(self, cls, event):
-        """ Unregister a given event """
+        """ Unregister an event from a given class.
+
+        cls
+            The class of the event to unregister.
+        event
+            The name of the event to unregister.
+
+        .. note:: It is an error to unregister an event that does not exist.
+        """
 
         assert cls in self.events_reg
 
@@ -119,7 +151,20 @@ class EventManager:
         del events[event]
 
     def register_callback(self, cls, event, priority, callback):
-        """ Register a callback for the given event """
+        """ Register a callback for an event.
+
+        You typically should never call this method directly; instead, use the
+        @hook decorator.
+
+        cls
+            The class of the event to register with this callback.
+        event
+            The name of the event to register with this callback.
+        priority
+            The priority of this callback with this event.
+        callback
+            A Callable to invoke when this event occurs.
+        """
 
         # Does nothing if not needed
         self.register_event(cls, event)
@@ -135,7 +180,15 @@ class EventManager:
         events[event].items.sort()
 
     def unregister_callback(self, cls, event, callback):
-        """ Unregister the given callback for an event """
+        """ Unregister a callback for an event.
+
+        cls
+            The class of the event to unregister this callback from.
+        event
+            The name of the event to unregister this callback from.
+        callback
+            The callback to unregister.
+        """
 
         assert cls in self.events_reg
 
@@ -157,7 +210,16 @@ class EventManager:
             del items[i]
 
     def call_event(self, cls, event, *args):
-        """ Call the callbacks for a given event """
+        """ Call the callbacks for a given event.
+
+        cls
+            The class of the event that is occuring.
+        event
+            The name of the event that is occuring.
+        ``*args``
+            The arguments to pass to the :py:class:`Event` type constructor used
+            for the event class.
+        """
 
         assert cls in self.events_reg
 

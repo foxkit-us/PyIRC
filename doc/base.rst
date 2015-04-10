@@ -17,5 +17,18 @@ per class at this time.
 
 EventManager
 ^^^^^^^^^^^^
+
 .. autoclass:: PyIRC.event.EventManager
+   :members:
+
+Event
+^^^^^
+
+.. autoclass:: PyIRC.event.Event
+   :members:
+
+EventState
+^^^^^^^^^^
+
+.. autoclass:: PyIRC.event.EventState
    :members:

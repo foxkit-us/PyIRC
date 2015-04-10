@@ -68,3 +68,11 @@ sasl - authenticate to services using SASL
 .. autoclass:: PyIRC.extensions.sasl.SASLPlain
    :special-members:
    :members:
+
+services - utilities for interacting with IRC services
+------------------------------------------------------
+
+.. autoclass:: PyIRC.extensions.services.ServicesLogin
+   :special-members:
+   :members:
+

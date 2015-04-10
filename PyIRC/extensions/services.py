@@ -5,6 +5,9 @@
 # for licensing information.
 
 
+""" Utilities for interacting with IRC services """
+
+
 from logging import getLogger
 
 from PyIRC.extension import BaseExtension, hook
@@ -29,19 +32,29 @@ class ServicesLogin(BaseExtension):
     """
 
     def __init__(self, base, **kwargs):
-        """ Initalise the module.
+        """ Initalise the ServicesLogin extension.
 
-        Arguments:
-            services_username: the username to use for authentication.
-            services_password: the password to use for authentication.
-            services_idenitfy_fmt: a format string using {username} and
-                {password} to send the correct message to services.
-            services_bot: The user to send authentication to (defaults to
-                NickServ). Can be a full nick!user@host set for the networks
-                that support or require this mechanism.
-            services_command: command to use to authenticate. Defaults to
-                PRIVMSG, but NS/NICKSERV are recommended for networks that
-                support it.
+        Keyword arguments:
+
+        services_username
+            The username to use for authentication.
+
+        services_password
+            The password to use for authentication.
+
+        services_idenitfy_fmt
+            A format string using {username} and {password} to send the
+            correct message to services.
+
+        services_bot
+            The user to send authentication to (defaults to NickServ). Can be
+            a full nick!user@host set for the networks that support or require
+            this mechanism.
+        
+        services_command
+            Command to use to authenticate. Defaults to PRIVMSG, but
+            NS/NICKSERV are recommended for networks that support it for some
+            improved security.
         """
 
         self.base = base

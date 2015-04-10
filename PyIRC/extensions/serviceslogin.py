@@ -39,6 +39,9 @@ class ServicesLogin(BaseExtension):
             services_bot: The user to send authentication to (defaults to
                 NickServ). Can be a full nick!user@host set for the networks
                 that support or require this mechanism.
+            services_command: command to use to authenticate. Defaults to
+                PRIVMSG, but NS/NICKSERV are recommended for networks that
+                support it.
         """
 
         self.base = base
@@ -51,6 +54,7 @@ class ServicesLogin(BaseExtension):
                                    "IDENTIFY {username} {password}")
 
         self.services_bot = kwargs.get("services_bot", "NickServ")
+        self.services_command = kwargs.get("services_command", "PRIVMSG")
 
         # Cache format string
         self.identify = self.identify.format(username=self.username,
@@ -66,7 +70,14 @@ class ServicesLogin(BaseExtension):
 
         logger.debug("Authenticating to services bot %s with username %s",
                      self.services_bot, self.username)
-        self.send("PRIVMSG", [self.services_bot, self.identify])
+
+        if self.services_command.lower() in ("PRIVMSG", "NOTICE"):
+            self.send(self.services_command, [self.services_bot,
+                                              self.identify])
+        else:
+            # XXX assuming self.services_bot is unused is probably not wise.
+            # Seems okay for now though.
+            self.send(self.services_command, [self.identify])
 
         # And STAY out! ;)
         self.authenticated = True

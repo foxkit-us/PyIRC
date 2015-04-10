@@ -4,6 +4,9 @@
 # for licensing information.
 
 
+""" Bare minimum IRC RFC standards support. Nothing more. """
+
+
 from logging import getLogger
 
 from PyIRC.numerics import Numerics
@@ -14,7 +17,20 @@ logger = getLogger(__name__)
 
 
 class BasicRFC(BaseExtension):
-    """ Basic RFC1459 doodads """
+    """ Basic RFC1459 support.
+    
+    This is basically just a module that ensures your bot doesn't time out and
+    can track its own nick. Nobody is making you use this implementation, but
+    it is highly recommended.
+
+    This extension implements the following user-facing attributes:
+
+    prev_nick
+      If we get a NICK event from the server, and it's for us, our last nick
+      will be stored here. Useful in case of services collisions that change
+      our nick, SANICK/FORCENICK operator abuse, or another extension changes
+      our nick.
+    """
 
     priority = PRIORITY_LAST
 
@@ -34,7 +50,6 @@ class BasicRFC(BaseExtension):
     def disconnected(self, event):
         self.base.connected = False
         self.base.registered = False
-
 
     @hook("commands", Numerics.RPL_HELLO)
     @hook("commands", "NOTICE")

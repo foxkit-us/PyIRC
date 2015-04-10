@@ -5,6 +5,13 @@
 # for licensing information.
 
 
+""" IRC CAP negotation sub-protocol extensions.
+
+For more information, see:
+http://ircv3.atheme.org/specification/capability-negotiation-3.1
+"""
+
+
 from functools import partial
 from logging import getLogger
 
@@ -24,11 +31,27 @@ class CapNegotiate(BaseExtension):
     in a backwards compatible manner.
 
     This extension does little on its own, but provides a public API.
+
+    The following attributes are available:
+
+    supported
+      Supported capabilities - these are the capabilities we support,
+      at least, in theory.
+
+    remote
+      Remote capabilities - that is, what the server supports.
+
+    local
+      Local capabilities - these are what we actually support.
+
+    negotiating
+      Whether or not CAP negotiation is in progress.
     """
 
     priority = PRIORITY_FIRST
     requires = ["BasicRFC"]
 
+    """ Presently supported maximum CAP version. """
     version = "302"
 
     def __init__(self, base, **kwargs):
@@ -102,7 +125,7 @@ class CapNegotiate(BaseExtension):
 
         self.negotiating = True
 
-        # Ensure no others get fired
+        # Ensure no other connected events get fired
         event.status = EventState.cancel
 
     @hook("hooks", "disconnected")
@@ -227,6 +250,8 @@ class CapNegotiate(BaseExtension):
 
         self.send("CAP", ["END"])
         self.negotiating = False
+
+        # Call the hooks to resume connection
         self.call_event("hooks", "connected")
 
     def register(self, cap, params=list(), replace=False):
@@ -249,5 +274,4 @@ class CapNegotiate(BaseExtension):
         if status == EventState.ok:
             if self.negotiating:
                 self.end(event)
-
 

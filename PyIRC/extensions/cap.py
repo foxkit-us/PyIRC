@@ -51,8 +51,8 @@ class CapNegotiate(BaseExtension):
     priority = PRIORITY_FIRST
     requires = ["BasicRFC"]
 
-    """ Presently supported maximum CAP version. """
     version = "302"
+    """ Presently supported maximum CAP version. """
 
     def __init__(self, base, **kwargs):
 

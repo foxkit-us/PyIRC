@@ -5,6 +5,13 @@
 # for licensing information.
 
 
+"""Extensions bundled with PyIRC.
+
+These are the actual things that make PyIRC do things. They implement various
+commands and allow new features to be easily added to the library in a
+backwards-compatible way."""
+
+
 from PyIRC.extensions.basicrfc import BasicRFC
 from PyIRC.extensions.autojoin import AutoJoin
 from PyIRC.extensions.cap import CapNegotiate
@@ -22,16 +29,17 @@ __all__ = [BasicRFC, AutoJoin, CapNegotiate, CTCP, ISupport, LagCheck,
            SASLPlain, StartTLS, UserTrack, ChannelTrack, ServicesLogin]
 
 
+"""A reference of all extensions by name"""
 extensions_db = {cls.__name__ : cls for cls in __all__}
 
 
-""" Baseline recommended extensions """
+"""Basic recommended extensions that are compatible with most servers"""
 base_recommended = [BasicRFC, AutoJoin, CTCP, ISupport, LagCheck]
 
 
-""" IRCv3 recommended extensions """
+"""Recommended extensions for use with IRCv3 compliant servers """
 ircv3_recommended = base_recommended + [CapNegotiate, SASLPlain, StartTLS]
 
 
-""" Recommended for bots """
+"""Recommended extensions for bots"""
 bot_recommended = ircv3_recommended + [UserTrack, ChannelTrack]

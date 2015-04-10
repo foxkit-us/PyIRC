@@ -12,7 +12,7 @@ autojoin - Join channels on connection
 .. autoclass:: PyIRC.extensions.autojoin.AutoJoin
    :members:
 
-basicrfc - Bare minimum IRC RFC standards support. Nothing more.
+basicrfc - Bare minimum IRC RFC standards support
 ----------------------------------------------------------------
 
 .. autoclass:: PyIRC.extensions.basicrfc.BasicRFC

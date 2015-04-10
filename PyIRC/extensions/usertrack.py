@@ -4,9 +4,16 @@
 # for licensing information.
 
 
+""" Track users we know about, whether on channels or through private messages
+
+Maintains various useful state on users via the User class.
+"""
+
+
 from itertools import chain
 from random import randint
 from functools import partial
+from collections import defaultdict
 from logging import getLogger
 
 from PyIRC.extension import BaseExtension, hook
@@ -20,9 +27,61 @@ logger = getLogger(__name__)
 
 class User:
 
-    """ A user entity. """
+    """ A user entity.
+    
+    The following attribute is publicly available:
+
+    channels
+        Mapping of channels, where the keys are casemapped channel names, and
+        the values are their status modes on the channel.
+
+    For more elaborate channel tracking, see channeltrack.ChannelTrack.
+    """
 
     def __init__(self, nick, **kwargs):
+        """Store the data for a user.
+
+        Unknown values are stored as None, whereas empty ones are stored as
+        '' or 0, so take care in comparisons involving values from this class.
+
+        Keyword arguments:
+
+        nick
+            Nickname of the user, not casemapped.
+
+        username
+            Username of the user, or ident (depending on IRC daemon).
+
+        host
+            Hostname of the user. May be fake due to a cloak.
+
+        gecos
+            The GECOS (aka "real name") of a user. Usually just freeform data
+            of dubious usefulness.
+
+        account
+            Services account name of the user.
+
+        server
+            Server the user is on. Not always reliable or present.
+
+        secure
+            User is using SSL. Always assume unsecured unless set to True.
+
+        operator
+            User is an operator. Being set to None does not guarantee a user
+            is not an operator due to IRC daemon limitations and data hiding.
+
+        signon
+            Signon time for the user. May not be set.
+
+        ip
+            IP for the user reported from the server. May be bogus and likely
+            nonexistent on networks with host cloaking.
+
+        realhost
+            Real hostname for a user. Probably not present in most cases.
+        """
         assert nick is not None
 
         self.nick = nick
@@ -69,7 +128,14 @@ class User:
 class UserTrack(BaseExtension):
 
     """ Track various user metrics, such as account info, and some channel
-    tracking. """
+    tracking.
+    
+    The following attribute is publlicly available:
+
+    users
+        Mapping of users, where the keys are casemapped nicks, and values are
+        User instances.
+    """
 
     caps = {
         "account-notify" : [],
@@ -83,7 +149,6 @@ class UserTrack(BaseExtension):
     requires = ["ISupport"]
 
     def __init__(self, base, **kwargs):
-
         self.base = base
 
         self.u_expire_timers = dict()
@@ -94,15 +159,25 @@ class UserTrack(BaseExtension):
         self.whois_send = set()
 
         # Authentication callbacks
-        self.auth_cb = dict()
+        self.auth_cb = defaultdict(list)
 
         # Create ourselves
         self.add_user(self.base.nick, user=self.base.username,
                       gecos=self.base.gecos)
 
-    def authenticate(self, nick, callback, kwargs):
-        """ Get authentication for a user """
+    def authenticate(self, nick, callback):
+        """Get authentication for a user and return result in a callback
+        
+        Arguments:
+        
+        nick
+            Nickname of user to check authentication for
 
+        callback
+            Callback to call for user when authentication is discovered. The
+            User instance is passed in as the first parameter, or None if the
+            user is not found. Use functools.partial to pass other arguments.
+        """
         fold_nick = self.casefold(user.nick)
 
         user = self.get_user(nick)
@@ -112,9 +187,10 @@ class UserTrack(BaseExtension):
 
         if user.account is not None:
             # User account is known
-            callback(user, **kwargs)
+            callback(user)
         elif fold_nick not in self.whois_send:
             # Defer for a whois
+            self.auth_cb[fold_nick].append(callback)
             self.send("WHOIS", ["*", user.nick])
             self.whois_send.add(fold_nick)
 
@@ -202,8 +278,8 @@ class UserTrack(BaseExtension):
         nick = self.casefold(user.nick)
         if nick in self.auth_cb:
             # User is awaiting authentication
-            for callback, kwargs in self.auth_cb[nick]:
-                callback(user, **kwargs)
+            for callback in self.auth_cb[nick]:
+                callback(user)
 
             del self.auth_cb[nick]
 
@@ -350,8 +426,8 @@ class UserTrack(BaseExtension):
         nick = self.casefold(event.line.params[1])
         if nick in self.auth_cb:
             # User doesn't exist, call back
-            for callback, kwargs in self.auth_cb[nick]:
-                callback(None, **kwargs)
+            for callback in self.auth_cb[nick]:
+                callback(None)
 
             del self.auth_cb[nick]
 
@@ -497,8 +573,8 @@ class UserTrack(BaseExtension):
         user = self.get_user(nick)
         if nick in self.auth_cb:
             # User is awaiting authentication
-            for callback, kwargs in self.auth_cb[nick]:
-                callback(user, **kwargs)
+            for callback in self.auth_cb[nick]:
+                callback(user)
 
             del self.auth_cb[nick]
 
@@ -610,8 +686,8 @@ class UserTrack(BaseExtension):
         nick = self.casefold(user.nick)
         if nick in self.auth_cb:
             # User is awaiting authentication
-            for callback, kwargs in self.auth_cb[nick]:
-                callback(user, **kwargs)
+            for callback in self.auth_cb[nick]:
+                callback(user)
 
             del self.auth_cb[nick]
 

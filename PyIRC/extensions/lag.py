@@ -2,6 +2,7 @@
 # This file is part of the PyIRC 3 project. See LICENSE in the root directory
 # for licensing information.
 
+
 """ Lag analysis and checking """
 
 

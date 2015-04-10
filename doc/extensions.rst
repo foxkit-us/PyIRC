@@ -82,3 +82,13 @@ starttls - Automatic SSL negotiation
 .. autoclass:: PyIRC.extensions.starttls.StartTLS
     :special-members:
     :members:
+
+usertrack - Track users we have seen and their associated data
+--------------------------------------------------------------
+
+.. autoclass:: PyIRC.extensions.usertrack.User
+   :members:
+
+.. autoclass:: PyIRC.extensions.usertrack.UserTrack
+   :special-members:
+   :members

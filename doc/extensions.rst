@@ -58,3 +58,13 @@ lag - get the current latency to the server
    :special-members:
    :members:
 
+sasl - authenticate to services using SASL
+------------------------------------------
+
+.. autoclass:: PyIRC.extensions.sasl.SASLBase
+   :special-members:
+   :members:
+
+.. autoclass:: PyIRC.extensions.sasl.SASLPlain
+   :special-members:
+   :members:

@@ -5,6 +5,14 @@
 # for licensing information.
 
 
+""" Services identification through SASL
+
+SASL is a mechanism used by IRCv3 to authenticate clients to services in a
+standard and user-friendly way. A variety of mechanisms are supported by most
+servers, but only PLAIN is supported by this module at the moment.
+"""
+
+
 from logging import getLogger
 from base64 import b64encode, b64decode
 
@@ -18,12 +26,22 @@ logger = getLogger(__name__)
 
 class SASLBase(BaseExtension):
 
-    """ Base SASL support. Does nothing on its own. """
+    """ Base SASL support. Does nothing on its own.
+    
+    The following attributes are available:
+
+    mechanisms
+        Mechanisms supported by the server
+
+    authenticated
+        Whether or not we are authenticated to services
+    """
 
     # We should come after things like STARTTLS
     priority = PRIORITY_FIRST + 5
     requires = ["CapNegotiate"]
 
+    """ Authentication method to use """
     method = None
 
     def __init__(self, base, **kwargs):
@@ -116,13 +134,13 @@ class SASLBase(BaseExtension):
 
 class SASLPlain(SASLBase):
 
+    """ PLAIN authentication. No security or encryption is performed on the
+    string sent to the server, but still suitable for use over TLS. """
+
     # Least preferred auth method
     priority = PRIORITY_FIRST + 10
 
     method = "PLAIN"
-
-    def __init__(self, base, **kwargs):
-        super().__init__(base, **kwargs)
 
     @hook("commands", "AUTHENTICATE")
     def authenticate(self, event):

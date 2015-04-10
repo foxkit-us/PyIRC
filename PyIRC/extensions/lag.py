@@ -23,20 +23,32 @@ logger = getLogger(__name__)
 
 class LagCheck(BaseExtension):
 
-    """ Lag measurement extension
+    """ Lag measurement extension. Checks latency periodically.
 
-    Members:
-    - lag: current lag measurements from the server
+    The following attributes are available:
+
+    lag
+        Current lag measurements from the server, measured in seconds. It is
+        not advisable to rely on less than a millisecond of precision on most
+        systems and real-world networks.
     """
 
     def __init__(self, base, **kwargs):
+        """ Initialise the LagCheck extension
 
+        Keyword arguments:
+
+        lagcheck
+            Time interval to do periodic lag checks to update the lag timer.
+            Defaults to 15 seconds.
+        """
         self.base = base
 
-        self.lagcheck = kwargs.get("lagcheck", 30)
+        self.lagcheck = kwargs.get("lagcheck", 15)
+        
+        self.lag = None
 
         self.last = None
-        self.lag = None
         self.timer = None
 
     @staticmethod

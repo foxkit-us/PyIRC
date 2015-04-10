@@ -35,17 +35,17 @@ class CapNegotiate(BaseExtension):
     The following attributes are available:
 
     supported
-      Supported capabilities - these are the capabilities we support,
-      at least, in theory.
+        Supported capabilities - these are the capabilities we support,
+        at least, in theory.
 
     remote
-      Remote capabilities - that is, what the server supports.
+        Remote capabilities - that is, what the server supports.
 
     local
-      Local capabilities - these are what we actually support.
+        Local capabilities - these are what we actually support.
 
     negotiating
-      Whether or not CAP negotiation is in progress.
+        Whether or not CAP negotiation is in progress.
     """
 
     priority = PRIORITY_FIRST

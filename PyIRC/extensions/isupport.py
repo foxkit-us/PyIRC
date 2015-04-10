@@ -19,9 +19,14 @@ class ISupport(BaseExtension):
 
     """ Parse ISUPPORT attributes into useful things.
 
-    Members:
-    - supported: parsed ISUPPORT data from the server. Because ISUPPORT is
-      technically non-standard, users should be prepared for unexpected data.
+    Parsing is done according to auxparse.isupport_parse semantics.
+
+    The following attributes are available:
+
+    supported
+        parsed ISUPPORT data from the server. Do note that because ISUPPORT is
+        technically non-standard, users should be prepared for data that does
+        not conform to any implied standard.
     """
 
     def __init__(self, base, **kwargs):

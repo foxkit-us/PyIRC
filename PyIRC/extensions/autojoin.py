@@ -22,18 +22,20 @@ class AutoJoin(BaseExtension):
     def __init__(self, base, **kwargs):
         """ Initialise the AutoJoin extension.
 
+        Keyword arguments:
+
         join
-          A Mapping (dictionary type) or Iterable of channels to join.
-          If a Mapping is passed, keys are treated as channel names and values
-          are used as keys to join the channel.
-          If an Iterable is passed, each value is a channel and no keys are
-          specified when joining.
+            A Mapping (dictionary type) or Iterable of channels to join.
+            If a Mapping is passed, keys are treated as channel names and
+            values are used as keys to join the channel.
+            If an Iterable is passed, each value is a channel and no keys are
+            specified when joining.
         autojoin_wait_start
-          How much time, in seconds, to wait for autojoin to begin.
-          The default is 0.75 seconds.
+            How much time, in seconds, to wait for autojoin to begin.
+            The default is 0.75 seconds.
         autojoin_wait_interval
-          How much time, in seconds, to wait between each join.
-          The default is 0.25 seconds.
+            How much time, in seconds, to wait between each join.
+            The default is 0.25 seconds.
         """
 
         self.base = base

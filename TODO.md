@@ -1,10 +1,10 @@
 # Tracking
 - [x] Channel tracking
 - [x] User tracking
-- [ ] Introspection (what the server sees us as) (partial)
+- [x] Introspection (what the server sees us as) (mostly done)
 
 ## Channel tracking
-- [x] Known channels we've joined (mostly)
+- [x] Known channels we've joined (mostly done)
 - [ ] Autorejoin on kick/remove
 - [x] Basic support for known users (see user tracking)
 
@@ -48,7 +48,7 @@
 - [x] Real event structures passed to callbacks (that have event status,
       data, etc).
 - [ ] Outgoing command hooks
-- [ ] Automatic dependency loading
+- [x] Automatic dependency loading
 - [x] Generic canned sets of extensions
 - [ ] Unit tests
 - [x] asyncio support

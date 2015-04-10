@@ -15,7 +15,7 @@ from PyIRC.extensions.sasl import SASLPlain
 from PyIRC.extensions.starttls import StartTLS
 from PyIRC.extensions.usertrack import UserTrack
 from PyIRC.extensions.channeltrack import ChannelTrack
-from PyIRC.extensions.serviceslogin import ServicesLogin
+from PyIRC.extensions.services import ServicesLogin
 
 
 __all__ = [BasicRFC, AutoJoin, CapNegotiate, CTCP, ISupport, LagCheck,

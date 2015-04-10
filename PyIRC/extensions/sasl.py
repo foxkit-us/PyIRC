@@ -35,6 +35,7 @@ class SASLBase(BaseExtension):
         self.password = kwargs.get("sasl_password")
 
         self.done = False
+        self.authenticated = False
 
     @property
     def caps(self):
@@ -85,6 +86,7 @@ class SASLBase(BaseExtension):
         logger.info("SASL authentication succeeded as %s", self.username)
 
         self.done = True
+        self.authenticated = True
         self.get_extension("CapNegotiate").cont(event)
 
     @hook("commands", Numerics.ERR_SASLFAIL)

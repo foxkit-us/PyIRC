@@ -26,7 +26,8 @@ def hook(hclass, hook, priority=None):
     Arguments:
         hclass: hook class to use
         hook: name of the hook to use
-        priority: optional priority value of this hook
+        priority: optional priority value of this hook (defaults to the
+            class priority)
     """
     def dec(func):
         _hooks = getattr(func, 'hooks', list())

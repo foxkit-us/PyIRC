@@ -87,6 +87,12 @@ class SASLBase(BaseExtension):
 
         self.done = True
         self.authenticated = True
+
+        services_login = self.get_extension("ServicesLogin")
+        if services_login:
+            # No need to authenticate
+            services_login.authenticated = True
+
         self.get_extension("CapNegotiate").cont(event)
 
     @hook("commands", Numerics.ERR_SASLFAIL)

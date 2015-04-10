@@ -62,7 +62,6 @@ class ServicesLogin(BaseExtension):
     @hook("commands", "PRIVMSG")
     def authenticate(self, event):
         if self.authenticated or not self.base.registered:
-            # Not authenticated and not logged in -_-
             return
 
         logger.debug("Authenticating to services bot %s with username %s",

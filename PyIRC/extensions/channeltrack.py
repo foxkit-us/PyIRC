@@ -30,29 +30,32 @@ class Channel:
         """Store the data for a channel.
 
         Unknown values are stored as None, whereas empty ones are stored as
-        '' or 0, so take care in comparisons.
+        '' or 0, so take care in comparisons involving values from this class.
+
+        Keyword arguments:
 
         name
-          Name of the channel, not casemapped.
+            Name of the channel, not casemapped.
 
         topic
-          The channel topic.
+            The channel topic.
 
         topictime
-          Time the channel topic was set, in Unix time.
+            Time the channel topic was set, in Unix time.
 
         topicwho
-          Who set the topic, as a freeform string.
+            Who set the topic, as a freeform string.
 
         users
-          A mapping containing user to their channel status modes.
+            A mapping containing user to their channel status modes.
 
         timestamp
-          Timestamp of the channel (channel creation), in Unix time.
+            Timestamp of the channel (channel creation), in Unix time.
 
         url
-          URL of the channel, sent on some IRC servers.
+            URL of the channel, sent on some IRC servers.
         """
+        assert name is not None
         self.name = name
 
         self.modes = kwargs.get("modes", dict())
@@ -75,8 +78,8 @@ class ChannelTrack(BaseExtension):
     The following attribute is publicly available:
 
     channels
-      The channels dictionary, stored by casemapped strings to Channel
-      instances.
+        Mapping of channels, where the keys are casemapped channel names, and
+        the values are Channel instances.
 
     For more elaborate user tracking, see usertrack.UserTrack. """
 

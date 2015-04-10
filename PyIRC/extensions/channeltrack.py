@@ -4,6 +4,10 @@
 # for licensing information.
 
 
+""" Track channels that we have joined, and a variety of metrics associated
+with them. """
+
+
 from time import time
 from collections import defaultdict
 from functools import partial

@@ -5,6 +5,31 @@
 # for licensing information.
 
 
+""" ISUPPORT information from the server
+
+ISUPPORT is a non-standard but widely supported IRC extension that is used to
+advertise what a server supports to a client. Whilst non-standard, most
+servers follow a standard format for many parameters.
+
+The following should be safe:
+
+- CHANTYPES (value is a string)
+- PREFIX (value is of format "(modes)symbols for modes")
+- NETWORK (value is a string)
+- CASEMAPPING (ascii or rfc1459)
+- CHANMODES (list of values enumerating modes into four distinct classes,
+  respectively: list modes, modes that send a parameter, modes that send a
+  parameter only when set, and parameterless modes)
+
+The following are common but not guaranteed:
+
+- INVEX (no parameters)
+- EXCEPTS (no parameters)
+- TARGMAX (command:targets,command2:targets2,...)
+- EXTBAN (a string, "prefix,extban prefixes")
+"""
+
+
 from logging import getLogger
 
 from PyIRC.extension import BaseExtension, hook

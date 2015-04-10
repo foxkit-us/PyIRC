@@ -39,7 +39,7 @@ class Event:
     def __init__(self, event):
         self.event = event
         self.status = EventState.ok
-
+        self.cancel_function = None
 
 class HookEvent(Event):
     """ A hook has been called """
@@ -176,9 +176,7 @@ class EventManager:
             if ev_inst.status == EventState.ok:
                 continue
             elif ev_inst.status == EventState.cancel:
-                # TODO this will go away and events will handle this themselves
-                # there may be a "hard" cancel in the future
-                # For now this is just a compat shim
+                EventState.cancel_function = function
                 break
             elif ev_inst.status == EventState.terminate_now:
                 quit()

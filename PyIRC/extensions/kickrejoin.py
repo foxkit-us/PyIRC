@@ -82,7 +82,7 @@ class KickRejoin(BaseExtension):
         if event.line.params[1] != basicrfc.nick:
             return  # It isn't us, so we don't care.
 
-	# If this was a REMOVE and the user is being 'nice', ignore.
+        # If this was a REMOVE and the user is being 'nice', ignore.
         if event.line.command == 'REMOVE' and not self.rejoin_on_remove:
             return
 

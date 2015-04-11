@@ -19,14 +19,18 @@ from logging import getLogger
 from PyIRC.numerics import Numerics
 from PyIRC.casemapping import IRCString
 from PyIRC.line import Line
-from PyIRC.extension import ExtensionManager
-from PyIRC.event import EventManager, HookEvent, LineEvent
+from PyIRC.extension import ExtensionManager, HookGenerator
+from PyIRC.event import EventManager
 
 
 logger = getLogger(__name__)
 
 
-class IRCBase(metaclass=ABCMeta):
+class ABCMetaHookGenerator(ABCMeta, HookGenerator):
+    """ A stub metaclass for IRCBase """
+
+
+class IRCBase(metaclass=ABCMetaHookGenerator):
 
     """ The base IRC class meant to be used as a base for more concrete
     implementations. 

@@ -56,8 +56,6 @@ class HookGenerator(type):
     def __new__(meta, name, bases, dct):
         # Cache all the members with hooks
 
-        logger.debug("Hooking: %s", name)
-
         hook_caches = dict()
 
         if len(bases) > 0:
@@ -113,8 +111,7 @@ class HookGenerator(type):
         inst = type.__call__(cls, *args, **kwargs)
 
         # Get hook cache instance (private member)
-        member_name = '_{}__hook_caches'.format(cls.__name__)
-        hook_caches = getattr(inst, member_name)
+        hook_caches = getattr(inst, private_mangle(inst, '__hook_caches'))
         for hclass, hook in hook_caches.items():
             name = '{}_hooks'.format(hclass)
 
@@ -124,6 +121,7 @@ class HookGenerator(type):
 
             # Go through the hooks table, adding bound functions
             for hook_name, (func, priority) in hook.items():
+                logger.debug("Bound: %s (%s): %r", hclass, hook_name, func)
                 htable[hook_name] = (getattr(inst, func), priority)
 
         return inst

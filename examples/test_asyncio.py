@@ -31,7 +31,6 @@ class TestProtocol(IRCProtocol):
 
     @hook("commands", "PRIVMSG")
     def respond(self, event):
-        print("Called")
         line = event.line
         params = line.params
         target = params[0]

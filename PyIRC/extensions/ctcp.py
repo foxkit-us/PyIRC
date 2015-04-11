@@ -48,7 +48,7 @@ class CTCP(BaseExtension):
 
         self.base = base
 
-        self.version = kwargs.get("ctcp_version", default_version)
+        self.version = kwargs.get("ctcp_version", self.default_version)
 
     @hook("hooks", "extension_post")
     def register_ctcp_hooks(self, event):

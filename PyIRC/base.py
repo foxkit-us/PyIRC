@@ -97,7 +97,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
         # Event state
         self.events = EventManager()
 
-        # Extensions
+        # Extension manager system
         assert extensions
         self.extensions = ExtensionManager(self, kwargs, self.events,
                                            extensions)

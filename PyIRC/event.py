@@ -41,6 +41,11 @@ class Event:
         self.status = EventState.ok
         self.cancel_function = None
 
+    @staticmethod
+    def key(k):
+        """Key function"""
+        return k.lower()
+
 
 class HookEvent(Event):
     """ A hook has been called """
@@ -55,6 +60,10 @@ class LineEvent(Event):
         super().__init__(event)
 
         self.line = line
+
+    @staticmethod
+    def key(k):
+        return k.lower() if isinstance(k, str) else k.value
 
 
 EventRegistry = namedtuple("EventRegistry", "events type")
@@ -173,10 +182,12 @@ class EventManager:
             A Callable to invoke when this event occurs.
         """
 
+        events = self.events_reg[hclass][0]
+        keyfunc = self.events_reg[hclass][1].key
+        event = keyfunc(event)
+
         # Does nothing if not needed
         self.register_event(hclass, event)
-
-        events = self.events_reg[hclass][0]
 
         # Increment unique event ID
         cur_id = events[event].cur_id
@@ -186,7 +197,7 @@ class EventManager:
         events[event].items.append(item)
         events[event].items.sort()
 
-    def register_callbacks_from_inst(self, hclass, inst, key=None):
+    def register_callbacks_from_inst(self, hclass, inst):
         """ Register callbacks from a given instance, using hook tables
 
         hclass
@@ -201,9 +212,9 @@ class EventManager:
         if table is None:
             return False
 
-        self.register_callbacks_from_table(hclass, table, key)
+        self.register_callbacks_from_table(hclass, table)
 
-    def register_callbacks_from_table(self, hclass, table, key=None):
+    def register_callbacks_from_table(self, hclass, table):
         """ Register callbacks from the given hook table.
 
         hclass
@@ -214,9 +225,6 @@ class EventManager:
             function to use to transform keys in the table
         """
         for hook, (callback, priority) in table.items():
-            if key:
-                hook = key(hook)
-
             self.register_callback(hclass, hook, priority, callback)
 
     def unregister_callback(self, hclass, event, callback):
@@ -233,8 +241,9 @@ class EventManager:
         assert hclass in self.events_reg
 
         events = self.events_reg[hclass][0]
+        keyfunc = self.events_reg[hclass][1].key
+        event = keyfunc(event)
         assert event in events
-
         items = events[event].items
 
         # Build the deletion list (can't delete whilst iterating)
@@ -264,6 +273,8 @@ class EventManager:
         assert hclass in self.events_reg
 
         events, type = self.events_reg[hclass]
+        keyfunc = type.key
+        event = keyfunc(event)
         if event not in events:
             return None
 

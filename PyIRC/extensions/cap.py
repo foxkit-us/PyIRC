@@ -56,7 +56,7 @@ class CapNegotiate(BaseExtension):
     version = "302"
 
     hook_classes = {
-        "commands_cap" : (LineEvent, str.lower),
+        "commands_cap" : LineEvent,
     }
 
     def __init__(self, base, **kwargs):

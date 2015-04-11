@@ -29,7 +29,7 @@ class BaseExtension(metaclass=HookGenerator):
     priority
         the priority of this extension, lower is higher (like Unix)
     hook_classes
-        A Mapping of hclass to (``Event`` subclass, key function)``
+        A Mapping of hclass to an ``Event`` subclass``
     """
 
     priority = PRIORITY_DONTCARE
@@ -105,16 +105,14 @@ class ExtensionManager:
         """ Enumerate present extensions and build the commands and hooks
         cache. """
 
-        commands_key = lambda s : (s.lower() if isinstance(s, str) else
-                                   s.value)
-        self.create_hooks("commands", commands_key)
+        self.create_hooks("commands")
         self.create_hooks("hooks")
 
-    def create_hooks(self, hclass, key=None):
+    def create_hooks(self, hclass):
         """ Register hooks contained in the given attribute from loaded
         extensions """
         for extension in self.db.values():
-            self.events.register_callbacks_from_inst(hclass, extension, key)
+            self.events.register_callbacks_from_inst(hclass, extension)
 
     def create_db(self):
         """ Build the extensions database """
@@ -132,7 +130,8 @@ class ExtensionManager:
         while extensions:
             # Pop an extension off the head
             extension_class = extensions.popleft()
-            if extension_class.__name__ in self.db:
+            extension_name = extension_class.__name__
+            if extension_name in self.db:
                 # Already present
                 continue
 
@@ -152,7 +151,7 @@ class ExtensionManager:
                         require)) from e
 
             # Register extension
-            self.db[extension_class.__name__] = extension_inst
+            self.db[extension_name] = extension_inst
 
             # Grab any custom hooks
             hook_classes.update(extension_inst.hook_classes)
@@ -161,10 +160,10 @@ class ExtensionManager:
         self.create_default_hooks()
 
         # Post-load hook
-        for hclass, (event, key) in hook_classes.items():
+        for hclass, event in hook_classes.items():
             logger.debug("Registering new event class: %s", hclass)
             self.events.register_class(hclass, event)
-            self.create_hooks(hclass, key)
+            self.create_hooks(hclass)
 
     def add_extension(self, extension):
         """ Add an extension by name """

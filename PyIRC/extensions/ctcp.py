@@ -39,8 +39,8 @@ class CTCP(BaseExtension):
     """ Default CTCP version string to use """
 
     hook_classes = {
-        "commands_ctcp" : (CTCPEvent, str.upper),
-        "commands_nctcp" : (CTCPEvent, str.upper),
+        "commands_ctcp" : CTCPEvent,
+        "commands_nctcp" : CTCPEvent,
     }
 
     def __init__(self, base, **kwargs):

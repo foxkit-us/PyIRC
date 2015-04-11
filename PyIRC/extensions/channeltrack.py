@@ -350,14 +350,13 @@ class ChannelTrack(BaseExtension):
 
         isupport = self.get_extension("ISupport")
         prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
-        pmap = {v : k for k, v in prefix.items()}
 
         for nick in event.line.params[-1].split():
             mode = set()
-            while nick[0] in pmap:
+            while nick[0] in prefix:
                 # Accomodate multi-prefix
-                prefix, nick = nick[0], nick[1:]
-                mode.add(pmap[prefix])
+                prefix_char, nick = nick[0], nick[1:]
+                mode.add(prefix[prefix_char])
 
             # userhost-in-names is why we do this dance
             nick = self.casefold(Hostmask.parse(nick).nick)

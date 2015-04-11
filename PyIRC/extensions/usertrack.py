@@ -521,14 +521,13 @@ class UserTrack(BaseExtension):
 
         isupport = self.get_extension("ISupport")
         prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
-        pmap = {v : k for k, v in prefix.items()}
 
         for nick in event.line.params[-1].split():
             mode = set()
-            while nick[0] in pmap:
+            while nick[0] in prefix:
                 # Accomodate multi-prefix
-                prefix, nick = nick[0], nick[1:]
-                mode.add(pmap[prefix])
+                prefix_char, nick = nick[0], nick[1:]
+                mode.add(prefix[prefix_char])
 
             # userhost-in-names (no need to check, nick goes through this
             # just fine)
@@ -608,14 +607,13 @@ class UserTrack(BaseExtension):
 
         isupport = self.get_extension("ISupport")
         prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
-        pmap = {v : k for k, v in prefix.items()}
 
         for channel in event.line.params[-1].split():
             mode = set()
-            while user[0] in pmap:
+            while user[0] in prefix:
                 # Accomodate multi-prefix
-                prefix, user = user[0], user[1:]
-                mode.add(pmap[prefix])
+                prefix_char, user = user[0], user[1:]
+                mode.add(prefix[prefix_char])
 
             user.channels[self.casefold(channel)] = mode
 
@@ -730,13 +728,12 @@ class UserTrack(BaseExtension):
         if channel != '*':
             # Convert symbols to modes
             prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
-            pmap = {v : k for k, v in prefix.items()}
 
             mode = set()
-            for m in flags.modes:
-                m = pmap.get(m)
-                if m is not None:
-                    mode.add(m)
+            for char in flags.modes:
+                char = prefix.get(char)
+                if char is not None:
+                    mode.add(char)
 
             user.channels[channel] = mode
 
@@ -792,13 +789,12 @@ class UserTrack(BaseExtension):
             isupport = self.get_extension("ISupport")
 
             prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
-            pmap = {v : k for k, v in prefix.items()}
 
             mode = set()
-            for m in flags.modes:
-                m = pmap.get(m)
-                if m is not None:
-                    mode.add(m)
+            for char in flags.modes:
+                char = prefix.get(char)
+                if char is not None:
+                    mode.add(char)
 
             user.channels[channel] = mode
 

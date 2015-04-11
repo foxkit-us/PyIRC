@@ -4,6 +4,14 @@
 # This file is part of the PyIRC 3 project. See LICENSE in the root directory
 # for licensing information.
 
+
+""" Library base classes
+
+Contains the most fundamental parts of PyIRC. This is the glue that binds
+everything together.
+"""
+
+
 from abc import ABCMeta, abstractmethod
 from collections import OrderedDict
 from logging import getLogger
@@ -31,7 +39,7 @@ class IRCBase(metaclass=ABCMeta):
         - serverport - server/port combination, like passed to socket.connect
         - username - username to send to the server (identd may override this)
         - nick - nickname to use
-        - extensions - list of default extensions to use (BasicRFC recommended)
+        - extensions - list of default extensions to use
 
         Keyword arguments:
         - ssl - whether or not to use SSL
@@ -52,6 +60,7 @@ class IRCBase(metaclass=ABCMeta):
         self.events = EventManager()
 
         # Extensions
+        assert extensions
         self.extensions = ExtensionManager(self, kwargs, self.events,
                                            extensions)
         self.extensions.create_db()
@@ -61,7 +70,13 @@ class IRCBase(metaclass=ABCMeta):
         self.registered = False
 
     def casefold(self, string):
-        """ Fold a nick according to server case folding rules """
+        """ Fold a nick according to server case folding rules
+        
+        Arguments:
+
+        string
+            string to casefold according to the IRC server semantics.
+        """
 
         isupport = self.extensions.get_extension("ISupport")
         casefold = isupport.supported.get("CASEMAPPING", "RFC1459")
@@ -84,7 +99,14 @@ class IRCBase(metaclass=ABCMeta):
         self.events.call_event("hooks", "disconnected")
 
     def recv(self, line):
-        """ Receive a line """
+        """ Receive a line 
+        
+        Arguments:
+
+        line
+            a Line instance to recieve from the wire. It is expected that it
+            has already been parsed.
+        """
 
         command = line.command.lower()
 
@@ -92,23 +114,54 @@ class IRCBase(metaclass=ABCMeta):
 
     @abstractmethod
     def send(self, command, params):
-        """ Send a line """
+        """ Send a line out onto the wire
+        
+        Arguments:
+        
+        command
+            IRC command to send
+
+        params
+            A Sequence of parameters to send with the command. Only the last
+            parameter may contain spaces due to IRC framing format
+            limitations.
+        """
 
         return Line(command=command, params=params)
 
     @abstractmethod
     def schedule(self, time, callback):
-        """ Schedule a callback for a specific time """
+        """ Schedule a callback for a specific time
+        
+        Returns an object that can be passed to unschedule. The object should
+        be treated as opaque.
+
+        Arguments:
+
+        time
+            Seconds into the future to perform the callback
+        callback
+            Callback to perform. Use functools.partial to pass other arguments.
+        """
 
         raise NotImplementedError()
 
     @abstractmethod
     def unschedule(self, sched):
-        """ Unschedule a callback previously registered with schedule """
+        """ Unschedule a callback previously registered with schedule
+        
+        Arguments:
+
+        sched
+            Event to unschedule returned by schedule
+        """
 
         raise NotImplementedError()
 
     def wrap_ssl(self):
-        """ Wrap the socket in SSL """
+        """ Wrap the underlying connection with an SSL connection
+        
+        Not all backends support this!
+        """
 
         raise NotImplementedError()

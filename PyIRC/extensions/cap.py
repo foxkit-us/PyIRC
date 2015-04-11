@@ -15,8 +15,9 @@ http://ircv3.atheme.org/specification/capability-negotiation-3.1
 from functools import partial
 from logging import getLogger
 
-from PyIRC.extension import BaseExtension, hook, PRIORITY_FIRST
-from PyIRC.event import EventState, HookEvent, LineEvent
+from PyIRC.extension import BaseExtension
+from PyIRC.hook import hook, PRIORITY_FIRST
+from PyIRC.event import EventState, LineEvent
 from PyIRC.numerics import Numerics
 
 

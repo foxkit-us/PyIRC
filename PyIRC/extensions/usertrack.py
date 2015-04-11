@@ -18,7 +18,8 @@ from functools import partial
 from collections import defaultdict
 from logging import getLogger
 
-from PyIRC.extension import BaseExtension, hook
+from PyIRC.extension import BaseExtension
+from PyIRC.hook import hook
 from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
 from PyIRC.auxparse import (mode_parse, prefix_parse, who_flag_parse,

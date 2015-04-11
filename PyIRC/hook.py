@@ -1,0 +1,124 @@
+# Copyright © 2015 Andrew Wilcox and Elizabeth Myers.
+# All rights reserved.
+# This file is part of the PyIRC 3 project. See LICENSE in the root directory
+# for licensing information.
+
+
+from logging import getLogger
+
+
+logger = getLogger(__name__)
+
+
+"""Hook can run whenever it wants"""
+PRIORITY_DONTCARE = 0
+
+"""Hook should run first"""
+PRIORITY_FIRST = -1000
+
+"""Hook should run last"""
+PRIORITY_LAST = 1000
+
+
+def hook(hclass, hook, priority=None):
+    """ Decorator to add a class hook
+
+    Arguments:
+        hclass
+            hook class to use
+
+        hook
+            name of the hook to use
+
+        priority
+            optional priority value of this hook (defaults to the class
+            priority)
+    """
+    def dec(func):
+        _hooks = getattr(func, 'hooks', list())
+
+        _hooks.append((hclass, hook, priority))
+
+        func.hooks = _hooks
+        return func
+
+    return dec
+
+
+class HookGenerator(type):
+
+    """ Internal metaclass for hook generation in BaseExtension.
+
+    Do not use this unless you know what you are doing and how this works. """
+
+    def __new__(meta, name, bases, dct):
+        # Cache all the members with hooks
+
+        hook_caches = dict()
+
+        if len(bases) > 0:
+            def check(x): return x.__name__ != 'BaseExtension'
+            cared_about = list(filter(check, bases))
+            if len(cared_about) > 0:
+                for ext in cared_about:
+                    # we merge each extension's hooks in, using the highest
+                    # priority hook on conflict.
+                    dname = '_{}__hook_caches'.format(ext.__name__)
+                    for hclass, cache in getattr(ext, dname).items():
+                        hdict = hook_caches.get(hclass)
+                        if hdict is None:
+                            hook_caches[hclass] = cache
+                            continue
+                        for hook in cache.keys():
+                            if hook in hdict and hdict[hook][1] < cache[hook][1]:
+                                continue
+                            else:
+                                hdict[hook] = cache[hook]
+
+        for key, val in dct.items():
+            if key.startswith('__') or not callable(val):
+                continue
+
+            _hooks = getattr(val, 'hooks', None)
+            if not _hooks:
+                continue
+
+            for hclass, hook, priority in _hooks:
+                # Build the hooks cache
+                hdict = hook_caches.get(hclass)
+                if hdict is None:
+                    hdict = hook_caches[hclass] = dict()
+
+                if priority is None:
+                    # Set to class default priority
+                    priority = dct.get('priority', PRIORITY_DONTCARE)
+
+                hdict[hook] = (key, priority)
+
+        # Private member
+        member_name = '_{}__hook_caches'.format(name)
+        dct[member_name] = hook_caches
+
+        return super(HookGenerator, meta).__new__(meta, name, bases, dct)
+
+    def __call__(cls, *args, **kwargs):
+        # Bind the names from the hook cache to the instance
+
+        inst = type.__call__(cls, *args, **kwargs)
+
+        # Get hook cache instance (private member)
+        member_name = '_{}__hook_caches'.format(cls.__name__)
+        hook_caches = getattr(inst, member_name)
+        for hclass, hook in hook_caches.items():
+            name = '{}_hooks'.format(hclass)
+
+            # Create hooks table
+            htable = dict()
+            setattr(inst, name, htable)
+
+            # Go through the hooks table, adding bound functions
+            for hook_name, (func, priority) in hook.items():
+                htable[hook_name] = (getattr(inst, func), priority)
+
+        return inst
+

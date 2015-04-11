@@ -10,7 +10,8 @@
 
 from logging import getLogger
 
-from PyIRC.extension import BaseExtension, hook
+from PyIRC.extension import BaseExtension
+from PyIRC.hook import hook
 
 
 logger = getLogger(__name__)

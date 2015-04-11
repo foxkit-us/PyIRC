@@ -15,7 +15,8 @@ quickly as possible.
 
 from logging import getLogger
 
-from PyIRC.extension import BaseExtension, hook, PRIORITY_FIRST
+from PyIRC.extension import BaseExtension
+from PyIRC.hook import hook, PRIORITY_FIRST
 from PyIRC.event import EventState
 from PyIRC.numerics import Numerics
 

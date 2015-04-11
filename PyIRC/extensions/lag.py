@@ -6,7 +6,8 @@
 """Latency measurements to the server"""
 
 
-from PyIRC.extension import BaseExtension, hook
+from PyIRC.extension import BaseExtension
+from PyIRC.hook import hook
 from PyIRC.numerics import Numerics
 
 try:

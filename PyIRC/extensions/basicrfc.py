@@ -10,7 +10,8 @@
 from logging import getLogger
 
 from PyIRC.numerics import Numerics
-from PyIRC.extension import BaseExtension, hook, PRIORITY_LAST
+from PyIRC.extension import BaseExtension
+from PyIRC.hook import hook, PRIORITY_LAST
 
 
 logger = getLogger(__name__)

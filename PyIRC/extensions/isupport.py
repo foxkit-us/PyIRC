@@ -32,7 +32,8 @@ The following are common but not guaranteed:
 
 from logging import getLogger
 
-from PyIRC.extension import BaseExtension, hook
+from PyIRC.extension import BaseExtension
+from PyIRC.hook import hook
 from PyIRC.numerics import Numerics
 from PyIRC.auxparse import isupport_parse
 

@@ -19,7 +19,8 @@ from logging import getLogger
 from PyIRC.numerics import Numerics
 from PyIRC.casemapping import IRCString
 from PyIRC.line import Line
-from PyIRC.extension import ExtensionManager, HookGenerator
+from PyIRC.extension import ExtensionManager
+from PyIRC.hook import HookGenerator, hook
 from PyIRC.event import EventManager
 
 

@@ -7,7 +7,7 @@ setup(name="PyIRC",
       description="A Python IRC library",
       author="Elizabeth Myers",
       author_email="elizabeth@interlinked.me",
-      url="https://github.com/Elizabeth/PyIRC3",
+      url="https://github.com/Elizafox/PyIRC",
       packages=["PyIRC", "PyIRC.extensions", "PyIRC.util", "PyIRC.io"],
       classifiers=[
           "Development Status :: 3 - Alpha",

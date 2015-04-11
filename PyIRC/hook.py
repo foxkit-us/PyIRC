@@ -6,6 +6,8 @@
 
 from logging import getLogger
 
+from PyIRC.util.classutil import private_mangle
+
 
 logger = getLogger(__name__)
 
@@ -63,8 +65,10 @@ class HookGenerator(type):
                 for ext in cared_about:
                     # we merge each extension's hooks in, using the highest
                     # priority hook on conflict.
-                    dname = '_{}__hook_caches'.format(ext.__name__)
-                    for hclass, cache in getattr(ext, dname).items():
+                    dname = private_mangle(ext, '__hook_caches')
+                    curr_caches = getattr(ext, dname, None)
+                    if curr_caches is None: continue
+                    for hclass, cache in curr_caches.items():
                         hdict = hook_caches.get(hclass)
                         if hdict is None:
                             hook_caches[hclass] = cache

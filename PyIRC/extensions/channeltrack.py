@@ -352,7 +352,7 @@ class ChannelTrack(BaseExtension):
         prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
 
         for nick in event.line.params[-1].split():
-            mode, nick = status_prefix_parse(nick)
+            mode, nick = status_prefix_parse(nick, prefix)
 
             # userhost-in-names is why we do this dance
             nick = self.casefold(Hostmask.parse(nick).nick)

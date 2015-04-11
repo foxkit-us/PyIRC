@@ -524,7 +524,7 @@ class UserTrack(BaseExtension):
         prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
 
         for nick in event.line.params[-1].split():
-            mode, nick = status_prefix_parse(nick)
+            mode, nick = status_prefix_parse(nick, prefix)
 
             # userhost-in-names (no need to check, nick goes through this
             # just fine)
@@ -607,7 +607,7 @@ class UserTrack(BaseExtension):
 
         for channel in event.line.params[-1].split():
             mode = set()
-            mode, channel = status_prefix_parse(channel)
+            mode, channel = status_prefix_parse(channel, prefix)
             user.channels[self.casefold(channel)] = mode
 
     @hook("commands", Numerics.RPL_WHOISHOST)

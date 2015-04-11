@@ -137,7 +137,7 @@ class EventManager:
 
         assert hclass in self.events_reg
 
-        events = self.events_reg[hclass][0]
+        events = self.events_reg[hclass].events
 
         if event in events:
             return
@@ -159,7 +159,7 @@ class EventManager:
 
         assert hclass in self.events_reg
 
-        events = self.events_reg[hclass][0]
+        events = self.events_reg[hclass].events
 
         if event not in events:
             return
@@ -182,8 +182,8 @@ class EventManager:
             A Callable to invoke when this event occurs.
         """
 
-        events = self.events_reg[hclass][0]
-        keyfunc = self.events_reg[hclass][1].key
+        events = self.events_reg[hclass].events
+        keyfunc = self.events_reg[hclass].type.key
         event = keyfunc(event)
 
         # Does nothing if not needed
@@ -240,8 +240,8 @@ class EventManager:
 
         assert hclass in self.events_reg
 
-        events = self.events_reg[hclass][0]
-        keyfunc = self.events_reg[hclass][1].key
+        events = self.events_reg[hclass].events
+        keyfunc = self.events_reg[hclass].type.key
         event = keyfunc(event)
         assert event in events
         items = events[event].items

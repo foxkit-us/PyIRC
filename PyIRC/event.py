@@ -197,22 +197,38 @@ class EventManager:
         events[event].items.append(item)
         events[event].items.sort()
 
+    def register_callbacks_from_inst_all(self, inst):
+        """ Register all (known) callback classes from a given instance, using
+        hook tables
+
+        Arguments:
+
+        inst
+            The instance to process
+        """
+        for hclass in self.events_reg.keys():
+            self.register_callbacks_from_inst(hclass, inst)
+
     def register_callbacks_from_inst(self, hclass, inst):
         """ Register callbacks from a given instance, using hook tables
 
+        Arguments:
+
         hclass
-            The class of the event to register with this callback
+            The instance of the event to register with this callback
         inst
-            The class to process
-        key
-            function to use to transform keys in the table
+            The instance to process
         """
         attr = hclass + '_hooks'
         table = getattr(inst, attr, None)
         if table is None:
             return False
 
+        logger.debug("Registering %s callbacks from class %s:",
+                     hclass, inst.__class__.__name__)
+
         self.register_callbacks_from_table(hclass, table)
+        return True
 
     def register_callbacks_from_table(self, hclass, table):
         """ Register callbacks from the given hook table.
@@ -221,11 +237,9 @@ class EventManager:
             The class of the event to register with this callback
         table
             The table to process
-        key
-            function to use to transform keys in the table
         """
-        for hook, (callback, priority) in table.items():
-            self.register_callback(hclass, hook, priority, callback)
+        for event, (callback, priority) in table.items():
+            self.register_callback(hclass, event, priority, callback)
 
     def unregister_callback(self, hclass, event, callback):
         """ Unregister a callback for an event.
@@ -237,7 +251,6 @@ class EventManager:
         callback
             The callback to unregister.
         """
-
         assert hclass in self.events_reg
 
         events = self.events_reg[hclass].events
@@ -246,20 +259,68 @@ class EventManager:
         assert event in events
         items = events[event].items
 
-        # Build the deletion list (can't delete whilst iterating)
-        remove = []
-        for i, (_, _, l_callback) in enumerate(items):
+        remove = False
+        for i, (_, _, l_callback) in enumerate(list(items)):
             if l_callback is callback:
-                remove.append(i)
+                del items[i]
+                remove = True
 
         if not remove:
             raise ValueError("Event not found")
 
-        for i in remove:
-            del items[i]
+        logger.debug("Unregistering callback for hclass %s event %s: %r",
+                     hclass, event, callback)
+
+    def unregister_callbacks_from_inst_all(self, inst):
+        """ Unregister all (known) callback classes from a given instance, using
+        hook tables
+
+        Arguments:
+
+        inst
+            The instance to process
+        """
+        for hclass in self.events_reg.keys():
+            self.unregister_callbacks_from_inst(hclass, inst)
+
+    def unregister_callbacks_from_inst(self, hclass, inst):
+        """ Unregister callbacks from a given instance, using hook tables
+
+        Arguments:
+
+        hclass
+            The class of the event to register with this callback
+        inst
+            The class to process
+        """
+        attr = hclass + '_hooks'
+        table = getattr(inst, attr, None)
+        if table is None:
+            return False
+
+        logger.debug("Unregistering %s callbacks from class %s:",
+                     hclass, inst.__class__.__name__)
+
+        self.unregister_callbacks_from_table(hclass, table)
+        return True
+
+    def unregister_callbacks_from_table(self, hclass, table):
+        """ Unregister callbacks from the given hook table.
+
+        Arguments:
+
+        hclass
+            The class of the event to register with this callback
+        table
+            The table to process
+        """
+        for event, (callback, _) in table.items():
+            self.unregister_callback(hclass, event, callback)
 
     def call_event(self, hclass, event, *args):
         """ Call the callbacks for a given event.
+
+        Arguments:
 
         hclass
             The class of the event that is occuring.

@@ -23,7 +23,7 @@ class BaseExtension(metaclass=HookGenerator):
     HookGenerator metaclass and the `hook` decorator.
 
     Members:
-    
+
     requires
         required extensions (must be a name)
     priority
@@ -181,14 +181,16 @@ class ExtensionManager:
         """ Remove a given extension by name """
         extensions = list(self.extensions)
         for i, name in enumerate(e.__name__ for e in extensions):
-            if name == extension:
-                logger.debug("Removing extension: %s", name)
-                del self.extensions[i]
+            if name != extension:
+                continue
 
-        if len(extensions) > len(self.extensions):
-            # List length changed
-            self.create_db()
-            return True
+            logger.debug("Removing extension: %s", name)
+            del self.extensions[i]
 
-        # Not found
-        return False
+            if name not in self.db:
+                continue
+
+            extension_inst = self.db.pop(name)
+            self.events.unregister_callbacks_from_inst_all(extension_inst)
+
+        return len(extensions) > len(self.extensions)

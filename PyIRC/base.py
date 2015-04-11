@@ -106,8 +106,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
         self.extensions.create_db()
 
         # Create hooks
-        for hclass, reg in self.events.events_reg.items():
-            self.events.register_callbacks_from_inst(hclass, self)
+        self.events.register_callbacks_from_inst_all(self)
 
         # Basic IRC state
         self.connected = False

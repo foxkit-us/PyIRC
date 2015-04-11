@@ -200,7 +200,7 @@ class UserTrack(BaseExtension):
 
     def get_user(self, nick):
         """ Get a user, or None if nonexistent
-        
+
         Use of this method is preferred to directly accessing the user
         dictionary.
 
@@ -214,7 +214,7 @@ class UserTrack(BaseExtension):
 
     def add_user(self, nick, **kwargs):
         """ Add a user
-        
+
         Avoid using this method directly unless you know what you are doing.
         """
 
@@ -227,7 +227,7 @@ class UserTrack(BaseExtension):
 
     def remove_user(self, nick):
         """ Remove a user
-        
+
         Avoid using this method directly unless you know what you are doing.
         """
 
@@ -242,7 +242,7 @@ class UserTrack(BaseExtension):
 
     def timeout_user(self, nick):
         """Time a user out, cancelling existing timeouts
-        
+
         Avoid using this method directly unless you know what you are doing.
         """
 
@@ -452,7 +452,7 @@ class UserTrack(BaseExtension):
         if event.line.params[0] == '*':
             # We are not registered, do nothing.
             return
-        
+
         hostmask = event.line.hostmask
 
         if self.casefold(hostmask.nick) in self.u_expire_timers:

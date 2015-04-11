@@ -56,28 +56,28 @@ class HookGenerator(type):
     def __new__(meta, name, bases, dct):
         # Cache all the members with hooks
 
+        logger.debug("Hooking: %s", name)
+
         hook_caches = dict()
 
         if len(bases) > 0:
-            def check(x): return x.__name__ != 'BaseExtension'
-            cared_about = list(filter(check, bases))
-            if len(cared_about) > 0:
-                for ext in cared_about:
-                    # we merge each extension's hooks in, using the highest
-                    # priority hook on conflict.
-                    dname = private_mangle(ext, '__hook_caches')
-                    curr_caches = getattr(ext, dname, None)
-                    if curr_caches is None: continue
-                    for hclass, cache in curr_caches.items():
-                        hdict = hook_caches.get(hclass)
-                        if hdict is None:
-                            hook_caches[hclass] = cache
+            cared_about = [b for b in bases if b.__name__ != 'BaseExtension']
+            for ext in cared_about:
+                # we merge each extension's hooks in, using the highest
+                # priority hook on conflict.
+                dname = private_mangle(ext, '__hook_caches')
+                curr_caches = getattr(ext, dname, None)
+                if curr_caches is None: continue
+                for hclass, cache in curr_caches.items():
+                    hdict = hook_caches.get(hclass)
+                    if hdict is None:
+                        hook_caches[hclass] = cache
+                        continue
+                    for hook in cache.keys():
+                        if hook in hdict and hdict[hook][1] < cache[hook][1]:
                             continue
-                        for hook in cache.keys():
-                            if hook in hdict and hdict[hook][1] < cache[hook][1]:
-                                continue
-                            else:
-                                hdict[hook] = cache[hook]
+                        else:
+                            hdict[hook] = cache[hook]
 
         for key, val in dct.items():
             if key.startswith('__') or not callable(val):
@@ -107,6 +107,8 @@ class HookGenerator(type):
 
     def __call__(cls, *args, **kwargs):
         # Bind the names from the hook cache to the instance
+
+        logger.debug("Binding: %s", cls.__name__)
 
         inst = type.__call__(cls, *args, **kwargs)
 

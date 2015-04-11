@@ -24,10 +24,15 @@ def hook(hclass, hook, priority=None):
     """ Decorator to add a class hook
 
     Arguments:
-        hclass: hook class to use
-        hook: name of the hook to use
-        priority: optional priority value of this hook (defaults to the
-            class priority)
+        hclass
+            hook class to use
+
+        hook
+            name of the hook to use
+
+        priority
+            optional priority value of this hook (defaults to the class
+            priority)
     """
     def dec(func):
         _hooks = getattr(func, 'hooks', list())
@@ -42,7 +47,7 @@ def hook(hclass, hook, priority=None):
 
 class HookGenerator(type):
 
-    """ Internal metaclass for hook generation in `BaseExtension`.
+    """ Internal metaclass for hook generation in BaseExtension.
 
     Do not use this unless you know what you are doing and how this works. """
 

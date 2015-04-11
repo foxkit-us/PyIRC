@@ -20,7 +20,8 @@ from logging import getLogger
 # * hook is the decorator for event handlers.
 # * PRIORITY_LAST is a helpful constant for extensions that don't need immediate
 #   procesing/filtering of messages.
-from PyIRC.extension import BaseExtension, hook, PRIORITY_LAST
+from PyIRC.extension import BaseExtension
+from PyIRC.hook import hook, PRIORITY_LAST
 
 
 # Initialise our logger.

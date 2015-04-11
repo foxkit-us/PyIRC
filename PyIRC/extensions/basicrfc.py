@@ -42,6 +42,9 @@ class BasicRFC(BaseExtension):
     @hook("hooks", "connected")
     def handshake(self, event):
         if not self.base.registered:
+            if self.base.server_password:
+                self.base.send("PASS", [self.base.server_password])
+
             self.base.send("USER", [self.base.username, "*", "*",
                                     self.base.gecos])
             self.base.send("NICK", [self.base.nick])

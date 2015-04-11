@@ -35,6 +35,7 @@ class IRCBase(metaclass=ABCMeta):
 
         Keyword arguments:
         - ssl - whether or not to use SSL
+        - server_password - server password
         - other extensions may provide their own
         """
 
@@ -43,6 +44,7 @@ class IRCBase(metaclass=ABCMeta):
         self.nick = nick
         self.gecos = gecos
         self.ssl = kwargs.get("ssl", False)
+        self.server_password = kwargs.get("server_password")
 
         self.kwargs = kwargs
 

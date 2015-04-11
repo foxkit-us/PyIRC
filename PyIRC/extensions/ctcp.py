@@ -38,6 +38,11 @@ class CTCP(BaseExtension):
     default_version = "Powered by PyIRC v{}".format(versionstr)
     """ Default CTCP version string to use """
 
+    hook_classes = {
+        "commands_ctcp" : (CTCPEvent, str.upper),
+        "commands_nctcp" : (CTCPEvent, str.upper),
+    }
+
     def __init__(self, base, **kwargs):
         """ Initalise the CTCP extension.
 
@@ -51,22 +56,10 @@ class CTCP(BaseExtension):
 
         self.version = kwargs.get("ctcp_version", self.default_version)
 
-    @hook("hooks", "extension_post")
-    def register_ctcp_hooks(self, event):
-        """ Register CTCP hooks """
-
-        events = self.base.events
-        extensions = self.base.extensions
-
-        events.register_class("hooks_ctcp", CTCPEvent)
-        events.register_class("hooks_nctcp", CTCPEvent)
-        extensions.create_hooks("hooks_ctcp", str.upper)
-        extensions.create_hooks("hooks_nctcp", str.upper)
-
     def ctcp(self, target, command, param=None):
         """ CTCP a target a given command """
 
-        ctcp = CTCPMessage("PRIVMSG", command.upper(), param)
+        ctcp = CTCPMessage("PRIVMSG", command.upper(), target, param)
         line = ctcp.line()
 
         self.send(line.command, line.params)
@@ -74,7 +67,7 @@ class CTCP(BaseExtension):
     def nctcp(self, target, command, param=None):
         """ Reply to a CTCP """
 
-        ctcp = CTCPMessage("NOTICE", command.upper(), param)
+        ctcp = CTCPMessage("NOTICE", command.upper(), target, param)
         line = ctcp.line()
 
         self.send(line.command, line.params)
@@ -88,7 +81,7 @@ class CTCP(BaseExtension):
             return
 
         command = ctcp.command
-        self.call_event("hooks_ctcp", command, ctcp, event.line)
+        self.call_event("commands_ctcp", command, ctcp, event.line)
 
     @hook("commands", "NOTICE")
     def nctcp_in(self, event):
@@ -99,15 +92,15 @@ class CTCP(BaseExtension):
             return
 
         command = ctcp.command
-        self.call_event("hooks_ctcp", command, ctcp, event.line)
+        self.call_event("commands_ctcp", command, ctcp, event.line)
 
-    @hook("hooks_ctcp", "ping")
+    @hook("commands_ctcp", "ping")
     def c_ping(self, event):
         """ Respond to CTCP ping """
 
         self.nctcp(event.ctcp.target, "PING", event.ctcp.param)
 
-    @hook("hooks_ctcp", "version")
+    @hook("commands_ctcp", "version")
     def c_version(self, event):
         """ Respond to CTCP version """
 

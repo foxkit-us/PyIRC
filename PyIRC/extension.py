@@ -28,10 +28,13 @@ class BaseExtension(metaclass=HookGenerator):
         required extensions (must be a name)
     priority
         the priority of this extension, lower is higher (like Unix)
+    hook_classes
+        A Mapping of hclass to (``Event`` subclass, key function)``
     """
 
     priority = PRIORITY_DONTCARE
     requires = []
+    hook_classes = {}
 
     def __init__(self, base, **kwargs):
         self.base = base
@@ -120,6 +123,10 @@ class ExtensionManager:
 
         self.create_default_events()
 
+        # Custom hooks tables
+        hook_classes = dict()
+
+        # Create a deque of extensions for easy popping/pushing
         extensions = deque(self.extensions)
         extensions_names = {e.__name__ for e in extensions}
         while extensions:
@@ -131,7 +138,6 @@ class ExtensionManager:
 
             # Create the extension
             extension_inst = extension_class(self.base, **self.kwargs)
-            self.db[extension_class.__name__] = extension_inst
 
             # Resolve all dependencies
             for require in extension_inst.requires:
@@ -145,11 +151,20 @@ class ExtensionManager:
                     raise KeyError("Required extension not found: {}".format(
                         require)) from e
 
+            # Register extension
+            self.db[extension_class.__name__] = extension_inst
+
+            # Grab any custom hooks
+            hook_classes.update(extension_inst.hook_classes)
+
         # Create the default hooks
         self.create_default_hooks()
 
         # Post-load hook
-        self.events.call_event("hooks", "extension_post")
+        for hclass, (event, key) in hook_classes.items():
+            logger.debug("Registering new event class: %s", hclass)
+            self.events.register_class(hclass, event)
+            self.create_hooks(hclass, key)
 
     def add_extension(self, extension):
         """ Add an extension by name """

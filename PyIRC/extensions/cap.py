@@ -52,8 +52,12 @@ class CapNegotiate(BaseExtension):
     priority = PRIORITY_FIRST
     requires = ["BasicRFC"]
 
-    version = "302"
     """ Presently supported maximum CAP version. """
+    version = "302"
+
+    hook_classes = {
+        "commands_cap" : (LineEvent, str.lower),
+    }
 
     def __init__(self, base, **kwargs):
 
@@ -100,16 +104,6 @@ class CapNegotiate(BaseExtension):
             return "{}={}".format(cap, ','.join(params))
         else:
             return cap
-
-    @hook("hooks", "extension_post")
-    def register_cap_hooks(self, event):
-        """ Register CAP hooks """
-
-        extensions = self.base.extensions
-        events = self.base.events
-
-        events.register_class("commands_cap", LineEvent)
-        extensions.create_hooks("commands_cap", str.lower)
 
     @hook("hooks", "connected")
     def send_cap(self, event):

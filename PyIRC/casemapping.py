@@ -6,7 +6,7 @@
 r""" IRC-style casemapping and casefolding
 
 IRC uses two forms of casemapping: RFC1459 and ASCII. Unicode is not handled
-or casemapped by any known servers. 
+or casemapped by any known servers.
 
 ASCII is simply casemapped as "abc..." <-> "ABC...".
 
@@ -33,7 +33,7 @@ ascii_toupper = str.maketrans(ascii_uppercase, ascii_lowercase)
 
 class IRCString(str):
     """ An IRC string.
-    
+
     Same as a normal string, with IRC style casemapping.
 
     >>> s = IRCString('Søs', IRCString.ASCII)

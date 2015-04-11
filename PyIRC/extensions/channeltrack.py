@@ -18,7 +18,7 @@ from logging import getLogger
 from PyIRC.extension import BaseExtension, hook
 from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
-from PyIRC.auxparse import mode_parse, prefix_parse
+from PyIRC.auxparse import mode_parse, prefix_parse, status_prefix_parse
 
 
 logger = getLogger(__name__)
@@ -352,11 +352,7 @@ class ChannelTrack(BaseExtension):
         prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
 
         for nick in event.line.params[-1].split():
-            mode = set()
-            while nick[0] in prefix:
-                # Accomodate multi-prefix
-                prefix_char, nick = nick[0], nick[1:]
-                mode.add(prefix[prefix_char])
+            mode, nick = status_prefix_parse(nick)
 
             # userhost-in-names is why we do this dance
             nick = self.casefold(Hostmask.parse(nick).nick)

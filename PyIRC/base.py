@@ -33,8 +33,8 @@ class ABCMetaHookGenerator(ABCMeta, HookGenerator):
 class IRCBase(metaclass=ABCMetaHookGenerator):
 
     """ The base IRC class meant to be used as a base for more concrete
-    implementations. 
-    
+    implementations.
+
     The following attributes are available:
 
     events
@@ -56,25 +56,25 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
         """ Initialise the IRC base.
 
         Arguments:
-        
+
         serverport
             (server, port) sequence, similar to the form passed to
             socket.connect
-        
+
         username
             the username to send to the server (identd may override this)
-        
+
         nick
             The nickname to use
-        
+
         extensions
             Sequence of default extensions to use
 
         Keyword arguments (extensions may use others):
-        
+
         ssl
             whether or not to use SSL
-        
+
         server_password
             server password
 
@@ -108,7 +108,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
     def casefold(self, string):
         """ Fold a nick according to server case folding rules
-        
+
         Arguments:
 
         string
@@ -136,8 +136,8 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
         self.events.call_event("hooks", "disconnected")
 
     def recv(self, line):
-        """ Receive a line 
-        
+        """ Receive a line
+
         Arguments:
 
         line
@@ -152,9 +152,9 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
     @abstractmethod
     def send(self, command, params):
         """ Send a line out onto the wire
-        
+
         Arguments:
-        
+
         command
             IRC command to send
 
@@ -169,7 +169,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
     @abstractmethod
     def schedule(self, time, callback):
         """ Schedule a callback for a specific time
-        
+
         Returns an object that can be passed to unschedule. The object should
         be treated as opaque.
 
@@ -186,7 +186,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
     @abstractmethod
     def unschedule(self, sched):
         """ Unschedule a callback previously registered with schedule
-        
+
         Arguments:
 
         sched
@@ -197,7 +197,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
     def wrap_ssl(self):
         """ Wrap the underlying connection with an SSL connection
-        
+
         Not all backends support this!
         """
 

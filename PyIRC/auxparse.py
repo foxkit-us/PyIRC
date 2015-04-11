@@ -86,21 +86,47 @@ def mode_parse(modes, params, modegroups, prefix):
 
     adding = True
     group = group_pop_add
-    for c in modes:
-        if c == '+':
+    for char in modes:
+        if char == '+':
             adding = True
             group = group_pop_add
             continue
-        elif c == '-':
+        elif char == '-':
             adding = False
             group = group_pop_remove
             continue
 
         param = None
-        if c in group:
+        if char in group:
             param = params.pop(0)
 
-        yield (c, param, adding)
+        yield (char, param, adding)
+
+
+def status_prefix_parse(string, prefix):
+    """ Parse a string containing status sigils
+
+    Returns a simple (string, status) tuple
+
+    Arguments:
+
+    nick
+        Nick containing leading sigils.
+
+    prefix
+        The mode prefixes from ISupport.supported['PREFIX'], optionally parsed
+        by prefix_parse
+    """
+    if not hasattr(prefix, 'items'):
+        prefix = prefix_parse(prefix)
+
+    modes = set()
+    for char in str(string):
+        if string[0] in prefix:
+            prefix_char, nick = string[0], string[1:]
+            modes.add(prefix_char)
+        else:
+            return (modes, string)
 
 
 def who_flag_parse(flags):
@@ -199,7 +225,7 @@ class CTCPMessage:
     @classmethod
     def parse(cls, line):
         """ Return a new CTCPMessage from the line specified
-        
+
         Arguments:
 
         line

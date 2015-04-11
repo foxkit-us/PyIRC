@@ -21,7 +21,8 @@ from logging import getLogger
 from PyIRC.extension import BaseExtension, hook
 from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
-from PyIRC.auxparse import mode_parse, prefix_parse, who_flag_parse
+from PyIRC.auxparse import (mode_parse, prefix_parse, who_flag_parse,
+                            status_prefix_parse)
 
 
 logger = getLogger(__name__)
@@ -364,9 +365,6 @@ class UserTrack(BaseExtension):
 
         prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
 
-        # Parse prefixes like list modes
-        modegroups[0] += ''.join(prefix.keys())
-
         channel = self.casefold(event.line.params[0])
 
         # Don't care if user-directed, as that means us most of the time
@@ -379,7 +377,8 @@ class UserTrack(BaseExtension):
         else:
             params = []
         remove = False
-        for mode, nick, adding in mode_parse(modes, params, modegroups):
+        for mode, nick, adding in mode_parse(modes, params, modegroups,
+                                             prefix):
             if mode not in prefix:
                 continue
 
@@ -610,11 +609,7 @@ class UserTrack(BaseExtension):
 
         for channel in event.line.params[-1].split():
             mode = set()
-            while user[0] in prefix:
-                # Accomodate multi-prefix
-                prefix_char, user = user[0], user[1:]
-                mode.add(prefix[prefix_char])
-
+            mode, channel = status_prefix_parse(channel)
             user.channels[self.casefold(channel)] = mode
 
     @hook("commands", Numerics.RPL_WHOISHOST)

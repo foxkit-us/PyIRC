@@ -1,5 +1,4 @@
-PyIRC
------
+# PyIRC
 This is PyIRC, an IRC library designed to be flexible, extensible, usable, and
 useful. It is entirely written in Python with no required external
 dependencies.
@@ -13,8 +12,7 @@ PyIRC 2, where appropriate.
 
 See LICENSE for details on distribution of this README and the software itself.
 
-Introduction
-============
+## Introduction
 This library has been designed with standards compliance in mind and as a goal.
 Relevant standards include [RFC1459](http://tools.ietf.org/html/rfc1459.html),
 [RFC2812](http://tools.ietf.org/html/rfc2812.html), and
@@ -36,8 +34,7 @@ The library presently supports the following in extensions:
 See the [TODO](http://github.com/Elizafox/PyIRC/blob/master/TODO.md) for the
 list of planned features.
 
-Design
-======
+## Design
 PyIRC 3 is designed to be wholly uncoupled from the underlying I/O subsystem
 whilst providing easy ways to ingest events. It is designed to work around
 your event system, not the other way around.
@@ -46,8 +43,7 @@ Please note the library is not thread-safe at this time, although some locking
 is implemented (mostly sendq related stuff). If such functionality is desired,
 it will be added.
 
-Platforms
-=========
+## Platforms
 The library is completely cross-platform and should work anywhere Python does,
 so long as it has a working socket implementation (SSL usage depends on your
 Python build having support for the `ssl` module - this should be almost all
@@ -56,18 +52,15 @@ modern platforms).
 PyIRC 3 requires Python 3.3 or newer. asyncio support requires either 3.4, or
 for asyncio to be installed from PyPI.
 
-Bugs
-====
+## Bugs
 Probably many! Tell us about them - see the support section or just file an
 issue on the [bug tracker :)](http://github.com/Elizacat/PyIRC/issues).
 
-Support
-=======
+## Support
 Point your IRC client irc.interlinked.me #PyIRC for general questions, or file
 an issue/pull request on github. Feature requests are also accepted this way.
 
-License and copyright
-=====================
+## License and copyright
 Copyright © 2013-2015 Andrew Wilcox and Elizabeth Myers. All rights reserved.
 
 Non-third party files are licensed under the WTFPL; terms and conditions can be

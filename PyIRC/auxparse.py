@@ -51,6 +51,7 @@ def prefix_parse(prefix):
     for k, v in zip(*match.groups()):
         ret[k] = v
         ret[v] = k
+    return ret
 
 
 def mode_parse(modes, params, modegroups, prefix):
@@ -123,7 +124,7 @@ def status_prefix_parse(string, prefix):
     modes = set()
     for char in str(string):
         if string[0] in prefix:
-            prefix_char, nick = string[0], string[1:]
+            prefix_char, string = string[0], string[1:]
             modes.add(prefix_char)
         else:
             return (modes, string)

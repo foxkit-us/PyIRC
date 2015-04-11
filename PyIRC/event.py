@@ -61,7 +61,13 @@ EventRegistry = namedtuple("EventRegistry", "events type")
 
 
 class EventManager:
-    """ EventManager manages event registration and dispatch. """
+    """EventManager manages event registration and dispatch.
+
+    The following attributes are available:
+
+    events_reg
+        The hclass to (events, type) mapping. Useful for advanced usage.
+    """
 
     def __init__(self):
         # Contains event classes
@@ -182,11 +188,11 @@ class EventManager:
 
     def register_callbacks_from_inst(self, hclass, inst, key=None):
         """ Register callbacks from a given instance, using hook tables
-        
+
         hclass
             The class of the event to register with this callback
         inst
-            The class to process 
+            The class to process
         key
             function to use to transform keys in the table
         """

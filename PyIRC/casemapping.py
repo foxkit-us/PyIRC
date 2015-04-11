@@ -35,6 +35,23 @@ class IRCString(str):
     """ An IRC string.
     
     Same as a normal string, with IRC style casemapping.
+
+    >>> s = IRCString('Søs', IRCString.ASCII)
+    >>> s
+    'Søs'
+    >>> s.irc_upper()
+    'SøS'
+    >>> s.irc_lower()
+    'søs'
+    >>> s.irc_casefold()
+    'søs'
+    >>> s = IRCString('Têst{}|~', IRCString.RFC1459)
+    >>> s
+    'Têst{}|~'
+    >>> s.irc_lower()
+    'têst{}|~'
+    >>> s.irc_upper()
+    'TêST[]\\^'
     """
 
     UNICODE = 0

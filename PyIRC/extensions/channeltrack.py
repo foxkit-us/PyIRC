@@ -176,6 +176,11 @@ class ChannelTrack(BaseExtension):
 
         del channel.users[self.casefold(hostmask.nick)]
 
+    def _get_modegroups(self):
+        supported = isupport.supported
+        modes = supported.get("CHANMODES", ["b", "k", "l", "imnstp"])
+        return list(modes)
+
     @hook("commands", "MODE")
     def mode(self, event):
         """ Track a channel MODE effect """
@@ -187,21 +192,17 @@ class ChannelTrack(BaseExtension):
         isupport = self.get_extension("ISupport")
 
         # Build mode groups
-        modegroups = list(isupport.supported.get("CHANMODES",
-                                                 ["b", "k", "l", "imnstp"]))
+        modegroups = self._get_modegroups()
 
         # Status modes
         prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
-
-        # Parse status modes like list modes
-        modegroups[0] += ''.join(prefix.keys())
 
         modes = event.line.params[1]
         if len(event.line.params) >= 3:
             params = event.line.params[2:]
         else:
             params = []
-        for mode, param, adding in mode_parse(modes, params, modegroups):
+        for mode, param, adding in mode_parse(modes, params, modegroups, prefix):
             if mode in prefix:
                 user = channel.users[self.casefold(param)]
                 if adding:
@@ -237,21 +238,17 @@ class ChannelTrack(BaseExtension):
         isupport = self.get_extension("ISupport")
 
         # Build mode groups
-        modegroups = list(isupport.supported.get("CHANMODES",
-                                                 ["b", "k", "l", "imnstp"]))
+        modegroups = self.get_modegroups()
 
         # Status modes
         prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
-
-        # Parse status modes like list modes
-        modegroups[0] += ''.join(prefix.keys())
 
         modes = event.line.params[2]
         if len(event.line.params) >= 4:
             params = event.line.params[3:]
         else:
             params = []
-        for mode, param, adding in mode_parse(modes, params, modegroups):
+        for mode, param, adding in mode_parse(modes, params, modegroups, prefix):
             if mode in prefix:
                 user = channel.users[self.casefold(param)]
                 if adding:

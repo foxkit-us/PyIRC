@@ -34,41 +34,94 @@ numletters = ascii_letters + digits
 
 
 def prefix_parse(prefix):
-    """ Parse ISUPPORT prefix """
+    """ Parse ISUPPORT PREFIX extension into mode : prefix and vice versa.
+
+    Arguments:
+
+    prefix
+        String from ISupport.supported['PREFIX']
+    """
+
+    ret = dict()
 
     match = prefix_match.match(prefix)
     if not match:
-        return {}
+        return ret
 
-    return {k : v for k, v in zip(*match.groups())}
+    for k, v in zip(*match.groups()):
+        ret[k] = v
+        ret[v] = k
 
 
-def mode_parse(modes, params, modegroups):
-    """ Parse IRC mode strings """
+def mode_parse(modes, params, modegroups, prefix):
+    """ Parse IRC mode strings
+
+    A generator that yields (modechar, param, adding). param may be None.
+    adding will either be True or False, depending on what is happening to the
+    mode.
+
+    Arguments:
+
+    modes
+        Initial string of modes (should resemble +blah/-blah or some such)
+
+    params
+        Parameters for the modes, likely the remaining parameters after modes
+
+    modegroups
+        The item from ISupport.supported['CHANMODES']
+
+    prefix
+        The mode prefixes from ISupport.supported['PREFIX'], optionally parsed
+        by prefix_parse
+    """
+    if not hasattr(prefix, 'items'):
+        prefix = prefix_parse(prefix)
+
+    status = ''.join(mode for mode in prefix if mode in ascii_letters)
+
+    # Groups of modes
+    group_pop_add = modegroups[0] + modegroups[1] + modegroups[2] + status
+    group_pop_remove = modegroups[0] + modegroups[2] + status
 
     adding = True
+    group = group_pop_add
     for c in modes:
         if c == '+':
             adding = True
+            group = group_pop_add
             continue
         elif c == '-':
             adding = False
+            group = group_pop_remove
             continue
 
         param = None
-        if adding:
-            if c in modegroups[0] + modegroups[1] + modegroups[2]:
-                param = params.pop(0)
-        else:
-            if c in modegroups[0] + modegroups[2]:
-                param = params.pop(0)
+        if c in group
+            param = params.pop(0)
 
         yield (c, param, adding)
 
 
 def who_flag_parse(flags):
-    """ Parse WHO flags """
+    """ Parse WHO flags
 
+    Returns a namespace object containing the following attributes:
+
+    operator
+        Whether or not the user is an operator
+
+    away
+        Whether or not the user is away
+
+    modes
+        A set of the user's present modes (prefixes)
+
+    Arguments:
+
+    flags
+        Flags to parse
+    """
     ret = SimpleNamespace()
     ret.operator = False
     ret.away = False
@@ -90,8 +143,15 @@ def who_flag_parse(flags):
 
 
 def isupport_parse(params):
-    """ Parse an ISUPPORT string """
+    """ Parse an ISUPPORT string
 
+    Returns a parsed dictionary of all ISUPPORT items from the parameter list
+
+    Arguments:
+
+    params
+        Params to parse into ISUPPORT entries in the dictionary
+    """
     supported = dict()
 
     for param in params:
@@ -138,8 +198,13 @@ class CTCPMessage:
 
     @classmethod
     def parse(cls, line):
-        """ Return a new CTCPMessage from the line specified. """
+        """ Return a new CTCPMessage from the line specified
+        
+        Arguments:
 
+        line
+            A Line instance to parse into a CTCPMessage
+        """
         message = line.params[1]
 
         if not message.startswith("\x01") or not message.endswith("\x01"):
@@ -153,6 +218,5 @@ class CTCPMessage:
 
     def line(self):
         """ Return a Line instance representing this CTCP message """
-
         str = '\x01{} {}\x01'.format(self.command, self.param)
         return Line(command=self.msgtype, params=[self.target, str])

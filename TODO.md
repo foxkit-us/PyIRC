@@ -56,26 +56,26 @@
 - [ ] stackless (?)
 
 # Docs
-- [ ] extensions
+- [x] extensions
 - [ ] io
 - [ ] base
 - [ ] util
 
 ## Extension docs
-- [ ] autojoin.AutoJoin
-- [ ] basicrfc.BasicRFC
-- [ ] cap.CapNegotiate
-- [ ] channeltrack.Channel
-- [ ] channeltrack.ChannelTrack
-- [ ] ctcp.CTCP
-- [ ] isupport.ISupport
-- [ ] lag.LagCheck
-- [ ] sasl.SASLBase
-- [ ] sasl.SASLPlain
-- [ ] services.ServicesLogin
-- [ ] starttls.StartTLS
-- [ ] usertrack.User
-- [ ] usertrack.UserTrack
+- [x] autojoin.AutoJoin
+- [x] basicrfc.BasicRFC
+- [x] cap.CapNegotiate
+- [x] channeltrack.Channel
+- [x] channeltrack.ChannelTrack
+- [x] ctcp.CTCP
+- [x] isupport.ISupport
+- [x] lag.LagCheck
+- [x] sasl.SASLBase
+- [x] sasl.SASLPlain
+- [x] services.ServicesLogin
+- [x] starttls.StartTLS
+- [x] usertrack.User
+- [x] usertrack.UserTrack
 
 ## IO docs
 - [ ] asyncio.IRCProtocol
@@ -87,17 +87,17 @@
 - [ ] auxparse.who\_flag\_parse
 - [ ] auxparse.isupport\_parse
 - [ ] auxparse.CTCPMessage
-- [ ] base.IRCBase
-- [ ] casemapping.IRCString
+- [x] base.IRCBase
+- [x] casemapping.IRCString
 - [ ] event.EventState
 - [ ] event.Event
 - [ ] event.HookEvent
 - [ ] event.LineEvent
 - [ ] event.EventManager
-- [ ] extension.HookGenerator
-- [ ] extension.BaseExtension
+- [x] extension.HookGenerator
+- [x] extension.BaseExtension
 - [ ] extension.ExtensionManager
-- [ ] line.Tags
-- [ ] line.Hostmask
-- [ ] line.Line
+- [x] line.Tags
+- [x] line.Hostmask
+- [x] line.Line
 - [ ] numerics.Numerics (perhaps not all the members...)

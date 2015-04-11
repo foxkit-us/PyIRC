@@ -97,7 +97,7 @@ def mode_parse(modes, params, modegroups, prefix):
             continue
 
         param = None
-        if c in group
+        if c in group:
             param = params.pop(0)
 
         yield (c, param, adding)

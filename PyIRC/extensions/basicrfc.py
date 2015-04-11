@@ -38,6 +38,7 @@ class BasicRFC(BaseExtension):
         self.base = base
 
         self.prev_nick = None
+        self.nick = self.base.nick
 
     @hook("hooks", "connected")
     def handshake(self, event):

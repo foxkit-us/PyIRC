@@ -232,7 +232,7 @@ class UserTrack(BaseExtension):
 
         nick = self.casefold(nick)
         if nick not in self.users:
-            logger.warning("Deleting nonexistent user: %s", user)
+            logger.warning("Deleting nonexistent user: %s", nick)
             return
 
         logger.debug("Deleted user: %s", nick)

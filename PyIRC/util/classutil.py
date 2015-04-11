@@ -12,6 +12,7 @@ def private_mangle(cls, name):
     if not name.startswith('__'):
         return name
 
-    name_mangle = '_{}__'.format(cls.__name__)
+    cls_name = getattr(cls, '__name__', cls.__class__.__name__)
+    name_mangle = '_{}__'.format(cls_name)
     return name.replace('__', name_mangle, 1)
 

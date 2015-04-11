@@ -29,22 +29,55 @@ logger = getLogger(__name__)
 class IRCBase(metaclass=ABCMeta):
 
     """ The base IRC class meant to be used as a base for more concrete
-    implementations. """
+    implementations. 
+    
+    The following attributes are available:
+
+    events
+        Our event.EventManager instance
+
+    extensions
+        Our event.ExtensionManager instance
+
+    connected
+        If True, we have connected to the server successfully.
+
+    registered
+        If True, we have completed the server handshake and are ready to send
+        commands.
+    """
 
     def __init__(self, serverport, username, nick, gecos, extensions,
                  **kwargs):
         """ Initialise the IRC base.
 
         Arguments:
-        - serverport - server/port combination, like passed to socket.connect
-        - username - username to send to the server (identd may override this)
-        - nick - nickname to use
-        - extensions - list of default extensions to use
+        
+        serverport
+            (server, port) sequence, similar to the form passed to
+            socket.connect
+        
+        username
+            the username to send to the server (identd may override this)
+        
+        nick
+            The nickname to use
+        
+        extensions
+            Sequence of default extensions to use
 
-        Keyword arguments:
-        - ssl - whether or not to use SSL
-        - server_password - server password
-        - other extensions may provide their own
+        Keyword arguments (extensions may use others):
+        
+        ssl
+            whether or not to use SSL
+        
+        server_password
+            server password
+
+        .. note::
+
+            Keyword arguments may be used by extensions. kwargs is passed
+            as-is to all extensions.
         """
 
         self.server, self.port = serverport

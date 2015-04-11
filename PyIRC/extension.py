@@ -23,8 +23,11 @@ class BaseExtension(metaclass=HookGenerator):
     HookGenerator metaclass and the `hook` decorator.
 
     Members:
-    - requires - required extensions (must be a name)
-    - priority - the priority of this extension, lower is higher (like Unix)
+    
+    requires
+        required extensions (must be a name)
+    priority
+        the priority of this extension, lower is higher (like Unix)
     """
 
     priority = PRIORITY_DONTCARE
@@ -53,10 +56,10 @@ class BaseExtension(metaclass=HookGenerator):
 
         return self.base.extensions.get_extension(extension)
 
-    def call_event(self, cls, event, *args):
+    def call_event(self, hclass, event, *args):
         """ Mirror self.base.events.call_event """
 
-        return self.base.events.call_event(cls, event, *args)
+        return self.base.events.call_event(hclass, event, *args)
 
     def casefold(self, string):
         """ Mirror self.base.casefold """
@@ -104,27 +107,14 @@ class ExtensionManager:
         self.create_hooks("commands", commands_key)
         self.create_hooks("hooks")
 
-    def create_hooks(self, cls, key=None):
+    def create_hooks(self, hclass, key=None):
         """ Register hooks contained in the given attribute from loaded
         extensions """
-
-        attr = cls + '_hooks'
-
-        items = self.db.items()
-        for order, (name, extension_inst) in enumerate(items):
-            extension_table = getattr(extension_inst, attr, None)
-            if extension_table is None:
-                continue
-
-            for hook, (callback, priority) in extension_table.items():
-                if key:
-                    hook = key(hook)
-
-                self.events.register_callback(cls, hook, priority, callback)
+        for extension in self.db.values():
+            self.events.register_callbacks_from_inst(hclass, extension, key)
 
     def create_db(self):
         """ Build the extensions database """
-
         self.db.clear()
         self.events.clear()
 
@@ -134,14 +124,14 @@ class ExtensionManager:
         extensions_names = {e.__name__ for e in extensions}
         while extensions:
             # Pop an extension off the head
-            extension_cls = extensions.popleft()
-            if extension_cls.__name__ in self.db:
+            extension_class = extensions.popleft()
+            if extension_class.__name__ in self.db:
                 # Already present
                 continue
 
             # Create the extension
-            extension_inst = extension_cls(self.base, **self.kwargs)
-            self.db[extension_cls.__name__] = extension_inst
+            extension_inst = extension_class(self.base, **self.kwargs)
+            self.db[extension_class.__name__] = extension_inst
 
             # Resolve all dependencies
             for require in extension_inst.requires:
@@ -163,7 +153,6 @@ class ExtensionManager:
 
     def add_extension(self, extension):
         """ Add an extension by name """
-
         if extension in self.extensions:
             return
 
@@ -172,12 +161,10 @@ class ExtensionManager:
 
     def get_extension(self, extension):
         """ Get an extension by name, or return None """
-
         return self.db.get(extension)
 
     def remove_extension(self, extension):
         """ Remove a given extension by name """
-
         extensions = list(self.extensions)
         for i, name in enumerate(e.__name__ for e in extensions):
             if name == extension:

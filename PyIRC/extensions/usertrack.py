@@ -399,8 +399,10 @@ class UserTrack(BaseExtension):
                 remove = True
 
         cap_negotiate = self.get_extension("CapNegotiate")
-        if remove and not (cap_negotiate and 'multi-prefix' in
-                           cap_negotiate.local):
+        if not cap_negotiate:
+            return
+
+        if remove and 'multi-prefix' in cap_negotiate.local:
             # Reissue a names request if we don't have multi-prefix
             self.send("NAMES", [channel])
 
@@ -522,11 +524,7 @@ class UserTrack(BaseExtension):
         prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
 
         for nick in event.line.params[-1].split():
-            mode = set()
-            while nick[0] in prefix:
-                # Accomodate multi-prefix
-                prefix_char, nick = nick[0], nick[1:]
-                mode.add(prefix[prefix_char])
+            mode, nick = status_prefix_parse(nick)
 
             # userhost-in-names (no need to check, nick goes through this
             # just fine)

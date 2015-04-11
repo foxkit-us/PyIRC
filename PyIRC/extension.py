@@ -182,7 +182,7 @@ class ExtensionManager:
         extensions = list(self.extensions)
         for i, name in enumerate(e.__name__ for e in extensions):
             if name == extension:
-                logger.debug("Removing extension: %s")
+                logger.debug("Removing extension: %s", name)
                 del self.extensions[i]
 
         if len(extensions) > len(self.extensions):

@@ -27,7 +27,7 @@ from PyIRC.event import EventManager
 logger = getLogger(__name__)
 
 
-class ABCMetaHookGenerator(ABCMeta, HookGenerator):
+class ABCMetaHookGenerator(HookGenerator, ABCMeta):
     """ A stub metaclass for IRCBase """
 
 

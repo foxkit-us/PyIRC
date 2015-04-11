@@ -198,12 +198,24 @@ class UserTrack(BaseExtension):
             self.whois_send.add(fold_nick)
 
     def get_user(self, nick):
-        """ Get a user, or None if nonexistent """
+        """ Get a user, or None if nonexistent
+        
+        Use of this method is preferred to directly accessing the user
+        dictionary.
+
+        Arguments:
+
+        nick
+            Nickname of the user to retrieve information about.
+        """
 
         return self.users.get(self.casefold(nick))
 
     def add_user(self, nick, **kwargs):
-        """ Add a user """
+        """ Add a user
+        
+        Avoid using this method directly unless you know what you are doing.
+        """
 
         user = self.get_user(nick)
         if not user:
@@ -213,7 +225,10 @@ class UserTrack(BaseExtension):
         return user
 
     def remove_user(self, nick):
-        """ Callback to remove a user """
+        """ Remove a user
+        
+        Avoid using this method directly unless you know what you are doing.
+        """
 
         nick = self.casefold(nick)
         if nick not in self.users:
@@ -225,7 +240,10 @@ class UserTrack(BaseExtension):
         del self.users[nick]
 
     def timeout_user(self, nick):
-        """ Time a user out, cancelling existing timeouts """
+        """Time a user out, cancelling existing timeouts
+        
+        Avoid using this method directly unless you know what you are doing.
+        """
 
         nick = self.casefold(nick)
         if nick in self.u_expire_timers:
@@ -235,7 +253,10 @@ class UserTrack(BaseExtension):
         self.u_expire_timers[nick] = self.schedule(30, callback)
 
     def update_username_host(self, line):
-        """ Update a user's basic info """
+        """Update a user's basic info, based on line hostmask info.
+
+        Avoid using this method directly unless you know what you are doing.
+        """
 
         if not line.hostmask or not line.hostmask.nick:
             return
@@ -269,8 +290,6 @@ class UserTrack(BaseExtension):
 
     @hook("commands", "ACCOUNT")
     def account(self, event):
-        """ Get account changes """
-
         self.update_username_host(event.line)
 
         user = self.get_user(event.line.hostmask.nick)
@@ -288,8 +307,6 @@ class UserTrack(BaseExtension):
 
     @hook("commands", "AWAY")
     def away(self, event):
-        """ Get away status changes """
-
         self.update_username_host(event.line)
 
         user = self.get_user(event.line.hostmask.nick)
@@ -299,8 +316,8 @@ class UserTrack(BaseExtension):
 
     @hook("commands", "CHGHOST")
     def chghost(self, event):
-        """ Update a user's host """
-
+        # NB - we don't know if a user is cloaking or uncloaking, or changing
+        # cloak, so do NOT update user's cloak.
         self.update_username_host(event.line)
 
         user = self.get_user(event.line.hostmask.nick)
@@ -311,8 +328,6 @@ class UserTrack(BaseExtension):
 
     @hook("commands", "JOIN")
     def join(self, event):
-        """ Introduce a user """
-
         channel = event.line.params[0]
         nick = event.line.hostmask.nick
 
@@ -354,8 +369,6 @@ class UserTrack(BaseExtension):
 
     @hook("commands", "MODE")
     def mode(self, event):
-        """ Got a channel mode """
-
         self.update_username_host(event.line)
 
         isupport = self.get_extension("ISupport")
@@ -408,8 +421,6 @@ class UserTrack(BaseExtension):
 
     @hook("commands", "NICK")
     def nick(self, event):
-        """ User changed nick """
-
         self.update_username_host(event.line)
 
         oldnick = event.line.hostmask.nick
@@ -424,8 +435,6 @@ class UserTrack(BaseExtension):
 
     @hook("commands", Numerics.ERR_NOSUCHNICK)
     def notfound(self, event):
-        """ User is gone """
-
         nick = self.casefold(event.line.params[1])
         if nick in self.auth_cb:
             # User doesn't exist, call back
@@ -439,13 +448,11 @@ class UserTrack(BaseExtension):
     @hook("commands", "PRIVMSG")
     @hook("commands", "NOTICE")
     def message(self, event):
-        """ Got a message from a user """
-
-        hostmask = event.line.hostmask
-
         if event.line.params[0] == '*':
-            # Us before reg.
+            # We are not registered, do nothing.
             return
+        
+        hostmask = event.line.hostmask
 
         if self.casefold(hostmask.nick) in self.u_expire_timers:
             # User is expiring
@@ -471,8 +478,6 @@ class UserTrack(BaseExtension):
     @hook("commands", "KICK")
     @hook("commands", "PART")
     def part(self, event):
-        """ Exit a user """
-
         channel = self.casefold(event.line.params[0])
 
         if event.line.command.lower() == 'part':
@@ -509,15 +514,11 @@ class UserTrack(BaseExtension):
 
     @hook("commands", "QUIT")
     def quit(self, event):
-        """ Exit a user for real """
-
         assert self.casefold(event.line.hostmask.nick) in self.users
         self.remove_user(event.line.hostmask.nick)
 
     @hook("commands", Numerics.RPL_NAMREPLY)
     def names(self, event):
-        """ Process a channel NAMES event """
-
         channel = self.casefold(event.line.params[2])
 
         isupport = self.get_extension("ISupport")
@@ -551,8 +552,6 @@ class UserTrack(BaseExtension):
 
     @hook("commands", Numerics.RPL_ENDOFWHO)
     def who_end(self, event):
-        """ Process end of WHO reply """
-
         if not self.whox_send:
             return
 
@@ -562,13 +561,15 @@ class UserTrack(BaseExtension):
 
     @hook("commands", Numerics.RPL_ENDOFWHOIS)
     def whois_end(self, event):
-        """ Process end of WHOIS """
-
         nick = self.casefold(event.line.params[1])
 
         self.whois_send.discard(nick)
 
         user = self.get_user(nick)
+
+        # If the user is awaiting auth, we aren't gonna find out their auth
+        # status through whois. If it's not in whois, we probably aren't going
+        # to find it any other way (sensibly at least).
         if nick in self.auth_cb:
             # User is awaiting authentication
             for callback in self.auth_cb[nick]:
@@ -578,8 +579,6 @@ class UserTrack(BaseExtension):
 
     @hook("commands", Numerics.RPL_WHOISUSER)
     def whois_user(self, event):
-        """ The nickname/user/host/gecos of a user """
-
         nick = event.line.params[1]
         username = event.line.params[2]
         host = event.line.params[3]
@@ -596,8 +595,6 @@ class UserTrack(BaseExtension):
 
     @hook("commands", Numerics.RPL_WHOISCHANNELS)
     def whois_channels(self, event):
-        """ Channels user is on from WHOIS """
-
         user = self.get_user(event.line.params[1])
         if not user:
             return
@@ -612,13 +609,11 @@ class UserTrack(BaseExtension):
 
     @hook("commands", Numerics.RPL_WHOISHOST)
     def whois_host(self, event):
-        """ Real host of the user (usually oper only) in WHOIS """
-
         user = self.get_user(event.line.params[1])
         if not user:
             return
 
-        # Fucking unreal.
+        # Fucking unreal did this shit.
         string, _, ip = event.line.params[-1].rpartition(' ')
         string, _, realhost = string.rpartition(' ')
 
@@ -627,18 +622,14 @@ class UserTrack(BaseExtension):
 
     @hook("commands", Numerics.RPL_WHOISIDLE)
     def whois_idle(self, event):
-        """ Idle and signon time for user from WHOIS  """
-
         user = self.get_user(event.line.params[1])
         if not user:
             return
 
-        user.signon = event.line.params[3]
+        user.signon = int(event.line.params[3])
 
     @hook("commands", Numerics.RPL_WHOISOPERATOR)
     def whois_operator(self, event):
-        """ User is an operator according to WHOIS """
-
         user = self.get_user(event.line.params[1])
         if not user:
             return
@@ -647,8 +638,6 @@ class UserTrack(BaseExtension):
 
     @hook("commands", Numerics.RPL_WHOISSECURE)
     def whois_secure(self, event):
-        """ User is known to be using SSL from WHOIS """
-
         user = self.get_user(event.line.params[1])
         if not user:
             return
@@ -657,8 +646,6 @@ class UserTrack(BaseExtension):
 
     @hook("commands", Numerics.RPL_WHOISSERVER)
     def whois_server(self, event):
-        """ Server the user is logged in on from WHOIS """
-
         user = self.get_user(event.line.params[1])
         if not user:
             return
@@ -668,8 +655,6 @@ class UserTrack(BaseExtension):
 
     @hook("commands", Numerics.RPL_WHOISLOGGEDIN)
     def whois_account(self, event):
-        """ Services account name of user according to WHOIS """
-
         user = self.get_user(event.line.params[1])
         if not user:
             return
@@ -686,8 +671,6 @@ class UserTrack(BaseExtension):
 
     @hook("commands", Numerics.RPL_WHOREPLY)
     def who(self, event):
-        """ Process a response to WHO """
-
         if len(event.line.params) < 8:
             # Some bizarre RFC breaking server
             logger.warn("Malformed WHO from server")
@@ -751,8 +734,6 @@ class UserTrack(BaseExtension):
 
     @hook("commands", Numerics.RPL_WHOSPCRPL)
     def whox(self, event):
-        """ Parse WHOX responses """
-
         if len(event.line.params) != 12:
             # Not from us!
             return

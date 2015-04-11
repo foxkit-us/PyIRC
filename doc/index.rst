@@ -4,6 +4,7 @@ PyIRC 3 documentation
 .. toctree ::
    :maxdepth: 2
 
+   about
    base
    extensions
    examples

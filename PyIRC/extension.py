@@ -56,6 +56,25 @@ class HookGenerator(type):
 
         hook_caches = dict()
 
+        if len(bases) > 0:
+            def check(x): return x.__name__ != 'BaseExtension'
+            cared_about = list(filter(check, bases))
+            if len(cared_about) > 0:
+                for ext in cared_about:
+                    # we merge each extension's hooks in, using the highest
+                    # priority hook on conflict.
+                    dname = '_{}__hook_caches'.format(ext.__name__)
+                    for hclass, cache in getattr(ext, dname).items():
+                        hdict = hook_caches.get(hclass)
+                        if hdict is None:
+                            hook_caches[hclass] = cache
+                            continue
+                        for hook in cache.keys():
+                            if hook in hdict and hdict[hook][1] < cache[hook][1]:
+                                continue
+                            else:
+                                hdict[hook] = cache[hook]
+
         for key, val in dct.items():
             if key.startswith('__') or not callable(val):
                 continue

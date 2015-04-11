@@ -274,4 +274,3 @@ class CapNegotiate(BaseExtension):
         if status == EventState.ok:
             if self.negotiating:
                 self.end(event)
-

@@ -18,7 +18,7 @@ logger = getLogger(__name__)
 
 class BasicRFC(BaseExtension):
     """ Basic RFC1459 support.
-    
+
     This is basically just a module that ensures your bot doesn't time out and
     can track its own nick. Nobody is making you use this implementation, but
     it is highly recommended.

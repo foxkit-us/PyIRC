@@ -26,7 +26,7 @@ logger = getLogger(__name__)
 class StartTLS(BaseExtension):
 
     """ Support for the STARTTLS extension.
-    
+
     Not all I/O backends support this, notably io.asyncio.
     """
 
@@ -41,7 +41,7 @@ class StartTLS(BaseExtension):
             self.caps = {
                 "tls" : [],
             }
-    
+
     @hook("hooks", "disconnected")
     def close(self, event):
         self.done = False
@@ -77,4 +77,3 @@ class StartTLS(BaseExtension):
         self.done = True
         cap_negotiate = self.get_extension("CapNegotiate")
         cap_negotiate.cont(event)
-

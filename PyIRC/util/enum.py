@@ -1,6 +1,12 @@
 # Below was taken from Python 3.4.3
 # It is a shim for Python 3.3
 
+
+import sys
+from collections import OrderedDict
+from types import MappingProxyType
+
+
 class DynamicClassAttribute:
     # Taken from types.py
     """Route attribute access on a class to __getattr__.
@@ -22,7 +28,8 @@ class DynamicClassAttribute:
         self.__doc__ = doc or fget.__doc__
         self.overwrite_doc = doc is None
         # support for abstract methods
-        self.__isabstractmethod__ = bool(getattr(fget, '__isabstractmethod__', False))
+        self.__isabstractmethod__ = bool(getattr(fget, '__isabstractmethod__',
+                                                 False))
 
     def __get__(self, instance, ownerclass=None):
         if instance is None:
@@ -61,19 +68,15 @@ class DynamicClassAttribute:
 
 
 # Below is taken from enum.py with very minor modifications.
-import sys
-from collections import OrderedDict
-from types import MappingProxyType
-
 __all__ = ['Enum', 'IntEnum', 'unique']
 
 
 def _is_descriptor(obj):
     """Returns True if obj is a descriptor, False otherwise."""
     return (
-            hasattr(obj, '__get__') or
-            hasattr(obj, '__set__') or
-            hasattr(obj, '__delete__'))
+        hasattr(obj, '__get__') or
+        hasattr(obj, '__set__') or
+        hasattr(obj, '__delete__'))
 
 
 def _is_dunder(name):
@@ -135,7 +138,6 @@ class _EnumDict(dict):
         super().__setitem__(key, value)
 
 
-
 # Dummy value for Enum as EnumMeta explicitly checks for it, but of course
 # until EnumMeta finishes running the first time the Enum class doesn't exist.
 # This is also why there are checks in EnumMeta like `if Enum is not None`
@@ -155,7 +157,7 @@ class EnumMeta(type):
         # class will fail).
         member_type, first_enum = metacls._get_mixins_(bases)
         __new__, save_new, use_args = metacls._find_new_(classdict, member_type,
-                                                        first_enum)
+                                                         first_enum)
 
         # save enum items into separate mapping so they don't get baked into
         # the new class
@@ -191,7 +193,7 @@ class EnumMeta(type):
         if '__reduce_ex__' not in classdict:
             if member_type is not object:
                 methods = ('__getnewargs_ex__', '__getnewargs__',
-                        '__reduce_ex__', '__reduce__')
+                           '__reduce_ex__', '__reduce__')
                 if not any(m in member_type.__dict__ for m in methods):
                     _make_class_unpicklable(enum_class)
 
@@ -256,7 +258,8 @@ class EnumMeta(type):
             enum_class.__new__ = Enum.__new__
         return enum_class
 
-    def __call__(cls, value, names=None, *, module=None, qualname=None, type=None):
+    def __call__(cls, value, names=None, *, module=None, qualname=None,
+                 type=None):
         """Either returns an existing member, or creates a new enum class.
 
         This method is used both when an enum class is given a value to match
@@ -284,7 +287,8 @@ class EnumMeta(type):
         if names is None:  # simple value lookup
             return cls.__new__(cls, value)
         # otherwise, functional API: we're creating a new Enum type
-        return cls._create_(value, names, module=module, qualname=qualname, type=type)
+        return cls._create_(value, names, module=module, qualname=qualname,
+                            type=type)
 
     def __contains__(cls, member):
         return isinstance(member, cls) and member._name_ in cls._member_map_
@@ -294,7 +298,7 @@ class EnumMeta(type):
         # (see issue19025).
         if attr in cls._member_map_:
             raise AttributeError(
-                    "%s: cannot delete Enum member." % cls.__name__)
+                "%s: cannot delete Enum member." % cls.__name__)
         super().__delattr__(attr)
 
     def __dir__(self):
@@ -355,7 +359,8 @@ class EnumMeta(type):
             raise AttributeError('Cannot reassign members.')
         super().__setattr__(name, value)
 
-    def _create_(cls, class_name, names=None, *, module=None, qualname=None, type=None):
+    def _create_(cls, class_name, names=None, *, module=None, qualname=None,
+                 type=None):
         """Convenience method to create a new Enum class.
 
         `names` can be:
@@ -418,14 +423,14 @@ class EnumMeta(type):
         # type has been mixed in so we can use the correct __new__
         member_type = first_enum = None
         for base in bases:
-            if  (base is not Enum and
+            if (base is not Enum and
                     issubclass(base, Enum) and
                     base._member_names_):
                 raise TypeError("Cannot extend enumerations")
         # base is now the last base in bases
         if not issubclass(base, Enum):
             raise TypeError("new enumerations must be created as "
-                    "`ClassName([mixin_type,] enum_type)`")
+                            "`ClassName([mixin_type,] enum_type)`")
 
         # get correct mix-in type (either mix-in type of Enum subclass, or
         # first base if last base is Enum)
@@ -475,7 +480,7 @@ class EnumMeta(type):
                             None.__new__,
                             object.__new__,
                             Enum.__new__,
-                            }:
+                    }:
                         __new__ = target
                         break
                 if __new__ is not None:
@@ -521,18 +526,18 @@ class Enum(metaclass=EnumMeta):
 
     def __repr__(self):
         return "<%s.%s: %r>" % (
-                self.__class__.__name__, self._name_, self._value_)
+               self.__class__.__name__, self._name_, self._value_)
 
     def __str__(self):
         return "%s.%s" % (self.__class__.__name__, self._name_)
 
     def __dir__(self):
         added_behavior = [
-                m
-                for cls in self.__class__.mro()
-                for m in cls.__dict__
-                if m[0] != '_'
-                ]
+            m
+            for cls in self.__class__.mro()
+            for m in cls.__dict__
+            if m[0] != '_'
+        ]
         return (['__class__', '__doc__', '__module__', 'name', 'value'] +
                 added_behavior)
 
@@ -587,7 +592,7 @@ def unique(enumeration):
             duplicates.append((name, member.name))
     if duplicates:
         alias_details = ', '.join(
-                ["%s -> %s" % (alias, name) for (alias, name) in duplicates])
+            ["%s -> %s" % (alias, name) for (alias, name) in duplicates])
         raise ValueError('duplicate values found in %r: %s' %
-                (enumeration, alias_details))
+                         (enumeration, alias_details))
     return enumeration

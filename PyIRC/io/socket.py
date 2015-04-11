@@ -15,7 +15,8 @@ This also serves as a useful example.
 """
 
 
-import socket, ssl
+import socket
+import ssl
 
 from time import sleep
 from sched import scheduler

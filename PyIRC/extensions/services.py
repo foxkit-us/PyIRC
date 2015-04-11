@@ -50,7 +50,7 @@ class ServicesLogin(BaseExtension):
             The user to send authentication to (defaults to NickServ). Can be
             a full nick!user@host set for the networks that support or require
             this mechanism.
-        
+
         services_command
             Command to use to authenticate. Defaults to PRIVMSG, but
             NS/NICKSERV are recommended for networks that support it for some
@@ -94,4 +94,3 @@ class ServicesLogin(BaseExtension):
 
         # And STAY out! ;)
         self.authenticated = True
-

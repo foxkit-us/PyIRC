@@ -41,6 +41,7 @@ class Event:
         self.status = EventState.ok
         self.cancel_function = None
 
+
 class HookEvent(Event):
     """ A hook has been called """
 
@@ -78,7 +79,7 @@ class EventManager:
         To change the type of :py:class:`Event` that will be passed to handlers,
         you must unregister the class using :py:meth:`unregister_class` and
         re-register it with the new type.
-	"""
+        """
 
         if cls in self.events_reg:
             return

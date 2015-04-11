@@ -16,7 +16,7 @@ from collections import namedtuple
 
 def _gitversion():
     try:
-        command = ["git","log","-1","--pretty=format:%h"]
+        command = ["git", "log", "-1", "--pretty=format:%h"]
         return subprocess.check_output(command).decode()
     except (OSError, subprocess.SubprocessError):
         return "UNKNOWN"

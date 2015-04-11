@@ -156,4 +156,3 @@ class CTCPMessage:
 
         str = '\x01{} {}\x01'.format(self.command, self.param)
         return Line(command=self.msgtype, params=[self.target, str])
-

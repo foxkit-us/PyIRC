@@ -21,4 +21,4 @@ setup(name="PyIRC",
           "Operating System :: OS Independent",
           "License :: DFSG approved",
       ]
-     )
+      )

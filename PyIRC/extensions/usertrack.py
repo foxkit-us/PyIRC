@@ -30,7 +30,7 @@ logger = getLogger(__name__)
 class User:
 
     """ A user entity.
-    
+
     The following attribute is publicly available:
 
     channels
@@ -131,7 +131,7 @@ class UserTrack(BaseExtension):
 
     """ Track various user metrics, such as account info, and some channel
     tracking.
-    
+
     The following attribute is publlicly available:
 
     users
@@ -169,9 +169,9 @@ class UserTrack(BaseExtension):
 
     def authenticate(self, nick, callback):
         """Get authentication for a user and return result in a callback
-        
+
         Arguments:
-        
+
         nick
             Nickname of user to check authentication for
 
@@ -252,7 +252,7 @@ class UserTrack(BaseExtension):
 
         if hostmask.host:
             user.host = hostmask.host
-    
+
     @hook("hooks", "disconnected")
     def close(self, event):
         timers = chain(self.u_expire_timers.values(),
@@ -342,7 +342,7 @@ class UserTrack(BaseExtension):
             if "WHOX" in isupport.supported:
                 # Use WHOX if possible
                 num = ''.join(str(randint(0, 9)) for x in range(randint(1, 3)))
-                params.append("%tcuihsnflar,"+num)
+                params.append("%tcuihsnflar," + num)
                 self.whox_send.append(num)
 
             sched = self.schedule(2, partial(self.send, "WHO", params))
@@ -386,7 +386,7 @@ class UserTrack(BaseExtension):
             user = self.get_user(nick)
             if not user:
                 logger.warn("IRC server sent us mode %s for nonexistent " \
-                    "user: %s", mode, user)
+                            "user: %s", mode, user)
                 continue
 
             if adding:
@@ -775,7 +775,7 @@ class UserTrack(BaseExtension):
         server = event.line.params[6]
         nick = event.line.params[7]
         flags = who_flag_parse(event.line.params[8])
-        #idle = event.line.params[9]
+        # idle = event.line.params[9]
         account = event.line.params[10]
         gecos = event.line.params[11]
 
@@ -821,4 +821,3 @@ class UserTrack(BaseExtension):
         user.operator = operator
         user.account = account
         user.ip = ip
-

@@ -77,4 +77,3 @@ class ISupport(BaseExtension):
 
         values = event.line.params[1:-1]
         self.supported.update(isupport_parse(values))
-

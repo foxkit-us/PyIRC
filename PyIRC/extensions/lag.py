@@ -46,7 +46,7 @@ class LagCheck(BaseExtension):
         self.base = base
 
         self.lagcheck = kwargs.get("lagcheck", 15)
-        
+
         self.lag = None
 
         self.last = None
@@ -107,4 +107,3 @@ class LagCheck(BaseExtension):
         self.lag = round(time() - float(self.last), 3)
         self.last = None
         logger.info("Lag: %f", self.lag)
-

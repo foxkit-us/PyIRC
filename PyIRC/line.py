@@ -11,6 +11,7 @@ import operator
 
 logger = getLogger(__name__)
 
+
 class Tags:
     """ Stores tags """
 
@@ -251,8 +252,6 @@ class Line:
     def __hash__(self):
         return hash(str(self))
 
-import doctest
-doctest.testmod()
 if __name__ == '__main__':
     import doctest
     doctest.testmod()

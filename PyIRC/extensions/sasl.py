@@ -27,7 +27,7 @@ logger = getLogger(__name__)
 class SASLBase(BaseExtension):
 
     """ Base SASL support. Does nothing on its own.
-    
+
     The following attributes are available:
 
     mechanisms
@@ -83,7 +83,7 @@ class SASLBase(BaseExtension):
         if self.done:
             # Finished authentication
             return
-        elif self.method == None:
+        elif self.method is None:
             raise NotImplementedError("Need an authentication method!")
         elif "sasl" not in cap_negotiate.remote:
             # CAP nonexistent
@@ -159,7 +159,7 @@ class SASLPlain(SASLBase):
         sendstr = sendstr.decode("utf-8")
 
         # Split into 400-sized chunks
-        for l in (sendstr[i:i+400] for i in range(0, len(sendstr), 400)):
+        for l in (sendstr[i:i + 400] for i in range(0, len(sendstr), 400)):
             self.send("AUTHENTICATE", [l])
 
         event.status = EventState.cancel

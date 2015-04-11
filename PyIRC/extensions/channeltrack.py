@@ -76,7 +76,7 @@ class ChannelTrack(BaseExtension):
     Only the user's casemapped nicks are stored, as well as their statuses.
     They are stored casemapped to make it easier to look them up in other
     extensions.
-    
+
     The following attribute is publicly available:
 
     channels
@@ -266,7 +266,7 @@ class ChannelTrack(BaseExtension):
             elif mode in modegroups[0]:
                 # We shouldn't get these here...
                 logger.warning("Unexpected mode with channel mode numeric: " \
-                    "%s%s (%s)", "+" if adding else "-", mode, param)
+                               "%s%s (%s)", "+" if adding else "-", mode, param)
                 continue
 
             if adding:

@@ -2,10 +2,48 @@
 
 
 import asyncio
+
+from random import choice
 from logging import basicConfig
 
 from PyIRC.io.asyncio import IRCProtocol
+from PyIRC.hook import hook
 from PyIRC.extensions import bot_recommended
+
+
+class TestProtocol(IRCProtocol):
+    yifflines = (
+        "rrf~",
+        "oh yes~",
+        "do more~",
+        "right there~",
+        "mmmm yes~",
+        "oh yeah~",
+    )
+
+    flirtlines = (
+        "not in here! message me",
+        "oh I couldn't in public...",
+        "do I look like silverwoof to you?"
+        "come on, there's people here!",
+        "I don't do it in channels, sorry...",
+    )
+
+    @hook("commands", "PRIVMSG")
+    def respond(self, event):
+        print("Called")
+        line = event.line
+        params = line.params
+        target = params[0]
+        if (target != self.nick and params[-1].startswith(self.nick)):
+            self.send("PRIVMSG", [target, choice(self.flirtlines)])
+            return
+
+        hostmask = line.hostmask
+        if not (hostmask and hostmask.nick):
+            return
+
+        self.send("PRIVMSG", [hostmask.nick, choice(self.yifflines)])
 
 
 basicConfig(level="DEBUG")
@@ -24,7 +62,7 @@ args = {
 
 loop = asyncio.get_event_loop()
 
-create = lambda : IRCProtocol(**args)
+create = lambda : TestProtocol(**args)
 coro = loop.create_connection(create, *args['serverport'], ssl=args.get('ssl'))
 
 loop.run_until_complete(coro)

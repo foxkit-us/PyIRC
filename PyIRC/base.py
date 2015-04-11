@@ -52,6 +52,8 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
         commands.
     """
 
+    priority = 10000
+
     def __init__(self, serverport, username, nick, gecos, extensions,
                  **kwargs):
         """ Initialise the IRC base.
@@ -102,6 +104,10 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
         self.extensions = ExtensionManager(self, kwargs, self.events,
                                            extensions)
         self.extensions.create_db()
+
+        # Create hooks
+        for hclass, reg in self.events.events_reg.items():
+            self.events.register_callbacks_from_inst(hclass, self)
 
         # Basic IRC state
         self.connected = False

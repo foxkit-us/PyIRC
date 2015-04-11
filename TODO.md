@@ -82,11 +82,11 @@
 - [ ] socket.IRCSocket
 
 ## Base docs
-- [ ] auxparse.prefix\_parse
-- [ ] auxparse.mode\_parse
-- [ ] auxparse.who\_flag\_parse
-- [ ] auxparse.isupport\_parse
-- [ ] auxparse.CTCPMessage
+- [x] auxparse.prefix\_parse
+- [x] auxparse.mode\_parse
+- [x] auxparse.who\_flag\_parse
+- [x] auxparse.isupport\_parse
+- [x] auxparse.CTCPMessage
 - [x] base.IRCBase
 - [x] casemapping.IRCString
 - [ ] event.EventState

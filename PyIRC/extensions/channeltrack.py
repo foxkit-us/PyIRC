@@ -177,7 +177,7 @@ class ChannelTrack(BaseExtension):
         del channel.users[self.casefold(hostmask.nick)]
 
     def _get_modegroups(self):
-        supported = isupport.supported
+        supported = self.get_extension("ISupport").supported
         modes = supported.get("CHANMODES", ["b", "k", "l", "imnstp"])
         return list(modes)
 
@@ -238,7 +238,7 @@ class ChannelTrack(BaseExtension):
         isupport = self.get_extension("ISupport")
 
         # Build mode groups
-        modegroups = self.get_modegroups()
+        modegroups = self._get_modegroups()
 
         # Status modes
         prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))

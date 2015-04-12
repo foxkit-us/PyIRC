@@ -21,7 +21,7 @@ from PyIRC.casemapping import IRCString
 from PyIRC.line import Line
 from PyIRC.extension import ExtensionManager
 from PyIRC.hook import HookGenerator, hook
-from PyIRC.event import EventManager
+from PyIRC.event import EventManager, EventState
 
 
 logger = getLogger(__name__)
@@ -179,7 +179,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         line = Line(command=command, params=params)
         event = self.events.call_event("commands_out", command, line)
-        if event.cancelled:
+        if event and event.status == EventState.cancelled:
             return None
 
         return line

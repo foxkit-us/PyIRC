@@ -31,6 +31,13 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
     """ The asyncio implementation of the IRC protocol. Available only with
     Python 3.4 and above in the standard library, and 3.3 via an external
     module.
+
+    .. warning:
+        This module is incompatible with StartTLS, and will unload that
+        extension if found! This is a known `asyncio bug`_ and will be fixed
+        in the future.
+
+    .. _`asyncio bug` https://bugs.python.org/issue23749
     """
 
     def __init__(self, *args, **kwargs):

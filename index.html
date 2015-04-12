@@ -31,9 +31,10 @@
         <h1>
 <a id="pyirc" class="anchor" href="#pyirc" aria-hidden="true"><span class="octicon octicon-link"></span></a>PyIRC</h1>
 
-<p>This is PyIRC, an IRC library designed to be flexible, extensible, usable, and
-useful. It is entirely written in Python with no required external
-dependencies.</p>
+<p>This is PyIRC, an IRC library designed to be flexible, extensible, and easy to
+use for beginners, experts, and those who don't want to spend too much time
+messing around with things to get something working. It is entirely written in
+Python with no required external dependencies.</p>
 
 <p>This is a rewrite of a rewrite, so you may see PyIRC 3 sprinkled in some
 comments. Much has been learned from the first two efforts (PyIRC 1 had many
@@ -47,25 +48,30 @@ PyIRC 2, where appropriate.</p>
 <h2>
 <a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h2>
 
-<p>This library has been designed with standards compliance in mind and as a goal.
-Relevant standards include <a href="http://tools.ietf.org/html/rfc1459.html">RFC1459</a>,
+<p>Written by people who have been involved in IRC daemon coding for over 7
+years, this library has been designed with standards compliance in mind. This
+library aims to follow <a href="http://tools.ietf.org/html/rfc1459.html">RFC1459</a>,
 <a href="http://tools.ietf.org/html/rfc2812.html">RFC2812</a>, and
 <a href="http://ircv3.org">IRCv3</a>. RFC1459 and RFC2812 compliance is basically finished
-(the different USER syntax in RFC2812 is not well-supported), as well as IRCv3.0
-support. IRCv3.1 support should be fairly complete - if you notice any gaps,
-please file a bug. Features of IRCv3.2 are mostly done, but may not be tested,
-due to the lack of servers implementations.</p>
+(the different USER syntax in RFC2812 is not well-supported by anything, and
+so is ignored), as well as IRCv3.0 support. IRCv3.1 and 3.2 support should be
+fairly complete - if you notice any gaps, please file a bug. </p>
 
-<p>The library presently supports the following in extensions:</p>
+<p>Note the IRCv3.2 support has not been extensively tested due to the lack of
+conforming implementations.</p>
+
+<p>The library presently supports the following using an extensions system:</p>
 
 <ul>
-<li>Autojoin</li>
-<li>STARTTLS</li>
-<li>Message tags (some parsing is attempted, but largely untested yet)</li>
-<li>SASL, PLAIN auth only right now</li>
-<li>CAP </li>
-<li>Scheduled events</li>
-<li>Ability to hook any numeric/command and many events</li>
+<li>Channel autojoin</li>
+<li>STARTTLS (automatic SSL negotiation)</li>
+<li>IRCv3 Message tags, though not thoroughly tested</li>
+<li>SASL (PLAIN auth only right now - more methods are coming)</li>
+<li>CAP - dynamic capabilities negotiation</li>
+<li>Scheduled events (aka timers)</li>
+<li>Ability to hook any numeric/command</li>
+<li>Ability to hook connect, disconnect, and a variety of other higher-level
+events</li>
 </ul>
 
 <p>See the <a href="http://github.com/Elizafox/PyIRC/blob/master/TODO.md">TODO</a> for the
@@ -75,12 +81,13 @@ list of planned features.</p>
 <a id="design" class="anchor" href="#design" aria-hidden="true"><span class="octicon octicon-link"></span></a>Design</h2>
 
 <p>PyIRC 3 is designed to be wholly uncoupled from the underlying I/O subsystem
-whilst providing easy ways to ingest events. It is designed to work around
-your event system, not the other way around.</p>
+whilst providing easy ways to ingest events. It is designed to work with any
+reasonably well-written event system.</p>
 
-<p>Please note the library is not thread-safe at this time, although some locking
-is implemented (mostly sendq related stuff). If such functionality is desired,
-it will be added.</p>
+<p>This library is not thread-safe and therefore caution should be used when
+using PyIRC with threads. It does not, however, modify state outside of its
+own classes, so it's safe to run instances in a thread or start up IRC
+instances in a thread.</p>
 
 <h2>
 <a id="platforms" class="anchor" href="#platforms" aria-hidden="true"><span class="octicon octicon-link"></span></a>Platforms</h2>
@@ -102,8 +109,9 @@ issue on the <a href="http://github.com/Elizacat/PyIRC/issues">bug tracker :)</a
 <h2>
 <a id="support" class="anchor" href="#support" aria-hidden="true"><span class="octicon octicon-link"></span></a>Support</h2>
 
-<p>Point your IRC client irc.interlinked.me #PyIRC for general questions, or file
-an issue/pull request on github. Feature requests are also accepted this way.</p>
+<p>We can be reached easily at irc.interlinked.me #PyIRC for general questions.
+Pull requests and patches are always welcomed. Features can be requested via
+the bug tracker.</p>
 
 <h2>
 <a id="license-and-copyright" class="anchor" href="#license-and-copyright" aria-hidden="true"><span class="octicon octicon-link"></span></a>License and copyright</h2>

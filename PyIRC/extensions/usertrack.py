@@ -182,9 +182,9 @@ class UserTrack(BaseExtension):
             User instance is passed in as the first parameter, or None if the
             user is not found. Use functools.partial to pass other arguments.
         """
-        fold_nick = self.casefold(user.nick)
+        fold_nick = self.casefold(nick)
 
-        user = self.get_user(nick)
+        user = self.get_user(fold_nick)
         if not user:
             # Add a user for now, get details later.
             self.users[fold_nick] = User(nick)

@@ -110,6 +110,13 @@ infinite loop. Deregistering the event is also an option.
 .. warning::
    Remember to reset all flags and events on close!
 
+ls
+""
+
+Use this to dynamically allow for injection of caps, although it's recommended
+you simply make your ``caps`` variable a property instead, dynamically
+controlled by current state.
+
 hooks
 ^^^^^
 

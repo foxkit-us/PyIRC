@@ -38,7 +38,7 @@ The following IRC servers or standards were checked:
 
 
 # This file has been automatically generated with conflicts manually sorted
-out
+# out
 # The comments show the place the numerics came from
 # TODO: fix name duplication
 
@@ -48,7 +48,7 @@ except ImportError:
     from PyIRC.util.enum import Enum
 
 
-class Numerics(enum.Enum):
+class Numerics(Enum):
     """Numerics used by IRC servers.
 
     If anything can illustrate IRC's severe fragmentation problem and long

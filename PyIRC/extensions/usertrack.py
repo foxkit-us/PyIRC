@@ -121,7 +121,7 @@ class User:
         # Build format string
         fmt = []
         for k, v in locals().items():
-            if v is None or k in ('k', 'v', 'fmt'):
+            if v is None or k in ('k', 'v', 'fmt', 'self'):
                 continue
 
             fmt.append('{}={}'.format(k, v))

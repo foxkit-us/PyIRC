@@ -4,7 +4,7 @@
 
 
 """ Support for asyncio, available in Python 3.4 and later (and 3.3 via a
-backport)
+backport).
 """
 
 
@@ -28,9 +28,11 @@ logger = getLogger(__name__)
 
 
 class IRCProtocol(IRCBase, asyncio.Protocol):
-    """ The asyncio implementation of the IRC protocol. Available only with
+    """The asyncio implementation of the IRC protocol. Available only with
     Python 3.4 and above in the standard library, and 3.3 via an external
     module.
+
+    The same methods as ``IRCBase`` are available.
 
     .. warning:
         This module is incompatible with StartTLS, and will unload that

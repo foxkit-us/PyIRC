@@ -7,6 +7,7 @@ PyIRC 3 documentation
    about
    base
    extensions
+   io
    examples
 
 Welcome to PyIRC 3!
@@ -19,7 +20,7 @@ portability.
 License
 -------
 
-Rien à branler, bitches.
+This software is licensed according to the WTFPL or LPRAB, at your option.
 
 Indices and tables
 ==================

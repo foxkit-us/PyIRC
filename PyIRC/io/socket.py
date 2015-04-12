@@ -11,7 +11,6 @@ Note all socket stuff is blocking, if you want non-blocking operation, you
 may want to subclass this and modify things for your application.
 
 This also serves as a useful example.
-
 """
 
 
@@ -32,6 +31,8 @@ logger = getLogger(__name__)
 class IRCSocket(IRCBase):
     """ The socket implementation of the IRC protocol. No asynchronous I/O is
     done. All scheduling is done with timeouts.
+
+    The same methods available in ``IRCBase`` are available.
 
     Keyword arguments:
     

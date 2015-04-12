@@ -9,6 +9,7 @@ PyIRC 3 documentation
    extensions
    io
    util
+   hooks
    examples
 
 Welcome to PyIRC 3!

@@ -39,7 +39,7 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
         extension if found! This is a known `asyncio bug`_ and will be fixed
         in the future.
 
-    .. _`asyncio bug` https://bugs.python.org/issue23749
+    .. _`asyncio bug`: https://bugs.python.org/issue23749
     """
 
     def __init__(self, *args, **kwargs):

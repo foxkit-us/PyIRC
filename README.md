@@ -1,17 +1,10 @@
 # PyIRC
-This is PyIRC, an IRC library designed to be flexible, extensible, and easy to
-use for beginners, experts, and those who don't want to spend too much time
-messing around with things to get something working. It is entirely written in
-Python with no required external dependencies.
+This is PyIRC, an IRC library designed to be flexible, extensible, well-
+documented, and easy to use. It is aimed at not only beginners and those who
+don't want to spend too much time writing boilerplate to get something going¸
+but also the advanced user who knows exactly what they're doing.
 
-This is a rewrite of a rewrite, so you may see PyIRC 3 sprinkled in some
-comments. Much has been learned from the first two efforts (PyIRC 1 had many
-issues with being too monolithic, and had too many Unicode problems due to
-Python 2 compatibility. PyIRC 2 was a bad API design (using subclassing) that
-never could be properly rewritten). Some of the code has been retained from
-PyIRC 2, where appropriate.
-
-See LICENSE for details on distribution of this README and the software itself.
+It is entirely written in Python 3 with only optional external dependencies.
 
 ## Introduction
 Written by people who have been involved in IRC daemon coding for over 7
@@ -26,8 +19,10 @@ fairly complete - if you notice any gaps, please file a bug.
 Note the IRCv3.2 support has not been extensively tested due to the lack of
 conforming implementations.
 
-The library presently supports the following using an extensions system:
+The library presently supports the following using an extensions system,
+meaning all of these are optional:
 - Channel autojoin
+- Autorejoin on kick
 - STARTTLS (automatic SSL negotiation)
 - IRCv3 Message tags, though not thoroughly tested
 - SASL (PLAIN auth only right now - more methods are coming)
@@ -47,8 +42,7 @@ reasonably well-written event system.
 
 This library is not thread-safe and therefore caution should be used when
 using PyIRC with threads. It does not, however, modify state outside of its
-own classes, so it's safe to run instances in a thread or start up IRC
-instances in a thread.
+own classes, so it's safe to run instances in threads.
 
 ## Platforms
 The library is completely cross-platform and should work anywhere Python does,
@@ -58,6 +52,11 @@ modern platforms).
 
 PyIRC 3 requires Python 3.3 or newer. asyncio support requires either 3.4, or
 for asyncio to be installed from PyPI.
+
+## Documentation
+Documentation is automatically generated and placed
+[here](http://foxkit.us/PyIRC/) for perusal. Our docs coverage is very
+complete.
 
 ## Bugs
 Probably many! Tell us about them - see the support section or just file an

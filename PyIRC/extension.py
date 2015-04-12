@@ -96,26 +96,31 @@ class ExtensionManager:
         self.db = OrderedDict()
 
     def create_default_events(self):
-        """ Create default events and classes """
-
+        """Create default events and classes"""
         self.events.register_class("commands", LineEvent)
         self.events.register_class("hooks", HookEvent)
 
     def create_default_hooks(self):
         """ Enumerate present extensions and build the commands and hooks
-        cache. """
+        cache."""
 
         self.create_hooks("commands")
         self.create_hooks("hooks")
 
     def create_hooks(self, hclass):
-        """ Register hooks contained in the given attribute from loaded
-        extensions """
+        """Register hooks contained in the given attribute from loaded
+        extensions
+        
+        Arguments:
+        
+        hclass
+            Class to create hooks for
+        """
         for extension in self.db.values():
             self.events.register_callbacks_from_inst(hclass, extension)
 
     def create_db(self):
-        """ Build the extensions database """
+        """Build the extensions database"""
         self.db.clear()
         self.events.clear()
 
@@ -166,7 +171,16 @@ class ExtensionManager:
             self.create_hooks(hclass)
 
     def add_extension(self, extension):
-        """ Add an extension by name """
+        """Add an extension by class
+
+        .. note::
+            This does not rebuild the extensions cache.
+        
+        Arguments:
+
+        extension
+            Extension to add.
+        """
         if extension in self.extensions:
             return
 
@@ -174,11 +188,25 @@ class ExtensionManager:
         self.create_db()
 
     def get_extension(self, extension):
-        """ Get an extension by name, or return None """
+        """Get an extension by name
+        
+        Returns None if the extension is not found.
+
+        Arguments:
+
+        extension
+            Extension to retrieve by name
+        """
         return self.db.get(extension)
 
     def remove_extension(self, extension):
-        """ Remove a given extension by name """
+        """Remove a given extension by name
+        
+        Arguments:
+
+        extension
+            Extension to remove.
+        """
         extensions = list(self.extensions)
         for i, name in enumerate(e.__name__ for e in extensions):
             if name != extension:

@@ -4,31 +4,54 @@ Base library
 .. toctree::
    :maxdepth: 2
 
-Events
-------
-PyIRC is built on a powerful yet easy-to-use event system.  In addition to
-command events (each command and numeric has its own event you can hook), your
-code can define its own event types wherever necessary - for example, the CTCP
-extension defines a CTCP message event.
+auxparse
+--------
 
-Event callbacks are registered using a decorator, @hook.  A single method can be
-registered for multiple callbacks, however each event can only have one callback
-per class at this time.
-
-EventManager
-^^^^^^^^^^^^
-
-.. autoclass:: PyIRC.event.EventManager
+.. automodule:: PyIRC.auxparse
    :members:
 
-Event
-^^^^^
+base
+----
 
-.. autoclass:: PyIRC.event.Event
+.. automodule:: PyIRC.base
    :members:
 
-EventState
-^^^^^^^^^^
+casemapping
+-----------
 
-.. autoclass:: PyIRC.event.EventState
+.. automodule:: PyIRC.casemapping
+
+event
+-----
+
+.. automodule:: PyIRC.event
    :members:
+
+extension
+---------
+
+.. automodule:: PyIRC.extension
+   :members:
+
+hook
+----
+
+.. automodule:: PyIRC.hook
+   :members:
+
+line
+----
+
+.. automodule:: PyIRC.line
+   :members:
+
+numerics
+--------
+Numerics for IRC servers. Not documented at the moment pending us finding a
+better way to document them.
+
+..
+   Until we can get better enum docs support and actually flesh out these
+   idocs, it's better to generate nothing at all for them.
+   .. automodule:: PyIRC.numerics
+      :members:

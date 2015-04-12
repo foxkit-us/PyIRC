@@ -9,7 +9,7 @@ to modern IRCv3 compliant servers, and everything in between. It is designed
 to be modular, flexible, and easy to use.
 
 Why should I use PyIRC?
-=======================
+-----------------------
 
 Despite the initial appearance, PyIRC is nothing more than a way to turn IRC
 commands into callbacks and accessible data, whilst optionally doing the
@@ -42,7 +42,7 @@ Guido says they'll support Python 2.7 until 2020; that doesn't mean we have
 to.
 
 Architecture
-============
+------------
 
 To hide the complexities of modern IRC as well as possible, whilst supporting
 legacy servers, we have designed the system (after much careful thought) to be
@@ -56,7 +56,7 @@ from the newbie to IRC who just wants a working bot, to the advanced user who
 may be writing a bot for IRC operator functions and tasks.
 
 A not-so-brief word about modern IRC
-------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Before continuing, it's necessary to get a picture of how truly complicated
 modern IRC is, and why PyIRC is designed the way it is (arguably increasing
@@ -145,7 +145,7 @@ need these features do not have to be forced to use them. This has influenced
 the architecture of PyIRC greatly.
 
 Concepts
----------
+^^^^^^^^
 
 PyIRC's four main architectural concepts are:
 
@@ -158,7 +158,7 @@ PyIRC's four main architectural concepts are:
   pieces of the puzzle
 
 Extensions
-----------
+^^^^^^^^^^
 
 PyIRC uses extensions to allow its functionality to be tweaked per-network and
 per-application as needed. By using extensions, end-users can tweak the
@@ -185,7 +185,7 @@ the same functionality in base.
 Note all extensions are optional, and you are free to implement your own.
 
 Hooks
------
+^^^^^
 
 Hooks are used in PyIRC to allow runtime behaviour of the program to be
 modified. IRC is a very stateful protocol, with numerous non-standard
@@ -210,7 +210,7 @@ scanned to add events that can be called later.
 Hooks can be removed or added at any time to modify runtime functionality.
 
 Base
-----
+^^^^
 
 The base class contains the glue for extensions and hooks, bringing them
 together into a cohesive unit. The base class also contains some minimal state
@@ -228,7 +228,7 @@ In the future, the role of base may be expanded as sort of a data registry for
 extensions, to allow reloading and runtime removal of extensions.
 
 io
---
+^^
 
 The io system subclasses Base to add the final piece of the puzzle - shoving
 data into the library. It implements the actual sending and recieving of data
@@ -236,7 +236,7 @@ from the network. It also implements scheduling. There is at present an
 asyncio and socket backend. A gevent backend may be created in the future.
 
 Using PyIRC
-===========
+-----------
 
 PyIRC is pretty simple to use:
 

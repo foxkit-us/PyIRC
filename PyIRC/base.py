@@ -177,6 +177,8 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
             limitations.
         """
 
+        self.events.call_event("commands_out", command, line)
+
         return Line(command=command, params=params)
 
     @abstractmethod

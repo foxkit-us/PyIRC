@@ -103,6 +103,7 @@ class ExtensionManager:
     def create_default_events(self):
         """Create default events and classes"""
         self.events.register_class("commands", LineEvent)
+        self.events.register_class("commands_out", LineEvent)
         self.events.register_class("hooks", HookEvent)
 
     def create_default_hooks(self):
@@ -110,6 +111,7 @@ class ExtensionManager:
         cache."""
 
         self.create_hooks("commands")
+        self.create_hooks("commands_out")
         self.create_hooks("hooks")
 
     def create_hooks(self, hclass):

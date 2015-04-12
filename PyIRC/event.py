@@ -4,6 +4,15 @@
 # for licensing information.
 
 
+"""The event subsystem
+
+PyIRC is built on a powerful yet easy-to-use event system.  In addition to
+command events (each command and numeric has its own event you can hook), your
+code can define its own event types wherever necessary - for example, the CTCP
+extension defines a CTCP message event.
+"""
+
+
 try:
     from enum import Enum
 except ImportError:

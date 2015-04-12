@@ -29,7 +29,7 @@ class BaseExtension(metaclass=HookGenerator):
     priority
         the priority of this extension, lower is higher (like Unix)
     hook_classes
-        A Mapping of hclass to an ``Event`` subclass``
+        A Mapping of hclass to an ``Event`` subclass
     """
 
     priority = PRIORITY_DONTCARE

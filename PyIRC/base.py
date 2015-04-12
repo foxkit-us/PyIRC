@@ -28,7 +28,7 @@ logger = getLogger(__name__)
 
 
 class ABCMetaHookGenerator(HookGenerator, ABCMeta):
-    """ A stub metaclass for IRCBase """
+    # A stub metaclass for IRCBase
 
 
 class IRCBase(metaclass=ABCMetaHookGenerator):
@@ -39,10 +39,10 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
     The following attributes are available:
 
     events
-        Our event.EventManager instance
+        Our ``EventManager`` instance
 
     extensions
-        Our event.ExtensionManager instance
+        Our ``ExtensionManager`` instance
 
     connected
         If True, we have connected to the server successfully.
@@ -97,16 +97,15 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
         self.kwargs = kwargs
 
         # Event state
-        self.events = EventManager()
+        events = self.events = EventManager()
 
         # Extension manager system
         assert extensions
-        self.extensions = ExtensionManager(self, kwargs, self.events,
-                                           extensions)
+        self.extensions = ExtensionManager(self, kwargs, events, extensions)
         self.extensions.create_db()
 
         # Create hooks
-        self.events.register_callbacks_from_inst_all(self)
+        events.register_callbacks_from_inst_all(self)
 
         # Basic IRC state
         self.connected = False

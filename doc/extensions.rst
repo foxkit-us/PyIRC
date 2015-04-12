@@ -1,10 +1,12 @@
 Extensions
 ==========
 
+This chapter presents the extensions that are included by default with PyIRC.
+Extensions are the mechanism PyIRC uses to implement various functionality
+that may overlap or conflict, whilst ensuring everything cooperates.
+
 .. toctree::
    :maxdepth: 2
-
-This chapter presents the extensions that are included by default with PyIRC.
 
 autojoin
 --------

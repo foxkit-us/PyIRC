@@ -1,0 +1,133 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>PyIRC by Elizafox</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>PyIRC</h1>
+        <p>An extensible and easy-to-use IRC library for Python</p>
+
+        <p class="view"><a href="https://github.com/Elizafox/PyIRC">View the Project on GitHub <small>Elizafox/PyIRC</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/Elizafox/PyIRC/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/Elizafox/PyIRC/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/Elizafox/PyIRC">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="pyirc" class="anchor" href="#pyirc" aria-hidden="true"><span class="octicon octicon-link"></span></a>PyIRC</h1>
+
+<p>This is PyIRC, an IRC library designed to be flexible, extensible, usable, and
+useful. It is entirely written in Python with no required external
+dependencies.</p>
+
+<p>This is a rewrite of a rewrite, so you may see PyIRC 3 sprinkled in some
+comments. Much has been learned from the first two efforts (PyIRC 1 had many
+issues with being too monolithic, and had too many Unicode problems due to
+Python 2 compatibility. PyIRC 2 was a bad API design (using subclassing) that
+never could be properly rewritten). Some of the code has been retained from
+PyIRC 2, where appropriate.</p>
+
+<p>See LICENSE for details on distribution of this README and the software itself.</p>
+
+<h2>
+<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h2>
+
+<p>This library has been designed with standards compliance in mind and as a goal.
+Relevant standards include <a href="http://tools.ietf.org/html/rfc1459.html">RFC1459</a>,
+<a href="http://tools.ietf.org/html/rfc2812.html">RFC2812</a>, and
+<a href="http://ircv3.org">IRCv3</a>. RFC1459 and RFC2812 compliance is basically finished
+(the different USER syntax in RFC2812 is not well-supported), as well as IRCv3.0
+support. IRCv3.1 support should be fairly complete - if you notice any gaps,
+please file a bug. Features of IRCv3.2 are mostly done, but may not be tested,
+due to the lack of servers implementations.</p>
+
+<p>The library presently supports the following in extensions:</p>
+
+<ul>
+<li>Autojoin</li>
+<li>STARTTLS</li>
+<li>Message tags (some parsing is attempted, but largely untested yet)</li>
+<li>SASL, PLAIN auth only right now</li>
+<li>CAP </li>
+<li>Scheduled events</li>
+<li>Ability to hook any numeric/command and many events</li>
+</ul>
+
+<p>See the <a href="http://github.com/Elizafox/PyIRC/blob/master/TODO.md">TODO</a> for the
+list of planned features.</p>
+
+<h2>
+<a id="design" class="anchor" href="#design" aria-hidden="true"><span class="octicon octicon-link"></span></a>Design</h2>
+
+<p>PyIRC 3 is designed to be wholly uncoupled from the underlying I/O subsystem
+whilst providing easy ways to ingest events. It is designed to work around
+your event system, not the other way around.</p>
+
+<p>Please note the library is not thread-safe at this time, although some locking
+is implemented (mostly sendq related stuff). If such functionality is desired,
+it will be added.</p>
+
+<h2>
+<a id="platforms" class="anchor" href="#platforms" aria-hidden="true"><span class="octicon octicon-link"></span></a>Platforms</h2>
+
+<p>The library is completely cross-platform and should work anywhere Python does,
+so long as it has a working socket implementation (SSL usage depends on your
+Python build having support for the <code>ssl</code> module - this should be almost all
+modern platforms).</p>
+
+<p>PyIRC 3 requires Python 3.3 or newer. asyncio support requires either 3.4, or
+for asyncio to be installed from PyPI.</p>
+
+<h2>
+<a id="bugs" class="anchor" href="#bugs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Bugs</h2>
+
+<p>Probably many! Tell us about them - see the support section or just file an
+issue on the <a href="http://github.com/Elizacat/PyIRC/issues">bug tracker :)</a>.</p>
+
+<h2>
+<a id="support" class="anchor" href="#support" aria-hidden="true"><span class="octicon octicon-link"></span></a>Support</h2>
+
+<p>Point your IRC client irc.interlinked.me #PyIRC for general questions, or file
+an issue/pull request on github. Feature requests are also accepted this way.</p>
+
+<h2>
+<a id="license-and-copyright" class="anchor" href="#license-and-copyright" aria-hidden="true"><span class="octicon octicon-link"></span></a>License and copyright</h2>
+
+<p>Copyright © 2013-2015 Andrew Wilcox and Elizabeth Myers. All rights reserved.</p>
+
+<p>Non-third party files are licensed under the WTFPL; terms and conditions can be
+found at:</p>
+
+<pre><code>http://www.wtfpl.net/about/
+</code></pre>
+
+<p>Selon votre choix, vous pouvez aussi utiliser la Licence Publique Rien À
+Branler (LPRAB):</p>
+
+<pre><code>http://sam.zoy.org/lprab/
+</code></pre>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/Elizafox">Elizafox</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>

@@ -12,14 +12,14 @@ from PyIRC.util.classutil import private_mangle
 logger = getLogger(__name__)
 
 
-PRIORITY_DONTCARE = 0
 """Hook can run whenever it wants"""
+PRIORITY_DONTCARE = 0
 
-PRIORITY_FIRST = -1000
 """Hook should run first"""
+PRIORITY_FIRST = -1000
 
-PRIORITY_LAST = 1000
 """Hook should run last"""
+PRIORITY_LAST = 1000
 
 
 def hook(hclass, hook, priority=None):

@@ -44,8 +44,8 @@ out
 
 try:
     from enum import Enum
-    except ImportError:
-        from PyIRC.util.enum import Enum
+except ImportError:
+    from PyIRC.util.enum import Enum
 
 
 class Numerics(enum.Enum):

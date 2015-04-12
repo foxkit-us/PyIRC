@@ -8,6 +8,7 @@ PyIRC 3 documentation
    base
    extensions
    io
+   util
    examples
 
 Welcome to PyIRC 3!

@@ -4,29 +4,45 @@
 # This file is part of the PyIRC 3 project. See LICENSE in the root directory
 # for licensing information.
 
+
+"""Objects and utilities related to IRC messages"""
+
+
+import operator
+
 from itertools import takewhile
 from functools import reduce
 from logging import getLogger
-import operator
+
 
 logger = getLogger(__name__)
 
 
 class Tags:
-    """ Stores tags """
+    """Stores message tags
+    
+    Message tags are a new feature proposed by IRCv3 to add enhanced
+    out-of-band data to messages.
+    """
 
     __slots__ = ('tags', 'tagstr')
 
-    def __init__(self, **kwargs):
-        self.tags = kwargs.get('tags', None)
-        self.tagstr = kwargs.get('tagstr', None)
+    def __init__(self, *, tags=None, tagstr=None):
+        self.tags = tags
+        self.tagstr = tagstr
 
         if not self.tags:
             self = self.parse(self.tagstr)
 
-    """ Parse a raw tag string into a nice object. """
     @classmethod
     def parse(cls, raw):
+        """Parse a raw tag string into a Tags object.
+        
+        Arguments:
+
+        raw
+            The raw tags to parse into a Tags object.
+        """
         if not raw:
             logger.debug("No tags on this message")
             return
@@ -43,7 +59,9 @@ class Tags:
 
 
 class Hostmask:
-    """ Stores a user hostmask
+    """ Stores a hostmask
+
+    Hostmasks are used to store sources and destinations in IRC messages.
 
     >>> repr(Hostmask.parse(mask='dongs!cocks@lol.org'))
     'Hostmask(dongs!cocks@lol.org)'
@@ -55,18 +73,22 @@ class Hostmask:
 
     __slots__ = ('nick', 'username', 'host', 'maskstr')
 
-    def __init__(self, **kwargs):
-        self.nick = kwargs.get('nick', None)
-        self.username = kwargs.get('username', None)
-        self.host = kwargs.get('host', None)
-        self.maskstr = kwargs.get('mask', None)
-
-        if not any((self.nick, self.username, self.host)) and self.maskstr:
-            self = self.parse(self.maskstr)
+    def __init__(self, *, nick=None, username=None, host=None, mask=None):
+        """Initalise the Hostmask object"""
+        self.nick = nick
+        self.username = username
+        self.host = host
+        self.maskstr = mask
 
     @classmethod
     def parse(cls, raw):
-        """ Parse a raw hostmask into a nice object. """
+        """Parse a raw hostmask into a Hostmask object.
+        
+        Arguments:
+
+        raw
+            The raw hostmask to parse.
+        """
 
         if not raw:
             logger.debug("No hostmask found")
@@ -119,7 +141,9 @@ class Hostmask:
 
 
 class Line:
-    """ Stores an IRC line.
+    """ Stores an IRC line
+
+    This uses RFC1459 framing.
 
     >>> repr(Line.parse(':lol.org PRIVMSG'))
     'Line(:lol.org PRIVMSG)'
@@ -135,31 +159,26 @@ class Line:
     'Line(:dongs!dongs@lol.org PRIVMSG loldongs meow :dongs)'
     """
 
-    __slots__ = ('tags', 'hostmask', 'command', 'params', 'linestr',
-                 'cancelled', 'direction')
+    __slots__ = ('tags', 'hostmask', 'command', 'params', 'linestr')
 
     IN = True
     OUT = False
 
-    def __init__(self, **kwargs):
-        self.tags = kwargs.get('tags', None)
-        self.hostmask = kwargs.get('host', None)
-        self.command = kwargs.get('command', None)
-        self.params = kwargs.get('params', list())
-        self.linestr = kwargs.get('line', None)
-        self.direction = kwargs.get('direction', self.OUT)
+    def __init__(self, *, tags=None, hostmask=None, command=None, params=None,
+                 line=None):
+        """Initalise the Line object."""
 
-        if self.linestr and not any((self.tags, self.hostmask, self.command,
-                                     self.params)):
-            self = self.parse(self.linestr)
-        else:
-            if isinstance(self.tags, str):
-                self.tags = Tags.parse(self.tags)
+        self.tags = tags
+        self.hostmask = hostmask
+        self.command = command
+        self.params = params if params is not None else list()
+        self.linestr = line
 
-            if isinstance(self.hostmask, str):
-                self.hostmask = Hostmask.parse(self.hostmask)
+        if isinstance(self.tags, str):
+            self.tags = Tags.parse(self.tags)
 
-        self.cancelled = False
+        if isinstance(self.hostmask, str):
+            self.hostmask = Hostmask.parse(self.hostmask)
 
         if isinstance(self.command, int):
             self.command = str(self.command)

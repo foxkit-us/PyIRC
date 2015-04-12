@@ -27,25 +27,41 @@ logger = getLogger(__name__)
 
 
 class EventState(Enum):
-    """ The current state of an event. """
-
-    ok = 0
+    """The current state of an event."""
+    
     """ Proceed with other callbacks, if any. """
-    cancel = 1
+    ok = 0
+
     """ Event is cancelled; do not run any further callbacks. """
-    terminate_soon = 2
+    cancel = 1
+    
     """ Send a QUIT to the IRC server. """
-    terminate_now = 3
+    terminate_soon = 2
+
     """ Abort the entire library immediately.
 
     .. warning:: This state should only be used if data loss may occur.
     """
+    terminate_now = 3
 
 
 class Event:
-    """ Basic event passing through """
+    """The base class for all events passed to callbacks.
+
+    status
+        The current status of the event.
+    cancel_function
+        Set to the function who cancelled us, if we are cancelled.
+    """
 
     def __init__(self, event):
+        """Initalise the event object
+
+        Arguments:
+        
+        event
+            The event type occuring
+        """
         self.event = event
         self.status = EventState.ok
         self.cancel_function = None
@@ -57,15 +73,20 @@ class Event:
 
 
 class HookEvent(Event):
-    """ A hook has been called """
-
-    pass
+    """The event for hooks"""
 
 
 class LineEvent(Event):
-    """ A line event """
+    """The event for lines"""
 
     def __init__(self, event, line):
+        """Initalise a LineEvent object.
+
+        event
+            The event type occurring, should mirror line.command.
+        line
+            The parsed IRC message of this event
+        """
         super().__init__(event)
 
         self.line = line

@@ -45,18 +45,6 @@ CAP subcommands are handled using this event. The most interesting thing to
 most clients is the ``ack`` subcommand, used to acknowedge capabilities.
 However, any subcommand may be hooked.
 
-The ``ack`` event is used to acknowledge capabilities and do necessary
-processes before the handhshake completes. To stall the ``ack`` "pipeline",
-cancel the event, and do your needed things. Be prepared to handle errors
-at any time, and to abort your stage of the handshake (or abort the connection
-if it is fatal). When you are finished with your portion of the handshake,
-call the ``CapNegotiate.cont`` callback to continue the handshake. This calls
-the ``ack`` hook again, so ensure you keep a flag to ensure you don't end up
-in an infinite loop. Deregistering the event is also an option.
-
-.. warning::
-   Remember to reset all flags and events on close!
-
 hooks
 ^^^^^
 
@@ -67,18 +55,14 @@ The catch-all for many default events, particularly connection events.
 
 A ``HookEvent`` is passed in.
 
-Probably the most interesting events in this class are the ``connected`` and
-``disconnected`` events. ``disconnected`` should be used to reset all state to
-good values, in case a reconnect is attempted.
-
 commands_ctcp
 ^^^^^^^^^^^^^
 
 .. note::
    This hook requires the ``CTCP`` extension.
 
-This hook is used by the ``CTCP`` extension to call CTCP events, such as TIME
-or PING. VERSION and PING events are implemented by default.
+This hook is used by the ``CTCP`` extension to call CTCP events. VERSION and
+PING events are implemented by default.
 
 A ``CTCPEvent`` is passed in, which passes in the ``CTCPMessage`` from the
 event.
@@ -94,4 +78,52 @@ reply to CTCP queries. No events are registered by default.
 
 A ``CTCPEvent`` is passed in, which passes in the ``CTCPMessage`` from the
 event.
+
+Events
+------
+
+The most important default events called by PyIRC are documented here. Of
+course, it is not possible to document every last hook (not to mention hook
+classes are open-ended on purpose).
+
+commands_cap
+^^^^^^^^^^^^
+
+Whilst it is not necessarily useful to hook all of the CAP subcommands, the
+ones you likely want are documented here.
+
+ack
+"""
+
+The ``ack`` event is used to acknowledge capabilities and do necessary
+processes before the handhshake completes. In this way, it acts as a sort of
+"pipeline" of events, that can be stalled in a specific order to achieve an
+orderly handshake. To stall the ``ack`` "pipeline", set the ``LineEvent``
+status member to cancelled, and do your part of the handshake. Be prepared to
+handle errors, and to abort your stage of the handshake if needed and resume
+processing, or even to abort the connection if the error is that fatal. When
+you are finished with your portion of the handshake, call the
+``CapNegotiate.cont`` callback to continue the handshake. This calls the
+``ack`` hook again, so ensure you keep a flag to ensure you don't end up in an
+infinite loop. Deregistering the event is also an option.
+
+.. warning::
+   Remember to reset all flags and events on close!
+
+hooks
+^^^^^
+
+connected
+"""""""""
+
+The event called when we establish a connection to the server, and are
+starting the handshake.
+
+disconnected
+""""""""""""
+
+The event called when the connection is lost to the server. Use this event to
+reset any state in your extension to a known state, in case of a reconnection
+attempt.
+
 

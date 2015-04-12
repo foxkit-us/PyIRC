@@ -29,6 +29,7 @@ logger = getLogger(__name__)
 
 class ABCMetaHookGenerator(HookGenerator, ABCMeta):
     # A stub metaclass for IRCBase
+    pass
 
 
 class IRCBase(metaclass=ABCMetaHookGenerator):

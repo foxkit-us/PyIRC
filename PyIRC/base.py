@@ -177,11 +177,12 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
             limitations.
         """
 
+        line = Line(command=command, params=params)
         event = self.events.call_event("commands_out", command, line)
         if event.cancelled:
             return None
 
-        return Line(command=command, params=params)
+        return line
 
     @abstractmethod
     def schedule(self, time, callback):

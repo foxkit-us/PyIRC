@@ -102,13 +102,26 @@ class ChannelTrack(BaseExtension):
         self.mode_timers = dict()
 
     def get_channel(self, name):
-        """ Get the Channel instance associated with a channel name """
+        """Retrieve a channel from the tracking dictionary based on name.
+
+        Use of this method is preferred to directly accessing the channels
+        dictionary.
+
+        Returns None if channel not found.
+
+        Arguments:
+
+        name
+            Name of the channel to retrieve.
+        """
 
         return self.channels.get(self.casefold(name))
 
     def add_channel(self, name, **kwargs):
-        """ Add a channel to our list """
+        """Add a channel to the tracking dictionary.
 
+        Avoid using this method directly unless you know what you are doing.
+        """
         channel = self.get_channel(name)
         if channel is None:
             logger.debug("Adding channel: %s", name)
@@ -119,7 +132,10 @@ class ChannelTrack(BaseExtension):
         return channel
 
     def remove_channel(self, name):
-        """ Remove a channel from our list """
+        """Remove a channel from the tracking dictionary.
+
+        Avoid using this method directly unless you know what you are doing.
+        """
 
         channel = self.get_channel(name)
         if not channel:
@@ -129,8 +145,6 @@ class ChannelTrack(BaseExtension):
 
     @hook("hooks", "disconnected")
     def close(self, event):
-        """ Disconnecting from server """
-
         self.channels.clear()
         for timer in self.mode_timers.values():
             try:
@@ -140,8 +154,6 @@ class ChannelTrack(BaseExtension):
 
     @hook("commands", "JOIN")
     def join(self, event):
-        """ Track a channel JOIN event """
-
         hostmask = event.line.hostmask
         channel = self.get_channel(event.line.params[0])
         if not channel:
@@ -156,8 +168,6 @@ class ChannelTrack(BaseExtension):
     @hook("commands", "KICK")
     @hook("commands", "PART")
     def part(self, event):
-        """ Track a channel PART event """
-
         hostmask = event.line.hostmask
         channel = self.get_channel(event.line.params[0])
         assert channel
@@ -184,8 +194,6 @@ class ChannelTrack(BaseExtension):
 
     @hook("commands", "MODE")
     def mode(self, event):
-        """ Track a channel MODE effect """
-
         channel = self.get_channel(event.line.params[0])
         if not channel:
             return
@@ -230,8 +238,6 @@ class ChannelTrack(BaseExtension):
 
     @hook("commands", Numerics.RPL_CHANNELMODEIS)
     def channel_modes(self, event):
-        """ Process the RPL_CHANNELMODEIS numeric """
-
         channel = self.get_channel(event.line.params[1])
         if not channel:
             return
@@ -277,8 +283,6 @@ class ChannelTrack(BaseExtension):
     @hook("commands", Numerics.RPL_TOPIC)
     @hook("commands", "TOPIC")
     def topic(self, event):
-        """ Process a TOPIC command """
-
         channel = self.get_channel(event.line.params[0])
         if not channel:
             return
@@ -296,8 +300,6 @@ class ChannelTrack(BaseExtension):
 
     @hook("commands", Numerics.RPL_NOTOPIC)
     def no_topic(self, event):
-        """ Process the numeric symbolising no topic """
-
         channel = self.get_channel(event.line.params[0])
         if not channel:
             return
@@ -306,8 +308,6 @@ class ChannelTrack(BaseExtension):
 
     @hook("commands", Numerics.RPL_TOPICWHOTIME)
     def topic_who_time(self, event):
-        """ Process the topic who/time numeric """
-
         channel = self.get_channel(event.line.params[0])
         if not channel:
             return
@@ -317,8 +317,6 @@ class ChannelTrack(BaseExtension):
 
     @hook("commands", Numerics.RPL_CHANNELURL)
     def url(self, event):
-        """ Process a URL numeric """
-
         channel = self.get_channel(event.line.params[1])
         assert channel
 
@@ -326,8 +324,6 @@ class ChannelTrack(BaseExtension):
 
     @hook("commands", Numerics.RPL_CREATIONTIME)
     def timestamp(self, event):
-        """ Process a channel timestamp numeric """
-
         channel = self.get_channel(event.line.params[1])
         assert channel
 
@@ -344,8 +340,6 @@ class ChannelTrack(BaseExtension):
 
     @hook("commands", Numerics.RPL_NAMREPLY)
     def names(self, event):
-        """ Process a channel NAMES event """
-
         channel = self.get_channel(event.line.params[2])
         assert channel
 
@@ -366,8 +360,6 @@ class ChannelTrack(BaseExtension):
 
     @hook("commands", Numerics.RPL_ENDOFNAMES)
     def names_end(self, event):
-        """ Process an end of NAMES event """
-
         channel = self.get_channel(event.line.params[1])
         assert channel
 
@@ -377,8 +369,6 @@ class ChannelTrack(BaseExtension):
 
     @hook("commands", "NICK")
     def nick(self, event):
-        """ Handle a nick change """
-
         oldnick = self.casefold(event.line.hostmask.nick)
         newnick = self.casefold(event.line.params[-1])
 
@@ -392,8 +382,6 @@ class ChannelTrack(BaseExtension):
 
     @hook("commands", "QUIT")
     def quit(self, event):
-        """ Quit a user """
-
         nick = self.casefold(event.line.hostmask.nick)
 
         for channel in self.channels.values():

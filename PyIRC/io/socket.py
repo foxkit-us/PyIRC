@@ -115,6 +115,8 @@ class IRCSocket(IRCBase):
 
     def send(self, command, params):
         line = super().send(command, params)
+        if line is None:
+            return
 
         self.socket.settimeout(self.kwargs.get('send_timeout', None))
         if self.socket.send(bytes(line)) == 0:

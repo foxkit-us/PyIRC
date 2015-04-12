@@ -177,7 +177,9 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
             limitations.
         """
 
-        self.events.call_event("commands_out", command, line)
+        event = self.events.call_event("commands_out", command, line)
+        if event.cancelled:
+            return None
 
         return Line(command=command, params=params)
 

@@ -74,6 +74,9 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
 
     def send(self, command, params):
         line = super().send(command, params)
+        if line is None:
+            return
+
         self.transport.write(bytes(line))
         logger.debug("OUT: %s", str(line).rstrip())
 

@@ -360,7 +360,24 @@ class EventManager:
             The arguments to pass to the :py:class:`Event` type constructor used
             for the event class.
         """
+        assert hclass in self.events_reg
 
+        type = self.events_reg[hclass].type
+        event = type.key(event)
+        return self.call_event_inst(hclass, event, type(event, *args))
+
+    def call_event_inst(self, hclass, event, eventinst):
+        """ Call an event with the given event instance
+
+        Arguments:
+
+        hclass
+            The class of the event that is occuring.
+        event
+            The name of the event that is occuring.
+        ``eventinst``
+            The :py:class:`Event` type we are reusing for this call.
+        """
         assert hclass in self.events_reg
 
         events, type = self.events_reg[hclass]
@@ -373,16 +390,15 @@ class EventManager:
         if not items:
             return None
 
-        ev_inst = type(event, *args)
-
         for _, _, function in items:
-            ret = function(ev_inst)
-            if ev_inst.status == EventState.ok:
+            ret = function(eventinst)
+            if eventinst.status == EventState.ok:
                 continue
-            elif ev_inst.status == EventState.cancel:
+            elif eventinst.status == EventState.cancel:
                 EventState.cancel_function = function
                 break
-            elif ev_inst.status == EventState.terminate_now:
+            elif eventinst.status == EventState.terminate_now:
                 quit()
 
-        return ev_inst
+        return eventinst
+

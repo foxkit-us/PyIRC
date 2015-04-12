@@ -45,19 +45,20 @@ class StartTLS(BaseExtension):
 
     @hook("hooks", "disconnected")
     def close(self, event):
-        self.done = False
+        self.done = False 
 
-    @hook("commands_cap", "ack", PRIORITY_FIRST)
+    @hook("cap_perform", "ack", PRIORITY_FIRST)
     def starttls(self, event):
         if self.base.ssl:
             # Unnecessary
             return
 
-        cap_negotiate = self.get_extension("CapNegotiate")
+        if self.done:
+            return
 
-        if "tls" in cap_negotiate.local and not self.done:
+        if "tls" in event.caps:
+            self.done = True
             self.send("STARTTLS", None)
-
             event.status = EventState.cancel
 
     @hook("commands", Numerics.RPL_STARTTLS)
@@ -65,16 +66,12 @@ class StartTLS(BaseExtension):
         logger.info("Performing STARTTLS initiation...")
         self.base.wrap_ssl()
 
-        self.done = True
         cap_negotiate = self.get_extension("CapNegotiate")
-        cap_negotiate.cont(event)
+        cap_negotiate.cont()
 
     @hook("commands", Numerics.ERR_STARTTLS)
     def abort(self, event):
         logger.critical("STARTTLS initiation failed, connection not secure")
-        self.base.socket = self.base._socket
-        del self.base._socket
 
-        self.done = True
         cap_negotiate = self.get_extension("CapNegotiate")
-        cap_negotiate.cont(event)
+        cap_negotiate.cont()

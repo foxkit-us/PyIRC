@@ -53,7 +53,7 @@ class SASLBase(BaseExtension):
         self.username = kwargs.get("sasl_username")
         self.password = kwargs.get("sasl_password")
 
-        self.done = False
+        self.cap_event = None
         self.authenticated = False
 
     @property
@@ -75,36 +75,40 @@ class SASLBase(BaseExtension):
     @hook("hooks", "disconnected")
     def close(self, event):
         self.mechanisms.clear()
-        self.done = False
+        self.cap_event = None
 
-    @hook("commands_cap", "ack")
+    @hook("cap_perform", "ack")
     def auth(self, event):
         cap_negotiate = self.get_extension("CapNegotiate")
 
-        if self.done:
-            # Finished authentication
+        if self.cap_event or "sasl" not in event.caps:
             return
         elif self.method is None:
             raise NotImplementedError("Need an authentication method!")
-        elif "sasl" not in cap_negotiate.remote:
-            # CAP nonexistent
-            return
+
+        self.authenticated = False
+        self.cap_event = event
 
         if cap_negotiate.remote["sasl"]:
             # 3.2 style
-            self.mechanisms = set(c.lower() for c in
-                                  cap_negotiate.remote["sasl"])
+            params = cap_negotiate.remote["sasl"]
+            self.mechanisms = set(c.lower() for c in params)
 
         self.send("AUTHENTICATE", [self.method])
 
         # Defer end of CAP
         event.status = EventState.cancel
 
+    @hook("commands_cap", "end")
+    def end_cap(self, event):
+        # A quick n' dirty hack used to rearm cap_event
+
+        self.cap_event = None
+
     @hook("commands", Numerics.RPL_SASLSUCCESS)
     def success(self, event):
         logger.info("SASL authentication succeeded as %s", self.username)
 
-        self.done = True
         self.authenticated = True
 
         services_login = self.get_extension("ServicesLogin")
@@ -112,7 +116,7 @@ class SASLBase(BaseExtension):
             # No need to authenticate
             services_login.authenticated = True
 
-        self.get_extension("CapNegotiate").cont(event)
+        self.get_extension("CapNegotiate").cont()
 
     @hook("commands", Numerics.ERR_SASLFAIL)
     @hook("commands", Numerics.ERR_SASLTOOLONG)
@@ -120,8 +124,8 @@ class SASLBase(BaseExtension):
     def fail(self, event):
         logger.info("SASL authentication failed as %s", self.username)
 
-        self.done = True
-        self.get_extension("CapNegotiate").cont(event)
+        self.cap_event = event
+        self.get_extension("CapNegotiate").cont()
 
     @hook("commands", Numerics.ERR_SASLALREADY)
     def already(self, event):

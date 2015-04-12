@@ -12,6 +12,7 @@ http://ircv3.atheme.org/specification/capability-negotiation-3.1
 """
 
 
+from collections import deque
 from functools import partial
 from logging import getLogger
 
@@ -22,6 +23,18 @@ from PyIRC.numerics import Numerics
 
 
 logger = getLogger(__name__)
+
+
+class CAPEvent(LineEvent):
+    """A CAP ACK/NEW event"""
+
+    def __init__(self, event, line, caps):
+        super().__init__(event, line)
+        self.caps = caps
+
+    @staticmethod
+    def key(k):
+        return k.lower()
 
 
 class CapNegotiate(BaseExtension):
@@ -57,6 +70,7 @@ class CapNegotiate(BaseExtension):
 
     hook_classes = {
         "commands_cap" : LineEvent,
+        "cap_perform" : CAPEvent,
     }
 
     def __init__(self, base, **kwargs):
@@ -77,6 +91,9 @@ class CapNegotiate(BaseExtension):
 
         # Timer for CAP disarm
         self.timer = None
+
+        # Current ACK events queue
+        self.ack_events = deque()
 
     @staticmethod
     def extract_caps(line):
@@ -107,8 +124,6 @@ class CapNegotiate(BaseExtension):
 
     @hook("hooks", "connected")
     def send_cap(self, event):
-        """ Request capabilities from the server """
-
         if not self.negotiating:
             return
 
@@ -125,8 +140,6 @@ class CapNegotiate(BaseExtension):
 
     @hook("hooks", "disconnected")
     def close(self, event):
-        """ Reset state on disconnect """
-
         if self.timer is not None:
             try:
                 self.unschedule(self.timer)
@@ -154,8 +167,6 @@ class CapNegotiate(BaseExtension):
     @hook("commands_cap", "new")
     @hook("commands_cap", "ls")
     def get_remote(self, event):
-        """ A list of the CAPs the server supports (CAP LS) """
-
         remote = self.extract_caps(event.line)
         self.remote.update(remote)
 
@@ -191,28 +202,18 @@ class CapNegotiate(BaseExtension):
 
     @hook("commands_cap", "list")
     def get_local(self, event):
-        """ caps presently in use """
-
         self.local = caps = extract_caps(event.line)
         logger.debug("CAPs active: %s", caps)
 
     @hook("commands_cap", "ack")
     def ack(self, event):
-        """ Acknowledge a CAP ACK response """
-
-        # XXX ghetto hack to avoid calling us again
-        if not hasattr(event, "line"):
-            return
-        if event.line.command.lower() != "cap":
-            return
-        if event.line.params[1].lower() != "ack":
-            return
-
+        caps = dict()
         for cap, params in self.extract_caps(event.line).items():
             if cap.startswith('-'):
                 cap = cap[1:]
                 logger.debug("CAP removed: %s", cap)
                 self.local.pop(cap, None)
+                caps.pop(cap, None)  # Just in case
                 continue
             elif cap.startswith(('=', '~')):
                 # Compatibility stuff
@@ -220,19 +221,20 @@ class CapNegotiate(BaseExtension):
 
             assert cap in self.supported
             logger.debug("Acknowledged CAP: %s", cap)
-            self.local[cap] = params
+            caps[cap] = self.local[cap] = params
+
+        event = self.call_event("cap_perform", "ack", event.line, caps)
+        if event.status == EventState.cancel:
+            # Push to the head
+            self.ack_events.append(event)
 
     @hook("commands_cap", "nak")
     def nak(self, event):
-        """ CAPs rejected """
-
         logger.warn("Rejected CAPs: %s", event.line.params[-1].lower())
 
     @hook("commands_cap", "end")
     @hook("commands", Numerics.RPL_HELLO)
     def end(self, event):
-        """ End the CAP process """
-
         logger.debug("Ending CAP negotiation")
 
         if self.timer is not None:
@@ -250,22 +252,46 @@ class CapNegotiate(BaseExtension):
         self.call_event("hooks", "connected")
 
     def register(self, cap, params=list(), replace=False):
-        """ Register that we support a specific CAP """
+        """Register that we support a specific CAP
 
+        Arguments:
+
+        cap
+            The capability to register support for
+
+        params
+            The parameters to pass for the CAP (IRCv3 extension)
+
+        replace
+            Replace existing CAP report, if present
+        """
         if replace or cap not in self.supported:
             self.supported[cap] = params
         else:
             self.supported[cap].extend(params)
 
-    def deregister(self, cap):
-        """ Unregister support for a specific CAP """
+    def unregister(self, cap):
+        """Unregister support for a specific CAP.
 
+        Arguments:
+
+        cap
+            Capability to remove
+        """
         self.supported.pop(cap, None)
 
-    def cont(self, event):
-        """ Continue negotiation of caps """
+    def cont(self):
+        """Continue negotiation of caps"""
+        assert self.ack_events
+        event = self.ack_events[0]
 
-        status = self.call_event("commands_cap", "ack", event.line).status
-        if status == EventState.ok:
-            if self.negotiating:
-                self.end(event)
+        # Reset event status
+        event.status = EventState.ok
+        self.call_event_inst("cap_perform", "ack", event)
+
+        if event.status == EventState.ok:
+            # Event complete
+            self.ack_events.popleft()
+
+        if not self.ack_events and self.negotiating:
+            self.end(event)

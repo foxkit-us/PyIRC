@@ -64,6 +64,11 @@ class BaseExtension(metaclass=HookGenerator):
 
         return self.base.events.call_event(hclass, event, *args)
 
+    def call_event_inst(self, hclass, event, eventinst):
+        """ Mirror self.base.events.call_event_inst """
+
+        return self.base.events.call_event_inst(hclass, event, eventinst)
+
     def casefold(self, string):
         """ Mirror self.base.casefold """
 

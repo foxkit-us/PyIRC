@@ -199,21 +199,23 @@ class UserTrack(BaseExtension):
             self.whois_send.add(fold_nick)
 
     def get_user(self, nick):
-        """ Get a user, or None if nonexistent
+        """Retrieve a user from the tracking dictionary based on nick.
 
         Use of this method is preferred to directly accessing the user
         dictionary.
 
+        Returns None if user not found.
+
         Arguments:
 
         nick
-            Nickname of the user to retrieve information about.
+            Nickname of the user to retrieve.
         """
 
         return self.users.get(self.casefold(nick))
 
     def add_user(self, nick, **kwargs):
-        """ Add a user
+        """Add a user to the tracking dictionary.
 
         Avoid using this method directly unless you know what you are doing.
         """
@@ -226,7 +228,7 @@ class UserTrack(BaseExtension):
         return user
 
     def remove_user(self, nick):
-        """ Remove a user
+        """Remove a user from the tracking dictionary.
 
         Avoid using this method directly unless you know what you are doing.
         """
@@ -356,7 +358,7 @@ class UserTrack(BaseExtension):
             isupport = self.get_extension("ISupport")
 
             params = [channel]
-            if "WHOX" in isupport.supported:
+            if isupport.get("WHOX"):
                 # Use WHOX if possible
                 num = ''.join(str(randint(0, 9)) for x in range(randint(1, 3)))
                 params.append("%tcuihsnflar," + num)
@@ -373,16 +375,13 @@ class UserTrack(BaseExtension):
         self.update_username_host(event.line)
 
         isupport = self.get_extension("ISupport")
-        chantypes = isupport.supported.get("CHANTYPES", '#+!&')
-        modegroups = list(isupport.supported.get("CHANMODES",
-                                                 ["b", "k", "l", "imnstp"]))
-
-        prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
+        modegroups = list(isupport.get("CHANMODES"))
+        prefix = prefix_parse(isupport.get("PREFIX"))
 
         channel = self.casefold(event.line.params[0])
 
         # Don't care if user-directed, as that means us most of the time
-        if not channel.startswith(*chantypes):
+        if not channel.startswith(isupport.get("CHANTYPES")):
             return
 
         modes = event.line.params[1]
@@ -523,7 +522,7 @@ class UserTrack(BaseExtension):
         channel = self.casefold(event.line.params[2])
 
         isupport = self.get_extension("ISupport")
-        prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
+        prefix = prefix_parse(isupport.get("PREFIX"))
 
         for nick in event.line.params[-1].split():
             mode, nick = status_prefix_parse(nick, prefix)
@@ -601,7 +600,7 @@ class UserTrack(BaseExtension):
             return
 
         isupport = self.get_extension("ISupport")
-        prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
+        prefix = prefix_parse(isupport.get("PREFIX"))
 
         for channel in event.line.params[-1].split():
             mode = set()
@@ -692,7 +691,7 @@ class UserTrack(BaseExtension):
 
         isupport = self.get_extension("ISupport")
 
-        if isupport.supported.get("RFC2812", False):
+        if isupport.get("RFC2812"):
             # IRCNet, for some stupid braindead reason, sends SID here. Why? I
             # don't know. They mentioned it might break clients in the commit
             # log. I really have no idea why it exists, why it's useful to
@@ -704,7 +703,7 @@ class UserTrack(BaseExtension):
 
         if channel != '*':
             # Convert symbols to modes
-            prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
+            prefix = prefix_parse(isupport.get("PREFIX"))
 
             mode = set()
             for char in flags.modes:
@@ -763,7 +762,7 @@ class UserTrack(BaseExtension):
             # Convert symbols to modes
             isupport = self.get_extension("ISupport")
 
-            prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
+            prefix = prefix_parse(isupport.get("PREFIX"))
 
             mode = set()
             for char in flags.modes:

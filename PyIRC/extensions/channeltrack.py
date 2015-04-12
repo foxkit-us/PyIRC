@@ -188,8 +188,8 @@ class ChannelTrack(BaseExtension):
         del channel.users[self.casefold(hostmask.nick)]
 
     def _get_modegroups(self):
-        supported = self.get_extension("ISupport").supported
-        modes = supported.get("CHANMODES", ["b", "k", "l", "imnstp"])
+        isupport = self.get_extension("ISupport")
+        modes = isupport.get("CHANMODES")
         return list(modes)
 
     @hook("commands", "MODE")
@@ -204,7 +204,7 @@ class ChannelTrack(BaseExtension):
         modegroups = self._get_modegroups()
 
         # Status modes
-        prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
+        prefix = prefix_parse(isupport.get("PREFIX"))
 
         modes = event.line.params[1]
         if len(event.line.params) >= 3:
@@ -248,7 +248,7 @@ class ChannelTrack(BaseExtension):
         modegroups = self._get_modegroups()
 
         # Status modes
-        prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
+        prefix = prefix_parse(isupport.get("PREFIX"))
 
         modes = event.line.params[2]
         if len(event.line.params) >= 4:
@@ -344,7 +344,7 @@ class ChannelTrack(BaseExtension):
         assert channel
 
         isupport = self.get_extension("ISupport")
-        prefix = prefix_parse(isupport.supported.get("PREFIX", "(ov)@+"))
+        prefix = prefix_parse(isupport.get("PREFIX"))
 
         for nick in event.line.params[-1].split():
             mode, nick = status_prefix_parse(nick, prefix)

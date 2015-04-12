@@ -5,7 +5,7 @@
 
 ## Channel tracking
 - [x] Known channels we've joined (mostly done)
-- [ ] Autorejoin on kick/remove
+- [x] Autorejoin on kick/remove
 - [x] Basic support for known users (see user tracking)
 
 ## User tracking
@@ -28,7 +28,7 @@
 - [x] IRCv3.x (mostly)
 - [x] CTCP
 - [ ] DCC
-- [ ] NickServ/Q support
+- [x] NickServ/Q support
 - [ ] PROTOCTL (?)
 
 ## IRCv3.x
@@ -47,7 +47,7 @@
 # Architectural
 - [x] Real event structures passed to callbacks (that have event status,
       data, etc).
-- [ ] Outgoing command hooks
+- [x] Outgoing command hooks
 - [x] Automatic dependency loading
 - [x] Generic canned sets of extensions
 - [ ] Unit tests
@@ -57,9 +57,9 @@
 
 # Docs
 - [x] extensions
-- [ ] io
+- [x] io
 - [ ] base
-- [ ] util
+- [x] util
 
 ## Extension docs
 - [x] autojoin.AutoJoin
@@ -78,8 +78,8 @@
 - [x] usertrack.UserTrack
 
 ## IO docs
-- [ ] asyncio.IRCProtocol
-- [ ] socket.IRCSocket
+- [x] asyncio.IRCProtocol
+- [x] socket.IRCSocket
 
 ## Base docs
 - [x] auxparse.prefix\_parse
@@ -89,14 +89,14 @@
 - [x] auxparse.CTCPMessage
 - [x] base.IRCBase
 - [x] casemapping.IRCString
-- [ ] event.EventState
-- [ ] event.Event
-- [ ] event.HookEvent
-- [ ] event.LineEvent
-- [ ] event.EventManager
+- [x] event.EventState
+- [x] event.Event
+- [x] event.HookEvent
+- [x] event.LineEvent
+- [x] event.EventManager
 - [x] extension.HookGenerator
 - [x] extension.BaseExtension
-- [ ] extension.ExtensionManager
+- [x] extension.ExtensionManager
 - [x] line.Tags
 - [x] line.Hostmask
 - [x] line.Line

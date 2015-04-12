@@ -217,15 +217,31 @@ class CTCPMessage:
 
     __slots__ = ('msgtype', 'command', 'target', 'param')
 
-    def __init__(self, type, command, target, param):
-        self.msgtype = type
+    def __init__(self, msgtype, command, target, param):
+        """Initalise the CTCPMessage instance
+
+        Arguments:
+
+        msgtype
+            The type of message received, either PRIVMSG or NOTICE
+        
+        command
+            The CTCP command used (e.g., PING, TIME, VERSION)
+
+        target
+            The target of this given CTCP request or response
+
+        param
+            The param(s) of the CTCP message, with no parsing attempted.
+        """
+        self.msgtype = msgtype
         self.command = command
         self.target = target
         self.param = param
 
     @classmethod
     def parse(cls, line):
-        """ Return a new CTCPMessage from the line specified
+        """Return a new `CTCPMessage` from the line specified
 
         Arguments:
 
@@ -244,6 +260,6 @@ class CTCPMessage:
                    param)
 
     def line(self):
-        """ Return a Line instance representing this CTCP message """
+        """Return a ``Line`` instance representing this CTCP message"""
         str = '\x01{} {}\x01'.format(self.command, self.param)
         return Line(command=self.msgtype, params=[self.target, str])

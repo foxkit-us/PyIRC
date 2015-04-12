@@ -1,6 +1,9 @@
 Base library
 ============
 
+The base elements of the library. Implements the foundation for extension
+loading, events handling, and protocol parsing.
+
 .. toctree::
    :maxdepth: 2
 
@@ -47,6 +50,7 @@ line
 
 numerics
 --------
+
 Numerics for IRC servers. Not documented at the moment pending us finding a
 better way to document them.
 

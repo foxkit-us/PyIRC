@@ -2,13 +2,17 @@
 # This file is part of the PyIRC 3 project. See LICENSE in the root directory
 # for licensing information.
 
+
 """IRC numerics derived from Inspircd, Charybdis, Bahamut, and any others.
 
-This file has been automatically generated with conflicts manually sorted out
-
-Conflicts should be handled by using the number directly, not the name.
-Comments will be added for conflicts.
+There is some duplication of names at the moment (aliases for the same
+numeric). This will be fixed. In the meantime, stick to the more popular
+meaning of the numeric.
 """
+
+# This file has been automatically generated with conflicts manually sorted out
+# The comments show the place the numerics came from
+# TODO: fix name duplication
 
 try:
     from enum import Enum

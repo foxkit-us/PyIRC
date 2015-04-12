@@ -262,9 +262,6 @@ PyIRC is pretty simple to use:
 
 Yes, it's that easy. No fuss, no muss.
 
-References
-==========
-
 .. _CAP: https://tools.ietf.org/html/draft-mitchell-irc-capabilities-01
 
 .. _CTCP: http://www.irchelp.org/irchelp/rfc/ctcpspec.html

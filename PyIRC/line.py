@@ -191,7 +191,7 @@ class Line:
     hostmasks (accepting such joys as '' and 'user1@user2@user3'), but trying
     to enforce strict validity in hostmasks will be slow. """
     @classmethod
-    def parse(cls, line, direction=False):
+    def parse(cls, line):
         if not line:
             logger.warning("Blank line passed in!")
             return
@@ -240,8 +240,8 @@ class Line:
 
             params.append(next_param)
 
-        return cls(tags=tags, host=hostmask, command=command, params=params,
-                   line=raw_line, direction=direction)
+        return cls(tags=tags, hostmask=hostmask, command=command,
+                   params=params, line=raw_line)
 
     def __str__(self):
         if not self.linestr:

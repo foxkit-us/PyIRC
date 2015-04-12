@@ -24,6 +24,14 @@ extensions. Extensions can add their own event classes via the hook_classes
 attribute. Conflicts are simply ignored (last one to register in the
 extensions list wins).
 
+cap_perform
+^^^^^^^^^^^
+
+Use this to hook when to execute CAPs during either a CAP ACK or a CAP NEW
+event.
+
+This fires a ``CAPEvent`` event.
+
 commands
 ^^^^^^^^
 
@@ -86,29 +94,26 @@ The most important default events called by PyIRC are documented here. Of
 course, it is not possible to document every last hook (not to mention hook
 classes are open-ended on purpose).
 
+cap_perform
+^^^^^^^^^^
+
+ack
+"""
+
+Use this to do the initial handshake. To keep other caps from running, cancel
+the event. Processing can be resumed using ``CapNegotiate.cont()``.
+
 commands_cap
 ^^^^^^^^^^^^
 
 Whilst it is not necessarily useful to hook all of the CAP subcommands, the
 ones you likely want are documented here.
 
-ack
+end
 """
 
-The ``ack`` event is used to acknowledge capabilities and do necessary
-processes before the handhshake completes. In this way, it acts as a sort of
-"pipeline" of events, that can be stalled in a specific order to achieve an
-orderly handshake. To stall the ``ack`` "pipeline", set the ``LineEvent``
-status member to cancelled, and do your part of the handshake. Be prepared to
-handle errors, and to abort your stage of the handshake if needed and resume
-processing, or even to abort the connection if the error is that fatal. When
-you are finished with your portion of the handshake, call the
-``CapNegotiate.cont`` callback to continue the handshake. This calls the
-``ack`` hook again, so ensure you keep a flag to ensure you don't end up in an
-infinite loop. Deregistering the event is also an option.
-
-.. warning::
-   Remember to reset all flags and events on close!
+Can be used to ensure that, if you are expecting new caps to arrive, that your
+callbacks won't be confused when called again later after the handshake ends.
 
 ls
 ""

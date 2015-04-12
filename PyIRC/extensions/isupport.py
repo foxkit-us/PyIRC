@@ -17,6 +17,7 @@ The following should be safe:
 - PREFIX (value is of format "(modes)symbols for modes")
 - NETWORK (value is a string)
 - CASEMAPPING (ascii or rfc1459)
+- NICKLEN (value is a number, but stored as a string)
 - CHANMODES (list of values enumerating modes into four distinct classes,
   respectively: list modes, modes that send a parameter, modes that send a
   parameter only when set, and parameterless modes)
@@ -30,6 +31,7 @@ The following are common but not guaranteed:
 """
 
 
+from copy import deepcopy
 from logging import getLogger
 
 from PyIRC.extension import BaseExtension
@@ -55,11 +57,32 @@ class ISupport(BaseExtension):
         not conform to any implied standard.
     """
 
+    """Defaults until overridden, for old server compat."""
+    defaults = {
+        "PREFIX" : ['o', 'v', '@', '+'],
+        "CHANTYPES" : '#&!+',  # Old channel types
+        "NICKLEN" : "8",  # Old servers
+        "CASEMAPPING" : "RFC1459",  # The (Shipped) Gold Standard
+        "CHANMODES" : ['b', 'k', 'l', 'imnstp'],  # Old modes
+    }
+
     def __init__(self, base, **kwargs):
         self.base = base
 
         # State
-        self.supported = {}
+        self.supported = deepcopy(self.defaults)
+
+    def get(self, string):
+        """Get an ISUPPORT string.
+
+        Returns None if not found.
+
+        Arguments:
+
+        string
+            ISUPPORT string to look up.
+        """
+        return self.supported.get(string)
 
     @hook("hooks", "disconnected")
     def close(self, event):

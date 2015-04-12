@@ -29,20 +29,20 @@ logger = getLogger(__name__)
 class EventState(Enum):
     """The current state of an event."""
 
-    """ Proceed with other callbacks, if any. """
     ok = 0
+    """ Proceed with other callbacks, if any. """
 
-    """ Event is cancelled; do not run any further callbacks. """
     cancel = 1
+    """ Event is cancelled; do not run any further callbacks. """
 
-    """ Send a QUIT to the IRC server. """
     terminate_soon = 2
+    """ Send a QUIT to the IRC server. """
 
+    terminate_now = 3
     """ Abort the entire library immediately.
 
     .. warning:: This state should only be used if data loss may occur.
     """
-    terminate_now = 3
 
 
 class Event:

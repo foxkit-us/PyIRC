@@ -1,7 +1,8 @@
 # PyIRC
-This is PyIRC, an IRC library designed to be flexible, extensible, usable, and
-useful. It is entirely written in Python with no required external
-dependencies.
+This is PyIRC, an IRC library designed to be flexible, extensible, and easy to
+use for beginners, experts, and those who don't want to spend too much time
+messing around with things to get something working. It is entirely written in
+Python with no required external dependencies.
 
 This is a rewrite of a rewrite, so you may see PyIRC 3 sprinkled in some
 comments. Much has been learned from the first two efforts (PyIRC 1 had many
@@ -13,35 +14,41 @@ PyIRC 2, where appropriate.
 See LICENSE for details on distribution of this README and the software itself.
 
 ## Introduction
-This library has been designed with standards compliance in mind and as a goal.
-Relevant standards include [RFC1459](http://tools.ietf.org/html/rfc1459.html),
+Written by people who have been involved in IRC daemon coding for over 7
+years, this library has been designed with standards compliance in mind. This
+library aims to follow [RFC1459](http://tools.ietf.org/html/rfc1459.html),
 [RFC2812](http://tools.ietf.org/html/rfc2812.html), and
 [IRCv3](http://ircv3.org). RFC1459 and RFC2812 compliance is basically finished
-(the different USER syntax in RFC2812 is not well-supported), as well as IRCv3.0
-support. IRCv3.1 support should be fairly complete - if you notice any gaps,
-please file a bug. Features of IRCv3.2 are mostly done, but may not be tested,
-due to the lack of servers implementations.
+(the different USER syntax in RFC2812 is not well-supported by anything, and
+so is ignored), as well as IRCv3.0 support. IRCv3.1 and 3.2 support should be
+fairly complete - if you notice any gaps, please file a bug. 
 
-The library presently supports the following in extensions:
-- Autojoin
-- STARTTLS
-- Message tags (some parsing is attempted, but largely untested yet)
-- SASL, PLAIN auth only right now
-- CAP 
-- Scheduled events
-- Ability to hook any numeric/command and many events
+Note the IRCv3.2 support has not been extensively tested due to the lack of
+conforming implementations.
+
+The library presently supports the following using an extensions system:
+- Channel autojoin
+- STARTTLS (automatic SSL negotiation)
+- IRCv3 Message tags, though not thoroughly tested
+- SASL (PLAIN auth only right now - more methods are coming)
+- CAP - dynamic capabilities negotiation
+- Scheduled events (aka timers)
+- Ability to hook any numeric/command
+- Ability to hook connect, disconnect, and a variety of other higher-level
+  events
 
 See the [TODO](http://github.com/Elizafox/PyIRC/blob/master/TODO.md) for the
 list of planned features.
 
 ## Design
 PyIRC 3 is designed to be wholly uncoupled from the underlying I/O subsystem
-whilst providing easy ways to ingest events. It is designed to work around
-your event system, not the other way around.
+whilst providing easy ways to ingest events. It is designed to work with any
+reasonably well-written event system.
 
-Please note the library is not thread-safe at this time, although some locking
-is implemented (mostly sendq related stuff). If such functionality is desired,
-it will be added.
+This library is not thread-safe and therefore caution should be used when
+using PyIRC with threads. It does not, however, modify state outside of its
+own classes, so it's safe to run instances in a thread or start up IRC
+instances in a thread.
 
 ## Platforms
 The library is completely cross-platform and should work anywhere Python does,
@@ -57,8 +64,9 @@ Probably many! Tell us about them - see the support section or just file an
 issue on the [bug tracker :)](http://github.com/Elizacat/PyIRC/issues).
 
 ## Support
-Point your IRC client irc.interlinked.me #PyIRC for general questions, or file
-an issue/pull request on github. Feature requests are also accepted this way.
+We can be reached easily at irc.interlinked.me #PyIRC for general questions.
+Pull requests and patches are always welcomed. Features can be requested via
+the bug tracker.
 
 ## License and copyright
 Copyright © 2013-2015 Andrew Wilcox and Elizabeth Myers. All rights reserved.

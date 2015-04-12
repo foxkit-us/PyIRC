@@ -110,9 +110,9 @@ class ExtensionManager:
     def create_hooks(self, hclass):
         """Register hooks contained in the given attribute from loaded
         extensions
-        
+
         Arguments:
-        
+
         hclass
             Class to create hooks for
         """
@@ -175,7 +175,7 @@ class ExtensionManager:
 
         .. note::
             This does not rebuild the extensions cache.
-        
+
         Arguments:
 
         extension
@@ -189,7 +189,7 @@ class ExtensionManager:
 
     def get_extension(self, extension):
         """Get an extension by name
-        
+
         Returns None if the extension is not found.
 
         Arguments:
@@ -201,7 +201,7 @@ class ExtensionManager:
 
     def remove_extension(self, extension):
         """Remove a given extension by name
-        
+
         Arguments:
 
         extension

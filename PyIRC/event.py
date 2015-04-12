@@ -28,13 +28,13 @@ logger = getLogger(__name__)
 
 class EventState(Enum):
     """The current state of an event."""
-    
+
     """ Proceed with other callbacks, if any. """
     ok = 0
 
     """ Event is cancelled; do not run any further callbacks. """
     cancel = 1
-    
+
     """ Send a QUIT to the IRC server. """
     terminate_soon = 2
 
@@ -58,7 +58,7 @@ class Event:
         """Initalise the event object
 
         Arguments:
-        
+
         event
             The event type occuring
         """

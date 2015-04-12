@@ -20,7 +20,7 @@ logger = getLogger(__name__)
 
 class Tags:
     """Stores message tags
-    
+
     Message tags are a new feature proposed by IRCv3 to add enhanced
     out-of-band data to messages.
     """
@@ -37,7 +37,7 @@ class Tags:
     @classmethod
     def parse(cls, raw):
         """Parse a raw tag string into a Tags object.
-        
+
         Arguments:
 
         raw
@@ -83,7 +83,7 @@ class Hostmask:
     @classmethod
     def parse(cls, raw):
         """Parse a raw hostmask into a Hostmask object.
-        
+
         Arguments:
 
         raw

@@ -224,7 +224,7 @@ class CTCPMessage:
 
         msgtype
             The type of message received, either PRIVMSG or NOTICE
-        
+
         command
             The CTCP command used (e.g., PING, TIME, VERSION)
 

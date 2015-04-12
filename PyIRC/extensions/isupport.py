@@ -75,14 +75,19 @@ class ISupport(BaseExtension):
     def get(self, string):
         """Get an ISUPPORT string.
 
-        Returns None if not found.
+        Returns False if not found, True for keyless values, and the value
+        for keyed values.
 
         Arguments:
 
         string
             ISUPPORT string to look up.
         """
-        return self.supported.get(string)
+        if string not in self.supported:
+            return False
+
+        value = self.supported[string]
+        return (True if value is None else value)
 
     @hook("hooks", "disconnected")
     def close(self, event):

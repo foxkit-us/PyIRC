@@ -336,7 +336,6 @@ class HTMLFormatter(Formatter):
 class VT100Formatter(Formatter):
     """A VT100 IRC formatting class, suitable for Unix-style terminals"""
 
-    # (begin, end) pairs
     # (end, begin) pairs where applicable
     fmt_normal = '0'
     fmt_bold = ('22', '1')

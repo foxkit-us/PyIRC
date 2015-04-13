@@ -361,18 +361,18 @@ class VT100Formatter(Formatter):
                 # restore bold
                 ret.append(self.fmt_bold[1])
         else:
-            foreground = ColourVT100[self.colour[0].name].value.foreground
-            background = ColourVT100[self.colour[1].name].value.background
+            fg = ColourVT100[self.colour[0].name].value
+            bg = ColourVT100[self.colour[1].name].value
 
-            if self.bold and not foreground.intense:
+            if self.bold and not fg.intense:
                 # conflicts -_-
                 ret.append(self.fmt_bold[0])
-            elif not self.bold and foreground.intense:
+            elif not self.bold and fg.intense:
                 # intensify!
                 ret.append(self.fmt_bold[1])
 
             # The time has come to.. colourise!
-            ret.extend((foreground, background))
+            ret.extend((str(fg.foreground), str(bg.background)))
 
         return self.sgr.format(';'.join(ret))
 

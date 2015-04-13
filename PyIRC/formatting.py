@@ -381,7 +381,7 @@ class VT100Formatter(Formatter):
         return self.sgr.format(self.fmt_italic[self.italic])
 
     def do_normal(self):
-        return self.sgr.format(self.normal)
+        return self.sgr.format(self.fmt_normal)
 
     def do_reverse(self):
         return self.sgr.format(self.fmt_reverse)

@@ -228,7 +228,7 @@ def isupport_parse(params):
     >>> isupport_parse(["CHANTYPES=a,b,cdefg"])
     {'CHANTYPES': ['a', 'b', 'cdefg']}
     >>> isupport_parse(["EXCEPTS"])
-    {'EXCEPTS': None}
+    {'EXCEPTS': True}
     >>> isupport_parse(["PREFIX=(ov)@+"])
     {'PREFIX': '(ov)@+'}
     >>> isupport_parse(["MAXLIST=ACCEPT:5"])
@@ -250,7 +250,7 @@ def isupport_parse(params):
             continue
 
         # Parse into CSV
-        value = filter(None, value.split(','))
+        value = list(filter(None, value.split(',')))
 
         # For each value, parse into pairs of val : data
         for i, v in enumerate(value):
@@ -272,19 +272,19 @@ def isupport_parse(params):
 
 
 class CTCPMessage:
-    """Represent a CTCP message.
+    r"""Represent a CTCP message.
 
     >>> CTCPMessage("PRIVMSG", "PING", "#Sporks", "lol")
-    CTCPMessage(msgtype='PRIVMSG', command='PING', target='#Sporks', \
-    param='lol')
+    ... # doctest: +ELLIPSIS
+    CTCPMessage(...='PRIVMSG', ...='PING', ...='#Sporks', ...='lol')
     >>> CTCPMessage("PRIVMSG", "PING", "#Sporks", "lol").line
-    Line(tags=None, hostmask=None, command='PRIVMSG', params=['#Sporks', \
-    '\x01PING lol\x01'])
+    ... # doctest: +ELLIPSIS
+    Line(..., command='PRIVMSG', params=['#Sporks', '\x01PING lol\x01'])
     >>> line = Line(tags=None, hostmask=None, command='PRIVMSG',
     ... params=['#test', '\x01TEST TEST\x01'])
     >>> CTCPMessage.parse(line)
-    CTCPMessage(msgtype='PRIVMSG', command='TEST', target='#test', \
-    param='TEST')
+    ... # doctest: +ELLIPSIS
+    CTCPMessage(msgtype='PRIVMSG', ...='TEST', ...='#test', param='TEST')
     """
 
     __slots__ = ('msgtype', 'command', 'target', 'param')

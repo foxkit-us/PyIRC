@@ -57,18 +57,33 @@ class Tags:
 
         return cls(tags=tags, tagstr=raw)
 
+    def __repr__(self):
+        return "Tags(tags={})".format(repr(self.tags))
+
+    def __str__(self):
+        ret = []
+        for key, value in self.tags.items():
+            if value is None:
+                value = ''
+
+            ret.append('{}={}'.format(key,value))
+
+        return ';'.join(ret)
+
 
 class Hostmask:
     """ Stores a hostmask
 
     Hostmasks are used to store sources and destinations in IRC messages.
 
-    >>> repr(Hostmask.parse(mask='dongs!cocks@lol.org'))
-    'Hostmask(dongs!cocks@lol.org)'
-    >>> repr(Hostmask.parse(mask='dongs@lol.org'))
-    'Hostmask(dongs@lol.org)'
-    >>> repr(Hostmask.parse(mask='lol.org'))
-    'Hostmask(lol.org)'
+    >>> Hostmask.parse('nick!user@host')
+    Hostmask(nick='nick', username='user', host='host')
+    >>> Hostmask.parse('nick@host')
+    Hostmask(nick='nick', username=None, host='host')
+    >>> Hostmask.parse('host.org')
+    Hostmask(nick=None, username=None, host='host.org')
+    >>> Hostmask.parse('nickname')
+    Hostmask(nick='nickname', username=None, host=None)
     """
 
     __slots__ = ('nick', 'username', 'host', 'maskstr')
@@ -80,6 +95,9 @@ class Hostmask:
         self.host = host
         self.maskstr = mask
 
+        if not self.maskstr:
+            str(self)
+
     @classmethod
     def parse(cls, raw):
         """Parse a raw hostmask into a Hostmask object.
@@ -89,7 +107,6 @@ class Hostmask:
         raw
             The raw hostmask to parse.
         """
-
         if not raw:
             logger.debug("No hostmask found")
             return
@@ -137,7 +154,8 @@ class Hostmask:
         return str(self).encode('utf-8', 'replace')
 
     def __repr__(self):
-        return 'Hostmask({})'.format(str(self))
+        return "Hostmask(nick={}, username={}, host={})".format(
+            repr(self.nick), repr(self.username), repr(self.host))
 
 
 class Line:
@@ -145,18 +163,20 @@ class Line:
 
     This uses RFC1459 framing.
 
-    >>> repr(Line.parse(':lol.org PRIVMSG'))
-    'Line(:lol.org PRIVMSG)'
-    >>> repr(Line.parse('PING'))
-    'Line(PING)'
-    >>> repr(Line.parse('PING Elizacat'))
-    'Line(PING Elizacat)'
-    >>> repr(Line.parse('PING Elizacat :dongs'))
-    'Line(PING Elizacat :dongs)'
-    >>> repr(Line.parse('PING :dongs'))
-    'Line(PING :dongs)'
-    >>> repr(Line.parse(':dongs!dongs@lol.org PRIVMSG loldongs meow :dongs'))
-    'Line(:dongs!dongs@lol.org PRIVMSG loldongs meow :dongs)'
+    >>> Line.parse(':lol.org PRIVMSG')
+    Line(tags=None, hostmask=Hostmask(nick=None, username=None, \
+    host='lol.org'), command='PRIVMSG', params=[])
+    >>> Line.parse('PING')
+    Line(tags=None, hostmask=None, command='PING', params=[])
+    >>> Line.parse('PING Elizacat')
+    Line(tags=None, hostmask=None, command='PING', params=['Elizacat'])
+    >>> Line.parse('PING Elizacat :test')
+    Line(tags=None, hostmask=None, command='PING', params=['Elizacat', 'test'])
+    >>> Line.parse('PING :test')
+    Line(tags=None, hostmask=None, command='PING', params=['test'])
+    >>> Line.parse(':nick!user@host PRIVMSG #testroom meow :testing')
+    Line(tags=None, hostmask=Hostmask(nick='nick', username='user', \
+    host='host'), command='PRIVMSG', params=['#testroom', 'meow', 'testing'])
     """
 
     __slots__ = ('tags', 'hostmask', 'command', 'params', 'linestr')
@@ -182,6 +202,9 @@ class Line:
 
         if isinstance(self.command, int):
             self.command = str(self.command)
+
+        if self.linestr is None:
+            str(self)
 
     """ Parse an IRC line.
 
@@ -266,7 +289,9 @@ class Line:
         return str(self).encode('utf-8', 'replace')
 
     def __repr__(self):
-        return 'Line({})'.format(str(self).rstrip('\r\n'))
+        return "Line(tags={}, hostmask={}, command={}, params={})".format(
+            repr(self.tags), repr(self.hostmask), repr(self.command),
+            repr(self.params))
 
     def __hash__(self):
         return hash(str(self))

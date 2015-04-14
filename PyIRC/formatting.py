@@ -297,12 +297,12 @@ class NullFormatter(Formatter):
 
     """A stripping formatter that simply removes formatting"""
 
-    do_bold = lambda self : pass
-    do_colour = lambda self : pass
-    do_normal = lambda self : pass
-    do_reverse = lambda self : pass
-    do_italic = lambda self : pass
-    do_underline = lambda self : pass
+    do_bold = lambda self : ''
+    do_colour = lambda self : ''
+    do_normal = lambda self : ''
+    do_reverse = lambda self : ''
+    do_italic = lambda self : ''
+    do_underline = lambda self : ''
 
 
 class HTMLFormatter(Formatter):

@@ -87,7 +87,7 @@ class ColourEscape:
 class ColourRGB(Enum):
 
     """Colours used on IRC, converted to RGB values
-    
+
     mIRC maintains a list_ of colour codes to values.
 
     .. _list: http://www.mirc.com/colors.html
@@ -153,7 +153,7 @@ class FormattingCodes(Enum):
 class Formatter:
 
     """A basic format parser that uses callbacks to perform formatting
-    
+
     The callbacks return a string which is then added to the final output.
 
     The following attributes are available:
@@ -239,25 +239,25 @@ class Formatter:
                 index += match.end()
 
                 ret.append(self.do_colour())
-            
+
             elif char == FormattingCodes.normal.value:
                 # Reset all /after/ for normal formatters, so callbacks know
                 # what to undo.
                 ret.append(self.do_normal())
                 self.reset()
-            
+
             elif char == FormattingCodes.reverse.value:
                 self.reverse = not self.reverse
                 ret.append(self.do_reverse())
-            
+
             elif char == FormattingCodes.italic.value:
                 self.italic = not self.italic
                 ret.append(self.do_italic())
-            
+
             elif char == FormattingCodes.underline.value:
                 self.underline = not self.underline
                 ret.append(self.do_underline())
-            
+
             else:
                 # No formatter
                 ret.append(char)

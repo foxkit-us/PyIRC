@@ -217,7 +217,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
         """Send a message to a target.
 
         Arguments:
-        
+
         target
             Where to send the message, This may be a ``Channel`` instance,
             ``User`` instance, or a string.
@@ -396,7 +396,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
     def halfop(self, channel, *args):
         """Halfop a user (or users) on a given channel.
-        
+
         This may not be supported by your IRC server. Notably, FreeNode,
         EfNet, and IRCNet do not support this.
 
@@ -416,7 +416,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
     def dehalfop(self, channel, *args):
         """Dealfop a user (or users) on a given channel.
-        
+
         This may not be supported by your IRC server. Notably, FreeNode,
         EfNet, and IRCNet do not support this.
 
@@ -436,7 +436,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
     def process_bantargs(self, *args):
         """Process ban targets (as used by ban modes)
-        
+
         .. note::
             The default mask format is $a:account if an account is available
             for the user. This only works on servers that support extended
@@ -475,7 +475,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
     def ban(self, channel, *args):
         """Ban a user (or users) on a given channel.
-        
+
         Arguments:
 
         channel
@@ -492,7 +492,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
     def unban(self, channel, *args):
         """Unban a user (or users) on a given channel.
-        
+
         Note at present this is not reliable if User instances are passed in.
         This is an unfortunate side effect of the way IRC works (ban masks may
         be freeform). Another extension may provide enhanced capability to
@@ -514,7 +514,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
     def banexempt(self, channel, *args):
         """Ban exempt a user (or users) on a given channel.
-        
+
         Most (but not all) servers support this. IRCNet notably does not.
 
         Arguments:
@@ -538,7 +538,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
     def unbanexempt(self, channel, *args):
         """Un-ban exempt a user (or users) on a given channel.
-        
+
         Most (but not all) servers support this. IRCNet notably does not.
 
         Note at present this is not reliable if User instances are passed in.
@@ -567,7 +567,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
     def inviteexempt(self, channel, *args):
         """Invite exempt a user (or users) on a given channel.
-        
+
         Most (but not all) servers support this. IRCNet notably does not.
 
         Arguments:
@@ -591,7 +591,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
     def uninviteexempt(self, channel, *args):
         """Un-invite exempt a user (or users) on a given channel.
-        
+
         Most (but not all) servers support this. IRCNet notably does not.
 
         Note at present this is not reliable if User instances are passed in.
@@ -620,7 +620,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
     def quiet(self, channel, *args):
         """Quiet a user (or users) on a given channel.
-        
+
         Many servers do not support this. This supports the charybdis-derived
         variant. This means it will work on Charybdis and ircd-seven networks
         (notably FreeNode) but few others.
@@ -657,7 +657,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
     def unquiet(self, channel, *args):
         """Unquiet a user (or users) on a given channel.
-        
+
         Many servers do not support this. This supports the charybdis-derived
         variant. This means it will work on Charybdis and ircd-seven networks
         (notably FreeNode) but few others.
@@ -666,7 +666,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         This **requires** ``ISupport`` be enabled, to disambiguate quiet from
         owner on UnrealIRCd and InspIRCd.
-        
+
         Note at present this is not reliable if User instances are passed in.
         This is an unfortunate side effect of the way IRC works (ban masks may
         be freeform). Another extension may provide enhanced capability to

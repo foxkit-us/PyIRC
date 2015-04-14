@@ -32,7 +32,6 @@ class BasicRFC(BaseExtension):
       our nick, SANICK/FORCENICK operator abuse, or another extension changes
       our nick.
     """
-
     priority = PRIORITY_LAST
 
     def __init__(self, base, **kwargs):
@@ -67,7 +66,7 @@ class BasicRFC(BaseExtension):
 
     @hook("commands", "NICK")
     def nick(self, event):
-        if event.line.hostmask.nick != self.base.nick:
+        if event.line.hostmask.nick != self.nick:
             return
 
         # Set nick

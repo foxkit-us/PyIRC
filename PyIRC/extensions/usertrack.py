@@ -150,7 +150,7 @@ class UserTrack(BaseExtension):
         "userhost-in-names" : [],
     }
 
-    requires = ["ISupport"]
+    requires = ["BasicRFC", "ISupport"]
 
     def __init__(self, base, **kwargs):
         self.base = base
@@ -166,7 +166,8 @@ class UserTrack(BaseExtension):
         self.auth_cb = defaultdict(list)
 
         # Create ourselves
-        self.add_user(self.base.nick, user=self.base.username,
+        basicrfc = self.get_extension("BasicRFC")
+        self.add_user(basicrfc.nick, user=self.base.username,
                       gecos=self.base.gecos)
 
     def authenticate(self, nick, callback):
@@ -353,7 +354,8 @@ class UserTrack(BaseExtension):
         # Update info
         self.update_username_host(event.line)
 
-        if self.casefold(nick) == self.casefold(self.base.nick):
+        basicrfc = self.get_extension("BasicRFC")
+        if self.casefold(nick) == self.casefold(basicrfc.nick):
             # It's us!
             isupport = self.get_extension("ISupport")
 
@@ -489,14 +491,15 @@ class UserTrack(BaseExtension):
         assert channel in user.channels
         del user.channels[channel]
 
-        if (self.casefold(user.nick) == self.casefold(self.base.nick)):
+        basicrfc = self.get_extension("BasicRFC")
+        if self.casefold(user.nick) == self.casefold(basicrfc.nick):
             # We left the channel, scan all users to remove unneeded ones
             for u_nick, u_user in list(self.users.items()):
                 if channel in u_user.channels:
                     # Purge from the cache since we don't know for certain.
                     del u_user.channels[channel]
 
-                if self.casefold(u_nick) == self.casefold(self.base.nick):
+                if self.casefold(u_nick) == self.casefold(basicrfc.nick):
                     # Don't delete ourselves!
                     continue
 

@@ -158,9 +158,6 @@ class ChannelTrack(BaseExtension):
         channel = self.get_channel(event.line.params[0])
         if not channel:
             # We are joining
-            assert (self.casefold(hostmask.nick) ==
-                    self.casefold(self.base.nick))
-
             channel = self.add_channel(event.line.params[0])
 
         channel.users[self.casefold(hostmask.nick)] = set()
@@ -172,8 +169,9 @@ class ChannelTrack(BaseExtension):
         channel = self.get_channel(event.line.params[0])
         assert channel
 
-        if (self.casefold(hostmask.nick) ==
-                self.casefold(self.base.nick)):
+        basicrfc = self.get_extension("BasicRFC")
+
+        if self.casefold(hostmask.nick) == self.casefold(basicrfc.nick):
             # We are leaving
             self.remove_channel(channel.name)
             timer = self.mode_timers.pop(self.casefold(channel.name),

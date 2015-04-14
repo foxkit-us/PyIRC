@@ -4,10 +4,13 @@
 # for licensing information.
 
 
-"""Colour formatting constants
+"""Formatting of IRC messages.
 
-This includes bold, underline, (the somewhat widely supported) italic, and
-colouration"""
+This module contains IRC formatting-related data, and reformatting classes to
+deal with this formatting.
+
+Bold, italic, underline, reverse, and colours are handled.
+"""
 
 
 try:
@@ -20,6 +23,7 @@ from re import compile
 
 
 class Colour(IntEnum):
+
     """A list of colour numbers from name to index
 
     mIRC maintains a list_ of colour indexes to names
@@ -46,7 +50,8 @@ class Colour(IntEnum):
 
 
 class ColourTriplet(namedtuple("ColourTriplet", "red green blue")):
-    """A colour triplet"""
+
+    """A colour triplet (red, green, and blue)"""
 
     @property
     def html(self):
@@ -80,6 +85,7 @@ class ColourEscape:
 
 
 class ColourRGB(Enum):
+
     """Colours used on IRC, converted to RGB values
     
     mIRC maintains a list_ of colour codes to values.
@@ -106,6 +112,7 @@ class ColourRGB(Enum):
 
 
 class ColourVT100(Enum):
+
     """Colours used on IRC, approximated with VT100/ANSI escapes."""
 
     white = ColourEscape(True, 7),
@@ -127,6 +134,7 @@ class ColourVT100(Enum):
 
 
 class FormattingCodes(Enum):
+
     """IRC formatting codes
 
     A list is maintained by WikiChip_
@@ -143,6 +151,7 @@ class FormattingCodes(Enum):
 
 
 class Formatter:
+
     """A basic format parser that uses callbacks to perform formatting
     
     The callbacks return a string which is then added to the final output.
@@ -284,7 +293,20 @@ class Formatter:
         raise NotImplementedError()
 
 
+class NullFormatter(Formatter):
+
+    """A stripping formatter that simply removes formatting"""
+
+    do_bold = lambda self : pass
+    do_colour = lambda self : pass
+    do_normal = lambda self : pass
+    do_reverse = lambda self : pass
+    do_italic = lambda self : pass
+    do_underline = lambda self : pass
+
+
 class HTMLFormatter(Formatter):
+
     """A basic HTML IRC formatting class"""
 
     def do_bold(self):

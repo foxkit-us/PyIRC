@@ -36,6 +36,12 @@ extension
 .. automodule:: PyIRC.extension
    :members:
 
+formatting
+----------
+
+.. automodule:: PyIRC.formatting
+   :members:
+
 hook
 ----
 

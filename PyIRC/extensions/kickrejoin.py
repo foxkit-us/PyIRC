@@ -31,9 +31,11 @@ logger = getLogger(__name__)
 class KickRejoin(BaseExtension):
     """ Rejoin a channel automatically after being kicked or removed. """
 
-    requires = ["BasicRFC"]
     """ Describes what extensions are required to use this extension.  We use
-    the :py:class:`basicrfc.BasicRFC` extension for nick tracking. """
+    the :py:class:`basicrfc.BasicRFC` extension for nick tracking.
+    :py:class:`isupport.ISupport` is used for prefixes discovery.
+    """
+    requires = ["BasicRFC", "ISupport"]
 
     def __init__(self, base, **kwargs):
         """ Initialise the KickRejoin extension.
@@ -65,45 +67,94 @@ class KickRejoin(BaseExtension):
         # disconnected.)
         self.scheduled = {}
 
+        if self.rejoin_on_remove:
+            # This is used to ensure we know our part was voluntary
+            self.parts = set()
+
+    @hook("commands_out", "PART")
+    def on_part_out(self, event):
+        """ Command handler for PART's that are outgoing
+
+        This is used to ensure we know when we PART a channel, it's voluntary.
+        """
+        if not self.rejoin_on_remove:
+            # No bookkeeping
+            return
+
+        # This is how you can get another extension. In our case we retrieve
+        # ISUPPORT, for dynamic discovery of valid channel types. Note that
+        # these are case-sensitive.
+        isupport = self.get_extension("ISupport")
+
+        # Now that we have it (and it's required so we don't have to check for
+        # None), we can call methods from it. :D
+        chantypes = isupport.get("CHANTYPES")
+
+        # Parts are sent out as a comma-separated list
+        for channel in event.line.params[0].split(","):
+            if not channel.startswith(*chantypes):
+                # Not a valid channel... we COULD cancel but that might break
+                # some expectations of clients... so let's not :).
+                continue
+
+            # Casemap the channel according to the server's casemapping rules
+            # Nicks and channels are case-insensitive, so always casemap them
+            # for comparisons.
+            channel = self.casefold(channel)
+
+            self.parts.add(casefold)
+
     @hook("commands", "KICK")
-    @hook("commands", "REMOVE")
+    @hook("commands", "PART")
     def on_kick(self, event):
-        """ Command handler for KICK and REMOVE.
+        """ Command handler for KICK and PART.
 
         This method receives a LineEvent object as its parameter, and will use
         it to determine if we were the ones kick/removed, and what action to
         take.
         """
-
         # Retrieve the BasicRFC extension handle.
         basicrfc = self.get_extension("BasicRFC")
 
-        # Determine if the kicked user is us.
-        if event.line.params[1] != basicrfc.nick:
-            return  # It isn't us, so we don't care.
-
-        # If this was a REMOVE and the user is being 'nice', ignore.
-        if event.line.command == 'REMOVE' and not self.rejoin_on_remove:
-            return
+        params = event.line.params
 
         # What channel were we kicked from?
-        channel = event.line.params[0]
+        channel = self.casefold(params[0])
+
+        # Determine if the kicked user is us.
+        if self.casefold(params[1]) != self.casefold(basicrfc.nick):
+            return  # It isn't us, so we don't care.
+
+        if event.line.command == 'PART':
+            # Do not rejoin if we are being 'nice'
+            if not self.rejoin_on_remove:
+                return
+            elif channel in self.parts:
+                # We left on our own :P
+                self.parts.delete(channel)
+                return
+
+        if self.rejoin_on_remove:
+            # Unconditionally remove channel.
+            self.parts.discard(channel)
 
         # If we already pending rejoin, don't bother.
         # (XXX is this even possible?)
+        # No not normally. But, always program defensively. --Elizabeth
         if channel in self.scheduled:
             return
 
         # Schedule the join for `rejoin_delay` seconds from now.
         future = self.schedule(self.rejoin_delay, partial(self.join, channel))
+
         # and add it to the list of scheduled rejoins.
         self.scheduled[channel] = future
 
     def join(self, channel):
         """ Join the specified channel and remove the channel from the pending
         rejoin list. """
-
         self.send("JOIN", [channel])
+        self.parts.discard(channel)
         del self.scheduled[channel]
 
     @hook("hooks", "disconnected")
@@ -118,10 +169,10 @@ class KickRejoin(BaseExtension):
             try:
                 self.unschedule(future)
             except ValueError:
-                pass  # XXX why?
+                pass  # Avoid a race when we get an exception during the join
+                      # callback.
 
         self.scheduled.clear()
 
 # That's it!
-# Pretty nifty, huh?  53 lines (not including documentation) to automatically
-# rejoin channels when kicked or removed.  Now try it out!
+# Pretty nifty, huh?  Now try it out!

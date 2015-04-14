@@ -27,12 +27,12 @@ rfc1459_upper = ascii_uppercase + "[]\\^"  # I just enforce them.
 rfc1459_tolower = str.maketrans(rfc1459_upper, rfc1459_lower)
 rfc1459_toupper = str.maketrans(rfc1459_lower, rfc1459_upper)
 
-ascii_tolower = str.maketrans(ascii_lowercase, ascii_uppercase)
-ascii_toupper = str.maketrans(ascii_uppercase, ascii_lowercase)
+ascii_tolower = str.maketrans(ascii_uppercase, ascii_lowercase)
+ascii_toupper = str.maketrans(ascii_lowercase, ascii_uppercase)
 
 
 class IRCString(str):
-    """ An IRC string.
+    r"""An IRC string.
 
     Same as a normal string, with IRC style casemapping.
 

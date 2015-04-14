@@ -30,7 +30,7 @@ cap_perform
 Use this to hook when to execute CAPs during either a CAP ACK or a CAP NEW
 event.
 
-This fires a ``CAPEvent`` event.
+A ``CAPEvent`` is passed in.
 
 commands
 ^^^^^^^^

@@ -60,7 +60,7 @@ class CTCP(BaseExtension):
         """ CTCP a target a given command """
 
         ctcp = CTCPMessage("PRIVMSG", command.upper(), target, param)
-        line = ctcp.line()
+        line = ctcp.line
 
         self.send(line.command, line.params)
 
@@ -68,7 +68,7 @@ class CTCP(BaseExtension):
         """ Reply to a CTCP """
 
         ctcp = CTCPMessage("NOTICE", command.upper(), target, param)
-        line = ctcp.line()
+        line = ctcp.line
 
         self.send(line.command, line.params)
 

@@ -95,10 +95,25 @@ def mode_parse(modes, params, modegroups, prefix):
         The mode prefixes from ISupport.supported['PREFIX'], optionally parsed
         by prefix_parse
 
-    
+    >>> modegroups = ("beIq", "k", "flj", "ac")
+    >>> prefixmodes = "(ov)@+"
+    >>> f = lambda x: [(char, param, adding) for char, param, adding in x]
+    >>> f(mode_parse("+oba", ("a", "b"), modegroups, prefixmodes))
+    [('o', 'a', True), ('b', 'b', True), ('a', None, True)]
+    >>> f(mode_parse("+o-o", ("a", "a"), modegroups, prefixmodes))
+    [('o', 'a', True), ('o', 'a', False)]
+    >>> f(mode_parse("+k-k", ("test",), modegroups, prefixmodes))
+    [('k', 'test', True), ('k', None, False)]
+    >>> f(mode_parse("+bf-k+b", ("a", "b", "c"), modegroups, prefixmodes))
+    [('b', 'a', True), ('f', 'b', True), ('k', None, False), ('b', 'c', True)]
+    >>> prefixmodes = prefix_parse(prefixmodes)
+    >>> f(mode_parse("+ov-v", ("a", "b", "c"), modegroups, prefixmodes))
+    [('o', 'a', True), ('v', 'b', True), ('v', 'c', False)]
     """
     if not hasattr(prefix, 'items'):
         prefix = prefix_parse(prefix)
+
+    params = list(params)
 
     status = ''.join(mode for mode in prefix if mode in ascii_letters)
 
@@ -132,12 +147,22 @@ def status_prefix_parse(string, prefix):
 
     Arguments:
 
-    nick
-        Nick containing leading sigils.
+    string
+        Nick or channel containing leading sigils.
 
     prefix
         The mode prefixes from ISupport.supported['PREFIX'], optionally parsed
         by prefix_parse
+
+    >>> status_prefix_parse("@#channel", "(ov)@+")
+    ({'@'}, '#channel')
+    >>> status_prefix_parse("+#ch@nnel", "(ov)@+")
+    ({'+'}, '#ch@nnel')
+    >>> status_prefix_parse("+#", "(ov)@+")
+    ({'+'}, '#')
+    >>> modes, channel = status_prefix_parse("@+#", "(ov)@+")
+    >>> sorted(modes), channel
+    (['+', '@'], '#')
     """
     if not hasattr(prefix, 'items'):
         prefix = prefix_parse(prefix)
@@ -199,6 +224,19 @@ def isupport_parse(params):
 
     params
         Params to parse into ISUPPORT entries in the dictionary
+
+    >>> isupport_parse(["CHANTYPES=a,b,cdefg"])
+    {'CHANTYPES': ['a', 'b', 'cdefg']}
+    >>> isupport_parse(["EXCEPTS"])
+    {'EXCEPTS': None}
+    >>> isupport_parse(["PREFIX=(ov)@+"])
+    {'PREFIX': '(ov)@+'}
+    >>> isupport_parse(["MAXLIST=ACCEPT:5"])
+    {'MAXLIST': ('ACCEPT', '5')}
+    >>> isupport_parse(["MAXLIST=ACCEPT:,TEST:5"])
+    {'MAXLIST': [('ACCEPT', None), ('TEST', '5')]}
+    >>> sorted((k, v) for k, v in isupport_parse(["EXCEPTS", "INVEX"]).items())
+    [('EXCEPTS', True), ('INVEX', True)]
     """
     supported = dict()
 
@@ -212,7 +250,7 @@ def isupport_parse(params):
             continue
 
         # Parse into CSV
-        value = value.split(',')
+        value = filter(None, value.split(','))
 
         # For each value, parse into pairs of val : data
         for i, v in enumerate(value):
@@ -234,7 +272,20 @@ def isupport_parse(params):
 
 
 class CTCPMessage:
-    """ Represent a CTCP message. """
+    """Represent a CTCP message.
+
+    >>> CTCPMessage("PRIVMSG", "PING", "#Sporks", "lol")
+    CTCPMessage(msgtype='PRIVMSG', command='PING', target='#Sporks', \
+    param='lol')
+    >>> CTCPMessage("PRIVMSG", "PING", "#Sporks", "lol").line
+    Line(tags=None, hostmask=None, command='PRIVMSG', params=['#Sporks', \
+    '\x01PING lol\x01'])
+    >>> line = Line(tags=None, hostmask=None, command='PRIVMSG',
+    ... params=['#test', '\x01TEST TEST\x01'])
+    >>> CTCPMessage.parse(line)
+    CTCPMessage(msgtype='PRIVMSG', command='TEST', target='#test', \
+    param='TEST')
+    """
 
     __slots__ = ('msgtype', 'command', 'target', 'param')
 
@@ -262,12 +313,12 @@ class CTCPMessage:
 
     @classmethod
     def parse(cls, line):
-        """Return a new `CTCPMessage` from the line specified
+        """Return a new :py:class::`CTCPMessage` from the line specified
 
         Arguments:
 
         line
-            A Line instance to parse into a CTCPMessage
+            A Line instance to parse into a :py:class::`CTCPMessage`
         """
         message = line.params[1]
 
@@ -276,11 +327,24 @@ class CTCPMessage:
 
         message = message[1:-1]  # chop off \x01 at beginning and end
         (command, _, param) = message.partition(' ')
+        param = param.strip()
+        if not param:
+            param = None
 
-        return cls(line.command.upper(), command.upper(), line.hostmask.nick,
-                   param)
+        if not line.hostmask or not line.hostmask.nick:
+            target = line.params[0]
+        else:
+            target = line.hostmask.nick
 
+        return cls(line.command.upper(), command.upper(), target, param)
+
+    @property
     def line(self):
-        """Return a ``Line`` instance representing this CTCP message"""
-        str = '\x01{} {}\x01'.format(self.command, self.param)
-        return Line(command=self.msgtype, params=[self.target, str])
+        """Return a :py:class::`Line` instance representing this CTCP message"""
+        message = '\x01{} {}\x01'.format(self.command, self.param)
+        return Line(command=self.msgtype, params=[self.target, message])
+
+    def __repr__(self):
+        return "CTCPMessage(msgtype={}, command={}, target={}, " \
+            "param={})".format(repr(self.msgtype), repr(self.command),
+                              repr(self.target), repr(self.param))

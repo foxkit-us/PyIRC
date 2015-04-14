@@ -529,7 +529,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
         .. note::
             All items are passed through ``process_bantargs``.
         """
-        isupport = self.extensions_get("ISupport")
+        isupport = self.get_extensions("ISupport")
         if isupport and not (isupport.get("EXCEPTS") or 'e' in
                              isupport.get("CHANMODES")[0]):
             return False
@@ -558,7 +558,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
         .. note::
             All items are passed through ``process_bantargs``.
         """
-        isupport = self.extensions_get("ISupport")
+        isupport = self.get_extensions("ISupport")
         if isupport and not (isupport.get("EXCEPTS") or 'e' in
                              isupport.get("CHANMODES")[0]):
             return False
@@ -582,7 +582,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
         .. note::
             All items are passed through ``process_bantargs``.
         """
-        isupport = self.extensions_get("ISupport")
+        isupport = self.get_extensions("ISupport")
         if isupport and not (isupport.get("EXCEPTS") or 'I' in
                              isupport.get("CHANMODES")[0]):
             return False
@@ -611,7 +611,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
         .. note::
             All items are passed through ``process_bantargs``.
         """
-        isupport = self.extensions_get("ISupport")
+        isupport = self.get_extensions("ISupport")
         if isupport and not (isupport.get("EXCEPTS") or 'I' in
                              isupport.get("CHANMODES")[0]):
             return False
@@ -642,7 +642,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
         .. note::
             All items are passed through ``process_bantargs``.
         """
-        isupport = self.extensions_get("ISupport")
+        isupport = self.get_extensions("ISupport")
         if not isupport:
             return False
 
@@ -684,7 +684,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
         .. note::
             All items are passed through ``process_bantargs``.
         """
-        isupport = self.extensions_get("ISupport")
+        isupport = self.get_extensions("ISupport")
         if not isupport:
             return False
 

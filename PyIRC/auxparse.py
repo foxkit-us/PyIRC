@@ -40,6 +40,21 @@ def prefix_parse(prefix):
 
     prefix
         String from ISupport.supported['PREFIX']
+
+    .. warning:
+
+    >>> sorted(prefix_parse("(ov)@+").items())
+    [('+', 'v'), ('@', 'o'), ('o', '@'), ('v', '+')]
+    >>> sorted(prefix_parse("(qahov)~&%@+").items())[:5]
+    [('%', 'h'), ('&', 'a'), ('+', 'v'), ('@', 'o'), ('a', '&')]
+    >>> prefix_parse("(ov)@+")["@"]
+    'o'
+    >>> prefix_parse("(ov)@+")["o"]
+    '@'
+    >>> prefix_parse("(o)@+")
+    Traceback (most recent call last):
+        ...
+    ValueError: Unbalanced modes and prefixes
     """
 
     ret = dict()
@@ -48,7 +63,11 @@ def prefix_parse(prefix):
     if not match:
         return ret
 
-    for k, v in zip(*match.groups()):
+    modes, values = match.groups()
+    if len(modes) != len(values):
+        raise ValueError("Unbalanced modes and prefixes")
+
+    for k, v in zip(modes, values):
         ret[k] = v
         ret[v] = k
     return ret
@@ -75,6 +94,8 @@ def mode_parse(modes, params, modegroups, prefix):
     prefix
         The mode prefixes from ISupport.supported['PREFIX'], optionally parsed
         by prefix_parse
+
+    
     """
     if not hasattr(prefix, 'items'):
         prefix = prefix_parse(prefix)

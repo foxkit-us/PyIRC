@@ -121,7 +121,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
             string to casefold according to the IRC server semantics.
         """
         isupport = self.extensions.get_extension("ISupport")
-        casefold = isupport.supported.get("CASEMAPPING", "RFC1459")
+        casefold = isupport.get("CASEMAPPING").upper()  # It's Guaranteed™
 
         if casefold == "ASCII":
             return IRCString.ascii_casefold(string)

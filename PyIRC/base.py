@@ -305,9 +305,20 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
             params.append(param)
 
-        # Err on the side of caution here and group into four
-        # TODO - use ISUPPORT
-        groups = (params[n:n+4] for n in range(0, len(params), 4))
+        isupport = self.get_extension("ISupport")
+        if isupport:
+            modes = isupport.get("MODES")
+            if modes:
+                modes = int(modes)
+            else:
+                # Be conservative
+                modes = 4
+
+            if modes > 8:
+                # Insanity...
+                modes = 8
+
+        groups = (params[n:n + modes] for n in range(0, len(params), modes))
         flag = '+' if add else '-'
         for group in groups:
             modes = flag + (mode * len(group))
@@ -685,3 +696,5 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
             return False
 
         self.mode_params(False, 'q', channel, *self.process_bantargs(*args))
+
+

@@ -95,7 +95,7 @@ course, it is not possible to document every last hook (not to mention hook
 classes are open-ended on purpose).
 
 cap_perform
-^^^^^^^^^^
+^^^^^^^^^^^
 
 ack
 """

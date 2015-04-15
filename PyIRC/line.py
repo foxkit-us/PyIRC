@@ -164,8 +164,8 @@ class Line:
     This uses RFC1459 framing.
 
     >>> Line.parse(':lol.org PRIVMSG')
-    Line(tags=None, hostmask=Hostmask(nick=None, username=None, \
-    host='lol.org'), command='PRIVMSG', params=[])
+    ... # doctest: +ELLIPSIS
+    Line(..., hostmask=Hostmask(...), command='PRIVMSG', params=[])
     >>> Line.parse('PING')
     Line(tags=None, hostmask=None, command='PING', params=[])
     >>> Line.parse('PING Elizacat')
@@ -175,8 +175,8 @@ class Line:
     >>> Line.parse('PING :test')
     Line(tags=None, hostmask=None, command='PING', params=['test'])
     >>> Line.parse(':nick!user@host PRIVMSG #testroom meow :testing')
-    Line(tags=None, hostmask=Hostmask(nick='nick', username='user', \
-    host='host'), command='PRIVMSG', params=['#testroom', 'meow', 'testing'])
+    ... # doctest: +ELLIPSIS
+    Line(..., command='PRIVMSG', params=['#testroom', 'meow', 'testing'])
     """
 
     __slots__ = ('tags', 'hostmask', 'command', 'params', 'linestr')

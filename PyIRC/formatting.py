@@ -14,21 +14,45 @@ Bold, italic, underline, reverse, and colours are handled.
 
 
 try:
-    from enum import Enum, IntEnum
+    from enum import Enum, IntEnum, unique
 except ImportError:
-    from PyIRC.util.enum import Enum, IntEnum
+    from PyIRC.util.enum import Enum, IntEnum, unique
 
 from collections import namedtuple
 from re import compile
 
 
+class ColourRGB(namedtuple("ColourRGB", "red green blue")):
+
+    """A colour triplet (red, green, and blue)"""
+
+    @property
+    def html(self):
+        """Convert triplet to HTML format"""
+        return "#{:02X}{:02X}{:02X}".format(self.red, self.green, self.blue)
+
+
+class ColourEscape(namedtuple("ColourEscape", "intense base")):
+
+    """Defines a new ANSI/VT100-style colour escape sequence"""
+
+    @property
+    def foreground(self):
+        return self.base + 30
+
+    @property
+    def background(self):
+        return self.base + 40
+
+
+@unique
 class Colour(IntEnum):
 
     """A list of colour numbers from name to index
 
-    mIRC maintains a list_ of colour indexes to names
+    mIRC maintains a list of ``colour indexes to names``.
 
-    .. _list: http://www.mirc.com/colors.html
+    .. ``colour indexes to names``: http://www.mirc.com/colors.html
     """
 
     white = 0
@@ -49,41 +73,7 @@ class Colour(IntEnum):
     light_grey = 15
 
 
-class ColourTriplet(namedtuple("ColourTriplet", "red green blue")):
-
-    """A colour triplet (red, green, and blue)"""
-
-    @property
-    def html(self):
-        """Convert triplet to HTML format"""
-        return "#{:02X}{:02X}{:02X}".format(self.red, self.green, self.blue)
-
-
-class ColourEscape:
-
-    """Defines a new ANSI/VT100-style colour escape sequence
-
-    The following attributes are available:
-
-    intense
-        Whether or not the colour should be "intense"
-
-    foreground
-        ANSI foreground escape number
-
-    background
-        ANSI background escape number
-    """
-
-    __slots__ = ("intense", "base", "foreground", "background")
-
-    def __init__(self, intense, base):
-        self.intense = intense
-        self.base = base
-        self.foreground = base + 30
-        self.background = base + 40
-
-
+@unique
 class ColourRGB(Enum):
 
     """Colours used on IRC, converted to RGB values
@@ -93,24 +83,25 @@ class ColourRGB(Enum):
     .. _list: http://www.mirc.com/colors.html
     """
 
-    white = ColourTriplet(255, 255, 255)
-    black = ColourTriplet(0, 0, 0)
-    blue = ColourTriplet(0, 0, 127)
-    green = ColourTriplet(0, 147, 0)
-    light_red = ColourTriplet(255, 0, 0)
-    brown = ColourTriplet(127, 0, 0)
-    purple = ColourTriplet(156, 0, 156)
-    orange = ColourTriplet(252, 127, 0)
-    yellow = ColourTriplet(255, 255, 0)
-    light_green = ColourTriplet(0, 252, 0)
-    cyan = ColourTriplet(0, 147, 147)
-    light_cyan = ColourTriplet(0, 255, 255)
-    light_blue = ColourTriplet(0, 0, 252)
-    pink = ColourTriplet(255, 0, 255)
-    grey = ColourTriplet(127, 127, 127)
-    light_grey = ColourTriplet(210, 210, 210)
+    white = ColourRGB(255, 255, 255)
+    black = ColourRGB(0, 0, 0)
+    blue = ColourRGB(0, 0, 127)
+    green = ColourRGB(0, 147, 0)
+    light_red = ColourRGB(255, 0, 0)
+    brown = ColourRGB(127, 0, 0)
+    purple = ColourRGB(156, 0, 156)
+    orange = ColourRGB(252, 127, 0)
+    yellow = ColourRGB(255, 255, 0)
+    light_green = ColourRGB(0, 252, 0)
+    cyan = ColourRGB(0, 147, 147)
+    light_cyan = ColourRGB(0, 255, 255)
+    light_blue = ColourRGB(0, 0, 252)
+    pink = ColourRGB(255, 0, 255)
+    grey = ColourRGB(127, 127, 127)
+    light_grey = ColourRGB(210, 210, 210)
 
 
+@unique
 class ColourVT100(Enum):
 
     """Colours used on IRC, approximated with VT100/ANSI escapes."""
@@ -133,6 +124,7 @@ class ColourVT100(Enum):
     light_grey = ColourEscape(False, 7)
 
 
+@unique
 class FormattingCodes(Enum):
 
     """IRC formatting codes

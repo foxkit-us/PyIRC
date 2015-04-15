@@ -29,20 +29,23 @@ logger = getLogger(__name__)
 class EventState(Enum):
     """The current state of an event."""
 
+    """Proceed with other callbacks, if any. """
     ok = 0
-    """ Proceed with other callbacks, if any. """
 
+    """Event is cancelled; do not run any further callbacks. """
     cancel = 1
-    """ Event is cancelled; do not run any further callbacks. """
 
+    """Send a QUIT to the IRC server. """
     terminate_soon = 2
-    """ Send a QUIT to the IRC server. """
 
-    terminate_now = 3
-    """ Abort the entire library immediately.
+    """Abort the entire library immediately.
 
     .. warning:: This state should only be used if data loss may occur.
     """
+    terminate_now = 3
+
+    """Pause the callback chain for later resumption """
+    pause = 4
 
 
 class Event:
@@ -50,7 +53,7 @@ class Event:
 
     status
         The current status of the event.
-    cancel_function
+    last_function
         Set to the function who cancelled us, if we are cancelled.
     """
 
@@ -64,7 +67,7 @@ class Event:
         """
         self.event = event
         self.status = EventState.ok
-        self.cancel_function = None
+        self.last_function = None
 
     @staticmethod
     def key(k):
@@ -111,9 +114,12 @@ class EventManager:
     def __init__(self):
         # Contains event classes
         self.events_reg = dict()
+        
+        # Paused chains
+        self.paused = dict()
 
     def register_class(self, hclass, type):
-        """ Register a class of events.
+        """Register a class of events.
 
         hclass
             The name of the event class.
@@ -135,27 +141,26 @@ class EventManager:
         self.events_reg[hclass] = EventRegistry(dict(), type)
 
     def unregister_class(self, hclass):
-        """ Unregister a class of events. """
-
-        assert hclass in self.events_reg
+        """Unregister a class of events. """
+        if hclass not in self.events_reg:
+            raise KeyError("hclass not found")
 
         logger.debug("Unregistering class %s", hclass)
 
         del self.events_reg[hclass]
 
     def clear(self):
-        """ Unregister all event classes.
+        """Unregister all event classes.
 
         .. warning::
             This will clear all callbacks, events, and event classes.
             Do not use unless you really know what you're doing.
         """
-
         logger.debug("Clearing hooks")
         self.events_reg.clear()
 
     def register_event(self, hclass, event):
-        """ Register an event to a given class.
+        """Register an event to a given class.
 
         hclass
             The class of the event to register.
@@ -164,8 +169,8 @@ class EventManager:
 
         If ``event`` is already registered in ``hclass``, this method is a no-op.
         """
-
-        assert hclass in self.events_reg
+        if hclass not in self.events_reg:
+            raise KeyError("hclass not found")
 
         events = self.events_reg[hclass].events
 
@@ -177,7 +182,7 @@ class EventManager:
         events[event].cur_id = 0
 
     def unregister_event(self, hclass, event):
-        """ Unregister an event from a given class.
+        """Unregister an event from a given class.
 
         hclass
             The class of the event to unregister.
@@ -186,8 +191,8 @@ class EventManager:
 
         .. note:: It is an error to unregister an event that does not exist.
         """
-
-        assert hclass in self.events_reg
+        if hclass not in self.events_reg:
+            raise KeyError("hclass not found")
 
         events = self.events_reg[hclass].events
 
@@ -197,7 +202,7 @@ class EventManager:
         del events[event]
 
     def register_callback(self, hclass, event, priority, callback):
-        """ Register a callback for an event.
+        """Register a callback for an event.
 
         You typically should never call this method directly; instead, use the
         @hook decorator.
@@ -228,7 +233,7 @@ class EventManager:
         events[event].items.sort()
 
     def register_callbacks_from_inst_all(self, inst):
-        """ Register all (known) callback classes from a given instance, using
+        """Register all (known) callback classes from a given instance, using
         hook tables
 
         Arguments:
@@ -240,7 +245,7 @@ class EventManager:
             self.register_callbacks_from_inst(hclass, inst)
 
     def register_callbacks_from_inst(self, hclass, inst):
-        """ Register callbacks from a given instance, using hook tables
+        """Register callbacks from a given instance, using hook tables
 
         Arguments:
 
@@ -261,7 +266,7 @@ class EventManager:
         return True
 
     def register_callbacks_from_table(self, hclass, table):
-        """ Register callbacks from the given hook table.
+        """Register callbacks from the given hook table.
 
         hclass
             The class of the event to register with this callback
@@ -272,7 +277,7 @@ class EventManager:
             self.register_callback(hclass, event, priority, callback)
 
     def unregister_callback(self, hclass, event, callback):
-        """ Unregister a callback for an event.
+        """Unregister a callback for an event.
 
         hclass
             The class of the event to unregister this callback from.
@@ -281,7 +286,8 @@ class EventManager:
         callback
             The callback to unregister.
         """
-        assert hclass in self.events_reg
+        if hclass not in self.events_reg:
+            raise KeyError("hclass not found")
 
         events = self.events_reg[hclass].events
         keyfunc = self.events_reg[hclass].type.key
@@ -302,7 +308,7 @@ class EventManager:
                      hclass, event, callback)
 
     def unregister_callbacks_from_inst_all(self, inst):
-        """ Unregister all (known) callback classes from a given instance, using
+        """Unregister all (known) callback classes from a given instance, using
         hook tables
 
         Arguments:
@@ -314,7 +320,7 @@ class EventManager:
             self.unregister_callbacks_from_inst(hclass, inst)
 
     def unregister_callbacks_from_inst(self, hclass, inst):
-        """ Unregister callbacks from a given instance, using hook tables
+        """Unregister callbacks from a given instance, using hook tables
 
         Arguments:
 
@@ -335,7 +341,7 @@ class EventManager:
         return True
 
     def unregister_callbacks_from_table(self, hclass, table):
-        """ Unregister callbacks from the given hook table.
+        """Unregister callbacks from the given hook table.
 
         Arguments:
 
@@ -348,7 +354,7 @@ class EventManager:
             self.unregister_callback(hclass, event, callback)
 
     def call_event(self, hclass, event, *args):
-        """ Call the callbacks for a given event.
+        """Call the callbacks for a given event.
 
         Arguments:
 
@@ -360,14 +366,42 @@ class EventManager:
             The arguments to pass to the :py:class:`Event` type constructor used
             for the event class.
         """
-        assert hclass in self.events_reg
+        if hclass not in self.events_reg:
+            raise KeyError("hclass not found")
 
         type = self.events_reg[hclass].type
         event = type.key(event)
         return self.call_event_inst(hclass, event, type(event, *args))
 
+    def _call_generator(self, events, eventinst):
+        for _, _, function in events:
+            eventinst.last_function = function
+            ret = function(eventinst)
+            yield ret
+
+    def stop_paused_event(self, hclass, event):
+        """Stop a paused event.
+
+        Arguments:
+        
+        hclass
+            The class of the event that is being stopped.
+        event
+            The name of the event that is being stopped
+        """
+        if hclass not in self.events_reg:
+            raise KeyError("hclass not found")
+
+        type = self.events_reg[hclass][1]
+        keyfunc = type.key
+        event = keyfunc(event)
+
+        return self.pause.pop((hclass, event), None)
+
     def call_event_inst(self, hclass, event, eventinst):
-        """ Call an event with the given event instance
+        """Call an event with the given event instance
+
+        If the event is paused, it will resume calling unless cancelled.
 
         Arguments:
 
@@ -378,26 +412,31 @@ class EventManager:
         ``eventinst``
             The :py:class:`Event` type we are reusing for this call.
         """
-        assert hclass in self.events_reg
+        if hclass not in self.events_reg:
+            raise KeyError("hclass not found")
 
         events, type = self.events_reg[hclass]
         keyfunc = type.key
         event = keyfunc(event)
         if event not in events:
-            return None
+            return
+        
+        if (hclass, event) in self.paused:
+            gen = self.paused.pop((hclass, event))
+        else:
+            items = events[event].items
+            if not items:
+                return
 
-        items = events[event].items
-        if not items:
-            return None
+            gen = self._call_generator(items, eventinst)
 
-        for _, _, function in items:
-            ret = function(eventinst)
-            if eventinst.status == EventState.ok:
-                continue
-            elif eventinst.status == EventState.cancel:
-                EventState.cancel_function = function
+        for status in gen:
+            if status == EventState.pause:
+                self.pause[(hclass, event)] = gen
                 break
-            elif eventinst.status == EventState.terminate_now:
+            elif status == EventState.cancel:
+                break
+            elif status == EventState.terminate_now:
                 quit()
 
         return eventinst

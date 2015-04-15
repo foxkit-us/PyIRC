@@ -371,12 +371,13 @@ class EventManager:
 
         type = self.events_reg[hclass].type
         event = type.key(event)
-        return self.call_event_inst(hclass, event, type(event, *args))
+        event_type = self.paused.get((hclass, event), type(event, *args))
+        return self.call_event_inst(hclass, event, event_type)
 
-    def _call_generator(self, events, eventinst):
+    def _call_generator(self, events, event_inst):
         for _, _, function in events:
-            eventinst.last_function = function
-            ret = function(eventinst)
+            event_inst.last_function = function
+            ret = function(event_inst)
             yield ret
 
     def stop_paused_event(self, hclass, event):
@@ -396,9 +397,9 @@ class EventManager:
         keyfunc = type.key
         event = keyfunc(event)
 
-        return self.pause.pop((hclass, event), None)
+        return self.paused.pop((hclass, event), None)
 
-    def call_event_inst(self, hclass, event, eventinst):
+    def call_event_inst(self, hclass, event, event_inst):
         """Call an event with the given event instance
 
         If the event is paused, it will resume calling unless cancelled.
@@ -409,7 +410,7 @@ class EventManager:
             The class of the event that is occuring.
         event
             The name of the event that is occuring.
-        ``eventinst``
+        ``event_inst``
             The :py:class:`Event` type we are reusing for this call.
         """
         if hclass not in self.events_reg:
@@ -422,22 +423,22 @@ class EventManager:
             return
         
         if (hclass, event) in self.paused:
-            gen = self.paused.pop((hclass, event))
+            gen, _ = self.paused.pop((hclass, event))
         else:
             items = events[event].items
             if not items:
                 return
 
-            gen = self._call_generator(items, eventinst)
+            gen = self._call_generator(items, event_inst)
 
         for status in gen:
             if status == EventState.pause:
-                self.pause[(hclass, event)] = gen
+                self.paused[(hclass, event)] = (gen, event_inst)
                 break
             elif status == EventState.cancel:
                 break
             elif status == EventState.terminate_now:
                 quit()
 
-        return eventinst
+        return event_inst
 

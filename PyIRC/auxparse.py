@@ -141,7 +141,6 @@ def mode_parse(modes, params, modegroups, prefix):
         yield (char, param, adding)
 
 
-@lru_cache()
 def status_prefix_parse(string, prefix):
     """ Parse a string containing status sigils
 

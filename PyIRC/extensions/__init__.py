@@ -26,13 +26,17 @@ from PyIRC.extensions.channeltrack import ChannelTrack
 from PyIRC.extensions.services import ServicesLogin
 
 
-__all__ = [BasicRFC, AutoJoin, CapNegotiate, CTCP, ISupport, LagCheck,
-           SASLPlain, StartTLS, UserTrack, ChannelTrack, ServicesLogin,
-           KickRejoin]
+__all__ = ["basicrfc", "autojoin", "cap", "ctcp", "isupport", "kickrejoin",
+           "lag", "sasl", "starttls", "usertrack", "channeltrack", "services"]
+
+
+__all_cls__ = [BasicRFC, AutoJoin, CapNegotiate, CTCP, ISupport, LagCheck,
+               SASLPlain, StartTLS, UserTrack, ChannelTrack, ServicesLogin,
+               KickRejoin]
 
 
 """A reference of all extensions by name"""
-extensions_db = {cls.__name__ : cls for cls in __all__}
+extensions_db = {cls.__name__ : cls for cls in __all_cls__}
 
 
 """Basic recommended extensions that are compatible with most servers"""

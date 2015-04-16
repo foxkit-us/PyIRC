@@ -79,7 +79,7 @@ class BanTrack(BaseExtension):
 
         channeltrack = self.get_extension("ChannelTrack")
         channel = channeltrack.get_channel(event.line.params[0])
-        ban_modes = channel.ban_modes 
+        ban_modes = channel.ban_modes
 
         isupport = self.get_extension("ISupport")
         modegroups = isupport.get("CHANMODES")
@@ -92,7 +92,7 @@ class BanTrack(BaseExtension):
                 # Don't care.
                 continue
 
-            if mode in prefixes:
+            if mode in prefixes and mode != 'v':
                 # Send a modes request if it's us
                 if not (send_request ^ adding):
                     # No need to check
@@ -112,12 +112,16 @@ class BanTrack(BaseExtension):
             for i, (string, _, _) in enumerate(ban_modes[mode]):
                 if self.casemap(param) == self.casemap(string):
                     # Update timestamp and setter
+                    logger.debug("Replacing entry: %r -> %r",
+                                 ban_modes[mode][i], entry)
                     ban_modes[mode][i] = entry
                     return
 
+            logger.debug("Adding entry: %r", entry)
             ban_modes[mode].append(entry)
 
         if send_request:
+            logging.debug("Given status in %s", channel.name)
             self.send("MODE", [channel.name, modegroups[0]])
 
     @hook("commands", Numerics.RPL_BANLIST)
@@ -137,7 +141,7 @@ class BanTrack(BaseExtension):
 
         # Mode letter lookup
         mode = self.ban_numerics_modes[event.line.command]
-        
+
         channeltrack = self.get_extension("ChannelTrack")
         channel = channeltrack.get_channel(params[0])
 
@@ -154,9 +158,12 @@ class BanTrack(BaseExtension):
                             self.casemap(str(setter)))
 
                     # Replace entry.
+                    logger.debug("Replacing entry: %r -> %r",
+                                 ban_modes[mode][i], entry)
                     ban_modes[mode][i] = entry
 
                 return
 
+        logger.debug("Adding entry: %r", entry)
         channel.ban_modes[mode].append(entry)
 

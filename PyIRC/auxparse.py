@@ -33,7 +33,7 @@ prefix_match = compile(r"\(([A-Za-z0-9]+)\)(.+)")
 numletters = ascii_letters + digits
 
 
-@lru_cache
+@lru_cache(maxsize=16)
 def prefix_parse(prefix):
     """ Parse ISUPPORT PREFIX extension into mode : prefix and vice versa.
 
@@ -141,7 +141,7 @@ def mode_parse(modes, params, modegroups, prefix):
         yield (char, param, adding)
 
 
-@lru_cache
+@lru_cache()
 def status_prefix_parse(string, prefix):
     """ Parse a string containing status sigils
 
@@ -178,7 +178,7 @@ def status_prefix_parse(string, prefix):
             return (modes, string)
 
 
-@lru_cache
+@lru_cache()
 def who_flag_parse(flags):
     """ Parse WHO flags
 
@@ -218,7 +218,6 @@ def who_flag_parse(flags):
     return ret
 
 
-@lru_cache
 def isupport_parse(params):
     """ Parse an ISUPPORT string
 

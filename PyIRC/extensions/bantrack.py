@@ -17,7 +17,7 @@ from collections import namedtuple, defaultdict
 from logging import getLogger
 
 from PyIRC.extension import BaseExtension
-from PyIRC.event import hook, PRIORITY_LAST
+from PyIRC.hook import hook, PRIORITY_LAST
 from PyIRC.auxparse import mode_parse, prefix_parse
 from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics

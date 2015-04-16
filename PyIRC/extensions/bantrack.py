@@ -115,12 +115,16 @@ class BanTrack(BaseExtension):
             entry = BanEntry(param, setter, round(time()))
 
             # Check for existing ban
-            for i, (string, _, _) in enumerate(ban_modes[mode]):
+            for i, (string, _, _) in enumerate(list(ban_modes[mode])):
                 if self.casefold(param) == self.casefold(string):
-                    # Update timestamp and setter
-                    logger.debug("Replacing entry: %r -> %r",
-                                 ban_modes[mode][i], entry)
-                    ban_modes[mode][i] = entry
+                    if adding:
+                        # Update timestamp and setter
+                        logger.debug("Replacing entry: %r -> %r",
+                                     ban_modes[mode][i], entry)
+                        ban_modes[mode][i] = entry
+                    else:
+                        # Delete ban
+                        del ban_modes[mode][i]
                     return
 
             logger.debug("Adding entry: %r", entry)

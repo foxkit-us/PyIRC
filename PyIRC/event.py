@@ -57,6 +57,8 @@ class Event:
         Set to the function who cancelled us, if we are cancelled.
     """
 
+    __slots__ = ('event', 'status', 'last_function', 'pause_state')
+
     def __init__(self, event):
         """Initalise the event object
 
@@ -68,6 +70,9 @@ class Event:
         self.event = event
         self.status = EventState.ok
         self.last_function = None
+
+        # Used for pausing events
+        self.pause_state = None
 
     @staticmethod
     def key(k):
@@ -115,9 +120,6 @@ class EventManager:
         # Contains event classes
         self.events_reg = dict()
         
-        # Paused chains
-        self.paused = dict()
-
     def register_class(self, hclass, type):
         """Register a class of events.
 
@@ -371,33 +373,13 @@ class EventManager:
 
         type = self.events_reg[hclass].type
         event = type.key(event)
-        event_type = self.paused.get((hclass, event), type(event, *args))
-        return self.call_event_inst(hclass, event, event_type)
+        return self.call_event_inst(hclass, event, type(event, *args))
 
     def _call_generator(self, events, event_inst):
         for _, _, function in events:
             event_inst.last_function = function
             ret = function(event_inst)
             yield ret
-
-    def stop_paused_event(self, hclass, event):
-        """Stop a paused event.
-
-        Arguments:
-        
-        hclass
-            The class of the event that is being stopped.
-        event
-            The name of the event that is being stopped
-        """
-        if hclass not in self.events_reg:
-            raise KeyError("hclass not found")
-
-        type = self.events_reg[hclass][1]
-        keyfunc = type.key
-        event = keyfunc(event)
-
-        return self.paused.pop((hclass, event), None)
 
     def call_event_inst(self, hclass, event, event_inst):
         """Call an event with the given event instance
@@ -421,9 +403,10 @@ class EventManager:
         event = keyfunc(event)
         if event not in events:
             return
-        
-        if (hclass, event) in self.paused:
-            gen, _ = self.paused.pop((hclass, event))
+
+        if event_inst.pause_state:
+            gen = event_inst.pause_state
+            event_inst.pause_state = None
         else:
             items = events[event].items
             if not items:
@@ -432,8 +415,10 @@ class EventManager:
             gen = self._call_generator(items, event_inst)
 
         for status in gen:
-            if status == EventState.pause:
-                self.paused[(hclass, event)] = (gen, event_inst)
+            if status == EventState.ok:
+                continue
+            elif status == EventState.pause:
+                event_inst.pause_state = gen
                 break
             elif status == EventState.cancel:
                 break

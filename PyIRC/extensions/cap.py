@@ -12,7 +12,6 @@ http://ircv3.atheme.org/specification/capability-negotiation-3.1
 """
 
 
-from collections import deque
 from functools import partial
 from logging import getLogger
 
@@ -92,8 +91,8 @@ class CapNegotiate(BaseExtension):
         # Timer for CAP disarm
         self.timer = None
 
-        # Current ACK events queue
-        self.ack_events = deque()
+        # pending ACK's to finish
+        self.ack_chains = set()
 
     @staticmethod
     def extract_caps(line):
@@ -224,9 +223,8 @@ class CapNegotiate(BaseExtension):
             caps[cap] = self.local[cap] = params
 
         event = self.call_event("cap_perform", "ack", event.line, caps)
-        if event.status == EventState.cancel:
-            # Push to the head
-            self.ack_events.append(event)
+        if event.status != EventState.ok:
+            self.ack_chains.add(event)
 
     @hook("commands_cap", "nak")
     def nak(self, event):
@@ -280,18 +278,14 @@ class CapNegotiate(BaseExtension):
         """
         self.supported.pop(cap, None)
 
-    def cont(self):
+    def cont(self, event):
         """Continue negotiation of caps"""
-        assert self.ack_events
-        event = self.ack_events[0]
-
         # Reset event status
         event.status = EventState.ok
         self.call_event_inst("cap_perform", "ack", event)
-
         if event.status == EventState.ok:
-            # Event complete
-            self.ack_events.popleft()
+            self.ack_chains.discard(event)
+            if not self.ack_chains and self.negotiating:
+                # No more chains.
+                self.end(event)
 
-        if not self.ack_events and self.negotiating:
-            self.end(event)

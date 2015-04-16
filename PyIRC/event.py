@@ -378,8 +378,8 @@ class EventManager:
     def _call_generator(self, events, event_inst):
         for _, _, function in events:
             event_inst.last_function = function
-            ret = function(event_inst)
-            yield ret
+            function(event_inst)
+            yield event_inst.status
 
     def call_event_inst(self, hclass, event, event_inst):
         """Call an event with the given event instance
@@ -407,6 +407,7 @@ class EventManager:
         if event_inst.pause_state:
             gen = event_inst.pause_state
             event_inst.pause_state = None
+            logger.debug("Resuming event: %r", gen)
         else:
             items = events[event].items
             if not items:
@@ -418,6 +419,7 @@ class EventManager:
             if status == EventState.ok:
                 continue
             elif status == EventState.pause:
+                logger.debug("Pausing event: %r", gen)
                 event_inst.pause_state = gen
                 break
             elif status == EventState.cancel:

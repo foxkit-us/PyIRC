@@ -66,6 +66,8 @@ class BanTrack(BaseExtension):
 
     @hook("commands", "JOIN", PRIORITY_LAST)
     def join(self, event):
+        logger.debug("Creating ban modes for channel %s",
+                     event.line.params[0])
         channeltrack = self.get_extension("ChannelTrack")
         channel = channeltrack.get_channel(event.line.params[0])
         channel.ban_modes = defaultdict(list)
@@ -79,6 +81,10 @@ class BanTrack(BaseExtension):
 
         channeltrack = self.get_extension("ChannelTrack")
         channel = channeltrack.get_channel(event.line.params[0])
+        if not channel:
+            # Not a channel or we don't know about it.
+            return
+
         ban_modes = channel.ban_modes
 
         isupport = self.get_extension("ISupport")
@@ -99,7 +105,7 @@ class BanTrack(BaseExtension):
                     continue
 
                 basicrfc = self.get_extension("BasicRFC")
-                if self.casemap(param) == self.casemap(basicrfc.nick):
+                if self.casefold(param) == self.casefold(basicrfc.nick):
                     # Adjust flag
                     send_request = adding
 
@@ -110,7 +116,7 @@ class BanTrack(BaseExtension):
 
             # Check for existing ban
             for i, (string, _, _) in enumerate(ban_modes[mode]):
-                if self.casemap(param) == self.casemap(string):
+                if self.casefold(param) == self.casefold(string):
                     # Update timestamp and setter
                     logger.debug("Replacing entry: %r -> %r",
                                  ban_modes[mode][i], entry)
@@ -121,7 +127,7 @@ class BanTrack(BaseExtension):
             ban_modes[mode].append(entry)
 
         if send_request:
-            logging.debug("Given status in %s", channel.name)
+            logger.debug("Given status in %s", channel.name)
             self.send("MODE", [channel.name, modegroups[0]])
 
     @hook("commands", Numerics.RPL_BANLIST)
@@ -154,8 +160,8 @@ class BanTrack(BaseExtension):
                 # listings!
                 if timestamp != ltimestamp:
                     # Desyncs with this shouldn't happen!
-                    assert (self.casemap(str(lsetter)) !=
-                            self.casemap(str(setter)))
+                    assert (self.casefold(str(lsetter)) !=
+                            self.casefold(str(setter)))
 
                     # Replace entry.
                     logger.debug("Replacing entry: %r -> %r",

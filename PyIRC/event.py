@@ -119,7 +119,7 @@ class EventManager:
     def __init__(self):
         # Contains event classes
         self.events_reg = dict()
-        
+
     def register_class(self, hclass, type):
         """Register a class of events.
 

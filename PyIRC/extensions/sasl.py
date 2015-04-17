@@ -85,7 +85,7 @@ class SASLBase(BaseExtension):
             raise NotImplementedError("Need an authentication method!")
 
         self.authenticated = False
-        
+
         cap_negotiate = self.get_extension("CapNegotiate")
         if cap_negotiate.remote["sasl"]:
             # 3.2 style
@@ -132,7 +132,7 @@ class SASLBase(BaseExtension):
 
         if self.cap_event and self.cap_event.pause_state:
             # Paused, keep going
-            self.fail(event)            
+            self.fail(event)
 
     @hook("commands", Numerics.RPL_SASLMECHS)
     def get_mechanisms(self, event):

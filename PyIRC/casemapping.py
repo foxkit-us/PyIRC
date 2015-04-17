@@ -246,7 +246,7 @@ class IRCDefaultDict(IRCDict):
 class IRCSet(MutableSet):
     """An IRC set class, with caseless members"""
 
-    def __init__(self, case, iterable):
+    def __init__(self, case, iterable=set()):
         self.case = case
         self.store = set()
         for item in iterable:

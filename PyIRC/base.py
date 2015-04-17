@@ -41,10 +41,10 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
     The following attributes are available:
 
     events
-        Our ``EventManager`` instance
+        Our :py:class::`EventManager` instance
 
     extensions
-        Our ``ExtensionManager`` instance
+        Our :py:class::`ExtensionManager` instance
 
     connected
         If True, we have connected to the server successfully.
@@ -100,17 +100,40 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
         # Event state
         events = self.events = EventManager()
 
+        # Basic IRC state
+        self.connected = False
+        self.registered = False
+        self.case = IRCString.RFC1459
+
         # Extension manager system
-        assert extensions
+        if not extensions:
+            raise ValueError("Need at least one extension")
         self.extensions = ExtensionManager(self, kwargs, events, extensions)
         self.extensions.create_db()
 
         # Create hooks
         events.register_callbacks_from_inst_all(self)
 
-        # Basic IRC state
-        self.connected = False
-        self.registered = False
+    def case_change(self):
+        """Change server casemapping semantics
+
+        Do not call this unless you know what you're doing
+        """
+        isupport = self.extensions.get_extension("ISupport")
+        case = isupport.get("CASEMAPPING").upper()
+
+        if case == "ASCII":
+            case = IRCString.ASCII
+        elif case == "RFC1459":
+            case = IRCString.RFC1459
+        else:
+            case = IRCString.UNICODE
+
+        if case == self.case:
+            return
+
+        self.case = case
+        self.events.call_event("hooks", "case_change")
 
     def casefold(self, string):
         """Fold a nick according to server case folding rules
@@ -120,15 +143,20 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
         string
             string to casefold according to the IRC server semantics.
         """
-        isupport = self.extensions.get_extension("ISupport")
-        casefold = isupport.get("CASEMAPPING").upper()  # It's Guaranteed™
+        return IRCString(self.case, string).casefold()
 
-        if casefold == "ASCII":
-            return IRCString.ascii_casefold(string)
-        elif casefold == "RFC1459":
-            return IRCString.rfc1459_casefold(string)
-        else:
-            return string.casefold()
+    def casecmp(self, string, other):
+        """Do a caseless comparison.
+
+        Returns True if equal, or False if not.
+
+        Arguments:
+
+        string
+        other
+            Strings to compare
+        """
+        return self.casefold(string) == self.casefold(other)
 
     def connect(self):
         """Do the connection handshake """

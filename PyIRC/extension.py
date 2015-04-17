@@ -41,38 +41,35 @@ class BaseExtension(metaclass=HookGenerator):
 
     def send(self, command, params):
         """ Mirror self.base.send """
-
         self.base.send(command, params)
 
     def schedule(self, time, callback):
         """ Mirror self.base.schedule """
-
         return self.base.schedule(time, callback)
 
     def unschedule(self, sched):
         """ Mirror self.base.unschedule """
-
         self.base.unschedule(sched)
 
     def get_extension(self, extension):
         """ Mirror self.base.extensions.get_extension """
-
         return self.base.extensions.get_extension(extension)
 
     def call_event(self, hclass, event, *args):
         """ Mirror self.base.events.call_event """
-
         return self.base.events.call_event(hclass, event, *args)
 
     def call_event_inst(self, hclass, event, eventinst):
         """ Mirror self.base.events.call_event_inst """
-
         return self.base.events.call_event_inst(hclass, event, eventinst)
 
     def casefold(self, string):
         """ Mirror self.base.casefold """
-
         return self.base.casefold(string)
+
+    def casecmp(self, string, other):
+        """ Mirror self.base.casecmp """
+        return self.base.casecmp(string, other)
 
 
 # Here to avoid circular dependency

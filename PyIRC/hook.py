@@ -12,21 +12,21 @@ from PyIRC.util.classutil import private_mangle
 logger = getLogger(__name__)
 
 
-"""Hook can run whenever it wants"""
 PRIORITY_DONTCARE = 0
+"""Hook can run whenever it wants"""
 
-"""Hook should run first"""
 PRIORITY_FIRST = -1000
+"""Hook should run first"""
 
-"""Hook should run last"""
 PRIORITY_LAST = 1000
+"""Hook should run last"""
 
 
 def hook(hclass, hook, priority=None):
     """ Decorator to add a class hook
 
-    This works with `HookGenerator` to generate the hook tables used by
-    ``EventManager``.
+    This works with py:class:`HookGenerator` to generate the hook tables used
+    by py:class:`EventManager`.
 
     Arguments:
         hclass
@@ -52,7 +52,7 @@ def hook(hclass, hook, priority=None):
 
 class HookGenerator(type):
 
-    """Internal metaclass for hook generation in BaseExtension.
+    """Internal metaclass for hook generation in py:class:`BaseExtension`.
 
     This generates hook tables and does runtime binding of the hooks, to
     enable dynamic generation of the tables with no user intervention.

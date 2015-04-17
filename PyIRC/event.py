@@ -126,12 +126,13 @@ class EventManager:
         hclass
             The name of the event class.
         type
-            The type of :py:class:`Event` that will be passed to event handlers.
+            The type of :py:class:`~PyIRC.event.Event` that will be passed to
+            event handlers.
 
-        If ``hclass`` is already a registered event class, this method is a no-op.
-        To change the type of :py:class:`Event` that will be passed to handlers,
-        you must unregister the class using :py:meth:`unregister_class` and
-        re-register it with the new type.
+        If ``hclass`` is already a registered event class, this method is a
+        no-op. To change the type of :py:class:`~PyIRC.event.Event` that will
+        be passed to handlers, you must unregister the class using
+        :py:meth:`unregister_class` and re-register it with the new type.
         """
 
         if hclass in self.events_reg:
@@ -365,7 +366,7 @@ class EventManager:
         event
             The name of the event that is occuring.
         ``*args``
-            The arguments to pass to the :py:class:`Event` type constructor used
+            The arguments to pass to the :py:class:`~PyIRC.event.Event` type constructor used
             for the event class.
         """
         if hclass not in self.events_reg:
@@ -393,7 +394,7 @@ class EventManager:
         event
             The name of the event that is occuring.
         ``event_inst``
-            The :py:class:`Event` type we are reusing for this call.
+            The :py:class:`~PyIRC.event.Event` type we are reusing for this call.
         """
         if hclass not in self.events_reg:
             raise KeyError("hclass not found")

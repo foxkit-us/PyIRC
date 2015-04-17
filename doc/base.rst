@@ -48,6 +48,8 @@ hook
 .. automodule:: PyIRC.hook
    :members:
 
+.. :py:decorator::hook
+
 line
 ----
 

@@ -239,7 +239,7 @@ class IRCDict(UserDict):
 class IRCDefaultDict(IRCDict):
 
     """Similar to the built in :py:class:`defaultdict`, but with the semantics
-    of :py:class:`IRCDict`."""
+    of :py:class:`~PyIRC.casemapping.IRCDict`."""
 
     def __init__(self, case, default, *args, **kwargs):
         self.default = default

@@ -96,5 +96,7 @@ class ISupport(BaseExtension):
             logger.warning("It's probably fine but things might break.")
             return
 
-        values = event.line.params[1:-1]
-        self.supported.update(isupport_parse(values))
+        values = isupport_parse(event.line.params[1:-1])
+        if 'CASEMAPPING' in values:
+            self.base.case_change()
+        self.supported.update(values)

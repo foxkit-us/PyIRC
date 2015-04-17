@@ -101,7 +101,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
         events = self.events = EventManager()
 
         # Extension manager system
-        if not self.extensions:
+        if not extensions:
             raise ValueError("Need at least one extension")
         self.extensions = ExtensionManager(self, kwargs, events, extensions)
         self.extensions.create_db()

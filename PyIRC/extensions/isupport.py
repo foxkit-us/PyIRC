@@ -41,11 +41,11 @@ class ISupport(BaseExtension):
 
     """Defaults until overridden, for old server compat."""
     defaults = {
-        "PREFIX" : ['o', 'v', '@', '+'],
-        "CHANTYPES" : '#&!+',  # Old channel types
-        "NICKLEN" : "8",  # Old servers
-        "CASEMAPPING" : "RFC1459",  # The (Shipped) Gold Standard
-        "CHANMODES" : ['b', 'k', 'l', 'imnstp'],  # Old modes
+        "PREFIX": ['o', 'v', '@', '+'],
+        "CHANTYPES": '#&!+',  # Old channel types
+        "NICKLEN": "8",  # Old servers
+        "CASEMAPPING": "RFC1459",  # The (Shipped) Gold Standard
+        "CHANMODES": ['b', 'k', 'l', 'imnstp'],  # Old modes
     }
 
     def __init__(self, base, **kwargs):

@@ -25,6 +25,7 @@ logger = getLogger(__name__)
 
 
 class CAPEvent(LineEvent):
+
     """A CAP ACK/NEW event"""
 
     def __init__(self, event, line, caps):
@@ -68,8 +69,8 @@ class CapNegotiate(BaseExtension):
     version = "302"
 
     hook_classes = {
-        "commands_cap" : LineEvent,
-        "cap_perform" : CAPEvent,
+        "commands_cap": LineEvent,
+        "cap_perform": CAPEvent,
     }
 
     def __init__(self, base, **kwargs):
@@ -186,9 +187,8 @@ class CapNegotiate(BaseExtension):
         if self.negotiating:
             # Negotiate caps
             supported = self.supported
-            supported = [self.create_str(c, v) for c, v in
-                         remote.items() if c in supported]
-            supported.sort()
+            supported = sorted([self.create_str(c, v) for c, v in
+                                remote.items() if c in supported])
 
             if supported:
                 caps = ' '.join(supported)
@@ -288,4 +288,3 @@ class CapNegotiate(BaseExtension):
             if not self.ack_chains and self.negotiating:
                 # No more chains.
                 self.end(event)
-

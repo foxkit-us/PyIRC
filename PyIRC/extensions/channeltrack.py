@@ -88,7 +88,7 @@ class ChannelTrack(BaseExtension):
     For more elaborate user tracking, see usertrack.UserTrack. """
 
     caps = {
-        "multi-prefix" : [],
+        "multi-prefix": [],
     }
 
     requires = ["ISupport"]
@@ -214,7 +214,8 @@ class ChannelTrack(BaseExtension):
             params = event.line.params[2:]
         else:
             params = []
-        for mode, param, adding in mode_parse(modes, params, modegroups, prefix):
+        for mode, param, adding in mode_parse(
+                modes, params, modegroups, prefix):
             if mode in prefix:
                 user = channel.users[param]
                 if adding:
@@ -258,11 +259,16 @@ class ChannelTrack(BaseExtension):
             params = event.line.params[3:]
         else:
             params = []
-        for mode, param, adding in mode_parse(modes, params, modegroups, prefix):
+        for mode, param, adding in mode_parse(
+                modes, params, modegroups, prefix):
             if mode in prefix:
                 user = channel.users[param]
                 if adding:
-                    logger.debug("Adding mode %s to %s in %s", mode, param, channel)
+                    logger.debug(
+                        "Adding mode %s to %s in %s",
+                        mode,
+                        param,
+                        channel)
                     user.add(mode)
                 else:
                     logger.debug("Removing mode %s from %s in %s", mode,

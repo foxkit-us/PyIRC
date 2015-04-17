@@ -9,6 +9,7 @@ from types import MappingProxyType
 
 class DynamicClassAttribute:
     # Taken from types.py
+
     """Route attribute access on a class to __getattr__.
 
     This is a descriptor, used to define attributes that act differently when
@@ -20,6 +21,7 @@ class DynamicClassAttribute:
     attributes on the class with the same name (see Enum for an example).
 
     """
+
     def __init__(self, fget=None, fset=None, fdel=None, doc=None):
         self.fget = fget
         self.fset = fset
@@ -97,6 +99,7 @@ def _is_sunder(name):
 
 def _make_class_unpicklable(cls):
     """Make the given class un-picklable."""
+
     def _break_on_call_reduce(self, proto):
         raise TypeError('%r cannot be pickled' % self)
     cls.__reduce_ex__ = _break_on_call_reduce
@@ -104,12 +107,14 @@ def _make_class_unpicklable(cls):
 
 
 class _EnumDict(dict):
+
     """Track enum member order and ensure member names are not reused.
 
     EnumMeta will use the names found in self._member_names as the
     enumeration member names.
 
     """
+
     def __init__(self):
         super().__init__()
         self._member_names = []
@@ -145,6 +150,7 @@ Enum = None
 
 
 class EnumMeta(type):
+
     """Metaclass for Enum"""
     @classmethod
     def __prepare__(metacls, cls, bases):
@@ -500,6 +506,7 @@ class EnumMeta(type):
 
 
 class Enum(metaclass=EnumMeta):
+
     """Generic enumeration.
 
     Derive from this class to define new enumerations.
@@ -509,7 +516,7 @@ class Enum(metaclass=EnumMeta):
         # all enum instances are actually created during class construction
         # without calling this method; this method is called by the metaclass'
         # __call__ (i.e. Color(3) ), and by pickle
-        if type(value) is cls:
+        if isinstance(value, cls):
             # For lookups like Color(Color.red)
             return value
         # by-value search for a matching enum member
@@ -581,6 +588,7 @@ class Enum(metaclass=EnumMeta):
 
 
 class IntEnum(int, Enum):
+
     """Enum where members are also (and must be) ints"""
 
 

@@ -28,6 +28,7 @@ logger = getLogger(__name__)
 
 
 class IRCProtocol(IRCBase, asyncio.Protocol):
+
     """The asyncio implementation of the IRC protocol. Available only with
     Python 3.4 and above in the standard library, and 3.3 via an external
     module.

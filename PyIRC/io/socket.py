@@ -29,13 +29,14 @@ logger = getLogger(__name__)
 
 
 class IRCSocket(IRCBase):
+
     """ The socket implementation of the IRC protocol. No asynchronous I/O is
     done. All scheduling is done with timeouts.
 
     The same methods available in ``IRCBase`` are available.
 
     Keyword arguments:
-    
+
     socket_timeout
         Set the timeout for connecting to the server (defaults to 10)
 

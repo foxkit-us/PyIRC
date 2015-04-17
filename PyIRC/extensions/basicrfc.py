@@ -18,6 +18,7 @@ logger = getLogger(__name__)
 
 
 class BasicRFC(BaseExtension):
+
     """ Basic RFC1459 support.
 
     This is basically just a module that ensures your bot doesn't time out and

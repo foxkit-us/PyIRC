@@ -40,7 +40,7 @@ class StartTLS(BaseExtension):
 
         if not self.base.ssl:
             self.caps = {
-                "tls" : [],
+                "tls": [],
             }
 
     @hook("hooks", "disconnected")

@@ -21,6 +21,7 @@ logger = getLogger(__name__)
 
 
 class CTCPEvent(LineEvent):
+
     """ A CTCP event """
 
     def __init__(self, event, ctcp, line):
@@ -29,6 +30,7 @@ class CTCPEvent(LineEvent):
 
 
 class CTCP(BaseExtension):
+
     """ Add CTCP dispatch functionaltiy.
 
     Hooks may be added by having a commands_ctcp or commands_nctcp mapping in
@@ -39,8 +41,8 @@ class CTCP(BaseExtension):
     """ Default CTCP version string to use """
 
     hook_classes = {
-        "commands_ctcp" : CTCPEvent,
-        "commands_nctcp" : CTCPEvent,
+        "commands_ctcp": CTCPEvent,
+        "commands_nctcp": CTCPEvent,
     }
 
     def __init__(self, base, **kwargs):

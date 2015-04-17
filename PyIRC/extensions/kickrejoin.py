@@ -29,6 +29,7 @@ logger = getLogger(__name__)
 
 
 class KickRejoin(BaseExtension):
+
     """ Rejoin a channel automatically after being kicked or removed. """
 
     """ Describes what extensions are required to use this extension.  We use
@@ -170,7 +171,7 @@ class KickRejoin(BaseExtension):
                 self.unschedule(future)
             except ValueError:
                 pass  # Avoid a race when we get an exception during the join
-                      # callback.
+                # callback.
 
         self.scheduled.clear()
 

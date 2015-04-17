@@ -18,6 +18,7 @@ logger = getLogger(__name__)
 
 
 class NullSocket(IRCBase):
+
     """ The fake socket implementation of the IRC protocol. """
 
     def connect(self):

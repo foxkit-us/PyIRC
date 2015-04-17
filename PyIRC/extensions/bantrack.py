@@ -44,14 +44,13 @@ class BanTrack(BaseExtension):
     requires = ["ISupport", "ChannelTrack", "BasicRFC"]
 
     default_ban_numerics_modes = {
-        Numerics.RPL_BANLIST.value : 'b',
-        Numerics.RPL_EXCEPTLIST.value : 'e',
-        Numerics.RPL_INVITELIST.value : 'I',
-        Numerics.RPL_QUIETLIST.value : 'q',
+        Numerics.RPL_BANLIST.value: 'b',
+        Numerics.RPL_EXCEPTLIST.value: 'e',
+        Numerics.RPL_INVITELIST.value: 'I',
+        Numerics.RPL_QUIETLIST.value: 'q',
     }
 
     def __init__(self, base, **kwargs):
-
         """Arguments:
 
         ban_numerics_modes
@@ -176,4 +175,3 @@ class BanTrack(BaseExtension):
 
         logger.debug("Adding entry: %r", entry)
         channel.ban_modes[mode].append(entry)
-

@@ -172,4 +172,3 @@ class SASLPlain(SASLBase):
 
         # Stop other auth methods.
         event.status = EventState.cancel
-

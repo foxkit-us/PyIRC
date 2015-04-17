@@ -65,11 +65,11 @@ class IRCString(UserString):
 
         Arguments:
 
-        case
+        :param case:
             Casemapping, can be UNICODE, ASCII, or RFC1459. This controls the
             behaviour of the irc_* functions.
 
-        string
+        :param string:
             String to use
         """
         self.case = case
@@ -237,6 +237,10 @@ class IRCDict(UserDict):
 
 
 class IRCDefaultDict(IRCDict):
+
+    """Similar to the built in :py:class:`defaultdict`, but with the semantics
+    of :py:class:`IRCDict`."""
+
     def __init__(self, case, default, *args, **kwargs):
         self.default = default
         super().__init__(case, *args, **kwargs)
@@ -253,6 +257,7 @@ class IRCDefaultDict(IRCDict):
 
 
 class IRCSet(MutableSet):
+
     """An IRC set class, with caseless members"""
 
     def __init__(self, case, iterable=set()):

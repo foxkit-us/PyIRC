@@ -305,14 +305,15 @@ class CTCPMessage:
 
     @classmethod
     def parse(cls, line):
-        """Return a new :py:class:`CTCPMessage` from the line specified.
+        """Return a new :py:class:`~PyIRC.auxparse.CTCPMessage` from
+        the line specified.
 
         :param line:
             A :py:class:`~PyIRC.line.Line` to parse into a
-            :py:class:`CTCPMessage`.
+            :py:class:`~PyIRC.auxparse.CTCPMessage`.
 
-        :returns: A new :py:class:`CTCPMessage` instance from the parsed line,
-                  or ``None`` if no CTCP message is found.
+        :returns: A new :py:class:`~PyIRC.auxparse.CTCPMessage` instance from
+            the parsed line, or ``None`` if no CTCP message is found.
         """
         message = line.params[1]
 

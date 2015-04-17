@@ -97,10 +97,10 @@ class ChannelTrack(BaseExtension):
         self.base = base
 
         # Our channel set
-        self.channels = IRCDict(self.case)
+        self.channels = IRCDict(self.base.case)
 
         # Scheduled items
-        self.mode_timers = IRCDict(self.case)
+        self.mode_timers = IRCDict(self.base.case)
 
     def get_channel(self, name):
         """Retrieve a channel from the tracking dictionary based on name.

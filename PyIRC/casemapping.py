@@ -187,6 +187,8 @@ class IRCString(UserString):
         RFC1459 semantics."""
         return str.translate(self.data, rfc1459_tolower)
 
+    def __repr__(self):
+        return "IRCString({})".format(super().__repr__())
 
 class IRCDict(UserDict):
     """An IRC dictionary class, with caseless key lookup"""
@@ -230,6 +232,9 @@ class IRCDict(UserDict):
 
         return new
 
+    def __repr__(self):
+        return "IRCDict({}, {})".format(self.case, super().__repr__())
+
 
 class IRCDefaultDict(IRCDict):
     def __init__(self, case, default, *args, **kwargs):
@@ -241,6 +246,10 @@ class IRCDefaultDict(IRCDict):
             key = key.convert(case)
 
         self[key] = default()
+
+    def __repr__(self):
+        return "IRCDefaultDict({}, {}, {})".format(self.case, self.default,
+                                                   UserDict.__repr__(self))
 
 
 class IRCSet(MutableSet):
@@ -286,3 +295,5 @@ class IRCSet(MutableSet):
     def __len__(self):
         return len(self.store)
 
+    def __repr__(self):
+        return "IRCSet({}, {})".format(self.case, super().__repr__())

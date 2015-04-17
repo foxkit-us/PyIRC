@@ -114,7 +114,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
         self.registered = False
         self.case = IRCString.RFC1459
 
-    def case_change(self, case):
+    def case_change(self):
         """Change server casemapping semantics
 
         Do not call this unless you know what you're doing
@@ -124,7 +124,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         if case == "ASCII":
             case = IRCString.ASCII
-        elif casefold == "RFC1459":
+        elif case == "RFC1459":
             case = IRCString.RFC1459
         else:
             case = IRCString.UNICODE

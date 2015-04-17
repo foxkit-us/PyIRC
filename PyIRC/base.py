@@ -100,6 +100,11 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
         # Event state
         events = self.events = EventManager()
 
+        # Basic IRC state
+        self.connected = False
+        self.registered = False
+        self.case = IRCString.RFC1459
+
         # Extension manager system
         if not extensions:
             raise ValueError("Need at least one extension")
@@ -108,11 +113,6 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         # Create hooks
         events.register_callbacks_from_inst_all(self)
-
-        # Basic IRC state
-        self.connected = False
-        self.registered = False
-        self.case = IRCString.RFC1459
 
     def case_change(self):
         """Change server casemapping semantics

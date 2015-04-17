@@ -6,4 +6,3 @@
 __all__ = ["auxparse", "base", "casemapping", "event", "extension",
            "extensions", "formatting", "hook", "io", "line", "numerics",
            "util"]
-

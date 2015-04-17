@@ -16,6 +16,7 @@ logger = getLogger(__name__)
 
 
 class BaseExtension(metaclass=HookGenerator):
+
     """ The base class for extensions.
 
     Hooks may exist in this, in a hclass_hooks dictionary. These can be
@@ -84,16 +85,16 @@ class ExtensionManager:
         """ Initialise the extensions manager
 
         Arguments:
-        
+
         base
             base instance to pass to each extension
-        
+
         kwargs
             keyword arguments to pass to each extension
-        
+
         events
             the EventManager instance to add hooks to
-        
+
         extensions
             our initial list of extensions
         """

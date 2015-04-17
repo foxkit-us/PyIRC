@@ -19,6 +19,7 @@ logger = getLogger(__name__)
 
 
 class Tags:
+
     """Stores message tags
 
     Message tags are a new feature proposed by IRCv3 to add enhanced
@@ -66,12 +67,13 @@ class Tags:
             if value is None:
                 value = ''
 
-            ret.append('{}={}'.format(key,value))
+            ret.append('{}={}'.format(key, value))
 
         return ';'.join(ret)
 
 
 class Hostmask:
+
     """ Stores a hostmask
 
     Hostmasks are used to store sources and destinations in IRC messages.
@@ -159,6 +161,7 @@ class Hostmask:
 
 
 class Line:
+
     """ Stores an IRC line
 
     This uses RFC1459 framing.

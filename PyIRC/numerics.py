@@ -49,6 +49,7 @@ except ImportError:
 
 
 class Numerics(Enum):
+
     """Numerics used by IRC servers.
 
     If anything can illustrate IRC's severe fragmentation problem and long
@@ -74,7 +75,6 @@ class Numerics(Enum):
     """
     RPL_WELCOME = "001"
 
-
     """
 
      This numeric can be found in:
@@ -93,14 +93,12 @@ class Numerics(Enum):
     """
     RPL_YOURHOST = "002"
 
-
     """
 
      This numeric can be found in:
     - Inspircd
     """
     RPL_YOURHOSTIS = "002"
-
 
     """
 
@@ -119,14 +117,12 @@ class Numerics(Enum):
     """
     RPL_CREATED = "003"
 
-
     """
 
      This numeric can be found in:
     - Inspircd
     """
     RPL_SERVERCREATED = "003"
-
 
     """
 
@@ -145,7 +141,6 @@ class Numerics(Enum):
     """
     RPL_MYINFO = "004"
 
-
     """
 
      This numeric can be found in:
@@ -153,14 +148,12 @@ class Numerics(Enum):
     """
     RPL_SERVERVERSION = "004"
 
-
     """
 
      This numeric can be found in:
     - RFC2812
     """
     RPL_BOUNCE_RFC2812 = "005"
-
 
     """
 
@@ -179,7 +172,6 @@ class Numerics(Enum):
     """
     RPL_ISUPPORT = "005"
 
-
     """
 
      This numeric can be found in:
@@ -188,7 +180,6 @@ class Numerics(Enum):
     """
     RPL_MAP_UNREAL = "006"
 
-
     """
 
      This numeric can be found in:
@@ -196,14 +187,12 @@ class Numerics(Enum):
     """
     RPL_ENDMAP_UNREAL = "007"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_MAPEND_UNREAL = "007"
-
 
     """
 
@@ -217,7 +206,6 @@ class Numerics(Enum):
     """
     RPL_SNOMASK = "008"
 
-
     """
 
      This numeric can be found in:
@@ -225,14 +213,12 @@ class Numerics(Enum):
     """
     RPL_SNOMASKIS = "008"
 
-
     """
 
      This numeric can be found in:
     - IRCNet ircd
     """
     RPL_BOUNCE = "010"
-
 
     """
 
@@ -245,7 +231,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_REDIR = "010"
-
 
     """
 
@@ -261,7 +246,6 @@ class Numerics(Enum):
     """
     RPL_MAP = "015"
 
-
     """
 
      This numeric can be found in:
@@ -274,7 +258,6 @@ class Numerics(Enum):
     - snircd
     """
     RPL_MAPMORE = "016"
-
 
     """
 
@@ -290,7 +273,6 @@ class Numerics(Enum):
     """
     RPL_MAPEND = "017"
 
-
     """
 
      This numeric can be found in:
@@ -298,14 +280,12 @@ class Numerics(Enum):
     """
     RPL_MAPSTART = "018"
 
-
     """
 
      This numeric can be found in:
     - IRCNet ircd
     """
     RPL_HELLO = "020"
-
 
     """
 
@@ -315,7 +295,6 @@ class Numerics(Enum):
     """
     RPL_APASSWARN_SET = "030"
 
-
     """
 
      This numeric can be found in:
@@ -324,7 +303,6 @@ class Numerics(Enum):
     """
     RPL_APASSWARN_SECRET = "031"
 
-
     """
 
      This numeric can be found in:
@@ -332,7 +310,6 @@ class Numerics(Enum):
     - snircd
     """
     RPL_APASSWARN_CLEAR = "032"
-
 
     """
 
@@ -343,14 +320,12 @@ class Numerics(Enum):
     """
     RPL_YOURID = "042"
 
-
     """
 
      This numeric can be found in:
     - Inspircd
     """
     RPL_YOURUUID = "042"
-
 
     """
 
@@ -362,14 +337,12 @@ class Numerics(Enum):
     """
     RPL_SAVENICK = "043"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_REMOTEISUPPORT = "105"
-
 
     """
 
@@ -389,7 +362,6 @@ class Numerics(Enum):
     """
     RPL_TRACELINK = "200"
 
-
     """
 
      This numeric can be found in:
@@ -407,7 +379,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_TRACECONNECTING = "201"
-
 
     """
 
@@ -427,7 +398,6 @@ class Numerics(Enum):
     """
     RPL_TRACEHANDSHAKE = "202"
 
-
     """
 
      This numeric can be found in:
@@ -445,7 +415,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_TRACEUNKNOWN = "203"
-
 
     """
 
@@ -465,7 +434,6 @@ class Numerics(Enum):
     """
     RPL_TRACEOPERATOR = "204"
 
-
     """
 
      This numeric can be found in:
@@ -483,7 +451,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_TRACEUSER = "205"
-
 
     """
 
@@ -503,14 +470,12 @@ class Numerics(Enum):
     """
     RPL_TRACESERVER = "206"
 
-
     """
 
      This numeric can be found in:
     - plexus
     """
     RPL_TRACECAPTURED = "207"
-
 
     """
 
@@ -520,7 +485,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_TRACESERVICE = "207"
-
 
     """
 
@@ -540,7 +504,6 @@ class Numerics(Enum):
     """
     RPL_TRACENEWTYPE = "208"
 
-
     """
 
      This numeric can be found in:
@@ -559,7 +522,6 @@ class Numerics(Enum):
     """
     RPL_TRACECLASS = "209"
 
-
     """
 
      This numeric can be found in:
@@ -567,14 +529,12 @@ class Numerics(Enum):
     """
     RPL_STATSHELP = "210"
 
-
     """
 
      This numeric can be found in:
     - RFC2812
     """
     RPL_TRACERECONNECT = "210"
-
 
     """
 
@@ -594,7 +554,6 @@ class Numerics(Enum):
     """
     RPL_STATSLINKINFO = "211"
 
-
     """
 
      This numeric can be found in:
@@ -612,7 +571,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_STATSCOMMANDS = "212"
-
 
     """
 
@@ -632,7 +590,6 @@ class Numerics(Enum):
     """
     RPL_STATSCLINE = "213"
 
-
     """
 
      This numeric can be found in:
@@ -650,14 +607,12 @@ class Numerics(Enum):
     """
     RPL_STATSNLINE = "214"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_STATSOLDNLINE = "214"
-
 
     """
 
@@ -677,7 +632,6 @@ class Numerics(Enum):
     """
     RPL_STATSILINE = "215"
 
-
     """
 
      This numeric can be found in:
@@ -696,7 +650,6 @@ class Numerics(Enum):
     """
     RPL_STATSKLINE = "216"
 
-
     """
 
      This numeric can be found in:
@@ -704,7 +657,6 @@ class Numerics(Enum):
     - snircd
     """
     RPL_STATSPLINE_IRCU = "217"
-
 
     """
 
@@ -721,7 +673,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_STATSQLINE = "217"
-
 
     """
 
@@ -741,7 +692,6 @@ class Numerics(Enum):
     """
     RPL_STATSYLINE = "218"
 
-
     """
 
      This numeric can be found in:
@@ -760,14 +710,12 @@ class Numerics(Enum):
     """
     RPL_ENDOFSTATS = "219"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_STATSBLINE_UNREAL = "220"
-
 
     """
 
@@ -779,7 +727,6 @@ class Numerics(Enum):
     - ircd-ratbox
     """
     RPL_STATSPLINE = "220"
-
 
     """
 
@@ -800,7 +747,6 @@ class Numerics(Enum):
     """
     RPL_UMODEIS = "221"
 
-
     """
 
      This numeric can be found in:
@@ -808,14 +754,12 @@ class Numerics(Enum):
     """
     RPL_SQLINE_NICK = "222"
 
-
     """
 
      This numeric can be found in:
     - Bahamut
     """
     RPL_STATSBLINE_BAHAMUT = "222"
-
 
     """
 
@@ -825,7 +769,6 @@ class Numerics(Enum):
     """
     RPL_STATSJLINE = "222"
 
-
     """
 
      This numeric can be found in:
@@ -833,14 +776,12 @@ class Numerics(Enum):
     """
     RPL_STATSELINE_BAHAMUT = "223"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_STATSGLINE_UNREAL = "223"
-
 
     """
 
@@ -853,7 +794,6 @@ class Numerics(Enum):
     """
     RPL_STATSFLINE = "224"
 
-
     """
 
      This numeric can be found in:
@@ -861,14 +801,12 @@ class Numerics(Enum):
     """
     RPL_STATSTLINE_UNREAL = "224"
 
-
     """
 
      This numeric can be found in:
     - Bahamut
     """
     RPL_STATSCLONE = "225"
-
 
     """
 
@@ -881,14 +819,12 @@ class Numerics(Enum):
     """
     RPL_STATSDLINE = "225"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_STATSELINE_UNREAL = "225"
-
 
     """
 
@@ -900,14 +836,12 @@ class Numerics(Enum):
     """
     RPL_STATSALINE = "226"
 
-
     """
 
      This numeric can be found in:
     - Bahamut
     """
     RPL_STATSCOUNT = "226"
-
 
     """
 
@@ -916,14 +850,12 @@ class Numerics(Enum):
     """
     RPL_STATSNLINE_UNREAL = "226"
 
-
     """
 
      This numeric can be found in:
     - plexus
     """
     RPL_STATSBLINE_PLEXUS = "227"
-
 
     """
 
@@ -932,7 +864,6 @@ class Numerics(Enum):
     """
     RPL_STATSGLINE_BAHAMUT = "227"
 
-
     """
 
      This numeric can be found in:
@@ -940,14 +871,12 @@ class Numerics(Enum):
     """
     RPL_STATSVLINE_UNREAL = "227"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_STATSBANVER = "228"
-
 
     """
 
@@ -957,7 +886,6 @@ class Numerics(Enum):
     """
     RPL_STATSQLINE_IRCU = "228"
 
-
     """
 
      This numeric can be found in:
@@ -965,14 +893,12 @@ class Numerics(Enum):
     """
     RPL_STATSSPAMF = "229"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_STATSEXCEPTTKL = "230"
-
 
     """
 
@@ -984,7 +910,6 @@ class Numerics(Enum):
     """
     RPL_SERVICEINFO = "231"
 
-
     """
 
      This numeric can be found in:
@@ -994,7 +919,6 @@ class Numerics(Enum):
     """
     RPL_ENDOFSERVICES = "232"
 
-
     """
 
      This numeric can be found in:
@@ -1002,7 +926,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_RULES = "232"
-
 
     """
 
@@ -1013,7 +936,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_SERVICE = "233"
-
 
     """
 
@@ -1029,7 +951,6 @@ class Numerics(Enum):
     """
     RPL_SERVLIST = "234"
 
-
     """
 
      This numeric can be found in:
@@ -1044,7 +965,6 @@ class Numerics(Enum):
     """
     RPL_SERVLISTEND = "235"
 
-
     """
 
      This numeric can be found in:
@@ -1052,7 +972,6 @@ class Numerics(Enum):
     - snircd
     """
     RPL_STATSVERBOSE = "236"
-
 
     """
 
@@ -1062,7 +981,6 @@ class Numerics(Enum):
     """
     RPL_STATSENGINE = "237"
 
-
     """
 
      This numeric can be found in:
@@ -1071,14 +989,12 @@ class Numerics(Enum):
     """
     RPL_STATSFLINE_IRCU = "238"
 
-
     """
 
      This numeric can be found in:
     - IRCNet ircd
     """
     RPL_STATSIAUTH = "239"
-
 
     """
 
@@ -1087,7 +1003,6 @@ class Numerics(Enum):
     - RFC2812
     """
     RPL_STATSVLINE = "240"
-
 
     """
 
@@ -1107,7 +1022,6 @@ class Numerics(Enum):
     """
     RPL_STATSLLINE = "241"
 
-
     """
 
      This numeric can be found in:
@@ -1125,7 +1039,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_STATSUPTIME = "242"
-
 
     """
 
@@ -1145,7 +1058,6 @@ class Numerics(Enum):
     """
     RPL_STATSOLINE = "243"
 
-
     """
 
      This numeric can be found in:
@@ -1164,14 +1076,12 @@ class Numerics(Enum):
     """
     RPL_STATSHLINE = "244"
 
-
     """
 
      This numeric can be found in:
     - RFC2812
     """
     RPL_STATSSLINE_RFC2812 = "244"
-
 
     """
 
@@ -1186,14 +1096,12 @@ class Numerics(Enum):
     """
     RPL_STATSSLINE = "245"
 
-
     """
 
      This numeric can be found in:
     - ircd-hybrid
     """
     RPL_STATSTLINE_HYBRID = "245"
-
 
     """
 
@@ -1203,14 +1111,12 @@ class Numerics(Enum):
     """
     RPL_STATSPING = "246"
 
-
     """
 
      This numeric can be found in:
     - ircd-hybrid
     """
     RPL_STATSSERVICE = "246"
-
 
     """
 
@@ -1220,14 +1126,12 @@ class Numerics(Enum):
     """
     RPL_STATSTLINE_IRCU = "246"
 
-
     """
 
      This numeric can be found in:
     - Bahamut
     """
     RPL_STATSULINE_BAHAMUT = "246"
-
 
     """
 
@@ -1237,7 +1141,6 @@ class Numerics(Enum):
     """
     RPL_STATSBLINE_RFC2812 = "247"
 
-
     """
 
      This numeric can be found in:
@@ -1245,7 +1148,6 @@ class Numerics(Enum):
     - snircd
     """
     RPL_STATSGLINE_IRCU = "247"
-
 
     """
 
@@ -1259,14 +1161,12 @@ class Numerics(Enum):
     """
     RPL_STATSXLINE = "247"
 
-
     """
 
      This numeric can be found in:
     - IRCNet ircd
     """
     RPL_STATSDEFINE = "248"
-
 
     """
 
@@ -1281,7 +1181,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_STATSULINE = "248"
-
 
     """
 
@@ -1299,7 +1198,6 @@ class Numerics(Enum):
     """
     RPL_STATSDEBUG = "249"
 
-
     """
 
      This numeric can be found in:
@@ -1314,7 +1212,6 @@ class Numerics(Enum):
     """
     RPL_STATSCONN = "250"
 
-
     """
 
      This numeric can be found in:
@@ -1322,7 +1219,6 @@ class Numerics(Enum):
     - RFC2812
     """
     RPL_STATSDLINE_RFC2812 = "250"
-
 
     """
 
@@ -1342,7 +1238,6 @@ class Numerics(Enum):
     """
     RPL_LUSERCLIENT = "251"
 
-
     """
 
      This numeric can be found in:
@@ -1360,7 +1255,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_LUSEROP = "252"
-
 
     """
 
@@ -1380,7 +1274,6 @@ class Numerics(Enum):
     """
     RPL_LUSERUNKNOWN = "253"
 
-
     """
 
      This numeric can be found in:
@@ -1399,7 +1292,6 @@ class Numerics(Enum):
     """
     RPL_LUSERCHANNELS = "254"
 
-
     """
 
      This numeric can be found in:
@@ -1417,7 +1309,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_LUSERME = "255"
-
 
     """
 
@@ -1438,7 +1329,6 @@ class Numerics(Enum):
     """
     RPL_ADMINME = "256"
 
-
     """
 
      This numeric can be found in:
@@ -1457,7 +1347,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_ADMINLOC1 = "257"
-
 
     """
 
@@ -1478,7 +1367,6 @@ class Numerics(Enum):
     """
     RPL_ADMINLOC2 = "258"
 
-
     """
 
      This numeric can be found in:
@@ -1498,7 +1386,6 @@ class Numerics(Enum):
     """
     RPL_ADMINEMAIL = "259"
 
-
     """
 
      This numeric can be found in:
@@ -1512,7 +1399,6 @@ class Numerics(Enum):
     """
     RPL_TRACELOG = "261"
 
-
     """
 
      This numeric can be found in:
@@ -1525,7 +1411,6 @@ class Numerics(Enum):
     """
     RPL_ENDOFTRACE = "262"
 
-
     """
 
      This numeric can be found in:
@@ -1535,7 +1420,6 @@ class Numerics(Enum):
     - snircd
     """
     RPL_TRACEEND = "262"
-
 
     """
 
@@ -1549,7 +1433,6 @@ class Numerics(Enum):
     """
     RPL_LOAD2HI = "263"
 
-
     """
 
      This numeric can be found in:
@@ -1557,7 +1440,6 @@ class Numerics(Enum):
     - RFC2812
     """
     RPL_TRYAGAIN = "263"
-
 
     """
 
@@ -1573,7 +1455,6 @@ class Numerics(Enum):
     """
     RPL_LOCALUSERS = "265"
 
-
     """
 
      This numeric can be found in:
@@ -1588,14 +1469,12 @@ class Numerics(Enum):
     """
     RPL_GLOBALUSERS = "266"
 
-
     """
 
      This numeric can be found in:
     - Inspircd
     """
     RPL_MAPUSERS = "270"
-
 
     """
 
@@ -1607,7 +1486,6 @@ class Numerics(Enum):
     """
     RPL_PRIVS = "270"
 
-
     """
 
      This numeric can be found in:
@@ -1617,7 +1495,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_SILELIST = "271"
-
 
     """
 
@@ -1629,7 +1506,6 @@ class Numerics(Enum):
     """
     RPL_ENDOFSILELIST = "272"
 
-
     """
 
      This numeric can be found in:
@@ -1639,14 +1515,12 @@ class Numerics(Enum):
     """
     RPL_STATSDLINE_IRCU = "275"
 
-
     """
 
      This numeric can be found in:
     - Bahamut
     """
     RPL_USINGSSL = "275"
-
 
     """
 
@@ -1655,7 +1529,6 @@ class Numerics(Enum):
     - snircd
     """
     RPL_STATSRLINE = "276"
-
 
     """
 
@@ -1667,7 +1540,6 @@ class Numerics(Enum):
     """
     RPL_WHOISCERTFP = "276"
 
-
     """
 
      This numeric can be found in:
@@ -1675,7 +1547,6 @@ class Numerics(Enum):
     - snircd
     """
     RPL_GLIST = "280"
-
 
     """
 
@@ -1688,7 +1559,6 @@ class Numerics(Enum):
     """
     RPL_ACCEPTLIST = "281"
 
-
     """
 
      This numeric can be found in:
@@ -1696,7 +1566,6 @@ class Numerics(Enum):
     - snircd
     """
     RPL_ENDOFGLIST = "281"
-
 
     """
 
@@ -1709,7 +1578,6 @@ class Numerics(Enum):
     """
     RPL_ENDOFACCEPT = "282"
 
-
     """
 
      This numeric can be found in:
@@ -1717,7 +1585,6 @@ class Numerics(Enum):
     - snircd
     """
     RPL_JUPELIST = "282"
-
 
     """
 
@@ -1727,7 +1594,6 @@ class Numerics(Enum):
     """
     RPL_ENDOFJUPELIST = "283"
 
-
     """
 
      This numeric can be found in:
@@ -1735,7 +1601,6 @@ class Numerics(Enum):
     - snircd
     """
     RPL_FEATURE = "284"
-
 
     """
 
@@ -1745,14 +1610,12 @@ class Numerics(Enum):
     """
     RPL_NEWHOSTIS = "285"
 
-
     """
 
      This numeric can be found in:
     - snircd
     """
     RPL_CHKHEAD = "286"
-
 
     """
 
@@ -1761,14 +1624,12 @@ class Numerics(Enum):
     """
     RPL_CHANUSER = "287"
 
-
     """
 
      This numeric can be found in:
     - snircd
     """
     RPL_PATCHHEAD = "288"
-
 
     """
 
@@ -1777,14 +1638,12 @@ class Numerics(Enum):
     """
     RPL_PATCHCON = "289"
 
-
     """
 
      This numeric can be found in:
     - snircd
     """
     RPL_DATASTR = "290"
-
 
     """
 
@@ -1793,14 +1652,12 @@ class Numerics(Enum):
     """
     RPL_HELPHDR = "290"
 
-
     """
 
      This numeric can be found in:
     - snircd
     """
     RPL_ENDOFCHECK = "291"
-
 
     """
 
@@ -1809,14 +1666,12 @@ class Numerics(Enum):
     """
     RPL_HELPOP = "291"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_HELPTLR = "292"
-
 
     """
 
@@ -1825,7 +1680,6 @@ class Numerics(Enum):
     """
     RPL_HELPHLP = "293"
 
-
     """
 
      This numeric can be found in:
@@ -1833,14 +1687,12 @@ class Numerics(Enum):
     """
     RPL_HELPFWD = "294"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_HELPIGN = "295"
-
 
     """
 
@@ -1855,7 +1707,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_NONE = "300"
-
 
     """
 
@@ -1875,7 +1726,6 @@ class Numerics(Enum):
     """
     RPL_AWAY = "301"
 
-
     """
 
      This numeric can be found in:
@@ -1893,7 +1743,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_USERHOST = "302"
-
 
     """
 
@@ -1913,14 +1762,12 @@ class Numerics(Enum):
     """
     RPL_ISON = "303"
 
-
     """
 
      This numeric can be found in:
     - Inspircd
     """
     RPL_SYNTAX = "304"
-
 
     """
 
@@ -1935,7 +1782,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_TEXT = "304"
-
 
     """
 
@@ -1956,7 +1802,6 @@ class Numerics(Enum):
     """
     RPL_UNAWAY = "305"
 
-
     """
 
      This numeric can be found in:
@@ -1976,7 +1821,6 @@ class Numerics(Enum):
     """
     RPL_NOWAWAY = "306"
 
-
     """
 
      This numeric can be found in:
@@ -1987,7 +1831,6 @@ class Numerics(Enum):
     """
     RPL_WHOISREGNICK = "307"
 
-
     """
 
      This numeric can be found in:
@@ -1995,14 +1838,12 @@ class Numerics(Enum):
     """
     RPL_RULESSTART = "308"
 
-
     """
 
      This numeric can be found in:
     - Inspircd
     """
     RPL_RULESTART = "308"
-
 
     """
 
@@ -2012,14 +1853,12 @@ class Numerics(Enum):
     """
     RPL_WHOISADMIN = "308"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_ENDOFRULES = "309"
-
 
     """
 
@@ -2028,7 +1867,6 @@ class Numerics(Enum):
     """
     RPL_RULESEND = "309"
 
-
     """
 
      This numeric can be found in:
@@ -2036,14 +1874,12 @@ class Numerics(Enum):
     """
     RPL_WHOISSADMIN = "309"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_WHOISHELPOP = "310"
-
 
     """
 
@@ -2053,14 +1889,12 @@ class Numerics(Enum):
     """
     RPL_WHOISMODES = "310"
 
-
     """
 
      This numeric can be found in:
     - Bahamut
     """
     RPL_WHOISSVCMSG = "310"
-
 
     """
 
@@ -2080,7 +1914,6 @@ class Numerics(Enum):
     """
     RPL_WHOISUSER = "311"
 
-
     """
 
      This numeric can be found in:
@@ -2098,7 +1931,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_WHOISSERVER = "312"
-
 
     """
 
@@ -2118,7 +1950,6 @@ class Numerics(Enum):
     """
     RPL_WHOISOPERATOR = "313"
 
-
     """
 
      This numeric can be found in:
@@ -2136,7 +1967,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_WHOWASUSER = "314"
-
 
     """
 
@@ -2156,7 +1986,6 @@ class Numerics(Enum):
     """
     RPL_ENDOFWHO = "315"
 
-
     """
 
      This numeric can be found in:
@@ -2172,7 +2001,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_WHOISCHANOP = "316"
-
 
     """
 
@@ -2192,7 +2020,6 @@ class Numerics(Enum):
     """
     RPL_WHOISIDLE = "317"
 
-
     """
 
      This numeric can be found in:
@@ -2210,7 +2037,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_ENDOFWHOIS = "318"
-
 
     """
 
@@ -2230,7 +2056,6 @@ class Numerics(Enum):
     """
     RPL_WHOISCHANNELS = "319"
 
-
     """
 
      This numeric can be found in:
@@ -2238,7 +2063,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_WHOISSPECIAL = "320"
-
 
     """
 
@@ -2258,7 +2082,6 @@ class Numerics(Enum):
     """
     RPL_LISTSTART = "321"
 
-
     """
 
      This numeric can be found in:
@@ -2277,7 +2100,6 @@ class Numerics(Enum):
     """
     RPL_LIST = "322"
 
-
     """
 
      This numeric can be found in:
@@ -2295,7 +2117,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_LISTEND = "323"
-
 
     """
 
@@ -2316,7 +2137,6 @@ class Numerics(Enum):
     """
     RPL_CHANNELMODEIS = "324"
 
-
     """
 
      This numeric can be found in:
@@ -2324,7 +2144,6 @@ class Numerics(Enum):
     - ircd-seven
     """
     RPL_CHANNELMLOCK = "325"
-
 
     """
 
@@ -2334,7 +2153,6 @@ class Numerics(Enum):
     """
     RPL_UNIQOPIS = "325"
 
-
     """
 
      This numeric can be found in:
@@ -2343,14 +2161,12 @@ class Numerics(Enum):
     """
     RPL_CHANNELURL = "328"
 
-
     """
 
      This numeric can be found in:
     - Inspircd
     """
     RPL_CHANNELCREATED = "329"
-
 
     """
 
@@ -2367,7 +2183,6 @@ class Numerics(Enum):
     """
     RPL_CREATIONTIME = "329"
 
-
     """
 
      This numeric can be found in:
@@ -2376,7 +2191,6 @@ class Numerics(Enum):
     - snircd
     """
     RPL_WHOISACCOUNT = "330"
-
 
     """
 
@@ -2387,7 +2201,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_WHOISLOGGEDIN = "330"
-
 
     """
 
@@ -2408,14 +2221,12 @@ class Numerics(Enum):
     """
     RPL_NOTOPIC = "331"
 
-
     """
 
      This numeric can be found in:
     - Inspircd
     """
     RPL_NOTOPICSET = "331"
-
 
     """
 
@@ -2436,14 +2247,12 @@ class Numerics(Enum):
     """
     RPL_TOPIC = "332"
 
-
     """
 
      This numeric can be found in:
     - Inspircd
     """
     RPL_TOPICTIME = "333"
-
 
     """
 
@@ -2460,14 +2269,12 @@ class Numerics(Enum):
     """
     RPL_TOPICWHOTIME = "333"
 
-
     """
 
      This numeric can be found in:
     - IRCNet ircd
     """
     RPL_TOPIC_WHO_TIME = "333"
-
 
     """
 
@@ -2476,14 +2283,12 @@ class Numerics(Enum):
     """
     RPL_COMMANDSYNTAX = "334"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_LISTSYNTAX = "334"
-
 
     """
 
@@ -2493,14 +2298,12 @@ class Numerics(Enum):
     """
     RPL_LISTUSAGE = "334"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_WHOISBOT = "335"
-
 
     """
 
@@ -2509,14 +2312,12 @@ class Numerics(Enum):
     """
     RPL_INVITELIST_UNREAL_OLD = "336"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_ENDOFINVITELIST_UNREAL_OLD = "337"
-
 
     """
 
@@ -2527,7 +2328,6 @@ class Numerics(Enum):
     - ircd-seven
     """
     RPL_WHOISTEXT = "337"
-
 
     """
 
@@ -2543,7 +2343,6 @@ class Numerics(Enum):
     """
     RPL_WHOISACTUALLY = "338"
 
-
     """
 
      This numeric can be found in:
@@ -2552,7 +2351,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_USERIP = "340"
-
 
     """
 
@@ -2573,7 +2371,6 @@ class Numerics(Enum):
     """
     RPL_INVITING = "341"
 
-
     """
 
      This numeric can be found in:
@@ -2588,14 +2385,12 @@ class Numerics(Enum):
     """
     RPL_SUMMONING = "342"
 
-
     """
 
      This numeric can be found in:
     - snircd
     """
     RPL_WHOISOPERNAME = "343"
-
 
     """
 
@@ -2604,7 +2399,6 @@ class Numerics(Enum):
     """
     RPL_REOPLIST = "344"
 
-
     """
 
      This numeric can be found in:
@@ -2612,14 +2406,12 @@ class Numerics(Enum):
     """
     RPL_ENDOFREOPLIST = "345"
 
-
     """
 
      This numeric can be found in:
     - Inspircd
     """
     RPL_INVITED = "345"
-
 
     """
 
@@ -2629,14 +2421,12 @@ class Numerics(Enum):
     """
     RPL_ISSUEDINVITE = "345"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_INVEXLIST = "346"
-
 
     """
 
@@ -2655,14 +2445,12 @@ class Numerics(Enum):
     """
     RPL_INVITELIST = "346"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_ENDOFINVEXLIST = "347"
-
 
     """
 
@@ -2681,7 +2469,6 @@ class Numerics(Enum):
     """
     RPL_ENDOFINVITELIST = "347"
 
-
     """
 
      This numeric can be found in:
@@ -2695,7 +2482,6 @@ class Numerics(Enum):
     """
     RPL_EXCEPTLIST = "348"
 
-
     """
 
      This numeric can be found in:
@@ -2703,14 +2489,12 @@ class Numerics(Enum):
     """
     RPL_EXEMPTLIST = "348"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_EXLIST = "348"
-
 
     """
 
@@ -2725,7 +2509,6 @@ class Numerics(Enum):
     """
     RPL_ENDOFEXCEPTLIST = "349"
 
-
     """
 
      This numeric can be found in:
@@ -2733,14 +2516,12 @@ class Numerics(Enum):
     """
     RPL_ENDOFEXEMPTLIST = "349"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_ENDOFEXLIST = "349"
-
 
     """
 
@@ -2761,7 +2542,6 @@ class Numerics(Enum):
     """
     RPL_VERSION = "351"
 
-
     """
 
      This numeric can be found in:
@@ -2779,7 +2559,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_WHOREPLY = "352"
-
 
     """
 
@@ -2800,14 +2579,12 @@ class Numerics(Enum):
     """
     RPL_NAMREPLY = "353"
 
-
     """
 
      This numeric can be found in:
     - Bahamut
     """
     RPL_RWHOREPLY = "354"
-
 
     """
 
@@ -2819,7 +2596,6 @@ class Numerics(Enum):
     """
     RPL_WHOSPCRPL = "354"
 
-
     """
 
      This numeric can be found in:
@@ -2828,7 +2604,6 @@ class Numerics(Enum):
     """
     RPL_DELNAMREPLY = "355"
 
-
     """
 
      This numeric can be found in:
@@ -2836,7 +2611,6 @@ class Numerics(Enum):
     - ircd-seven
     """
     RPL_WHOWASREAL = "360"
-
 
     """
 
@@ -2851,7 +2625,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_KILLDONE = "361"
-
 
     """
 
@@ -2871,7 +2644,6 @@ class Numerics(Enum):
     """
     RPL_CLOSING = "362"
 
-
     """
 
      This numeric can be found in:
@@ -2889,7 +2661,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_CLOSEEND = "363"
-
 
     """
 
@@ -2909,7 +2680,6 @@ class Numerics(Enum):
     """
     RPL_LINKS = "364"
 
-
     """
 
      This numeric can be found in:
@@ -2927,7 +2697,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_ENDOFLINKS = "365"
-
 
     """
 
@@ -2948,7 +2717,6 @@ class Numerics(Enum):
     """
     RPL_ENDOFNAMES = "366"
 
-
     """
 
      This numeric can be found in:
@@ -2966,7 +2734,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_BANLIST = "367"
-
 
     """
 
@@ -2986,7 +2753,6 @@ class Numerics(Enum):
     """
     RPL_ENDOFBANLIST = "368"
 
-
     """
 
      This numeric can be found in:
@@ -3004,7 +2770,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_ENDOFWHOWAS = "369"
-
 
     """
 
@@ -3025,7 +2790,6 @@ class Numerics(Enum):
     """
     RPL_INFO = "371"
 
-
     """
 
      This numeric can be found in:
@@ -3045,7 +2809,6 @@ class Numerics(Enum):
     """
     RPL_MOTD = "372"
 
-
     """
 
      This numeric can be found in:
@@ -3061,7 +2824,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_INFOSTART = "373"
-
 
     """
 
@@ -3082,7 +2844,6 @@ class Numerics(Enum):
     """
     RPL_ENDOFINFO = "374"
 
-
     """
 
      This numeric can be found in:
@@ -3101,7 +2862,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_MOTDSTART = "375"
-
 
     """
 
@@ -3122,7 +2882,6 @@ class Numerics(Enum):
     """
     RPL_ENDOFMOTD = "376"
 
-
     """
 
      This numeric can be found in:
@@ -3132,7 +2891,6 @@ class Numerics(Enum):
     """
     RPL_WHOISHOST = "378"
 
-
     """
 
      This numeric can be found in:
@@ -3140,14 +2898,12 @@ class Numerics(Enum):
     """
     RPL_WHOISMODES_UNREAL = "379"
 
-
     """
 
      This numeric can be found in:
     - Inspircd
     """
     RPL_YOUAREOPER = "381"
-
 
     """
 
@@ -3166,7 +2922,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_YOUREOPER = "381"
-
 
     """
 
@@ -3187,7 +2942,6 @@ class Numerics(Enum):
     """
     RPL_REHASHING = "382"
 
-
     """
 
      This numeric can be found in:
@@ -3196,7 +2950,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_YOURESERVICE = "383"
-
 
     """
 
@@ -3212,7 +2965,6 @@ class Numerics(Enum):
     """
     RPL_MYPORTIS = "384"
 
-
     """
 
      This numeric can be found in:
@@ -3225,14 +2977,12 @@ class Numerics(Enum):
     """
     RPL_NOTOPERANYMORE = "385"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_QLIST = "386"
-
 
     """
 
@@ -3245,14 +2995,12 @@ class Numerics(Enum):
     """
     RPL_RSACHALLENGE = "386"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_ENDOFQLIST = "387"
-
 
     """
 
@@ -3261,14 +3009,12 @@ class Numerics(Enum):
     """
     RPL_ALIST = "388"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_ENDOFALIST = "389"
-
 
     """
 
@@ -3289,7 +3035,6 @@ class Numerics(Enum):
     """
     RPL_TIME = "391"
 
-
     """
 
      This numeric can be found in:
@@ -3305,7 +3050,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_USERSSTART = "392"
-
 
     """
 
@@ -3323,7 +3067,6 @@ class Numerics(Enum):
     """
     RPL_USERS = "393"
 
-
     """
 
      This numeric can be found in:
@@ -3339,7 +3082,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_ENDOFUSERS = "394"
-
 
     """
 
@@ -3357,7 +3099,6 @@ class Numerics(Enum):
     """
     RPL_NOUSERS = "395"
 
-
     """
 
      This numeric can be found in:
@@ -3369,14 +3110,12 @@ class Numerics(Enum):
     """
     RPL_HOSTHIDDEN = "396"
 
-
     """
 
      This numeric can be found in:
     - plexus
     """
     RPL_VISIBLEHOST = "396"
-
 
     """
 
@@ -3385,7 +3124,6 @@ class Numerics(Enum):
     """
     RPL_YOURDISPLAYEDHOST = "396"
 
-
     """
 
      This numeric can be found in:
@@ -3393,14 +3131,12 @@ class Numerics(Enum):
     """
     RPL_STATSSLINE_SNIRCD = "398"
 
-
     """
 
      This numeric can be found in:
     - snircd
     """
     RPL_USINGSLINE = "399"
-
 
     """
 
@@ -3421,7 +3157,6 @@ class Numerics(Enum):
     """
     ERR_NOSUCHNICK = "401"
 
-
     """
 
      This numeric can be found in:
@@ -3440,7 +3175,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     ERR_NOSUCHSERVER = "402"
-
 
     """
 
@@ -3461,7 +3195,6 @@ class Numerics(Enum):
     """
     ERR_NOSUCHCHANNEL = "403"
 
-
     """
 
      This numeric can be found in:
@@ -3480,7 +3213,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     ERR_CANNOTSENDTOCHAN = "404"
-
 
     """
 
@@ -3501,7 +3233,6 @@ class Numerics(Enum):
     """
     ERR_TOOMANYCHANNELS = "405"
 
-
     """
 
      This numeric can be found in:
@@ -3519,7 +3250,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     ERR_WASNOSUCHNICK = "406"
-
 
     """
 
@@ -3539,7 +3269,6 @@ class Numerics(Enum):
     """
     ERR_TOOMANYTARGETS = "407"
 
-
     """
 
      This numeric can be found in:
@@ -3548,7 +3277,6 @@ class Numerics(Enum):
     - plexus
     """
     ERR_NOCTRLSONCHAN = "408"
-
 
     """
 
@@ -3559,14 +3287,12 @@ class Numerics(Enum):
     """
     ERR_NOSUCHSERVICE = "408"
 
-
     """
 
      This numeric can be found in:
     - snircd
     """
     ERR_SEARCHNOMATCH = "408"
-
 
     """
 
@@ -3586,7 +3312,6 @@ class Numerics(Enum):
     """
     ERR_NOORIGIN = "409"
 
-
     """
 
      This numeric can be found in:
@@ -3599,14 +3324,12 @@ class Numerics(Enum):
     """
     ERR_INVALIDCAPCMD = "410"
 
-
     """
 
      This numeric can be found in:
     - Inspircd
     """
     ERR_INVALIDCAPSUBCOMMAND = "410"
-
 
     """
 
@@ -3615,7 +3338,6 @@ class Numerics(Enum):
     - snircd
     """
     ERR_UNKNOWNCAPCMD = "410"
-
 
     """
 
@@ -3635,7 +3357,6 @@ class Numerics(Enum):
     """
     ERR_NORECIPIENT = "411"
 
-
     """
 
      This numeric can be found in:
@@ -3653,7 +3374,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     ERR_NOTEXTTOSEND = "412"
-
 
     """
 
@@ -3673,7 +3393,6 @@ class Numerics(Enum):
     """
     ERR_NOTOPLEVEL = "413"
 
-
     """
 
      This numeric can be found in:
@@ -3692,7 +3411,6 @@ class Numerics(Enum):
     """
     ERR_WILDTOPLEVEL = "414"
 
-
     """
 
      This numeric can be found in:
@@ -3701,7 +3419,6 @@ class Numerics(Enum):
     """
     ERR_BADMASK = "415"
 
-
     """
 
      This numeric can be found in:
@@ -3709,7 +3426,6 @@ class Numerics(Enum):
     - snircd
     """
     ERR_QUERYTOOLONG = "416"
-
 
     """
 
@@ -3721,7 +3437,6 @@ class Numerics(Enum):
     """
     ERR_TOOMANYMATCHES = "416"
 
-
     """
 
      This numeric can be found in:
@@ -3729,7 +3444,6 @@ class Numerics(Enum):
     - snircd
     """
     ERR_INPUTTOOLONG = "417"
-
 
     """
 
@@ -3750,7 +3464,6 @@ class Numerics(Enum):
     """
     ERR_UNKNOWNCOMMAND = "421"
 
-
     """
 
      This numeric can be found in:
@@ -3770,7 +3483,6 @@ class Numerics(Enum):
     """
     ERR_NOMOTD = "422"
 
-
     """
 
      This numeric can be found in:
@@ -3789,7 +3501,6 @@ class Numerics(Enum):
     """
     ERR_NOADMININFO = "423"
 
-
     """
 
      This numeric can be found in:
@@ -3804,14 +3515,12 @@ class Numerics(Enum):
     """
     ERR_FILEERROR = "424"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     ERR_NOOPERMOTD = "425"
-
 
     """
 
@@ -3820,7 +3529,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     ERR_TOOMANYAWAY = "429"
-
 
     """
 
@@ -3840,14 +3548,12 @@ class Numerics(Enum):
     """
     ERR_NONICKNAMEGIVEN = "431"
 
-
     """
 
      This numeric can be found in:
     - IRCNet ircd
     """
     ERR_ERRONEOUSNICKNAME = "432"
-
 
     """
 
@@ -3865,7 +3571,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     ERR_ERRONEUSNICKNAME = "432"
-
 
     """
 
@@ -3885,7 +3590,6 @@ class Numerics(Enum):
     """
     ERR_NICKNAMEINUSE = "433"
 
-
     """
 
      This numeric can be found in:
@@ -3894,14 +3598,12 @@ class Numerics(Enum):
     """
     ERR_NORULES = "434"
 
-
     """
 
      This numeric can be found in:
     - IRCNet ircd
     """
     ERR_SERVICENAMEINUSE = "434"
-
 
     """
 
@@ -3911,14 +3613,12 @@ class Numerics(Enum):
     """
     ERR_BANNICKCHANGE_CHARYBDIS = "435"
 
-
     """
 
      This numeric can be found in:
     - Bahamut
     """
     ERR_BANONCHAN = "435"
-
 
     """
 
@@ -3927,7 +3627,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     ERR_SERVICECONFUSED = "435"
-
 
     """
 
@@ -3947,7 +3646,6 @@ class Numerics(Enum):
     """
     ERR_NICKCOLLISION = "436"
 
-
     """
 
      This numeric can be found in:
@@ -3958,7 +3656,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     ERR_BANNICKCHANGE = "437"
-
 
     """
 
@@ -3972,14 +3669,12 @@ class Numerics(Enum):
     """
     ERR_UNAVAILRESOURCE = "437"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     ERR_NCHANGETOOFAST = "438"
-
 
     """
 
@@ -3994,14 +3689,12 @@ class Numerics(Enum):
     """
     ERR_NICKTOOFAST = "438"
 
-
     """
 
      This numeric can be found in:
     - Bahamut
     """
     ERR_TARGETTOFAST = "439"
-
 
     """
 
@@ -4012,7 +3705,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     ERR_TARGETTOOFAST = "439"
-
 
     """
 
@@ -4027,7 +3719,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     ERR_SERVICESDOWN = "440"
-
 
     """
 
@@ -4048,7 +3739,6 @@ class Numerics(Enum):
     """
     ERR_USERNOTINCHANNEL = "441"
 
-
     """
 
      This numeric can be found in:
@@ -4067,7 +3757,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     ERR_NOTONCHANNEL = "442"
-
 
     """
 
@@ -4088,7 +3777,6 @@ class Numerics(Enum):
     """
     ERR_USERONCHANNEL = "443"
 
-
     """
 
      This numeric can be found in:
@@ -4102,7 +3790,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     ERR_NOLOGIN = "444"
-
 
     """
 
@@ -4118,7 +3805,6 @@ class Numerics(Enum):
     """
     ERR_SUMMONDISABLED = "445"
 
-
     """
 
      This numeric can be found in:
@@ -4133,7 +3819,6 @@ class Numerics(Enum):
     """
     ERR_USERSDISABLED = "446"
 
-
     """
 
      This numeric can be found in:
@@ -4141,14 +3826,12 @@ class Numerics(Enum):
     """
     ERR_CANTCHANGENICK = "447"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     ERR_NONICKCHANGE = "447"
-
 
     """
 
@@ -4169,14 +3852,12 @@ class Numerics(Enum):
     """
     ERR_NOTREGISTERED = "451"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     ERR_HOSTILENAME = "455"
-
 
     """
 
@@ -4189,7 +3870,6 @@ class Numerics(Enum):
     """
     ERR_ACCEPTFULL = "456"
 
-
     """
 
      This numeric can be found in:
@@ -4200,7 +3880,6 @@ class Numerics(Enum):
     - ircd-ratbox
     """
     ERR_ACCEPTEXIST = "457"
-
 
     """
 
@@ -4213,7 +3892,6 @@ class Numerics(Enum):
     """
     ERR_ACCEPTNOT = "458"
 
-
     """
 
      This numeric can be found in:
@@ -4221,14 +3899,12 @@ class Numerics(Enum):
     """
     ERR_NOHIDING = "459"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     ERR_NOTFORHALFOPS = "460"
-
 
     """
 
@@ -4249,14 +3925,12 @@ class Numerics(Enum):
     """
     ERR_NEEDMOREPARAMS = "461"
 
-
     """
 
      This numeric can be found in:
     - Inspircd
     """
     ERR_ALREADYREGISTERED = "462"
-
 
     """
 
@@ -4276,7 +3950,6 @@ class Numerics(Enum):
     """
     ERR_ALREADYREGISTRED = "462"
 
-
     """
 
      This numeric can be found in:
@@ -4292,7 +3965,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     ERR_NOPERMFORHOST = "463"
-
 
     """
 
@@ -4312,7 +3984,6 @@ class Numerics(Enum):
     """
     ERR_PASSWDMISMATCH = "464"
 
-
     """
 
      This numeric can be found in:
@@ -4331,7 +4002,6 @@ class Numerics(Enum):
     """
     ERR_YOUREBANNEDCREEP = "465"
 
-
     """
 
      This numeric can be found in:
@@ -4347,7 +4017,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     ERR_YOUWILLBEBANNED = "466"
-
 
     """
 
@@ -4365,7 +4034,6 @@ class Numerics(Enum):
     """
     ERR_KEYSET = "467"
 
-
     """
 
      This numeric can be found in:
@@ -4373,7 +4041,6 @@ class Numerics(Enum):
     - snircd
     """
     ERR_INVALIDUSERNAME = "468"
-
 
     """
 
@@ -4384,14 +4051,12 @@ class Numerics(Enum):
     """
     ERR_ONLYSERVERSCANCHANGE = "468"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     ERR_LINKSET = "469"
-
 
     """
 
@@ -4402,14 +4067,12 @@ class Numerics(Enum):
     """
     ERR_LINKCHANNEL = "470"
 
-
     """
 
      This numeric can be found in:
     - ircd-hybrid
     """
     ERR_OPERONLYCHAN = "470"
-
 
     """
 
@@ -4430,7 +4093,6 @@ class Numerics(Enum):
     """
     ERR_CHANNELISFULL = "471"
 
-
     """
 
      This numeric can be found in:
@@ -4448,7 +4110,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     ERR_UNKNOWNMODE = "472"
-
 
     """
 
@@ -4469,7 +4130,6 @@ class Numerics(Enum):
     """
     ERR_INVITEONLYCHAN = "473"
 
-
     """
 
      This numeric can be found in:
@@ -4488,7 +4148,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     ERR_BANNEDFROMCHAN = "474"
-
 
     """
 
@@ -4509,7 +4168,6 @@ class Numerics(Enum):
     """
     ERR_BADCHANNELKEY = "475"
 
-
     """
 
      This numeric can be found in:
@@ -4526,14 +4184,12 @@ class Numerics(Enum):
     """
     ERR_BADCHANMASK = "476"
 
-
     """
 
      This numeric can be found in:
     - plexus
     """
     ERR_OPERONLYCHAN_PLEXUS = "476"
-
 
     """
 
@@ -4550,7 +4206,6 @@ class Numerics(Enum):
     """
     ERR_NEEDREGGEDNICK = "477"
 
-
     """
 
      This numeric can be found in:
@@ -4558,7 +4213,6 @@ class Numerics(Enum):
     - RFC2812
     """
     ERR_NOCHANMODES = "477"
-
 
     """
 
@@ -4577,7 +4231,6 @@ class Numerics(Enum):
     """
     ERR_BANLISTFULL = "478"
 
-
     """
 
      This numeric can be found in:
@@ -4592,7 +4245,6 @@ class Numerics(Enum):
     """
     ERR_BADCHANNAME = "479"
 
-
     """
 
      This numeric can be found in:
@@ -4600,14 +4252,12 @@ class Numerics(Enum):
     """
     ERR_LINKFAIL = "479"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     ERR_CANNOTKNOCK = "480"
-
 
     """
 
@@ -4617,7 +4267,6 @@ class Numerics(Enum):
     """
     ERR_SSLONLYCHAN = "480"
 
-
     """
 
      This numeric can be found in:
@@ -4625,7 +4274,6 @@ class Numerics(Enum):
     - ircd-seven
     """
     ERR_THROTTLE = "480"
-
 
     """
 
@@ -4646,7 +4294,6 @@ class Numerics(Enum):
     """
     ERR_NOPRIVILEGES = "481"
 
-
     """
 
      This numeric can be found in:
@@ -4666,7 +4313,6 @@ class Numerics(Enum):
     """
     ERR_CHANOPRIVSNEEDED = "482"
 
-
     """
 
      This numeric can be found in:
@@ -4685,7 +4331,6 @@ class Numerics(Enum):
     """
     ERR_CANTKILLSERVER = "483"
 
-
     """
 
      This numeric can be found in:
@@ -4693,14 +4338,12 @@ class Numerics(Enum):
     """
     ERR_ATTACKDENY = "484"
 
-
     """
 
      This numeric can be found in:
     - Bahamut
     """
     ERR_DESYNC = "484"
-
 
     """
 
@@ -4713,7 +4356,6 @@ class Numerics(Enum):
     """
     ERR_ISCHANSERVICE = "484"
 
-
     """
 
      This numeric can be found in:
@@ -4722,7 +4364,6 @@ class Numerics(Enum):
     - RFC2812
     """
     ERR_RESTRICTED = "484"
-
 
     """
 
@@ -4733,7 +4374,6 @@ class Numerics(Enum):
     """
     ERR_BANNEDNICK = "485"
 
-
     """
 
      This numeric can be found in:
@@ -4743,14 +4383,12 @@ class Numerics(Enum):
     """
     ERR_CHANBANREASON = "485"
 
-
     """
 
      This numeric can be found in:
     - snircd
     """
     ERR_ISREALSERVICE = "485"
-
 
     """
 
@@ -4759,14 +4397,12 @@ class Numerics(Enum):
     """
     ERR_KILLDENY = "485"
 
-
     """
 
      This numeric can be found in:
     - RFC2812
     """
     ERR_UNIQOPPRIVSNEEDED = "485"
-
 
     """
 
@@ -4775,14 +4411,12 @@ class Numerics(Enum):
     """
     ERR_UNIQOPRIVSNEEDED = "485"
 
-
     """
 
      This numeric can be found in:
     - snircd
     """
     ERR_ACCOUNTONLY = "486"
-
 
     """
 
@@ -4796,14 +4430,12 @@ class Numerics(Enum):
     """
     ERR_NONONREG = "486"
 
-
     """
 
      This numeric can be found in:
     - Bahamut
     """
     ERR_MSGSERVICES = "487"
-
 
     """
 
@@ -4812,14 +4444,12 @@ class Numerics(Enum):
     """
     ERR_NOTFORUSERS = "487"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     ERR_HTMDISABLED = "488"
-
 
     """
 
@@ -4828,14 +4458,12 @@ class Numerics(Enum):
     """
     ERR_NOSSL = "488"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     ERR_SECUREONLYCHAN = "489"
-
 
     """
 
@@ -4848,7 +4476,6 @@ class Numerics(Enum):
     """
     ERR_VOICENEEDED = "489"
 
-
     """
 
      This numeric can be found in:
@@ -4856,14 +4483,12 @@ class Numerics(Enum):
     """
     ERR_ALLMUSTSSL = "490"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     ERR_NOSWEAR = "490"
-
 
     """
 
@@ -4883,7 +4508,6 @@ class Numerics(Enum):
     """
     ERR_NOOPERHOST = "491"
 
-
     """
 
      This numeric can be found in:
@@ -4893,14 +4517,12 @@ class Numerics(Enum):
     """
     ERR_NOCTCP = "492"
 
-
     """
 
      This numeric can be found in:
     - Inspircd
     """
     ERR_NOCTCPALLOWED = "492"
-
 
     """
 
@@ -4911,7 +4533,6 @@ class Numerics(Enum):
     """
     ERR_NOSERVICEHOST = "492"
 
-
     """
 
      This numeric can be found in:
@@ -4920,14 +4541,12 @@ class Numerics(Enum):
     """
     ERR_NOFEATURE = "493"
 
-
     """
 
      This numeric can be found in:
     - Bahamut
     """
     ERR_NOSHAREDCHAN = "493"
-
 
     """
 
@@ -4936,7 +4555,6 @@ class Numerics(Enum):
     - snircd
     """
     ERR_BADFEATVALUE = "494"
-
 
     """
 
@@ -4947,7 +4565,6 @@ class Numerics(Enum):
     """
     ERR_OWNMODE = "494"
 
-
     """
 
      This numeric can be found in:
@@ -4956,14 +4573,12 @@ class Numerics(Enum):
     """
     ERR_BADLOGTYPE = "495"
 
-
     """
 
      This numeric can be found in:
     - Inspircd
     """
     ERR_DELAYREJOIN = "495"
-
 
     """
 
@@ -4973,7 +4588,6 @@ class Numerics(Enum):
     """
     ERR_BADLOGSYS = "496"
 
-
     """
 
      This numeric can be found in:
@@ -4981,7 +4595,6 @@ class Numerics(Enum):
     - snircd
     """
     ERR_BADLOGVALUE = "497"
-
 
     """
 
@@ -4991,7 +4604,6 @@ class Numerics(Enum):
     """
     ERR_ISOPERLCHAN = "498"
 
-
     """
 
      This numeric can be found in:
@@ -5000,7 +4612,6 @@ class Numerics(Enum):
     """
     ERR_CHANOWNPRIVNEEDED = "499"
 
-
     """
 
      This numeric can be found in:
@@ -5008,14 +4619,12 @@ class Numerics(Enum):
     """
     ERR_STATSKLINE_RFC2812 = "499"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     ERR_TOOMANYJOINS = "500"
-
 
     """
 
@@ -5035,14 +4644,12 @@ class Numerics(Enum):
     """
     ERR_UMODEUNKNOWNFLAG = "501"
 
-
     """
 
      This numeric can be found in:
     - Inspircd
     """
     ERR_UNKNOWNSNOMASK = "501"
-
 
     """
 
@@ -5063,7 +4670,6 @@ class Numerics(Enum):
     """
     ERR_USERSDONTMATCH = "502"
 
-
     """
 
      This numeric can be found in:
@@ -5076,14 +4682,12 @@ class Numerics(Enum):
     """
     ERR_GHOSTEDCLIENT = "503"
 
-
     """
 
      This numeric can be found in:
     - Bahamut
     """
     ERR_LAST_ERR_MSG_BAHAMUT = "504"
-
 
     """
 
@@ -5096,7 +4700,6 @@ class Numerics(Enum):
     """
     ERR_USERNOTONSERV = "504"
 
-
     """
 
      This numeric can be found in:
@@ -5107,7 +4710,6 @@ class Numerics(Enum):
     """
     ERR_SILELISTFULL = "511"
 
-
     """
 
      This numeric can be found in:
@@ -5115,7 +4717,6 @@ class Numerics(Enum):
     - snircd
     """
     ERR_NOSUCHGLINE = "512"
-
 
     """
 
@@ -5126,7 +4727,6 @@ class Numerics(Enum):
     """
     ERR_TOOMANYWATCH = "512"
 
-
     """
 
      This numeric can be found in:
@@ -5135,14 +4735,12 @@ class Numerics(Enum):
     """
     ERR_BADPING = "513"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     ERR_NEEDPONG = "513"
-
 
     """
 
@@ -5155,7 +4753,6 @@ class Numerics(Enum):
     """
     ERR_WRONGPONG = "513"
 
-
     """
 
      This numeric can be found in:
@@ -5163,7 +4760,6 @@ class Numerics(Enum):
     - snircd
     """
     ERR_NOSUCHJUPE = "514"
-
 
     """
 
@@ -5173,7 +4769,6 @@ class Numerics(Enum):
     """
     ERR_TOOMANYDCC = "514"
 
-
     """
 
      This numeric can be found in:
@@ -5182,7 +4777,6 @@ class Numerics(Enum):
     """
     ERR_BADEXPIRE = "515"
 
-
     """
 
      This numeric can be found in:
@@ -5190,7 +4784,6 @@ class Numerics(Enum):
     - snircd
     """
     ERR_DONTCHEAT = "516"
-
 
     """
 
@@ -5203,7 +4796,6 @@ class Numerics(Enum):
     """
     ERR_DISABLED = "517"
 
-
     """
 
      This numeric can be found in:
@@ -5214,7 +4806,6 @@ class Numerics(Enum):
     """
     ERR_LONGMASK = "518"
 
-
     """
 
      This numeric can be found in:
@@ -5222,14 +4813,12 @@ class Numerics(Enum):
     """
     ERR_NOINVITE = "518"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     ERR_ADMONLY = "519"
-
 
     """
 
@@ -5239,14 +4828,12 @@ class Numerics(Enum):
     """
     ERR_TOOMANYUSERS = "519"
 
-
     """
 
      This numeric can be found in:
     - Inspircd
     """
     ERR_CANTJOINOPERSONLY = "520"
-
 
     """
 
@@ -5256,14 +4843,12 @@ class Numerics(Enum):
     """
     ERR_MASKTOOWIDE = "520"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     ERR_OPERONLY = "520"
-
 
     """
 
@@ -5275,7 +4860,6 @@ class Numerics(Enum):
     """
     ERR_LISTSYNTAX = "521"
 
-
     """
 
      This numeric can be found in:
@@ -5284,7 +4868,6 @@ class Numerics(Enum):
     """
     ERR_WHOSYNTAX = "522"
 
-
     """
 
      This numeric can be found in:
@@ -5292,7 +4875,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     ERR_WHOLIMEXCEED = "523"
-
 
     """
 
@@ -5305,14 +4887,12 @@ class Numerics(Enum):
     """
     ERR_HELPNOTFOUND = "524"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     ERR_OPERSPVERIFY = "524"
-
 
     """
 
@@ -5322,14 +4902,12 @@ class Numerics(Enum):
     """
     ERR_QUARANTINED = "524"
 
-
     """
 
      This numeric can be found in:
     - ircu
     """
     ERR_INVALIDKEY = "525"
-
 
     """
 
@@ -5338,7 +4916,6 @@ class Numerics(Enum):
     """
     ERR_BADHOSTMASK = "530"
 
-
     """
 
      This numeric can be found in:
@@ -5346,14 +4923,12 @@ class Numerics(Enum):
     """
     ERR_CANTSENDTOUSER = "531"
 
-
     """
 
      This numeric can be found in:
     - snircd
     """
     ERR_HOSTUNAVAIL = "531"
-
 
     """
 
@@ -5363,7 +4938,6 @@ class Numerics(Enum):
     """
     ERR_NOTLOWEROPLEVEL = "560"
 
-
     """
 
      This numeric can be found in:
@@ -5371,7 +4945,6 @@ class Numerics(Enum):
     - snircd
     """
     ERR_NOTMANAGER = "561"
-
 
     """
 
@@ -5381,7 +4954,6 @@ class Numerics(Enum):
     """
     ERR_CHANSECURED = "562"
 
-
     """
 
      This numeric can be found in:
@@ -5389,7 +4961,6 @@ class Numerics(Enum):
     - snircd
     """
     ERR_UPASSSET = "563"
-
 
     """
 
@@ -5399,7 +4970,6 @@ class Numerics(Enum):
     """
     ERR_UPASSNOTSET = "564"
 
-
     """
 
      This numeric can be found in:
@@ -5407,7 +4977,6 @@ class Numerics(Enum):
     - snircd
     """
     ERR_NOMANAGER = "566"
-
 
     """
 
@@ -5417,7 +4986,6 @@ class Numerics(Enum):
     """
     ERR_UPASS_SAME_APASS = "567"
 
-
     """
 
      This numeric can be found in:
@@ -5426,14 +4994,12 @@ class Numerics(Enum):
     """
     ERR_LASTERROR = "568"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_REAWAY = "597"
-
 
     """
 
@@ -5442,14 +5008,12 @@ class Numerics(Enum):
     """
     RPL_GONEAWAY = "598"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_NOTAWAY = "599"
-
 
     """
 
@@ -5460,7 +5024,6 @@ class Numerics(Enum):
     """
     RPL_LOGON = "600"
 
-
     """
 
      This numeric can be found in:
@@ -5469,7 +5032,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_LOGOFF = "601"
-
 
     """
 
@@ -5480,7 +5042,6 @@ class Numerics(Enum):
     """
     RPL_WATCHOFF = "602"
 
-
     """
 
      This numeric can be found in:
@@ -5489,7 +5050,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_WATCHSTAT = "603"
-
 
     """
 
@@ -5500,7 +5060,6 @@ class Numerics(Enum):
     """
     RPL_NOWON = "604"
 
-
     """
 
      This numeric can be found in:
@@ -5509,7 +5068,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_NOWOFF = "605"
-
 
     """
 
@@ -5520,7 +5078,6 @@ class Numerics(Enum):
     """
     RPL_WATCHLIST = "606"
 
-
     """
 
      This numeric can be found in:
@@ -5530,14 +5087,12 @@ class Numerics(Enum):
     """
     RPL_ENDOFWATCHLIST = "607"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_CLEARWATCH = "608"
-
 
     """
 
@@ -5546,14 +5101,12 @@ class Numerics(Enum):
     """
     RPL_NOWISAWAY = "609"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_MAPMORE_UNREAL = "610"
-
 
     """
 
@@ -5563,7 +5116,6 @@ class Numerics(Enum):
     """
     RPL_DCCSTATUS = "617"
 
-
     """
 
      This numeric can be found in:
@@ -5571,7 +5123,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_DCCLIST = "618"
-
 
     """
 
@@ -5581,7 +5132,6 @@ class Numerics(Enum):
     """
     RPL_ENDOFDCCLIST = "619"
 
-
     """
 
      This numeric can be found in:
@@ -5590,14 +5140,12 @@ class Numerics(Enum):
     """
     RPL_DCCINFO = "620"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_DUMPING = "640"
-
 
     """
 
@@ -5606,7 +5154,6 @@ class Numerics(Enum):
     """
     RPL_DUMPRPL = "641"
 
-
     """
 
      This numeric can be found in:
@@ -5614,14 +5161,12 @@ class Numerics(Enum):
     """
     RPL_EODUMP = "642"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     RPL_SPAMCMDFWD = "659"
-
 
     """
 
@@ -5631,7 +5176,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_STARTTLS = "670"
-
 
     """
 
@@ -5644,7 +5188,6 @@ class Numerics(Enum):
     """
     RPL_WHOISSECURE = "671"
 
-
     """
 
      This numeric can be found in:
@@ -5652,14 +5195,12 @@ class Numerics(Enum):
     """
     RPL_WHOISSSL = "671"
 
-
     """
 
      This numeric can be found in:
     - plexus
     """
     RPL_WHOISCGI = "672"
-
 
     """
 
@@ -5670,14 +5211,12 @@ class Numerics(Enum):
     """
     ERR_STARTTLS = "691"
 
-
     """
 
      This numeric can be found in:
     - Inspircd
     """
     RPL_COMMANDS = "702"
-
 
     """
 
@@ -5690,14 +5229,12 @@ class Numerics(Enum):
     """
     RPL_MODLIST = "702"
 
-
     """
 
      This numeric can be found in:
     - Inspircd
     """
     RPL_COMMANDSEND = "703"
-
 
     """
 
@@ -5710,7 +5247,6 @@ class Numerics(Enum):
     """
     RPL_ENDOFMODLIST = "703"
 
-
     """
 
      This numeric can be found in:
@@ -5721,7 +5257,6 @@ class Numerics(Enum):
     - ircd-ratbox
     """
     RPL_HELPSTART = "704"
-
 
     """
 
@@ -5734,7 +5269,6 @@ class Numerics(Enum):
     """
     RPL_HELPTXT = "705"
 
-
     """
 
      This numeric can be found in:
@@ -5746,7 +5280,6 @@ class Numerics(Enum):
     """
     RPL_ENDOFHELP = "706"
 
-
     """
 
      This numeric can be found in:
@@ -5755,7 +5288,6 @@ class Numerics(Enum):
     - ircd-ratbox
     """
     ERR_TARGCHANGE = "707"
-
 
     """
 
@@ -5767,7 +5299,6 @@ class Numerics(Enum):
     """
     RPL_ETRACEFULL = "708"
 
-
     """
 
      This numeric can be found in:
@@ -5777,7 +5308,6 @@ class Numerics(Enum):
     - ircd-ratbox
     """
     RPL_ETRACE = "709"
-
 
     """
 
@@ -5790,7 +5320,6 @@ class Numerics(Enum):
     """
     RPL_KNOCK = "710"
 
-
     """
 
      This numeric can be found in:
@@ -5801,7 +5330,6 @@ class Numerics(Enum):
     - ircd-ratbox
     """
     RPL_KNOCKDLVR = "711"
-
 
     """
 
@@ -5814,7 +5342,6 @@ class Numerics(Enum):
     """
     ERR_TOOMANYKNOCK = "712"
 
-
     """
 
      This numeric can be found in:
@@ -5825,7 +5352,6 @@ class Numerics(Enum):
     - ircd-ratbox
     """
     ERR_CHANOPEN = "713"
-
 
     """
 
@@ -5838,7 +5364,6 @@ class Numerics(Enum):
     """
     ERR_KNOCKONCHAN = "714"
 
-
     """
 
      This numeric can be found in:
@@ -5849,7 +5374,6 @@ class Numerics(Enum):
     """
     ERR_KNOCKDISABLED = "715"
 
-
     """
 
      This numeric can be found in:
@@ -5859,7 +5383,6 @@ class Numerics(Enum):
     """
     ERR_TARGUMODEG = "716"
 
-
     """
 
      This numeric can be found in:
@@ -5867,7 +5390,6 @@ class Numerics(Enum):
     - plexus
     """
     RPL_TARGUMODEG = "716"
-
 
     """
 
@@ -5880,7 +5402,6 @@ class Numerics(Enum):
     """
     RPL_TARGNOTIFY = "717"
 
-
     """
 
      This numeric can be found in:
@@ -5892,7 +5413,6 @@ class Numerics(Enum):
     """
     RPL_UMODEGMSG = "718"
 
-
     """
 
      This numeric can be found in:
@@ -5902,7 +5422,6 @@ class Numerics(Enum):
     - ircd-ratbox
     """
     RPL_OMOTDSTART = "720"
-
 
     """
 
@@ -5914,7 +5433,6 @@ class Numerics(Enum):
     """
     RPL_OMOTD = "721"
 
-
     """
 
      This numeric can be found in:
@@ -5924,7 +5442,6 @@ class Numerics(Enum):
     - ircd-ratbox
     """
     RPL_ENDOFOMOTD = "722"
-
 
     """
 
@@ -5937,7 +5454,6 @@ class Numerics(Enum):
     """
     ERR_NOPRIVS = "723"
 
-
     """
 
      This numeric can be found in:
@@ -5947,7 +5463,6 @@ class Numerics(Enum):
     - ircd-ratbox
     """
     RPL_TESTMASK = "724"
-
 
     """
 
@@ -5959,7 +5474,6 @@ class Numerics(Enum):
     """
     RPL_TESTLINE = "725"
 
-
     """
 
      This numeric can be found in:
@@ -5970,14 +5484,12 @@ class Numerics(Enum):
     """
     RPL_NOTESTLINE = "726"
 
-
     """
 
      This numeric can be found in:
     - plexus
     """
     RPL_ISCAPTURED = "727"
-
 
     """
 
@@ -5988,14 +5500,12 @@ class Numerics(Enum):
     """
     RPL_TESTMASKGECOS = "727"
 
-
     """
 
      This numeric can be found in:
     - plexus
     """
     RPL_ISUNCAPTURED = "728"
-
 
     """
 
@@ -6005,7 +5515,6 @@ class Numerics(Enum):
     """
     RPL_QUIETLIST = "728"
 
-
     """
 
      This numeric can be found in:
@@ -6013,7 +5522,6 @@ class Numerics(Enum):
     - ircd-seven
     """
     RPL_ENDOFQUIETLIST = "729"
-
 
     """
 
@@ -6024,7 +5532,6 @@ class Numerics(Enum):
     """
     RPL_MONONLINE = "730"
 
-
     """
 
      This numeric can be found in:
@@ -6033,7 +5540,6 @@ class Numerics(Enum):
     - ircd-ratbox
     """
     RPL_MONOFFLINE = "731"
-
 
     """
 
@@ -6044,7 +5550,6 @@ class Numerics(Enum):
     """
     RPL_MONLIST = "732"
 
-
     """
 
      This numeric can be found in:
@@ -6053,7 +5558,6 @@ class Numerics(Enum):
     - ircd-ratbox
     """
     RPL_ENDOFMONLIST = "733"
-
 
     """
 
@@ -6064,7 +5568,6 @@ class Numerics(Enum):
     """
     ERR_MONLISTFULL = "734"
 
-
     """
 
      This numeric can be found in:
@@ -6073,7 +5576,6 @@ class Numerics(Enum):
     - ircd-ratbox
     """
     RPL_RSACHALLENGE2 = "740"
-
 
     """
 
@@ -6084,7 +5586,6 @@ class Numerics(Enum):
     """
     RPL_ENDOFRSACHALLENGE2 = "741"
 
-
     """
 
      This numeric can be found in:
@@ -6094,7 +5595,6 @@ class Numerics(Enum):
     """
     ERR_MLOCKRESTRICTED = "742"
 
-
     """
 
      This numeric can be found in:
@@ -6102,7 +5602,6 @@ class Numerics(Enum):
     - ircd-seven
     """
     ERR_INVALIDBAN = "743"
-
 
     """
 
@@ -6112,7 +5611,6 @@ class Numerics(Enum):
     """
     ERR_TOPICLOCK = "744"
 
-
     """
 
      This numeric can be found in:
@@ -6120,7 +5618,6 @@ class Numerics(Enum):
     - ircd-seven
     """
     RPL_SCANMATCHED = "750"
-
 
     """
 
@@ -6130,14 +5627,12 @@ class Numerics(Enum):
     """
     RPL_SCANUMODES = "751"
 
-
     """
 
      This numeric can be found in:
     - IRCNet ircd
     """
     RPL_ETRACEEND = "759"
-
 
     """
 
@@ -6148,7 +5643,6 @@ class Numerics(Enum):
     """
     RPL_LOGGEDIN = "900"
 
-
     """
 
      This numeric can be found in:
@@ -6157,7 +5651,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_LOGGEDOUT = "901"
-
 
     """
 
@@ -6168,7 +5661,6 @@ class Numerics(Enum):
     """
     ERR_NICKLOCKED = "902"
 
-
     """
 
      This numeric can be found in:
@@ -6177,7 +5669,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     RPL_SASLSUCCESS = "903"
-
 
     """
 
@@ -6188,7 +5679,6 @@ class Numerics(Enum):
     """
     ERR_SASLFAIL = "904"
 
-
     """
 
      This numeric can be found in:
@@ -6197,7 +5687,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
     ERR_SASLTOOLONG = "905"
-
 
     """
 
@@ -6208,7 +5697,6 @@ class Numerics(Enum):
     """
     ERR_SASLABORTED = "906"
 
-
     """
 
      This numeric can be found in:
@@ -6218,7 +5706,6 @@ class Numerics(Enum):
     """
     ERR_SASLALREADY = "907"
 
-
     """
 
      This numeric can be found in:
@@ -6227,14 +5714,12 @@ class Numerics(Enum):
     """
     RPL_SASLMECHS = "908"
 
-
     """
 
      This numeric can be found in:
     - Inspircd
     """
     ERR_WORDFILTERED = "936"
-
 
     """
 
@@ -6244,7 +5729,6 @@ class Numerics(Enum):
     """
     ERR_CANNOTDOCOMMAND = "972"
 
-
     """
 
      This numeric can be found in:
@@ -6252,14 +5736,12 @@ class Numerics(Enum):
     """
     ERR_CANTUNLOADMODULE = "972"
 
-
     """
 
      This numeric can be found in:
     - Inspircd
     """
     RPL_UNLOADEDMODULE = "973"
-
 
     """
 
@@ -6269,7 +5751,6 @@ class Numerics(Enum):
     """
     ERR_CANNOTCHANGECHANMODE = "974"
 
-
     """
 
      This numeric can be found in:
@@ -6277,14 +5758,12 @@ class Numerics(Enum):
     """
     ERR_CANTLOADMODULE = "974"
 
-
     """
 
      This numeric can be found in:
     - Inspircd
     """
     RPL_LOADEDMODULE = "975"
-
 
     """
 
@@ -6297,14 +5776,12 @@ class Numerics(Enum):
     """
     ERR_LAST_ERR_MSG = "999"
 
-
     """
 
      This numeric can be found in:
     - UnrealIRCD
     """
     ERR_NUMERICERR = "999"
-
 
     """
 

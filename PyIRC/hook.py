@@ -72,7 +72,8 @@ class HookGenerator(type):
                 # priority hook on conflict.
                 dname = private_mangle(ext, '__hook_caches')
                 curr_caches = getattr(ext, dname, None)
-                if curr_caches is None: continue
+                if curr_caches is None:
+                    continue
                 for hclass, cache in curr_caches.items():
                     hdict = hook_caches.get(hclass)
                     if hdict is None:
@@ -132,4 +133,3 @@ class HookGenerator(type):
                 htable[hook_name] = (getattr(inst, func), priority)
 
         return inst
-

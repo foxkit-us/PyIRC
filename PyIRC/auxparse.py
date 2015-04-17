@@ -266,6 +266,7 @@ def isupport_parse(params):
 
 
 class CTCPMessage:
+
     r"""Represent a CTCP message.
 
     >>> CTCPMessage("PRIVMSG", "PING", "#Sporks", "lol")
@@ -343,4 +344,4 @@ class CTCPMessage:
     def __repr__(self):
         return "CTCPMessage(msgtype={}, command={}, target={}, " \
             "param={})".format(repr(self.msgtype), repr(self.command),
-                              repr(self.target), repr(self.param))
+                               repr(self.target), repr(self.param))

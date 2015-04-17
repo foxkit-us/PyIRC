@@ -348,6 +348,7 @@ class HTMLFormatter(Formatter):
 
 
 class VT100Formatter(Formatter):
+
     """A VT100 IRC formatting class, suitable for Unix-style terminals"""
 
     # (end, begin) pairs where applicable

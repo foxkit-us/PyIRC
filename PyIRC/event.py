@@ -27,6 +27,7 @@ logger = getLogger(__name__)
 
 
 class EventState(Enum):
+
     """The current state of an event."""
 
     """Proceed with other callbacks, if any. """
@@ -49,6 +50,7 @@ class EventState(Enum):
 
 
 class Event:
+
     """The base class for all events passed to callbacks.
 
     status
@@ -81,10 +83,12 @@ class Event:
 
 
 class HookEvent(Event):
+
     """The event for hooks"""
 
 
 class LineEvent(Event):
+
     """The event for lines"""
 
     def __init__(self, event, line):
@@ -108,6 +112,7 @@ EventRegistry = namedtuple("EventRegistry", "events type")
 
 
 class EventManager:
+
     """EventManager manages event registration and dispatch.
 
     The following attributes are available:
@@ -429,4 +434,3 @@ class EventManager:
                 quit()
 
         return event_inst
-

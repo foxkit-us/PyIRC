@@ -775,5 +775,3 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
             return False
 
         self.mode_params(False, 'q', channel, *self.process_bantargs(*args))
-
-

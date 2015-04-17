@@ -34,6 +34,7 @@ ascii_toupper = str.maketrans(ascii_lowercase, ascii_uppercase)
 
 
 class IRCString(UserString):
+
     r"""An IRC string.
 
     Same as a normal string, with IRC style casemapping.
@@ -190,7 +191,9 @@ class IRCString(UserString):
     def __repr__(self):
         return "IRCString({})".format(super().__repr__())
 
+
 class IRCDict(UserDict):
+
     """An IRC dictionary class, with caseless key lookup"""
 
     def __init__(self, case, *args, **kwargs):

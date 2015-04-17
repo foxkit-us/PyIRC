@@ -37,9 +37,7 @@ numletters = ascii_letters + digits
 def prefix_parse(prefix):
     """ Parse ISUPPORT PREFIX extension into mode : prefix and vice versa.
 
-    Arguments:
-
-    prefix
+    :param prefix:
         String from ISupport.supported['PREFIX'].
 
     .. warning::
@@ -78,24 +76,22 @@ def prefix_parse(prefix):
 def mode_parse(modes, params, modegroups, prefix):
     """ Parse IRC mode strings
 
-    A generator that yields (modechar, param, adding). param may be ``None``.
-    adding will either be True or False, depending on what is happening to the
-    mode.
+    A generator that yields (modechar, param, adding).  param may be
+    :keyword:`None`.  adding will either be :keyword:`True` or :keyword:`False`,
+    depending on what is happening to the mode.
 
-    Arguments:
+    :param modes:
+        Initial string of modes (should resemble +blah/-blah or some such).
 
-    modes
-        Initial string of modes (should resemble +blah/-blah or some such)
+    :param params:
+        Parameters for the modes, likely the remaining parameters after modes.
 
-    params
-        Parameters for the modes, likely the remaining parameters after modes
+    :param modegroups:
+        The item from ISupport.supported['CHANMODES'].
 
-    modegroups
-        The item from ISupport.supported['CHANMODES']
-
-    prefix
+    :param prefix:
         The mode prefixes from ISupport.supported['PREFIX'], optionally parsed
-        by prefix_parse
+        by prefix_parse.
 
     >>> modegroups = ("beIq", "k", "flj", "ac")
     >>> prefixmodes = "(ov)@+"
@@ -145,16 +141,15 @@ def mode_parse(modes, params, modegroups, prefix):
 def status_prefix_parse(string, prefix):
     """ Parse a string containing status sigils.
 
-    Returns a (string, status) tuple.
-
-    Arguments:
-
-    string
+    :param string:
         Nick or channel containing leading sigils.
 
-    prefix
+    :param prefix:
         The mode prefixes from ISupport.supported['PREFIX'], optionally parsed
         by :py:func:`prefix_parse`.
+
+    :returns: (status, string) tuple, where `status` is a list of each sigil and
+              `string` is the string with all leading status sigils removed.
 
     >>> status_prefix_parse("@#channel", "(ov)@+")
     ({'@'}, '#channel')
@@ -182,21 +177,19 @@ def status_prefix_parse(string, prefix):
 def who_flag_parse(flags):
     """ Parse WHO flags.
 
-    Returns a namespace object containing the following attributes:
-
-    operator
-        Whether or not the user is an operator.
-
-    away
-        Whether or not the user is away.
-
-    modes
-        A set of the user's present modes (prefixes).
-
-    Arguments:
-
-    flags
+    :param flags:
         Flags to parse.
+
+    :returns: A namespace object containing the following attributes:
+
+        operator
+            Whether or not the user is an operator.
+
+        away
+            Whether or not the user is away.
+
+        modes
+            A set of the user's present modes (prefixes).
     """
     ret = SimpleNamespace()
     ret.operator = False
@@ -221,12 +214,10 @@ def who_flag_parse(flags):
 def isupport_parse(params):
     """ Parse an ISUPPORT string.
 
-    Returns a parsed dictionary of all ISUPPORT items from the parameter list.
+    :param params:
+        Params to parse into ISUPPORT entries in the dictionary.
 
-    Arguments:
-
-    params
-        Params to parse into ISUPPORT entries in the dictionary
+    :returns: A parsed dictionary of all ISUPPORT items from the parameter list.
 
     >>> isupport_parse(["CHANTYPES=a,b,cdefg"])
     {'CHANTYPES': ['a', 'b', 'cdefg']}
@@ -293,20 +284,18 @@ class CTCPMessage:
     __slots__ = ('msgtype', 'command', 'target', 'param')
 
     def __init__(self, msgtype, command, target, param):
-        """Initalise the CTCPMessage instance
+        """Initalise the CTCPMessage instance.
 
-        Arguments:
+        :param msgtype:
+            The type of message received, either PRIVMSG or NOTICE.
 
-        msgtype
-            The type of message received, either PRIVMSG or NOTICE
+        :param command:
+            The CTCP command used (e.g., PING, TIME, VERSION).
 
-        command
-            The CTCP command used (e.g., PING, TIME, VERSION)
+        :param target:
+            The target of this given CTCP request or response.
 
-        target
-            The target of this given CTCP request or response
-
-        param
+        :param param:
             The param(s) of the CTCP message, with no parsing attempted.
         """
         self.msgtype = msgtype
@@ -318,13 +307,12 @@ class CTCPMessage:
     def parse(cls, line):
         """Return a new :py:class:`CTCPMessage` from the line specified.
 
-        Arguments:
-
-        line
+        :param line:
             A :py:class:`~PyIRC.line.Line` to parse into a
             :py:class:`CTCPMessage`.
 
-        Returns ``None`` if no CTCP message is found in ``Line``.
+        :returns: A new :py:class:`CTCPMessage` instance from the parsed line,
+                  or ``None`` if no CTCP message is found.
         """
         message = line.params[1]
 

@@ -18,7 +18,7 @@ historical wart in the protocol.
 
 from string import ascii_lowercase, ascii_uppercase
 from collections import UserString, UserDict
-from abc.collections import MutableSet
+from collections.abc import MutableSet
 
 
 # Translation tables

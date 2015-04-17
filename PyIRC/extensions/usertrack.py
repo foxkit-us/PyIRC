@@ -494,7 +494,7 @@ class UserTrack(BaseExtension):
     @hook("commands", "KICK")
     @hook("commands", "PART")
     def part(self, event):
-        channel = event.line.params[0])
+        channel = event.line.params[0]
 
         if event.line.command.lower() == 'part':
             user = self.get_user(event.line.hostmask.nick)

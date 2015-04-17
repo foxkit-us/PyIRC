@@ -29,7 +29,7 @@ class BaseExtension(metaclass=HookGenerator):
     priority
         the priority of this extension, lower is higher (like Unix)
     hook_classes
-        A Mapping of hclass to an ``Event`` subclass
+        A Mapping of hclass to an :py:class:`~PyIRC.event.Event` subclass
     """
 
     priority = PRIORITY_DONTCARE
@@ -84,10 +84,18 @@ class ExtensionManager:
         """ Initialise the extensions manager
 
         Arguments:
-            base: base instance to pass to each extension
-            kwargs: keyword arguments to pass to each extension
-            events: the EventManager instance to add hooks to
-            extensions: our initial list of extensions
+        
+        base
+            base instance to pass to each extension
+        
+        kwargs
+            keyword arguments to pass to each extension
+        
+        events
+            the EventManager instance to add hooks to
+        
+        extensions
+            our initial list of extensions
         """
 
         self.base = base

@@ -150,19 +150,19 @@ class Formatter:
 
     The following attributes are available:
 
-    bold
+    :param bold:
         Set when text should be bold
 
-    colour
+    :param colour:
         A (foreground, background) tuple; members not set are set to None.
 
-    reverse
+    :param reverse:
         Set when colours are being reversed
 
-    italic
+    :param italic:
         Set when text should be in italics
 
-    underline
+    :param underline:
         Set when text should be underline
     """
 
@@ -194,7 +194,7 @@ class Formatter:
 
         Arguments
 
-        string
+        :param string:
             String to reformat
         """
         ret = list()

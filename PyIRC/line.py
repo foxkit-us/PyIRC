@@ -41,7 +41,7 @@ class Tags:
 
         Arguments:
 
-        raw
+        :param raw:
             The raw tags to parse into a Tags object.
         """
         if not raw:
@@ -106,7 +106,7 @@ class Hostmask:
 
         Arguments:
 
-        raw
+        :param raw:
             The raw hostmask to parse.
         """
         if not raw:

@@ -40,16 +40,16 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
     The following attributes are available:
 
-    events
+    :param events:
         Our :py:class:`~PyIRC.event.EventManager` instance
 
-    extensions
+    :param extensions:
         Our :py:class:`~PyIRC.extension.ExtensionManager` instance
 
-    connected
+    :param connected:
         If True, we have connected to the server successfully.
 
-    registered
+    :param registered:
         If True, we have completed the server handshake and are ready to send
         commands.
     """
@@ -62,22 +62,22 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Arguments:
 
-        serverport
+        :param serverport:
             (server, port) sequence, similar to the form passed to
             socket.connect
 
-        username
+        :param username:
             the username to send to the server (identd may override this)
 
-        nick
+        :param nick:
             The nickname to use
 
-        extensions
+        :param extensions:
             Sequence of default extensions to use
 
         Keyword arguments (extensions may use others):
 
-        ssl
+        :param ssl:
             whether or not to use SSL
 
         server_password
@@ -140,7 +140,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Arguments:
 
-        string
+        :param string:
             string to casefold according to the IRC server semantics.
         """
         return IRCString(self.case, string).casefold()
@@ -152,9 +152,9 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Arguments:
 
-        string
+        :param string:
             String to compare
-        other
+        :param other:
             String to compare
         """
         return self.casefold(string) == self.casefold(other)
@@ -179,7 +179,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Arguments:
 
-        line
+        :param line:
             a Line instance to recieve from the wire. It is expected that it
             has already been parsed.
         """
@@ -193,10 +193,10 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Arguments:
 
-        command
+        :param command:
             IRC command to send
 
-        params
+        :param params:
             A Sequence of parameters to send with the command. Only the last
             parameter may contain spaces due to IRC framing format
             limitations.
@@ -217,9 +217,9 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Arguments:
 
-        time
+        :param time:
             Seconds into the future to perform the callback
-        callback
+        :param callback:
             Callback to perform. Use functools.partial to pass other arguments.
         """
         raise NotImplementedError()
@@ -230,7 +230,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Arguments:
 
-        sched
+        :param sched:
             Event to unschedule returned by schedule
         """
         raise NotImplementedError()
@@ -247,16 +247,16 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Arguments:
 
-        target
+        :param target:
             Where to send the message, This may be a
             :py:class:`~PyIRC.extensions.channeltrack.Channel` instance,
             :py:class:`~PyIRC.extensions.usertrack.User` instance, or a
             string.
 
-        message
+        :param message:
             Message to send
 
-        notice
+        :param notice:
             Send the message as a notice
 
         .. warning::
@@ -281,12 +281,12 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Arguments:
 
-        channel
+        :param channel:
             Channel to set the topic in. This can be either a
             :py:class:`~PyIRC.extensions.channeltrack.Channel` instance or a
             string.
 
-        topic
+        :param topic:
             Topic to set in channel. Will unset the topic if set to None or
             the empty string.
         """
@@ -305,19 +305,19 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Arguments:
 
-        add
+        :param add:
             Whether or not mode is being added or removed
 
-        mode
+        :param mode:
             Mode to apply to channel.
 
-        target
+        :param target:
             Channel to apply the modes in. This can be a
             :py:class:`~PyIRC.extensions.channeltrack.Channel` instance,
             :py:class:`~PyIRC.extensions.usertrack.User` instance, or a
             string.
 
-        ``*args``
+        :param *args:
             Targets or params for modes. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or a
             string.
@@ -367,12 +367,12 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Arguments:
 
-        channel
+        :param channel:
             Channel to op the user or users in. This can be a
             :py:class:`~PyIRC.extensions.channeltrack.Channel` instance, or a
             string.
 
-        ``*args``
+        :param *args:
             Users to op. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or a
             string.
@@ -387,12 +387,12 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Arguments:
 
-        channel
+        :param channel:
             Channel to deopop the user or users in. This can be a
             :py:class:`~PyIRC.extensions.channeltrack.Channel` instance, or a
             string.
 
-        ``*args``
+        :param *args:
             Users to deop. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or a
             string.
@@ -407,12 +407,12 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Arguments:
 
-        channel
+        :param channel:
             Channel to voice the user or users in. This can be a
             :py:class:`~PyIRC.extensions.channeltrack.Channel` instance, or a
             string.
 
-        ``*args``
+        :param *args:
             Users to voice. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or a
             string.
@@ -427,12 +427,12 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Arguments:
 
-        channel
+        :param channel:
             Channel to devoice the user or users in. This can be a
             :py:class:`~PyIRC.extensions.channeltrack.Channel` instance, or a
             string.
 
-        ``*args``
+        :param *args:
             Users to devoice. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or a
             string.
@@ -450,12 +450,12 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Arguments:
 
-        channel
+        :param channel:
             Channel to halfop the user or users in. This can be a
             :py:class:`~PyIRC.extensions.channeltrack.Channel` instance, or a
             string.
 
-        ``*args``
+        :param *args:
             Users to halfop. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or a
             string.
@@ -473,12 +473,12 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Arguments:
 
-        channel
+        :param channel:
             Channel to dehalfop the user or users in. This can be a
             :py:class:`~PyIRC.extensions.channeltrack.Channel` instance, or a
             string.
 
-        ``*args``
+        :param *args:
             Users to dehalfop. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or a
             string.
@@ -532,12 +532,12 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Arguments:
 
-        channel
+        :param channel:
             Channel to ban the user or users in. This can be a
             :py:class:`~PyIRC.extensions.channeltrack.Channel` instance, or a
             string.
 
-        ``*args``
+        :param *args:
             Users to ban. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or a
             string.
@@ -557,12 +557,12 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Arguments:
 
-        channel
+        :param channel:
             Channel to unban the user or users in. This can be a
             :py:class:`~PyIRC.extensions.channeltrack.Channel` instance, or a
             string.
 
-        ``*args``
+        :param *args:
             Users to unban. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or a
             string.
@@ -579,12 +579,12 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Arguments:
 
-        channel
+        :param channel:
             Channel to ban exempt the user or users in. This can be a
             :py:class:`~PyIRC.extensions.channeltrack.Channel` instance, or a
             string.
 
-        ``*args``
+        :param *args:
             Users to ban exempt. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or a
             string.
@@ -611,12 +611,12 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Arguments:
 
-        channel
+        :param channel:
             Channel to un-ban exempt the user or users in. This can be a
             :py:class:`~PyIRC.extensions.channeltrack.Channel` instance, or a
             string.
 
-        ``*args``
+        :param *args:
             Users to un-ban exempt. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or a
             string.
@@ -638,12 +638,12 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Arguments:
 
-        channel
+        :param channel:
             Channel to ban exempt the user or users in. This can be a
             :py:class:`~PyIRC.extensions.channeltrack.Channel` instance, or a
             string.
 
-        ``*args``
+        :param *args:
             Users to invite exempt. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or a
             string.
@@ -670,12 +670,12 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Arguments:
 
-        channel
+        :param channel:
             Channel to un-invite exempt the user or users in. This can be a
             :py:class:`~PyIRC.extensions.channeltrack.Channel` instance, or a
             string.
 
-        ``*args``
+        :param *args:
             Users to un-invite exempt. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or a
             string.
@@ -704,12 +704,12 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Arguments:
 
-        channel
+        :param channel:
             Channel to quiet the user or users in. This can be a
             :py:class:`~PyIRC.extensions.channeltrack.Channel` instance, or a
             string.
 
-        ``*args``
+        :param *args:
             Users to quiet. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or a
             string.
@@ -750,12 +750,12 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Arguments:
 
-        channel
+        :param channel:
             Channel to unquiet the user or users in. This can be a
             :py:class:`~PyIRC.extensions.channeltrack.Channel` instance, or a
             string.
 
-        ``*args``
+        :param *args:
             Users to unquiet. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or a
             string.

@@ -29,13 +29,13 @@ def hook(hclass, hook, priority=None):
     by py:class:`EventManager`.
 
     Arguments:
-        hclass
+        :param hclass:
             hook class to use
 
-        hook
+        :param hook:
             name of the hook to use
 
-        priority
+        :param priority:
             optional priority value of this hook (defaults to the class
             priority)
     """

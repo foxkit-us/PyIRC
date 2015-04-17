@@ -25,9 +25,9 @@ class BaseExtension(metaclass=HookGenerator):
 
     Members:
 
-    requires
+    :param requires:
         required extensions (must be a name)
-    priority
+    :param priority:
         the priority of this extension, lower is higher (like Unix)
     hook_classes
         A Mapping of hclass to an :py:class:`~PyIRC.event.Event` subclass
@@ -86,16 +86,16 @@ class ExtensionManager:
 
         Arguments:
 
-        base
+        :param base:
             base instance to pass to each extension
 
-        kwargs
+        :param kwargs:
             keyword arguments to pass to each extension
 
-        events
+        :param events:
             the EventManager instance to add hooks to
 
-        extensions
+        :param extensions:
             our initial list of extensions
         """
 
@@ -122,11 +122,11 @@ class ExtensionManager:
 
     def create_hooks(self, hclass):
         """Register hooks contained in the given attribute from loaded
-        extensions
+        :param extensions:
 
         Arguments:
 
-        hclass
+        :param hclass:
             Class to create hooks for
         """
         for extension in self.db.values():
@@ -191,7 +191,7 @@ class ExtensionManager:
 
         Arguments:
 
-        extension
+        :param extension:
             Extension to add.
         """
         if extension in self.extensions:
@@ -207,7 +207,7 @@ class ExtensionManager:
 
         Arguments:
 
-        extension
+        :param extension:
             Extension to retrieve by name
         """
         return self.db.get(extension)
@@ -217,7 +217,7 @@ class ExtensionManager:
 
         Arguments:
 
-        extension
+        :param extension:
             Extension to remove.
         """
         extensions = list(self.extensions)

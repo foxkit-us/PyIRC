@@ -182,13 +182,13 @@ def who_flag_parse(flags):
 
     :returns: A namespace object containing the following attributes:
 
-        operator
+        :param operator:
             Whether or not the user is an operator.
 
-        away
+        :param away:
             Whether or not the user is away.
 
-        modes
+        :param modes:
             A set of the user's present modes (prefixes).
     """
     ret = SimpleNamespace()

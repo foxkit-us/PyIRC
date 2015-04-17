@@ -53,7 +53,7 @@ class Event:
 
     """The base class for all events passed to callbacks.
 
-    status
+    :param status:
         The current status of the event.
     last_function
         Set to the function who cancelled us, if we are cancelled.
@@ -66,7 +66,7 @@ class Event:
 
         Arguments:
 
-        event
+        :param event:
             The event type occuring
         """
         self.event = event
@@ -94,9 +94,9 @@ class LineEvent(Event):
     def __init__(self, event, line):
         """Initalise a LineEvent object.
 
-        event
+        :param event:
             The event type occurring, should mirror line.command.
-        line
+        :param line:
             The parsed IRC message of this event
         """
         super().__init__(event)
@@ -128,9 +128,9 @@ class EventManager:
     def register_class(self, hclass, type):
         """Register a class of events.
 
-        hclass
+        :param hclass:
             The name of the event class.
-        type
+        :param type:
             The type of :py:class:`~PyIRC.event.Event` that will be passed to
             event handlers.
 
@@ -170,9 +170,9 @@ class EventManager:
     def register_event(self, hclass, event):
         """Register an event to a given class.
 
-        hclass
+        :param hclass:
             The class of the event to register.
-        event
+        :param event:
             The name of the event to register.
 
         If ``event`` is already registered in ``hclass``, this method is a no-op.
@@ -192,9 +192,9 @@ class EventManager:
     def unregister_event(self, hclass, event):
         """Unregister an event from a given class.
 
-        hclass
+        :param hclass:
             The class of the event to unregister.
-        event
+        :param event:
             The name of the event to unregister.
 
         .. note:: It is an error to unregister an event that does not exist.
@@ -215,13 +215,13 @@ class EventManager:
         You typically should never call this method directly; instead, use the
         @hook decorator.
 
-        hclass
+        :param hclass:
             The class of the event to register with this callback.
-        event
+        :param event:
             The name of the event to register with this callback.
-        priority
+        :param priority:
             The priority of this callback with this event.
-        callback
+        :param callback:
             A Callable to invoke when this event occurs.
         """
 
@@ -246,7 +246,7 @@ class EventManager:
 
         Arguments:
 
-        inst
+        :param inst:
             The instance to process
         """
         for hclass in self.events_reg.keys():
@@ -257,9 +257,9 @@ class EventManager:
 
         Arguments:
 
-        hclass
+        :param hclass:
             The instance of the event to register with this callback
-        inst
+        :param inst:
             The instance to process
         """
         attr = hclass + '_hooks'
@@ -276,9 +276,9 @@ class EventManager:
     def register_callbacks_from_table(self, hclass, table):
         """Register callbacks from the given hook table.
 
-        hclass
+        :param hclass:
             The class of the event to register with this callback
-        table
+        :param table:
             The table to process
         """
         for event, (callback, priority) in table.items():
@@ -287,11 +287,11 @@ class EventManager:
     def unregister_callback(self, hclass, event, callback):
         """Unregister a callback for an event.
 
-        hclass
+        :param hclass:
             The class of the event to unregister this callback from.
-        event
+        :param event:
             The name of the event to unregister this callback from.
-        callback
+        :param callback:
             The callback to unregister.
         """
         if hclass not in self.events_reg:
@@ -321,7 +321,7 @@ class EventManager:
 
         Arguments:
 
-        inst
+        :param inst:
             The instance to process
         """
         for hclass in self.events_reg.keys():
@@ -332,9 +332,9 @@ class EventManager:
 
         Arguments:
 
-        hclass
+        :param hclass:
             The class of the event to register with this callback
-        inst
+        :param inst:
             The class to process
         """
         attr = hclass + '_hooks'
@@ -353,9 +353,9 @@ class EventManager:
 
         Arguments:
 
-        hclass
+        :param hclass:
             The class of the event to register with this callback
-        table
+        :param table:
             The table to process
         """
         for event, (callback, _) in table.items():
@@ -366,9 +366,9 @@ class EventManager:
 
         Arguments:
 
-        hclass
+        :param hclass:
             The class of the event that is occuring.
-        event
+        :param event:
             The name of the event that is occuring.
         ``*args``
             The arguments to pass to the :py:class:`~PyIRC.event.Event` type constructor used
@@ -394,9 +394,9 @@ class EventManager:
 
         Arguments:
 
-        hclass
+        :param hclass:
             The class of the event that is occuring.
-        event
+        :param event:
             The name of the event that is occuring.
         ``event_inst``
             The :py:class:`~PyIRC.event.Event` type we are reusing for this call.

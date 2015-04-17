@@ -40,9 +40,10 @@ def prefix_parse(prefix):
     Arguments:
 
     prefix
-        String from ISupport.supported['PREFIX']
+        String from ISupport.supported['PREFIX'].
 
-    .. warning:
+    .. warning::
+        If prefix is not properly balanced, ``ValueError`` will be raised.
 
     >>> sorted(prefix_parse("(ov)@+").items())
     [('+', 'v'), ('@', 'o'), ('o', '@'), ('v', '+')]
@@ -77,7 +78,7 @@ def prefix_parse(prefix):
 def mode_parse(modes, params, modegroups, prefix):
     """ Parse IRC mode strings
 
-    A generator that yields (modechar, param, adding). param may be None.
+    A generator that yields (modechar, param, adding). param may be ``None``.
     adding will either be True or False, depending on what is happening to the
     mode.
 
@@ -142,9 +143,9 @@ def mode_parse(modes, params, modegroups, prefix):
 
 
 def status_prefix_parse(string, prefix):
-    """ Parse a string containing status sigils
+    """ Parse a string containing status sigils.
 
-    Returns a simple (string, status) tuple
+    Returns a (string, status) tuple.
 
     Arguments:
 
@@ -153,7 +154,7 @@ def status_prefix_parse(string, prefix):
 
     prefix
         The mode prefixes from ISupport.supported['PREFIX'], optionally parsed
-        by prefix_parse
+        by :py:func:`prefix_parse`.
 
     >>> status_prefix_parse("@#channel", "(ov)@+")
     ({'@'}, '#channel')
@@ -179,23 +180,23 @@ def status_prefix_parse(string, prefix):
 
 @lru_cache()
 def who_flag_parse(flags):
-    """ Parse WHO flags
+    """ Parse WHO flags.
 
     Returns a namespace object containing the following attributes:
 
     operator
-        Whether or not the user is an operator
+        Whether or not the user is an operator.
 
     away
-        Whether or not the user is away
+        Whether or not the user is away.
 
     modes
-        A set of the user's present modes (prefixes)
+        A set of the user's present modes (prefixes).
 
     Arguments:
 
     flags
-        Flags to parse
+        Flags to parse.
     """
     ret = SimpleNamespace()
     ret.operator = False
@@ -218,9 +219,9 @@ def who_flag_parse(flags):
 
 
 def isupport_parse(params):
-    """ Parse an ISUPPORT string
+    """ Parse an ISUPPORT string.
 
-    Returns a parsed dictionary of all ISUPPORT items from the parameter list
+    Returns a parsed dictionary of all ISUPPORT items from the parameter list.
 
     Arguments:
 
@@ -315,12 +316,15 @@ class CTCPMessage:
 
     @classmethod
     def parse(cls, line):
-        """Return a new :py:class::`CTCPMessage` from the line specified
+        """Return a new :py:class:`CTCPMessage` from the line specified.
 
         Arguments:
 
         line
-            A Line instance to parse into a :py:class::`CTCPMessage`
+            A :py:class:`~PyIRC.line.Line` to parse into a
+            :py:class:`CTCPMessage`.
+
+        Returns ``None`` if no CTCP message is found in ``Line``.
         """
         message = line.params[1]
 
@@ -342,7 +346,8 @@ class CTCPMessage:
 
     @property
     def line(self):
-        """Return a :py:class::`Line` instance representing this CTCP message"""
+        """Return a :py:class:`~PyIRC.line.Line` instance representing this
+        CTCP message"""
         message = '\x01{} {}\x01'.format(self.command, self.param)
         return Line(command=self.msgtype, params=[self.target, message])
 

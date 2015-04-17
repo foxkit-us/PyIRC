@@ -153,8 +153,9 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
         Arguments:
 
         string
+            String to compare
         other
-            Strings to compare
+            String to compare
         """
         return self.casefold(string) == self.casefold(other)
 

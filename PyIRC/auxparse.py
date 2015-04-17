@@ -76,9 +76,9 @@ def prefix_parse(prefix):
 def mode_parse(modes, params, modegroups, prefix):
     """ Parse IRC mode strings
 
-    A generator that yields (modechar, param, adding).  param may be
-    :keyword:`None`.  adding will either be :keyword:`True` or :keyword:`False`,
-    depending on what is happening to the mode.
+    A generator that yields (modechar, param, adding).  param may be `None`.
+    `adding` will either be `True` or `False`, depending on what is happening
+    to the mode.
 
     :param modes:
         Initial string of modes (should resemble +blah/-blah or some such).

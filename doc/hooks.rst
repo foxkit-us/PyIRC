@@ -125,6 +125,12 @@ controlled by current state.
 hooks
 ^^^^^
 
+case_change
+"""""""""""
+The event called when the casemapping changes on the server.  Normally only
+called once, when RPL_ISUPPORT (numeric 005) is received, but may be called at
+any time.
+
 connected
 """""""""
 

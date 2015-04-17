@@ -18,6 +18,7 @@ from functools import partial
 from collections import defaultdict
 from logging import getLogger
 
+from PyIRC.casemapping import IRCDict, IRCDefaultDict, IRCSet
 from PyIRC.extension import BaseExtension
 from PyIRC.hook import hook
 from PyIRC.line import Hostmask
@@ -42,16 +43,21 @@ class User:
     For more elaborate channel tracking, see channeltrack.ChannelTrack.
     """
 
-    def __init__(self, nick, **kwargs):
+    def __init__(self, case, nick, **kwargs):
         """Store the data for a user.
 
         Unknown values are stored as None, whereas empty ones are stored as
         '' or 0, so take care in comparisons involving values from this class.
 
-        Keyword arguments:
+        Arguments:
 
         nick
             Nickname of the user, not casemapped.
+
+        case
+            Casemapping to use for channels member.
+
+        Keyword arguments:
 
         username
             Username of the user, or ident (depending on IRC daemon).
@@ -86,7 +92,8 @@ class User:
         realhost
             Real hostname for a user. Probably not present in most cases.
         """
-        assert nick is not None
+        if nick is None:
+            raise ValueError("nick may not be None")
 
         self.nick = nick
         self.username = kwargs.get("username", None)
@@ -101,7 +108,8 @@ class User:
         self.realhost = kwargs.get("realhost", None)
 
         # Statuses in channels
-        self.channels = dict()
+        # This assumes case never changes.
+        self.channels = IRCDict(case)
 
         logger.debug("Created user: %s", self.nick)
 
@@ -155,15 +163,17 @@ class UserTrack(BaseExtension):
     def __init__(self, base, **kwargs):
         self.base = base
 
-        self.u_expire_timers = dict()
-        self.who_timers = dict()
+        self.u_expire_timers = IRCDict(self.base.case)
+        self.who_timers = IRCDict(self.base.case)
 
-        self.users = dict()
-        self.whox_send = list()
-        self.whois_send = set()
+        self.users = IRCDict(self.base.case)
+        self.whois_send = IRCSet(self.base.case)
 
         # Authentication callbacks
-        self.auth_cb = defaultdict(list)
+        self.auth_cb = IRCDefaultDict(self.base.case, list)
+
+        # WHOX sent list
+        self.whox_send = list()
 
         # Create ourselves
         basicrfc = self.get_extension("BasicRFC")
@@ -183,21 +193,19 @@ class UserTrack(BaseExtension):
             User instance is passed in as the first parameter, or None if the
             user is not found. Use functools.partial to pass other arguments.
         """
-        fold_nick = self.casefold(nick)
-
-        user = self.get_user(fold_nick)
+        user = self.get_user(nick)
         if not user:
             # Add a user for now, get details later.
-            self.users[fold_nick] = User(nick)
+            self.users[nick] = User(self.base.case, nick)
 
         if user.account is not None:
             # User account is known
             callback(user)
-        elif fold_nick not in self.whois_send:
+        elif nick not in self.whois_send:
             # Defer for a whois
-            self.auth_cb[fold_nick].append(callback)
+            self.auth_cb[nick].append(callback)
             self.send("WHOIS", ["*", user.nick])
-            self.whois_send.add(fold_nick)
+            self.whois_send.add(nick)
 
     def get_user(self, nick):
         """Retrieve a user from the tracking dictionary based on nick.
@@ -212,19 +220,17 @@ class UserTrack(BaseExtension):
         nick
             Nickname of the user to retrieve.
         """
-
-        return self.users.get(self.casefold(nick))
+        return self.users.get(nick)
 
     def add_user(self, nick, **kwargs):
         """Add a user to the tracking dictionary.
 
         Avoid using this method directly unless you know what you are doing.
         """
-
         user = self.get_user(nick)
         if not user:
-            user = User(nick, **kwargs)
-            self.users[self.casefold(nick)] = user
+            user = User(self.base.case, nick, **kwargs)
+            self.users[nick] = user
 
         return user
 
@@ -233,8 +239,6 @@ class UserTrack(BaseExtension):
 
         Avoid using this method directly unless you know what you are doing.
         """
-
-        nick = self.casefold(nick)
         if nick not in self.users:
             logger.warning("Deleting nonexistent user: %s", nick)
             return
@@ -248,8 +252,6 @@ class UserTrack(BaseExtension):
 
         Avoid using this method directly unless you know what you are doing.
         """
-
-        nick = self.casefold(nick)
         if nick in self.u_expire_timers:
             self.unschedule(self.u_expire_timers[nick])
 
@@ -261,7 +263,6 @@ class UserTrack(BaseExtension):
 
         Avoid using this method directly unless you know what you are doing.
         """
-
         if not line.hostmask or not line.hostmask.nick:
             return
 
@@ -278,6 +279,18 @@ class UserTrack(BaseExtension):
 
         if hostmask.host:
             user.host = hostmask.host
+
+    @hook("hooks", "case_change")
+    def case_change(self, event):
+        case = self.base.case
+
+        self.u_expire_timers = self.u_expire_timers.convert(case)
+        self.who_timers = self.who_timers.convert(case)
+
+        self.users = self.users.convert(case)
+        self.whois_send = self.whois_send.convert(case)
+
+        self.auth_cb = self.auth_cb.convert(case)
 
     @hook("hooks", "disconnected")
     def close(self, event):
@@ -301,13 +314,12 @@ class UserTrack(BaseExtension):
 
         user.account = '' if account == '*' else account
 
-        nick = self.casefold(user.nick)
-        if nick in self.auth_cb:
+        if user.nick in self.auth_cb:
             # User is awaiting authentication
-            for callback in self.auth_cb[nick]:
+            for callback in self.auth_cb[user.nick]:
                 callback(user)
 
-            del self.auth_cb[nick]
+            del self.auth_cb[user.nick]
 
     @hook("commands", "AWAY")
     def away(self, event):
@@ -338,7 +350,7 @@ class UserTrack(BaseExtension):
         user = self.get_user(nick)
         if user:
             # Remove any pending expiration timer
-            self.u_expire_timers.pop(self.casefold(nick), None)
+            self.u_expire_timers.pop(nick, None)
         else:
             # Create a new user with available info
             cap_negotiate = self.get_extension("CapNegotiate")
@@ -355,7 +367,7 @@ class UserTrack(BaseExtension):
         self.update_username_host(event.line)
 
         basicrfc = self.get_extension("BasicRFC")
-        if self.casefold(nick) == self.casefold(basicrfc.nick):
+        if self.casecmp(nick, basicrfc.nick):
             # It's us!
             isupport = self.get_extension("ISupport")
 
@@ -367,10 +379,10 @@ class UserTrack(BaseExtension):
                 self.whox_send.append(num)
 
             sched = self.schedule(2, partial(self.send, "WHO", params))
-            self.who_timers[self.casefold(channel)] = sched
+            self.who_timers[channel] = sched
 
         # Add the channel
-        user.channels[self.casefold(channel)] = set()
+        user.channels[channel] = set
 
     @hook("commands", "MODE")
     def mode(self, event):
@@ -380,7 +392,7 @@ class UserTrack(BaseExtension):
         modegroups = list(isupport.get("CHANMODES"))
         prefix = prefix_parse(isupport.get("PREFIX"))
 
-        channel = self.casefold(event.line.params[0])
+        channel = event.line.params[0]
 
         # Don't care if user-directed, as that means us most of the time
         if not channel.startswith(isupport.get("CHANTYPES")):
@@ -430,14 +442,14 @@ class UserTrack(BaseExtension):
 
         assert self.get_user(oldnick)
 
-        self.users[self.casefold(newnick)] = self.get_user(oldnick)
-        self.users[self.casefold(newnick)].nick = newnick
+        self.users[newnick] = self.get_user(oldnick)
+        self.users[newnick].nick = newnick
 
-        del self.users[self.casefold(oldnick)]
+        del self.users[oldnick]
 
     @hook("commands", Numerics.ERR_NOSUCHNICK)
     def notfound(self, event):
-        nick = self.casefold(event.line.params[1])
+        nick = event.line.params[1]
         if nick in self.auth_cb:
             # User doesn't exist, call back
             for callback in self.auth_cb[nick]:
@@ -455,8 +467,10 @@ class UserTrack(BaseExtension):
             return
 
         hostmask = event.line.hostmask
+        if not hostmask.nick:
+            return
 
-        if self.casefold(hostmask.nick) in self.u_expire_timers:
+        if hostmask.nick in self.u_expire_timers:
             # User is expiring
             user = self.get_user(hostmask.nick)
             if hostmask.username != user.username or hostmask.host != user.host:
@@ -471,16 +485,16 @@ class UserTrack(BaseExtension):
             user = self.add_user(hostmask.nick, user=hostmask.username,
                                  host=hostmask.host)
 
-            if self.casefold(hostmask.nick) not in self.whois_send:
+            if hostmask.nick not in self.whois_send:
                 self.send("WHOIS", ['*', hostmask.nick])
-                self.whois_send.add(self.casefold(hostmask.nick))
+                self.whois_send.add(hostmask.nick)
 
             self.timeout_user(hostmask.nick)
 
     @hook("commands", "KICK")
     @hook("commands", "PART")
     def part(self, event):
-        channel = self.casefold(event.line.params[0])
+        channel = event.line.params[0])
 
         if event.line.command.lower() == 'part':
             user = self.get_user(event.line.hostmask.nick)
@@ -492,14 +506,14 @@ class UserTrack(BaseExtension):
         del user.channels[channel]
 
         basicrfc = self.get_extension("BasicRFC")
-        if self.casefold(user.nick) == self.casefold(basicrfc.nick):
+        if self.casecmp(user.nick, basicrfc.nick):
             # We left the channel, scan all users to remove unneeded ones
             for u_nick, u_user in list(self.users.items()):
                 if channel in u_user.channels:
                     # Purge from the cache since we don't know for certain.
                     del u_user.channels[channel]
 
-                if self.casefold(u_nick) == self.casefold(basicrfc.nick):
+                if self.casecmp(u_nick, basicrfc.nick):
                     # Don't delete ourselves!
                     continue
 
@@ -517,12 +531,12 @@ class UserTrack(BaseExtension):
 
     @hook("commands", "QUIT")
     def quit(self, event):
-        assert self.casefold(event.line.hostmask.nick) in self.users
+        assert event.line.hostmask.nick in self.users
         self.remove_user(event.line.hostmask.nick)
 
     @hook("commands", Numerics.RPL_NAMREPLY)
     def names(self, event):
-        channel = self.casefold(event.line.params[2])
+        channel = event.line.params[2]
 
         isupport = self.get_extension("ISupport")
         prefix = prefix_parse(isupport.get("PREFIX"))
@@ -558,13 +572,13 @@ class UserTrack(BaseExtension):
         if not self.whox_send:
             return
 
-        channel = self.casefold(event.line.params[1])
+        channel = event.line.params[1]
         del self.who_timers[channel]
         del self.whox_send[0]
 
     @hook("commands", Numerics.RPL_ENDOFWHOIS)
     def whois_end(self, event):
-        nick = self.casefold(event.line.params[1])
+        nick = event.line.params[1]
 
         self.whois_send.discard(nick)
 
@@ -608,7 +622,7 @@ class UserTrack(BaseExtension):
         for channel in event.line.params[-1].split():
             mode = set()
             mode, channel = status_prefix_parse(channel, prefix)
-            user.channels[self.casefold(channel)] = mode
+            user.channels[channel] = mode
 
     @hook("commands", Numerics.RPL_WHOISHOST)
     def whois_host(self, event):
@@ -664,7 +678,7 @@ class UserTrack(BaseExtension):
 
         user.account = event.line.params[2]
 
-        nick = self.casefold(user.nick)
+        nick = user.nick
         if nick in self.auth_cb:
             # User is awaiting authentication
             for callback in self.auth_cb[nick]:
@@ -679,7 +693,7 @@ class UserTrack(BaseExtension):
             logger.warn("Malformed WHO from server")
             return
 
-        channel = self.casefold(event.line.params[1])
+        channel = event.line.params[1]
         username = event.line.params[2]
         host = event.line.params[3]
         server = event.line.params[4]
@@ -742,7 +756,7 @@ class UserTrack(BaseExtension):
             return
 
         whoxid = event.line.params[1]
-        channel = self.casefold(event.line.params[2])
+        channel = event.line.params[2]
         username = event.line.params[3]
         ip = event.line.params[4]
         host = event.line.params[5]

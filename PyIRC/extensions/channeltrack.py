@@ -11,10 +11,10 @@ This data includes ops, modes, the topic, and associated data.
 
 
 from time import time
-from collections import defaultdict
 from functools import partial
 from logging import getLogger
 
+from PyIRC.casemapping import IRCDict
 from PyIRC.extension import BaseExtension
 from PyIRC.hook import hook
 from PyIRC.line import Hostmask
@@ -29,7 +29,7 @@ class Channel:
 
     """ A channel entity """
 
-    def __init__(self, name, **kwargs):
+    def __init__(self, case, name, **kwargs):
         """Store the data for a channel.
 
         Unknown values are stored as None, whereas empty ones are stored as
@@ -58,16 +58,17 @@ class Channel:
         url
             URL of the channel, sent on some IRC servers.
         """
-        assert name is not None
+        if name is None:
+            raise ValueError("name must not be None")
         self.name = name
 
         self.modes = kwargs.get("modes", dict())
         self.topic = kwargs.get("topic", None)
         self.topictime = kwargs.get("topictime", None)
         self.topicwho = kwargs.get("topicwho", None)
-        self.users = kwargs.get("users", dict())
         self.timestamp = kwargs.get("timestamp", None)
         self.url = kwargs.get("url", None)
+        self.users = kwargs.get("users", IRCDict(case))
 
 
 class ChannelTrack(BaseExtension):
@@ -96,10 +97,10 @@ class ChannelTrack(BaseExtension):
         self.base = base
 
         # Our channel set
-        self.channels = dict()
+        self.channels = IRCDict(self.case)
 
         # Scheduled items
-        self.mode_timers = dict()
+        self.mode_timers = IRCDict(self.case)
 
     def get_channel(self, name):
         """Retrieve a channel from the tracking dictionary based on name.
@@ -115,7 +116,7 @@ class ChannelTrack(BaseExtension):
             Name of the channel to retrieve.
         """
 
-        return self.channels.get(self.casefold(name))
+        return self.channels.get(name)
 
     def add_channel(self, name, **kwargs):
         """Add a channel to the tracking dictionary.
@@ -126,8 +127,8 @@ class ChannelTrack(BaseExtension):
         if channel is None:
             logger.debug("Adding channel: %s", name)
 
-            channel = Channel(name, **kwargs)
-            self.channels[self.casefold(name)] = channel
+            channel = Channel(self.base.case, name, **kwargs)
+            self.channels[name] = channel
 
         return channel
 
@@ -141,7 +142,12 @@ class ChannelTrack(BaseExtension):
         if not channel:
             return
 
-        del self.channels[self.casefold(name)]
+        del self.channels[name]
+
+    @hook("hooks", "case_change")
+    def case_change(self, event):
+        self.channels = self.channels.convert(self.base.case)
+        self.mode_timers = self.mode_timers.convert(self.base.case)
 
     @hook("hooks", "disconnected")
     def close(self, event):
@@ -160,7 +166,7 @@ class ChannelTrack(BaseExtension):
             # We are joining
             channel = self.add_channel(event.line.params[0])
 
-        channel.users[self.casefold(hostmask.nick)] = set()
+        channel.users[hostmask.nick] = set()
 
     @hook("commands", "KICK")
     @hook("commands", "PART")
@@ -171,11 +177,10 @@ class ChannelTrack(BaseExtension):
 
         basicrfc = self.get_extension("BasicRFC")
 
-        if self.casefold(hostmask.nick) == self.casefold(basicrfc.nick):
+        if self.casecmp(hostmask.nick, basicrfc.nick):
             # We are leaving
             self.remove_channel(channel.name)
-            timer = self.mode_timers.pop(self.casefold(channel.name),
-                                         None)
+            timer = self.mode_timers.pop(channel.name, None)
             if timer is not None:
                 try:
                     self.unschedule(timer)
@@ -183,7 +188,7 @@ class ChannelTrack(BaseExtension):
                     pass
             return
 
-        del channel.users[self.casefold(hostmask.nick)]
+        del channel.users[hostmask.nick]
 
     def _get_modegroups(self):
         isupport = self.get_extension("ISupport")
@@ -211,7 +216,7 @@ class ChannelTrack(BaseExtension):
             params = []
         for mode, param, adding in mode_parse(modes, params, modegroups, prefix):
             if mode in prefix:
-                user = channel.users[self.casefold(param)]
+                user = channel.users[param]
                 if adding:
                     logger.debug("Adding mode for nick %s: %s", param, mode)
                     user.add(mode)
@@ -255,7 +260,7 @@ class ChannelTrack(BaseExtension):
             params = []
         for mode, param, adding in mode_parse(modes, params, modegroups, prefix):
             if mode in prefix:
-                user = channel.users[self.casefold(param)]
+                user = channel.users[param]
                 if adding:
                     logger.debug("Adding mode %s to %s in %s", mode, param, channel)
                     user.add(mode)
@@ -316,20 +321,21 @@ class ChannelTrack(BaseExtension):
     @hook("commands", Numerics.RPL_CHANNELURL)
     def url(self, event):
         channel = self.get_channel(event.line.params[1])
-        assert channel
+        if not channel:
+            return
 
         channel.url = event.line.params[-1]
 
     @hook("commands", Numerics.RPL_CREATIONTIME)
     def timestamp(self, event):
         channel = self.get_channel(event.line.params[1])
-        assert channel
+        if not channel:
+            return
 
         channel.timestamp = int(event.line.params[-1])
 
         # Cancel
-        timer = self.mode_timers.pop(self.casefold(channel.name),
-                                     None)
+        timer = self.mode_timers.pop(channel.name, None)
         if timer is not None:
             try:
                 self.unschedule(timer)
@@ -339,7 +345,10 @@ class ChannelTrack(BaseExtension):
     @hook("commands", Numerics.RPL_NAMREPLY)
     def names(self, event):
         channel = self.get_channel(event.line.params[2])
-        assert channel
+        if not channel:
+            logger.warning("Got NAMES for a channel we don't know about: %s",
+                           event.line.params[2])
+            return
 
         isupport = self.get_extension("ISupport")
         prefix = prefix_parse(isupport.get("PREFIX"))
@@ -348,7 +357,7 @@ class ChannelTrack(BaseExtension):
             mode, nick = status_prefix_parse(nick, prefix)
 
             # userhost-in-names is why we do this dance
-            nick = self.casefold(Hostmask.parse(nick).nick)
+            nick = Hostmask.parse(nick).nick
             if nick not in channel.users:
                 channel.users[nick] = set()
 
@@ -359,16 +368,17 @@ class ChannelTrack(BaseExtension):
     @hook("commands", Numerics.RPL_ENDOFNAMES)
     def names_end(self, event):
         channel = self.get_channel(event.line.params[1])
-        assert channel
+        if not channel:
+            return
 
         timer = self.schedule(5, partial(self.send, "MODE",
                                          [event.line.params[1]]))
-        self.mode_timers[self.casefold(channel.name)] = timer
+        self.mode_timers[channel.name] = timer
 
     @hook("commands", "NICK")
     def nick(self, event):
-        oldnick = self.casefold(event.line.hostmask.nick)
-        newnick = self.casefold(event.line.params[-1])
+        oldnick = event.line.hostmask.nick
+        newnick = event.line.params[-1]
 
         # Change the nick in all channels
         for channel in self.channels.values():
@@ -380,7 +390,7 @@ class ChannelTrack(BaseExtension):
 
     @hook("commands", "QUIT")
     def quit(self, event):
-        nick = self.casefold(event.line.hostmask.nick)
+        nick = event.line.hostmask.nick
 
         for channel in self.channels.values():
             channel.users.pop(nick, None)

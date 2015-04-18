@@ -38,7 +38,7 @@ class StartTLS(BaseExtension):
 
         self.tls_event = None
 
-        if not self.base.ssl:
+        if not self.ssl:
             self.caps = {
                 "tls": [],
             }
@@ -49,7 +49,7 @@ class StartTLS(BaseExtension):
 
     @hook("cap_perform", "ack", PRIORITY_FIRST)
     def starttls(self, event):
-        if self.base.ssl:
+        if self.ssl:
             # Unnecessary
             return
 
@@ -64,7 +64,7 @@ class StartTLS(BaseExtension):
     @hook("commands", Numerics.RPL_STARTTLS)
     def wrap(self, event):
         logger.info("Performing STARTTLS initiation...")
-        self.base.wrap_ssl()
+        self.wrap_ssl()
 
         cap_negotiate = self.get_extension("CapNegotiate")
         cap_negotiate.cont(self.tls_event)

@@ -46,27 +46,27 @@ class BasicRFC(BaseExtension):
 
     @hook("hooks", "connected")
     def handshake(self, event):
-        if not self.base.registered:
-            if self.base.server_password:
-                self.base.send("PASS", [self.base.server_password])
+        if not self.registered:
+            if self.server_password:
+                self.send("PASS", [self.server_password])
 
-            self.base.send("USER", [self.base.username, "*", "*",
-                                    self.base.gecos])
-            self.base.send("NICK", [self.base.nick])
+            self.send("USER", [self.username, "*", "*",
+                                    self.gecos])
+            self.send("NICK", [self.nick])
 
     @hook("hooks", "disconnected")
     def disconnected(self, event):
-        self.base.connected = False
-        self.base.registered = False
+        self.connected = False
+        self.registered = False
 
     @hook("commands", Numerics.RPL_HELLO)
     @hook("commands", "NOTICE")
     def connected(self, event):
-        self.base.connected = True
+        self.connected = True
 
     @hook("commands", "PING")
     def pong(self, event):
-        self.base.send("PONG", event.line.params)
+        self.send("PONG", event.line.params)
 
     @hook("commands", "NICK")
     def nick(self, event):
@@ -79,4 +79,4 @@ class BasicRFC(BaseExtension):
 
     @hook("commands", Numerics.RPL_WELCOME)
     def welcome(self, event):
-        self.base.registered = True
+        self.registered = True

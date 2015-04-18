@@ -97,10 +97,10 @@ class ChannelTrack(BaseExtension):
         self.base = base
 
         # Our channel set
-        self.channels = IRCDict(self.base.case)
+        self.channels = IRCDict(self.case)
 
         # Scheduled items
-        self.mode_timers = IRCDict(self.base.case)
+        self.mode_timers = IRCDict(self.case)
 
     def get_channel(self, name):
         """Retrieve a channel from the tracking dictionary based on name.
@@ -127,7 +127,7 @@ class ChannelTrack(BaseExtension):
         if channel is None:
             logger.debug("Adding channel: %s", name)
 
-            channel = Channel(self.base.case, name, **kwargs)
+            channel = Channel(self.case, name, **kwargs)
             self.channels[name] = channel
 
         return channel
@@ -146,8 +146,8 @@ class ChannelTrack(BaseExtension):
 
     @hook("hooks", "case_change")
     def case_change(self, event):
-        self.channels = self.channels.convert(self.base.case)
-        self.mode_timers = self.mode_timers.convert(self.base.case)
+        self.channels = self.channels.convert(self.case)
+        self.mode_timers = self.mode_timers.convert(self.case)
 
     @hook("hooks", "disconnected")
     def close(self, event):

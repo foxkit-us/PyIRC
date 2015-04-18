@@ -163,22 +163,22 @@ class UserTrack(BaseExtension):
     def __init__(self, base, **kwargs):
         self.base = base
 
-        self.u_expire_timers = IRCDict(self.base.case)
-        self.who_timers = IRCDict(self.base.case)
+        self.u_expire_timers = IRCDict(self.case)
+        self.who_timers = IRCDict(self.case)
 
-        self.users = IRCDict(self.base.case)
-        self.whois_send = IRCSet(self.base.case)
+        self.users = IRCDict(self.case)
+        self.whois_send = IRCSet(self.case)
 
         # Authentication callbacks
-        self.auth_cb = IRCDefaultDict(self.base.case, list)
+        self.auth_cb = IRCDefaultDict(self.case, list)
 
         # WHOX sent list
         self.whox_send = list()
 
         # Create ourselves
         basicrfc = self.get_extension("BasicRFC")
-        self.add_user(basicrfc.nick, user=self.base.username,
-                      gecos=self.base.gecos)
+        self.add_user(basicrfc.nick, user=self.username,
+                      gecos=self.gecos)
 
     def authenticate(self, nick, callback):
         """Get authentication for a user and return result in a callback
@@ -196,7 +196,7 @@ class UserTrack(BaseExtension):
         user = self.get_user(nick)
         if not user:
             # Add a user for now, get details later.
-            self.users[nick] = User(self.base.case, nick)
+            self.users[nick] = User(self.case, nick)
 
         if user.account is not None:
             # User account is known
@@ -229,7 +229,7 @@ class UserTrack(BaseExtension):
         """
         user = self.get_user(nick)
         if not user:
-            user = User(self.base.case, nick, **kwargs)
+            user = User(self.case, nick, **kwargs)
             self.users[nick] = user
 
         return user
@@ -282,7 +282,7 @@ class UserTrack(BaseExtension):
 
     @hook("hooks", "case_change")
     def case_change(self, event):
-        case = self.base.case
+        case = self.case
 
         self.u_expire_timers = self.u_expire_timers.convert(case)
         self.who_timers = self.who_timers.convert(case)

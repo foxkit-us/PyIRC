@@ -98,5 +98,5 @@ class ISupport(BaseExtension):
 
         values = isupport_parse(event.line.params[1:-1])
         if 'CASEMAPPING' in values:
-            self.base.case_change()
+            self.case_change()
         self.supported.update(values)

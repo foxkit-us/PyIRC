@@ -21,7 +21,10 @@ class BaseExtension(metaclass=HookGenerator):
 
     Hooks may exist in this, in a hclass_hooks dictionary. These can be
     created by hand, but it is recommended to let them be created by the
-    HookGenerator metaclass and the hook decorator.
+    :py:class:`~PyIRC.hook.HookGenerator` metaclass and the hook decorator.
+
+    Any unknown attributes in this class are redirected to the ``base``
+    attribute.
 
     Members:
 
@@ -40,6 +43,11 @@ class BaseExtension(metaclass=HookGenerator):
     hook_classes = {}
 
     def __init__(self, base, **kwargs):
+        """Arguments:
+
+        :param base:
+            Base class for this method
+        """
         self.base = base
 
     def __getattr__(self, attr):

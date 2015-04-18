@@ -37,22 +37,22 @@ class ServicesLogin(BaseExtension):
 
         Keyword arguments:
 
-        services_username
+        :param services_username:
             The username to use for authentication.
 
-        services_password
+        :param services_password:
             The password to use for authentication.
 
-        services_idenitfy_fmt
+        :param services_idenitfy_fmt:
             A format string using {username} and {password} to send the
             correct message to services.
 
-        services_bot
+        :param services_bot:
             The user to send authentication to (defaults to NickServ). Can be
             a full nick!user@host set for the networks that support or require
             this mechanism.
 
-        services_command
+        :param services_command:
             Command to use to authenticate. Defaults to PRIVMSG, but
             NS/NICKSERV are recommended for networks that support it for some
             improved security.

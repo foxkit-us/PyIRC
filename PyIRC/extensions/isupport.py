@@ -33,7 +33,7 @@ class ISupport(BaseExtension):
 
     The following attributes are available:
 
-    :param supported:
+    supported
         parsed ISUPPORT data from the server. Do note that because ISUPPORT is
         technically non-standard, users should be prepared for data that does
         not conform to any implied standard.

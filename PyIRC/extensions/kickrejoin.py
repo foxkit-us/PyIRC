@@ -32,22 +32,22 @@ class KickRejoin(BaseExtension):
 
     """ Rejoin a channel automatically after being kicked or removed. """
 
+    requires = ["BasicRFC", "ISupport"]
     """ Describes what extensions are required to use this extension.  We use
     the :py:class:`basicrfc.BasicRFC` extension for nick tracking.
     :py:class:`isupport.ISupport` is used for prefixes discovery.
     """
-    requires = ["BasicRFC", "ISupport"]
 
     def __init__(self, base, **kwargs):
         """ Initialise the KickRejoin extension.
 
         Keyword arguments:
 
-        rejoin_delay
+        :param rejoin_delay:
             Seconds to delay until the channel is rejoined.  This defaults to 5,
             but can be set to anything.  Some people may think you're rude if
             you set it to 0.
-        rejoin_on_remove
+        :param rejoin_on_remove:
             Boolean defining whether to rejoin if you are 'removed'.  Note that
             most servers propogate REMOVE as KICK to clients so it won't always
             work (the sole exception in testing this extension was Freenode).

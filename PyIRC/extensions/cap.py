@@ -48,17 +48,17 @@ class CapNegotiate(BaseExtension):
 
     The following attributes are available:
 
-    :param supported:
+    supported
         Supported capabilities - these are the capabilities we support,
         at least, in theory.
 
-    :param remote:
+    remote
         Remote capabilities - that is, what the server supports.
 
-    :param local:
+    local
         Local capabilities - these are what we actually support.
 
-    :param negotiating:
+    negotiating
         Whether or not CAP negotiation is in progress.
     """
 

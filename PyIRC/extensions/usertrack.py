@@ -144,7 +144,7 @@ class UserTrack(BaseExtension):
 
     The following attribute is publlicly available:
 
-    :param users:
+    users
         Mapping of users, where the keys are casemapped nicks, and values are
         User instances.
     """

@@ -31,10 +31,10 @@ class SASLBase(BaseExtension):
 
     The following attributes are available:
 
-    :param mechanisms:
+    mechanisms
         Mechanisms supported by the server
 
-    :param authenticated:
+    authenticated
         Whether or not we are authenticated to services
     """
 
@@ -42,8 +42,8 @@ class SASLBase(BaseExtension):
     priority = PRIORITY_FIRST + 5
     requires = ["CapNegotiate"]
 
-    """ Authentication method to use """
     method = None
+    """ Authentication method to use """
 
     def __init__(self, base, **kwargs):
 

@@ -29,7 +29,7 @@ class LagCheck(BaseExtension):
 
     The following attributes are available:
 
-    :param lag:
+    lag
         Current lag measurements from the server, measured in seconds. It is
         not advisable to rely on less than a millisecond of precision on most
         systems and real-world networks.
@@ -42,7 +42,8 @@ class LagCheck(BaseExtension):
 
         :param lagcheck:
             Time interval to do periodic lag checks to update the lag timer.
-            Defaults to 15 seconds.
+            Defaults to 15 seconds. Setting the value too low may result in
+            being disconnected by the server.
         """
         self.base = base
 

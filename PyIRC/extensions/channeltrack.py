@@ -81,7 +81,7 @@ class ChannelTrack(BaseExtension):
 
     The following attribute is publicly available:
 
-    :param channels:
+    channels
         Mapping of channels, where the keys are casemapped channel names, and
         the values are Channel instances.
 

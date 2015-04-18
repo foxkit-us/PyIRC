@@ -27,6 +27,9 @@ class BasicRFC(BaseExtension):
 
     This extension implements the following user-facing attributes:
 
+    nick
+        Our present real nickname as reported by the IRC server.
+
     prev_nick
       If we get a NICK event from the server, and it's for us, our last nick
       will be stored here. Useful in case of services collisions that change

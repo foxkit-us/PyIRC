@@ -10,9 +10,9 @@
 def private_mangle(cls, name):
     """Generate a private name based on the given name
 
-    cls
+    :param cls:
         Class (instance or not) to use for the mangling
-    name
+    :param name:
         Name to mangle.
     """
     if not name.startswith('__'):

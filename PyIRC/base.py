@@ -159,20 +159,35 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
         """
         return self.casefold(string) == self.casefold(other)
 
+    def get_extension(self, extension):
+        """A convenience method for
+        :py:meth:`~PyIRC.extension.ExtensionManager.get_extension`"""
+        return self.extensions.get_extension(extension)
+
+    def call_event(self, hclass, event, *args):
+        """A convenience method for
+        :py:meth:`~PyIRC.event.EventManager.call_event`"""
+        return self.events.call_event(hclass, event, *args)
+    
+    def call_event_inst(self, hclass, event, inst):
+        """A convenience method for
+        :py:meth:`~PyIRC.event.EventManager.call_event_inst`"""
+        return self.events.call_event_inst(hclass, event, inst)
+
     def connect(self):
         """Do the connection handshake """
         # XXX late binding sucks but we can't do it in __init__.
         # Else we get a chicken and egg problem.
         self.events.register_callbacks_from_inst_all(self)
 
-        self.events.call_event("hooks", "connected")
+        return self.events.call_event("hooks", "connected")
 
     def close(self):
         """Do the connection teardown """
         # XXX cheesy hack
         self.events.unregister_callbacks_from_inst_all(self)
 
-        self.events.call_event("hooks", "disconnected")
+        return self.events.call_event("hooks", "disconnected")
 
     def recv(self, line):
         """Receive a line

@@ -29,7 +29,7 @@ class LagCheck(BaseExtension):
 
     The following attributes are available:
 
-    lag
+    :param lag:
         Current lag measurements from the server, measured in seconds. It is
         not advisable to rely on less than a millisecond of precision on most
         systems and real-world networks.
@@ -40,7 +40,7 @@ class LagCheck(BaseExtension):
 
         Keyword arguments:
 
-        lagcheck
+        :param lagcheck:
             Time interval to do periodic lag checks to update the lag timer.
             Defaults to 15 seconds.
         """

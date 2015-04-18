@@ -28,7 +28,7 @@ class AutoJoin(BaseExtension):
 
         Keyword arguments:
 
-        join
+        :param join:
             A Mapping (dictionary type) or Iterable of channels to join.
             If a Mapping is passed, keys are treated as channel names and
             values are used as keys to join the channel.

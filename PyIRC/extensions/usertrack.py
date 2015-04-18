@@ -36,7 +36,7 @@ class User:
 
     The following attribute is publicly available:
 
-    channels
+    :param channels:
         Mapping of channels, where the keys are casemapped channel names, and
         the values are their status modes on the channel.
 
@@ -51,45 +51,45 @@ class User:
 
         Arguments:
 
-        nick
+        :param nick:
             Nickname of the user, not casemapped.
 
-        case
+        :param case:
             Casemapping to use for channels member.
 
         Keyword arguments:
 
-        username
+        :param username:
             Username of the user, or ident (depending on IRC daemon).
 
-        host
+        :param host:
             Hostname of the user. May be fake due to a cloak.
 
-        gecos
+        :param gecos:
             The GECOS (aka "real name") of a user. Usually just freeform data
             of dubious usefulness.
 
-        account
+        :param account:
             Services account name of the user.
 
-        server
+        :param server:
             Server the user is on. Not always reliable or present.
 
-        secure
+        :param secure:
             User is using SSL. Always assume unsecured unless set to True.
 
-        operator
+        :param operator:
             User is an operator. Being set to None does not guarantee a user
             is not an operator due to IRC daemon limitations and data hiding.
 
-        signon
+        :param signon:
             Signon time for the user. May not be set.
 
-        ip
+        :param ip:
             IP for the user reported from the server. May be bogus and likely
             nonexistent on networks with host cloaking.
 
-        realhost
+        :param realhost:
             Real hostname for a user. Probably not present in most cases.
         """
         if nick is None:
@@ -144,7 +144,7 @@ class UserTrack(BaseExtension):
 
     The following attribute is publlicly available:
 
-    users
+    :param users:
         Mapping of users, where the keys are casemapped nicks, and values are
         User instances.
     """
@@ -185,10 +185,10 @@ class UserTrack(BaseExtension):
 
         Arguments:
 
-        nick
+        :param nick:
             Nickname of user to check authentication for
 
-        callback
+        :param callback:
             Callback to call for user when authentication is discovered. The
             User instance is passed in as the first parameter, or None if the
             user is not found. Use functools.partial to pass other arguments.
@@ -217,7 +217,7 @@ class UserTrack(BaseExtension):
 
         Arguments:
 
-        nick
+        :param nick:
             Nickname of the user to retrieve.
         """
         return self.users.get(nick)

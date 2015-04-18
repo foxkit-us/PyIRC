@@ -48,17 +48,17 @@ class CapNegotiate(BaseExtension):
 
     The following attributes are available:
 
-    supported
+    :param supported:
         Supported capabilities - these are the capabilities we support,
         at least, in theory.
 
-    remote
+    :param remote:
         Remote capabilities - that is, what the server supports.
 
-    local
+    :param local:
         Local capabilities - these are what we actually support.
 
-    negotiating
+    :param negotiating:
         Whether or not CAP negotiation is in progress.
     """
 
@@ -254,13 +254,13 @@ class CapNegotiate(BaseExtension):
 
         Arguments:
 
-        cap
+        :param cap:
             The capability to register support for
 
-        params
+        :param params:
             The parameters to pass for the CAP (IRCv3 extension)
 
-        replace
+        :param replace:
             Replace existing CAP report, if present
         """
         if replace or cap not in self.supported:
@@ -273,7 +273,7 @@ class CapNegotiate(BaseExtension):
 
         Arguments:
 
-        cap
+        :param cap:
             Capability to remove
         """
         self.supported.pop(cap, None)

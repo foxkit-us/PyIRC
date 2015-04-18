@@ -30,31 +30,32 @@ class EventState(Enum):
 
     """The current state of an event."""
 
-    """Proceed with other callbacks, if any. """
     ok = 0
+    """Proceed with other callbacks, if any. """
 
-    """Event is cancelled; do not run any further callbacks. """
     cancel = 1
+    """Event is cancelled; do not run any further callbacks. """
 
-    """Send a QUIT to the IRC server. """
     terminate_soon = 2
+    """Send a QUIT to the IRC server. """
 
+    terminate_now = 3
     """Abort the entire library immediately.
 
     .. warning:: This state should only be used if data loss may occur.
     """
-    terminate_now = 3
 
-    """Pause the callback chain for later resumption """
     pause = 4
+    """Pause the callback chain for later resumption """
 
 
 class Event:
 
     """The base class for all events passed to callbacks.
 
-    :param status:
+    status
         The current status of the event.
+
     last_function
         Set to the function who cancelled us, if we are cancelled.
     """
@@ -172,6 +173,7 @@ class EventManager:
 
         :param hclass:
             The class of the event to register.
+
         :param event:
             The name of the event to register.
 
@@ -259,6 +261,7 @@ class EventManager:
 
         :param hclass:
             The instance of the event to register with this callback
+
         :param inst:
             The instance to process
         """
@@ -277,9 +280,10 @@ class EventManager:
         """Register callbacks from the given hook table.
 
         :param hclass:
-            The class of the event to register with this callback
+            The class of the event to register with this callback.
+
         :param table:
-            The table to process
+            The table to process.
         """
         for event, (callback, priority) in table.items():
             self.register_callback(hclass, event, priority, callback)
@@ -289,8 +293,10 @@ class EventManager:
 
         :param hclass:
             The class of the event to unregister this callback from.
+
         :param event:
             The name of the event to unregister this callback from.
+
         :param callback:
             The callback to unregister.
         """
@@ -328,14 +334,15 @@ class EventManager:
             self.unregister_callbacks_from_inst(hclass, inst)
 
     def unregister_callbacks_from_inst(self, hclass, inst):
-        """Unregister callbacks from a given instance, using hook tables
+        """Unregister callbacks from a given instance, using hook tables.
 
         Arguments:
 
         :param hclass:
-            The class of the event to register with this callback
+            The class of the event to register with this callback.
+
         :param inst:
-            The class to process
+            The class to process.
         """
         attr = hclass + '_hooks'
         table = getattr(inst, attr, None)
@@ -354,7 +361,8 @@ class EventManager:
         Arguments:
 
         :param hclass:
-            The class of the event to register with this callback
+            The class of the event to register with this callback.
+
         :param table:
             The table to process
         """
@@ -368,9 +376,11 @@ class EventManager:
 
         :param hclass:
             The class of the event that is occuring.
+
         :param event:
             The name of the event that is occuring.
-        ``*args``
+
+        :param \*args:
             The arguments to pass to the :py:class:`~PyIRC.event.Event` type constructor used
             for the event class.
         """
@@ -388,7 +398,7 @@ class EventManager:
             yield event_inst.status
 
     def call_event_inst(self, hclass, event, event_inst):
-        """Call an event with the given event instance
+        """Call an event with the given event instance.
 
         If the event is paused, it will resume calling unless cancelled.
 
@@ -396,9 +406,11 @@ class EventManager:
 
         :param hclass:
             The class of the event that is occuring.
+
         :param event:
             The name of the event that is occuring.
-        ``event_inst``
+
+        :param event_inst:
             The :py:class:`~PyIRC.event.Event` type we are reusing for this call.
         """
         if hclass not in self.events_reg:

@@ -37,25 +37,25 @@ class Channel:
 
         Keyword arguments:
 
-        name
+        :param name:
             Name of the channel, not casemapped.
 
-        topic
+        :param topic:
             The channel topic.
 
-        topictime
+        :param topictime:
             Time the channel topic was set, in Unix time.
 
-        topicwho
+        :param topicwho:
             Who set the topic, as a freeform string.
 
-        users
+        :param users:
             A mapping containing user to their channel status modes.
 
-        timestamp
+        :param timestamp:
             Timestamp of the channel (channel creation), in Unix time.
 
-        url
+        :param url:
             URL of the channel, sent on some IRC servers.
         """
         if name is None:
@@ -81,7 +81,7 @@ class ChannelTrack(BaseExtension):
 
     The following attribute is publicly available:
 
-    channels
+    :param channels:
         Mapping of channels, where the keys are casemapped channel names, and
         the values are Channel instances.
 
@@ -112,7 +112,7 @@ class ChannelTrack(BaseExtension):
 
         Arguments:
 
-        name
+        :param name:
             Name of the channel to retrieve.
         """
 

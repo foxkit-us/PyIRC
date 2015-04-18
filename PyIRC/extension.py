@@ -21,14 +21,16 @@ class BaseExtension(metaclass=HookGenerator):
 
     Hooks may exist in this, in a hclass_hooks dictionary. These can be
     created by hand, but it is recommended to let them be created by the
-    HookGenerator metaclass and the `hook` decorator.
+    HookGenerator metaclass and the hook decorator.
 
     Members:
 
-    :param requires:
+    requires
         required extensions (must be a name)
-    :param priority:
+
+    priority
         the priority of this extension, lower is higher (like Unix)
+
     hook_classes
         A Mapping of hclass to an :py:class:`~PyIRC.event.Event` subclass
     """
@@ -82,21 +84,21 @@ class ExtensionManager:
     """ Manage extensions to PyIRC's library, and register their hooks. """
 
     def __init__(self, base, kwargs, events, extensions=[]):
-        """ Initialise the extensions manager
+        """Initialise the extensions manager
 
         Arguments:
 
         :param base:
-            base instance to pass to each extension
+            Base instance to pass to each extension.
 
         :param kwargs:
-            keyword arguments to pass to each extension
+            Keyword arguments to pass to each extension.
 
         :param events:
-            the EventManager instance to add hooks to
+            The py:class:`~PyIRC.event.EventManager` instance to add hooks to.
 
         :param extensions:
-            our initial list of extensions
+            Initial list of extensions.
         """
 
         self.base = base

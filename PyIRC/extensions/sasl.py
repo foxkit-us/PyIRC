@@ -31,10 +31,10 @@ class SASLBase(BaseExtension):
 
     The following attributes are available:
 
-    mechanisms
+    :param mechanisms:
         Mechanisms supported by the server
 
-    authenticated
+    :param authenticated:
         Whether or not we are authenticated to services
     """
 

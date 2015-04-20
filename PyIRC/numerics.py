@@ -5707,9 +5707,51 @@ class Numerics(Enum):
     """
 
 
+    RPL_AUTOOPLIST = "910"
+    """
+    This numeric can be found in:
+    - Inspircd
+    """
+
+
+    RPL_ENDOFAUTOOPLIST = "911"
+    """
+    This numeric can be found in:
+    - Inspircd
+    """
+
+
     ERR_WORDFILTERED = "936"
     """
      This numeric can be found in:
+    - Inspircd
+    """
+
+
+    ERR_ENDOFSPAMFILTERLIST = "941"
+    """
+    This numeric can be found in:
+    - Inspircd
+    """
+
+
+    RPL_SPAMFILTERLIST = "940"
+    """
+    This numeric can be found in:
+    - Inspircd
+    """
+
+
+    ERR_ENDOFEXEMPTCHANOPSLIST = "954"
+    """
+    This numeric can be found in:
+    - Inspircd
+    """
+
+
+    RPL_EXEMPTCHANOPSLIST = "953"
+    """
+    This numeric can be found in:
     - Inspircd
     """
 

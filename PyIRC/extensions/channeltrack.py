@@ -172,7 +172,7 @@ class ChannelTrack(BaseExtension):
             channel.users[hostmask.nick].add(event.mode)
         else:
             channel.users[hostmask.nick].discard(event.mode)
-    
+
     @hook("modes", "mode_key")
     @hook("modes", "mode_param")
     @hook("modes", "mode_normal")

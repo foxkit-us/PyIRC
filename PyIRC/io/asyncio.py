@@ -16,7 +16,7 @@ except ImportError as e:
         raise ImportError("Must have Python 3.3 or greater to use this " \
                           "module") from e
     else:
-        raise ImportError("Must install asyncio module from PyPI")
+        raise ImportError("Must install asyncio module from PyPI") from e
 
 from logging import getLogger
 
@@ -52,6 +52,10 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
         if self.extensions.remove_extension("StartTLS"):
             logger.critical("Removing StartTLS extension due to asyncio " \
                             "limitations")
+
+    def connect(self):
+        super().connect()
+        return loop.create_connection(self, *self.serverport, ssl=self.ssl)
 
     def connection_made(self, transport):
         self.transport = transport

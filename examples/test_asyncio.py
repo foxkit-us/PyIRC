@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.4
 
 
-import asyncio
+import asyncio, ssl
 
 from random import choice
 from logging import basicConfig
@@ -59,11 +59,9 @@ args = {
     'join' : ['#PyIRC'],
 }
 
+inst = TestProtocol(**args)
+
 loop = asyncio.get_event_loop()
-
-create = lambda : TestProtocol(**args)
-coro = loop.create_connection(create, *args['serverport'], ssl=args.get('ssl'))
-
-loop.run_until_complete(coro)
+loop.run_until_complete(inst.connect())
 loop.run_forever()
 loop.close()

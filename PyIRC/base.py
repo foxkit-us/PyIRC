@@ -75,7 +75,8 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
         Keyword arguments (extensions may use others):
 
         :key ssl:
-            Whether or not to use SSL.
+            Whether or not to use SSL. Set to an ``SSLContext`` from the ssl
+            module to specify custom parameters, or ``True`` for defaults.
 
         :key server_password:
             Server password (PASS).

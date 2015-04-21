@@ -59,7 +59,10 @@ class IRCSocket(IRCBase):
 
         if self.ssl:
             self._socket = self.socket
-            self.socket = ssl.wrap_socket(self.socket)
+            if self.ssl is True:
+                self.socket = ssl.wrap_socket(self.socket)
+            else:
+                self.socket = self.ssl.wrap_socket(self.socket)
 
         self.socket.settimeout(self.kwargs.get("socket_timeout", 10))
         self.socket.connect((self.server, self.port))

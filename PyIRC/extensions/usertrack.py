@@ -18,13 +18,12 @@ from functools import partial
 from collections import defaultdict
 from logging import getLogger
 
+from PyIRC.auxparse import prefix_parse, who_flag_parse, status_prefix_parse
 from PyIRC.casemapping import IRCDict, IRCDefaultDict, IRCSet
 from PyIRC.extension import BaseExtension
 from PyIRC.hook import hook
 from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
-from PyIRC.auxparse import (mode_parse, prefix_parse, who_flag_parse,
-                            status_prefix_parse)
 
 
 logger = getLogger(__name__)
@@ -36,7 +35,7 @@ class User:
 
     The following attribute is publicly available:
 
-    :param channels:
+    channels
         Mapping of channels, where the keys are casemapped channel names, and
         the values are their status modes on the channel.
 
@@ -106,10 +105,7 @@ class User:
         self.signon = kwargs.get("signon", None)
         self.ip = kwargs.get("ip", None)
         self.realhost = kwargs.get("realhost", None)
-
-        # Statuses in channels
-        # This assumes case never changes.
-        self.channels = IRCDict(case)
+        self.channels = IRCDefaultDict(case, set)
 
         logger.debug("Created user: %s", self.nick)
 
@@ -384,54 +380,21 @@ class UserTrack(BaseExtension):
         # Add the channel
         user.channels[channel] = set
 
-    @hook("commands", "MODE")
-    def mode(self, event):
-        self.update_username_host(event.line)
+    @hook("modes", "mode_prefix")
+    def prefix(self, event):
+        # Parse into hostmask in case of usernames-in-host
+        hostmask = Hostmask(event.param)
+        user = self.get_user(hostmask.nick)
+        if not user:
+            # Add the user
+            user = self.add_user(nick, user=hostmask.username,
+                                 host=hostmask.host)
 
-        isupport = self.get_extension("ISupport")
-        modegroups = list(isupport.get("CHANMODES"))
-        prefix = prefix_parse(isupport.get("PREFIX"))
-
-        channel = event.line.params[0]
-
-        # Don't care if user-directed, as that means us most of the time
-        if not channel.startswith(isupport.get("CHANTYPES")):
-            return
-
-        modes = event.line.params[1]
-        if len(event.line.params) >= 3:
-            params = event.line.params[2:]
+        channel = user.channels[event.target]
+        if event.adding:
+            channel.add(event.mode)
         else:
-            params = []
-        remove = False
-        for mode, nick, adding in mode_parse(modes, params, modegroups,
-                                             prefix):
-            if mode not in prefix:
-                continue
-
-            user = self.get_user(nick)
-            if not user:
-                logger.warn("IRC server sent us mode %s for nonexistent " \
-                            "user: %s", mode, user)
-                continue
-
-            if adding:
-                channel = user.channels[channel]
-                channel.update(mode)
-                logger.debug("Adding mode for nick %s: %s", user.nick, mode)
-            else:
-                channel = user.channels[channel]
-                channel.difference_update(mode)
-                logger.debug("Deleting mode for nick %s: %s", user.nick, mode)
-                remove = True
-
-        cap_negotiate = self.get_extension("CapNegotiate")
-        if not cap_negotiate:
-            return
-
-        if remove and 'multi-prefix' in cap_negotiate.local:
-            # Reissue a names request if we don't have multi-prefix
-            self.send("NAMES", [channel])
+            channel.discard(event.mode)
 
     @hook("commands", "NICK")
     def nick(self, event):
@@ -533,39 +496,6 @@ class UserTrack(BaseExtension):
     def quit(self, event):
         assert event.line.hostmask.nick in self.users
         self.remove_user(event.line.hostmask.nick)
-
-    @hook("commands", Numerics.RPL_NAMREPLY)
-    def names(self, event):
-        channel = event.line.params[2]
-
-        isupport = self.get_extension("ISupport")
-        prefix = prefix_parse(isupport.get("PREFIX"))
-
-        for nick in event.line.params[-1].split():
-            mode, nick = status_prefix_parse(nick, prefix)
-
-            # userhost-in-names (no need to check, nick goes through this
-            # just fine)
-            hostmask = Hostmask.parse(nick)
-            username = hostmask.username if hostmask.username else None
-            host = hostmask.host if hostmask.host else None
-
-            user = self.get_user(nick)
-            if user:
-                # Update user info
-                if username:
-                    user.username = username
-
-                if host:
-                    user.host = host
-            else:
-                user = self.add_user(nick, user=username, host=host)
-
-            # Apply modes
-            if channel in user.channels:
-                user.channels[channel].update(mode)
-            else:
-                user.channels[channel] = mode
 
     @hook("commands", Numerics.RPL_ENDOFWHO)
     def who_end(self, event):

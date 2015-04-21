@@ -19,6 +19,7 @@ from PyIRC.extensions.ctcp import CTCP
 from PyIRC.extensions.isupport import ISupport
 from PyIRC.extensions.kickrejoin import KickRejoin
 from PyIRC.extensions.lag import LagCheck
+from PyIRC.extensions.modehandler import ModeHandler
 from PyIRC.extensions.sasl import SASLPlain
 from PyIRC.extensions.starttls import StartTLS
 from PyIRC.extensions.usertrack import UserTrack
@@ -33,8 +34,8 @@ __all__ = ["basicrfc", "autojoin", "cap", "ctcp", "isupport", "kickrejoin",
 
 
 __all_cls__ = [BasicRFC, AutoJoin, CapNegotiate, CTCP, ISupport, KickRejoin,
-               LagCheck, SASLPlain, StartTLS, UserTrack, ChannelTrack,
-               ServicesLogin, BanTrack]
+               LagCheck, ModeHandler, SASLPlain, StartTLS, UserTrack,
+               ChannelTrack, ServicesLogin, BanTrack]
 
 
 """A reference of all extensions by name"""

@@ -13,12 +13,12 @@ used for ban listing.
 
 
 from time import time
-from collections import namedtuple, defaultdict
+from collections import namedtuple
 from logging import getLogger
 
+from PyIRC.auxparse import mode_parse, prefix_parse
 from PyIRC.extension import BaseExtension
 from PyIRC.hook import hook, PRIORITY_LAST
-from PyIRC.auxparse import mode_parse, prefix_parse
 from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
 
@@ -65,113 +65,128 @@ class BanTrack(BaseExtension):
 
     @hook("commands", "JOIN", PRIORITY_LAST)
     def join(self, event):
-        logger.debug("Creating ban modes for channel %s",
-                     event.line.params[0])
-        channeltrack = self.get_extension("ChannelTrack")
-        channel = channeltrack.get_channel(event.line.params[0])
-        channel.ban_modes = defaultdict(list)
-
-    @hook("commands", "MODE")
-    def mode(self, event):
-        setter = event.line.hostmask
         params = event.line.params
-        modes = params[1]
-        modeparams = params[2:]
+        logger.debug("Creating ban modes for channel %s",
+                     params[0])
+        channeltrack = self.get_extension("ChannelTrack")
+        channel = channeltrack.get_channel(params[0])
+
+        channel.synced_list = dict()
+
+        isupport = self.get_extension("ISupport")
+        modes = isupport.get("CHANMODES")[0]
+
+        for mode in modes:
+            channel.modes[mode] = list()
+            channel.synced_list[mode] = False
+
+        self.send("MODE", [channel.name, modes])
+
+    @hook("modes", "mode_list")
+    def mode_list(self, event):
+        line = event.line
+
+        if event.param is None:
+            return
 
         channeltrack = self.get_extension("ChannelTrack")
-        channel = channeltrack.get_channel(event.line.params[0])
+        channel = channeltrack.get_channel(event.target)
         if not channel:
             # Not a channel or we don't know about it.
             return
 
-        ban_modes = channel.ban_modes
+        modes = channel.modes[event.mode]
 
-        isupport = self.get_extension("ISupport")
-        modegroups = isupport.get("CHANMODES")
-        prefixes = prefix_parse(isupport.get("PREFIX"))
+        entry = BanEntry(param, event.setter, event.timestamp)
 
-        send_request = False
-        for (mode, param, adding) in mode_parse(modes, modeparams, modegroups,
-                                                prefixes):
-            if param is None:
-                # Don't care.
-                continue
-
-            if mode in prefixes and mode != 'v':
-                # Send a modes request if it's us
-                if not (send_request ^ adding):
-                    # No need to check
-                    continue
-
-                basicrfc = self.get_extension("BasicRFC")
-                if self.casefold(param) == self.casefold(basicrfc.nick):
-                    # Adjust flag
-                    send_request = adding
-
-            if mode not in modegroups[0]:
-                continue
-
-            entry = BanEntry(param, setter, round(time()))
-
-            # Check for existing ban
-            for i, (string, _, _) in enumerate(list(ban_modes[mode])):
-                if self.casefold(param) == self.casefold(string):
-                    if adding:
-                        # Update timestamp and setter
-                        logger.debug("Replacing entry: %r -> %r",
-                                     ban_modes[mode][i], entry)
-                        ban_modes[mode][i] = entry
-                    else:
-                        # Delete ban
-                        del ban_modes[mode][i]
-                    return
-
-            logger.debug("Adding entry: %r", entry)
-            ban_modes[mode].append(entry)
-
-        if send_request:
-            logger.debug("Given status in %s", channel.name)
-            self.send("MODE", [channel.name, modegroups[0]])
-
-    @hook("commands", Numerics.RPL_BANLIST)
-    @hook("commands", Numerics.RPL_EXCEPTLIST)
-    @hook("commands", Numerics.RPL_INVITELIST)
-    @hook("commands", Numerics.RPL_QUIETLIST)
-    def list_numeric(self, event):
-        params = event.line.params
-        string = params[1]
-        setter = Hostmask.parse(params[2])
-        timestamp = int(params[3])
-
-        entry = BanEntry(param, setter, timestamp)
-
-        if event.line.command not in self.ban_numerics_modes:
-            return
-
-        # Mode letter lookup
-        mode = self.ban_numerics_modes[event.line.command]
-
-        channeltrack = self.get_extension("ChannelTrack")
-        channel = channeltrack.get_channel(params[0])
-
-        for i, (lstring, lsetter, ltimestamp) in enumerate(ban_modes[mode]):
-            if lstring == string:
-                # Check if known
-                # We do this in case our clock is off and stuff is desynced,
-                # because MODE added some entries.
-                # FIXME - results in approx. O(n*m) behaviour of mode
-                # listings!
-                if timestamp != ltimestamp:
-                    # Desyncs with this shouldn't happen!
-                    assert (self.casefold(str(lsetter)) !=
-                            self.casefold(str(setter)))
-
-                    # Replace entry.
+        # Check for existing ban
+        for i, (string, _, _) in enumerate(list(modes[event.mode])):
+            if self.casecmp(event.param, string):
+                if event.adding:
+                    # Update timestamp and setter
                     logger.debug("Replacing entry: %r -> %r",
-                                 ban_modes[mode][i], entry)
-                    ban_modes[mode][i] = entry
+                                 modes[i], entry)
+                    modes[i] = entry
+                else:
+                    # Delete ban
+                    logger.debug("Removing ban: %r", modes[i])
+                    del modes[i]
 
                 return
 
         logger.debug("Adding entry: %r", entry)
-        channel.ban_modes[mode].append(entry)
+        modes.append(entry)
+
+    @hook("modes", "mode_prefix")
+    def mode_prefix(self, event):
+        if event.mode == 'v':
+            # Voice, don't care
+            return
+
+        basicrfc = self.get_extension("BasicRFC")
+        if not self.casecmp(event.target, basicrfc.nick):
+            # Not us, don't care
+            return
+
+        channeltrack = self.get_extension("ChannelTrack")
+        channel = channeltrack.get_channel(event.target)
+        if not channel:
+            # Not a channel or we don't know about it.
+            return
+
+        if event.adding:
+            check = ''
+            for sync, value in channel.synced_list.items():
+                if not value:
+                    check += sync
+
+            if check:
+                isupport = self.get_extension("ISupport")
+                self.send("MODE", [event.target, check])
+
+    @hook("commands", Numerics.RPL_ENDOFBANLIST)
+    def end_ban(self, event):
+        self.set_synced(event, 'b')
+
+    @hook("commands", Numerics.RPL_ENDOFEXCEPTLIST)
+    def end_except(self, event):
+        self.set_synced(event, 'e')
+
+    @hook("commands", Numerics.RPL_ENDOFINVEXLIST)
+    def end_invex(self, event):
+        self.set_synced(event, 'I')
+
+    @hook("commands", Numerics.RPL_ENDOFQUIETLIST)
+    def end_quiet(self, event):
+        self.set_synced(event, 'q')
+
+    @hook("commands", Numerics.ERR_ENDOFSPAMFILTERLIST)
+    def end_spamfilter(self, event):
+        self.set_synced(event, 'g')
+
+    @hook("commands", Numerics.ERR_ENDOFEXEMPTCHANOPSLIST)
+    def end_exemptchanops(self, event):
+        self.set_synced(event, 'X')
+
+    @hook("commands", Numerics.RPL_ENDOFREOPLIST)
+    def end_reop(self, event):
+        self.set_synced(event, 'R')
+
+    @hook("commands", Numerics.RPL_ENDOFAUTOOPLIST)
+    def end_autoop(self, event):
+        self.set_synced(event, 'w')
+
+    def set_synced(self, event, mode):
+        channeltrack = self.get_extension("ChannelTrack")
+        channel = channeltrack.get_channel(event.params[1])
+        if not channel:
+            # Not a channel or we don't know about it.
+            return
+
+        if mode not in channel.synced_list:
+            logger.warning("Got bogus/invalid end of list sync for mode %s",
+                           mode)
+            return
+
+        channel.synced_list[mode] = True
+

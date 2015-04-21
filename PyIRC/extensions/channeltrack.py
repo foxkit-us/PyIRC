@@ -14,7 +14,7 @@ from time import time
 from functools import partial
 from logging import getLogger
 
-from PyIRC.casemapping import IRCDict
+from PyIRC.casemapping import IRCDict, IRCDefaultDict
 from PyIRC.extension import BaseExtension
 from PyIRC.hook import hook
 from PyIRC.line import Hostmask
@@ -68,7 +68,7 @@ class Channel:
         self.topicwho = kwargs.get("topicwho", None)
         self.timestamp = kwargs.get("timestamp", None)
         self.url = kwargs.get("url", None)
-        self.users = kwargs.get("users", IRCDict(case))
+        self.users = kwargs.get("users", IRCDefaultDict(case, set))
 
 
 class ChannelTrack(BaseExtension):
@@ -158,6 +158,34 @@ class ChannelTrack(BaseExtension):
             except ValueError:
                 pass
 
+    @hook("modes", "mode_prefix")
+    def prefix(self, event):
+        # Parse into hostmask in case of usernames-in-host
+        channel = self.get_channel(event.target)
+        if not channel:
+            logger.warning("Got a PREFIX event for an unknown channel: %s",
+                           event.target)
+            return
+
+        hostmask = Hostmask(event.param)
+        if event.adding:
+            channel.users[hostmask.nick].add(event.mode)
+        else:
+            channel.users[hostmask.nick].discard(event.mode)
+
+    @hook("modes", "mode_key")
+    @hook("modes", "mode_param")
+    @hook("modes", "mode_normal")
+    def modes(self, event):
+        channel = self.get_channel(event.target)
+        if not channel:
+            return
+
+        if event.adding:
+            channel.modes[mode] = event.param
+        else:
+            channel.modes.pop(event.param, None)
+
     @hook("commands", "JOIN")
     def join(self, event):
         hostmask = event.line.hostmask
@@ -189,105 +217,6 @@ class ChannelTrack(BaseExtension):
             return
 
         del channel.users[hostmask.nick]
-
-    def _get_modegroups(self):
-        isupport = self.get_extension("ISupport")
-        modes = isupport.get("CHANMODES")
-        return list(modes)
-
-    @hook("commands", "MODE")
-    def mode(self, event):
-        channel = self.get_channel(event.line.params[0])
-        if not channel:
-            return
-
-        isupport = self.get_extension("ISupport")
-
-        # Build mode groups
-        modegroups = self._get_modegroups()
-
-        # Status modes
-        prefix = prefix_parse(isupport.get("PREFIX"))
-
-        modes = event.line.params[1]
-        if len(event.line.params) >= 3:
-            params = event.line.params[2:]
-        else:
-            params = []
-        for mode, param, adding in mode_parse(
-                modes, params, modegroups, prefix):
-            if mode in prefix:
-                user = channel.users[param]
-                if adding:
-                    logger.debug("Adding mode for nick %s: %s", param, mode)
-                    user.add(mode)
-                else:
-                    logger.debug("Removing mode for nick %s: %s", param, mode)
-                    user.discard(mode)
-
-                continue
-            elif mode in modegroups[0]:
-                # We don't do list modes because getting a full list may not
-                # be possible in all channels due to restrictions/ircd config,
-                # so any tracking will be misleading.
-                # Another extension could easily support it.
-                continue
-
-            if adding:
-                channel.modes[mode] = param
-                logger.debug("Adding mode %s (%s)", mode, param)
-            else:
-                channel.modes.pop(mode, None)
-                logger.debug("Removing mode %s (%s)", mode, param)
-
-    @hook("commands", Numerics.RPL_CHANNELMODEIS)
-    def channel_modes(self, event):
-        channel = self.get_channel(event.line.params[1])
-        if not channel:
-            return
-
-        isupport = self.get_extension("ISupport")
-
-        # Build mode groups
-        modegroups = self._get_modegroups()
-
-        # Status modes
-        prefix = prefix_parse(isupport.get("PREFIX"))
-
-        modes = event.line.params[2]
-        if len(event.line.params) >= 4:
-            params = event.line.params[3:]
-        else:
-            params = []
-        for mode, param, adding in mode_parse(
-                modes, params, modegroups, prefix):
-            if mode in prefix:
-                user = channel.users[param]
-                if adding:
-                    logger.debug(
-                        "Adding mode %s to %s in %s",
-                        mode,
-                        param,
-                        channel)
-                    user.add(mode)
-                else:
-                    logger.debug("Removing mode %s from %s in %s", mode,
-                                 param, channel)
-                    user.discard(mode)
-
-                continue
-            elif mode in modegroups[0]:
-                # We shouldn't get these here...
-                logger.warning("Unexpected mode with channel mode numeric: " \
-                               "%s%s (%s)", "+" if adding else "-", mode, param)
-                continue
-
-            if adding:
-                logger.debug("Adding mode %s (%s)", mode, param)
-                channel.modes[mode] = param
-            else:
-                logger.debug("Removing mode %s (%s)", mode, param)
-                channel.modes.pop(mode, None)
 
     @hook("commands", Numerics.RPL_TOPIC)
     @hook("commands", "TOPIC")
@@ -347,29 +276,6 @@ class ChannelTrack(BaseExtension):
                 self.unschedule(timer)
             except ValueError:
                 pass
-
-    @hook("commands", Numerics.RPL_NAMREPLY)
-    def names(self, event):
-        channel = self.get_channel(event.line.params[2])
-        if not channel:
-            logger.warning("Got NAMES for a channel we don't know about: %s",
-                           event.line.params[2])
-            return
-
-        isupport = self.get_extension("ISupport")
-        prefix = prefix_parse(isupport.get("PREFIX"))
-
-        for nick in event.line.params[-1].split():
-            mode, nick = status_prefix_parse(nick, prefix)
-
-            # userhost-in-names is why we do this dance
-            nick = Hostmask.parse(nick).nick
-            if nick not in channel.users:
-                channel.users[nick] = set()
-
-            logger.debug("Adding user %s with modes %r", nick, mode)
-
-            channel.users[nick].update(mode)
 
     @hook("commands", Numerics.RPL_ENDOFNAMES)
     def names_end(self, event):

@@ -12,14 +12,14 @@ advertise what a server supports to a client. Whilst non-standard, most
 servers follow a standard format for many parameters.
 """
 
-
 from copy import deepcopy
+from functools import lru_cache
 from logging import getLogger
 
+from PyIRC.auxparse import isupport_parse
 from PyIRC.extension import BaseExtension
 from PyIRC.hook import hook
 from PyIRC.numerics import Numerics
-from PyIRC.auxparse import isupport_parse
 
 
 logger = getLogger(__name__)
@@ -54,6 +54,7 @@ class ISupport(BaseExtension):
         # State
         self.supported = deepcopy(self.defaults)
 
+    @lru_cache(maxsize=16)
     def get(self, string):
         """Get an ISUPPORT string.
 
@@ -99,4 +100,7 @@ class ISupport(BaseExtension):
         values = isupport_parse(event.line.params[1:-1])
         if 'CASEMAPPING' in values:
             self.case_change()
+
         self.supported.update(values)
+
+        self.get.cache_clear()

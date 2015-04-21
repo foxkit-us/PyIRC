@@ -5,11 +5,12 @@
 
 
 from collections import OrderedDict, deque
+from functools import lru_cache
 from logging import getLogger
 
-from PyIRC.numerics import Numerics
 from PyIRC.event import LineEvent, HookEvent
 from PyIRC.hook import HookGenerator, PRIORITY_DONTCARE
+from PyIRC.numerics import Numerics
 
 
 logger = getLogger(__name__)
@@ -117,6 +118,7 @@ class ExtensionManager:
         """Build the extensions database"""
         self.db.clear()
         self.events.clear()
+        self.get_extension.cache_clear()
 
         self.create_default_events()
 
@@ -181,6 +183,7 @@ class ExtensionManager:
         self.extensions.append(extension)
         self.create_db()
 
+    @lru_cache(maxsize=32)
     def get_extension(self, extension):
         """Get an extension by name
 
@@ -215,4 +218,8 @@ class ExtensionManager:
             extension_inst = self.db.pop(name)
             self.events.unregister_callbacks_from_inst_all(extension_inst)
 
-        return len(extensions) > len(self.extensions)
+        result = len(extensions) > len(self.extensions)
+        if result:
+            self.get_extension.cache_clear()
+
+        return result

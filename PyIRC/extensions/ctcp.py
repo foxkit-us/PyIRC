@@ -50,7 +50,7 @@ class CTCP(BaseExtension):
 
         Keyword arguments:
 
-        ctcp_version
+        :param ctcp_version:
             Version string to use, defaults to default_version.
         """
 
@@ -59,16 +59,14 @@ class CTCP(BaseExtension):
         self.version = kwargs.get("ctcp_version", self.default_version)
 
     def ctcp(self, target, command, param=None):
-        """ CTCP a target a given command """
-
+        """CTCP a target a given command"""
         ctcp = CTCPMessage("PRIVMSG", command.upper(), target, param)
         line = ctcp.line
 
         self.send(line.command, line.params)
 
     def nctcp(self, target, command, param=None):
-        """ Reply to a CTCP """
-
+        """Reply to a CTCP"""
         ctcp = CTCPMessage("NOTICE", command.upper(), target, param)
         line = ctcp.line
 
@@ -76,8 +74,7 @@ class CTCP(BaseExtension):
 
     @hook("commands", "PRIVMSG")
     def ctcp_in(self, event):
-        """ Check message for CTCP (incoming) and dispatch if necessary. """
-
+        """Check message for CTCP (incoming) and dispatch if necessary."""
         ctcp = CTCPMessage.parse(event.line)
         if not ctcp:
             return
@@ -87,8 +84,7 @@ class CTCP(BaseExtension):
 
     @hook("commands", "NOTICE")
     def nctcp_in(self, event):
-        """ Check message for NCTCP (incoming) and dispatch if necessary. """
-
+        """Check message for NCTCP (incoming) and dispatch if necessary."""
         ctcp = CTCPMessage.parse(event.line)
         if not ctcp:
             return
@@ -98,12 +94,10 @@ class CTCP(BaseExtension):
 
     @hook("commands_ctcp", "ping")
     def c_ping(self, event):
-        """ Respond to CTCP ping """
-
+        """Respond to CTCP ping"""
         self.nctcp(event.ctcp.target, "PING", event.ctcp.param)
 
     @hook("commands_ctcp", "version")
     def c_version(self, event):
-        """ Respond to CTCP version """
-
+        """Respond to CTCP version"""
         self.nctcp(event.ctcp.target, "VERSION", self.version)

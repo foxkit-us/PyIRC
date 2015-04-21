@@ -65,17 +65,22 @@ class BanTrack(BaseExtension):
 
     @hook("commands", "JOIN", PRIORITY_LAST)
     def join(self, event):
+        params = event.line.params
         logger.debug("Creating ban modes for channel %s",
-                     event.line.params[0])
+                     params[0])
         channeltrack = self.get_extension("ChannelTrack")
-        channel = channeltrack.get_channel(event.line.params[0])
+        channel = channeltrack.get_channel(params[0])
 
         channel.synced_list = dict()
 
         isupport = self.get_extension("ISupport")
-        for mode in isupport.get("CHANMODES")[0]:
+        modes = isupport.get("CHANMODES")[0]
+
+        for mode in modes:
             channel.modes[mode] = list()
             channel.synced_list[mode] = False
+
+        self.send("MODE", [channel.name, modes])
 
     @hook("modes", "mode_list")
     def mode_list(self, event):

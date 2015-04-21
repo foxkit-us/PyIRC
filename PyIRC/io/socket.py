@@ -30,23 +30,24 @@ logger = getLogger(__name__)
 
 class IRCSocket(IRCBase):
 
-    """ The socket implementation of the IRC protocol. No asynchronous I/O is
-    done. All scheduling is done with timeouts.
+    """The socket implementation of the IRC protocol. No asynchronous I/O is
+    done. All scheduling is done with socket timeouts and the python ``sched``
+    module.
 
-    The same methods available in ``IRCBase`` are available.
+    The same methods available in
+    :py:class:`~PyIRC.base.IRCBase` are available.
 
-    Keyword arguments:
 
-    socket_timeout
+    :key socket_timeout:
         Set the timeout for connecting to the server (defaults to 10)
 
-    send_timeout
+    :key send_timeout:
         Set the timeout for sending data (default None)
 
-    recv_timeout
+    :key recv_timeout:
         Set the timeout for receiving data (default None)
 
-    family
+    :key family:
         The family to use for the socket (default AF_INET, IPv4). Set to
         socket.AF_INET6 for IPv6 usage.
     """

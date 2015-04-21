@@ -24,6 +24,39 @@ class ModeEvent(LineEvent):
 
     def __init__(self, event, line, setter, target, adding, mode, param=None,
                  timestamp=None):
+        """Initalise the ModeEvent instance.
+
+        Arguments:
+
+        :param event:
+            The event fired
+
+        :param line:
+            The :py:class::`~PyIRC.line.Line` instance of the firing mode.
+
+        :param setter:
+            The :py:class::`~PyIRC.line.Hostmask` of the setter of this mode,
+            or ``None`` when unknown.
+
+        :param target:
+            The target of this command, as a regular string.
+
+        :param adding:
+            Set to ``True`` if the mode is being added to the target, or
+            ``False`` if being removed. Consumers should be prepared for
+            redundant modes, as many IRC daemons do not do strict checking
+            for performance reasons.
+
+        :param mode:
+            The mode being set or unset.
+
+        :param param:
+            The parameter of the mode, set to ``None`` for most modes.
+
+        :param timestamp:
+            The time this mode was set. If None, the current system time will
+            be used.
+        """
         super().__init__(event, line)
 
         self.setter = setter

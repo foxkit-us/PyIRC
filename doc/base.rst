@@ -48,7 +48,7 @@ hook
 .. automodule:: PyIRC.hook
    :members:
 
-.. :py:decorator::hook
+   .. :py:decorator: hook(hclass, hook, priority=None)
 
 line
 ----

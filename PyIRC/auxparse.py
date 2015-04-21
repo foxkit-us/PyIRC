@@ -35,13 +35,14 @@ numletters = ascii_letters + digits
 
 @lru_cache(maxsize=16)
 def prefix_parse(prefix):
-    """ Parse ISUPPORT PREFIX extension into mode : prefix and vice versa.
+    """Parse ISUPPORT PREFIX extension into mode : prefix and vice versa.
 
     :param prefix:
-        String from ISupport.supported['PREFIX'].
+        Prefix string to parse (e.g., ``(ov)@+``)
 
-    .. warning::
-        If prefix is not properly balanced, ``ValueError`` will be raised.
+    .. note::
+        If prefix and modes are not properly balanced, ``ValueError`` will be
+        raised.
 
     >>> sorted(prefix_parse("(ov)@+").items())
     [('+', 'v'), ('@', 'o'), ('o', '@'), ('v', '+')]
@@ -87,10 +88,10 @@ def mode_parse(modes, params, modegroups, prefix):
         Parameters for the modes, likely the remaining parameters after modes.
 
     :param modegroups:
-        The item from ISupport.supported['CHANMODES'].
+        The item from the isupport string CHANMODES.
 
     :param prefix:
-        The mode prefixes from ISupport.supported['PREFIX'], optionally parsed
+        The mode prefixes from the isupport string PREFIX, optionally parsed
         by prefix_parse.
 
     >>> modegroups = ("beIq", "k", "flj", "ac")
@@ -212,12 +213,11 @@ def who_flag_parse(flags):
 
 
 def isupport_parse(params):
-    """ Parse an ISUPPORT string.
+    """Parse an ISUPPORT string into a dictionary. Uses the params derived
+    from line :py:attr:`~PyIRC.line.Line.params`.
 
-    :param params:
-        Params to parse into ISUPPORT entries in the dictionary.
-
-    :returns: A parsed dictionary of all ISUPPORT items from the parameter list.
+    :returns:
+        A parsed dictionary of all ISUPPORT items from the parameter list.
 
     >>> isupport_parse(["CHANTYPES=a,b,cdefg"])
     {'CHANTYPES': ['a', 'b', 'cdefg']}
@@ -307,14 +307,7 @@ class CTCPMessage:
     @classmethod
     def parse(cls, line):
         """Return a new :py:class:`~PyIRC.auxparse.CTCPMessage` from
-        the line specified.
-
-        :param line:
-            A :py:class:`~PyIRC.line.Line` to parse into a
-            :py:class:`~PyIRC.auxparse.CTCPMessage`.
-
-        :returns: A new :py:class:`~PyIRC.auxparse.CTCPMessage` instance from
-            the parsed line, or ``None`` if no CTCP message is found.
+        the :py:class:`~PyIRC.line.Line` instance specified.
         """
         message = line.params[1]
 

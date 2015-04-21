@@ -23,21 +23,22 @@ PRIORITY_LAST = 1000
 
 
 def hook(hclass, hook, priority=None):
-    """ Decorator to add a class hook
+    """:py:decorator:: Decorator to add a class hook
 
-    This works with py:class:`HookGenerator` to generate the hook tables used
-    by py:class:`EventManager`.
+    This works with py:class:`~PyIRC.hook.HookGenerator` to generate the
+    hook tables used by py:class:`~PyIRC.event.EventManager`.
 
     Arguments:
-        :param hclass:
-            hook class to use
 
-        :param hook:
-            name of the hook to use
+    :param hclass:
+        hook class to use
 
-        :param priority:
-            optional priority value of this hook (defaults to the class
-            priority)
+    :param hook:
+        name of the hook to use
+
+    :param priority:
+        optional priority value of this hook (defaults to the class
+        priority)
     """
     def dec(func):
         _hooks = getattr(func, 'hooks', list())
@@ -52,7 +53,8 @@ def hook(hclass, hook, priority=None):
 
 class HookGenerator(type):
 
-    """Internal metaclass for hook generation in py:class:`BaseExtension`.
+    """Internal metaclass for hook generation in
+    py:class:`~PyIRC.extension.BaseExtension`.
 
     This generates hook tables and does runtime binding of the hooks, to
     enable dynamic generation of the tables with no user intervention.

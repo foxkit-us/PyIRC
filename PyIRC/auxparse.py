@@ -216,9 +216,6 @@ def isupport_parse(params):
     """Parse an ISUPPORT string into a dictionary. Uses the params derived
     from line :py:attr:`~PyIRC.line.Line.params`.
 
-    :returns:
-        A parsed dictionary of all ISUPPORT items from the parameter list.
-
     >>> isupport_parse(["CHANTYPES=a,b,cdefg"])
     {'CHANTYPES': ['a', 'b', 'cdefg']}
     >>> isupport_parse(["EXCEPTS"])

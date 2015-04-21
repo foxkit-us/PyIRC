@@ -118,7 +118,7 @@ class ExtensionManager:
         """Build the extensions database"""
         self.db.clear()
         self.events.clear()
-        self.get_extensions.clear_cache()
+        self.get_extension.cache_clear()
 
         self.create_default_events()
 

@@ -24,4 +24,4 @@ version
 -------
 
 .. automodule:: PyIRC.util.version
-   :members
+   :members:

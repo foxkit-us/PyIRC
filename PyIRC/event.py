@@ -138,7 +138,8 @@ class EventManager:
         If ``hclass`` is already a registered event class, this method is a
         no-op. To change the type of :py:class:`~PyIRC.event.Event` that will
         be passed to handlers, you must unregister the class using
-        :py:meth:`unregister_class` and re-register it with the new type.
+        :py:meth:`~PyIRC.event.EventManager.unregister_class` and re-register
+        it with the new type.
         """
 
         if hclass in self.events_reg:

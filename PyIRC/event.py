@@ -53,10 +53,10 @@ class Event:
 
     """The base class for all events passed to callbacks.
 
-    status
+    :ivar status:
         The current status of the event.
 
-    last_function
+    :ivar last_function:
         Set to the function who cancelled us, if we are cancelled.
     """
 
@@ -130,16 +130,16 @@ class EventManager:
         """Register a class of events.
 
         :param hclass:
-            The name of the event class.
+            The name of the event class. If this name is already registered,
+            this method is a no-op. To change the
+            py:class:`~PyIRC.event.Event` type for a given class, you must
+            unregister the class with
+            :py:meth:`~PyIRC.event.EventManager.unregister_class`, and then
+            re-register it wiht the new type.
+
         :param type:
             The type of :py:class:`~PyIRC.event.Event` that will be passed to
             event handlers.
-
-        If ``hclass`` is already a registered event class, this method is a
-        no-op. To change the type of :py:class:`~PyIRC.event.Event` that will
-        be passed to handlers, you must unregister the class using
-        :py:meth:`~PyIRC.event.EventManager.unregister_class` and re-register
-        it with the new type.
         """
 
         if hclass in self.events_reg:
@@ -197,6 +197,7 @@ class EventManager:
 
         :param hclass:
             The class of the event to unregister.
+
         :param event:
             The name of the event to unregister.
 
@@ -215,15 +216,18 @@ class EventManager:
     def register_callback(self, hclass, event, priority, callback):
         """Register a callback for an event.
 
-        You typically should never call this method directly; instead, use the
-        @hook decorator.
+        This method should only be used directly if you know what you're
+        doing.
 
         :param hclass:
             The class of the event to register with this callback.
+
         :param event:
             The name of the event to register with this callback.
+
         :param priority:
             The priority of this callback with this event.
+
         :param callback:
             A Callable to invoke when this event occurs.
         """
@@ -247,8 +251,6 @@ class EventManager:
         """Register all (known) callback classes from a given instance, using
         hook tables
 
-        Arguments:
-
         :param inst:
             The instance to process
         """
@@ -257,8 +259,6 @@ class EventManager:
 
     def register_callbacks_from_inst(self, hclass, inst):
         """Register callbacks from a given instance, using hook tables
-
-        Arguments:
 
         :param hclass:
             The instance of the event to register with this callback
@@ -326,8 +326,6 @@ class EventManager:
         """Unregister all (known) callback classes from a given instance, using
         hook tables
 
-        Arguments:
-
         :param inst:
             The instance to process
         """
@@ -336,8 +334,6 @@ class EventManager:
 
     def unregister_callbacks_from_inst(self, hclass, inst):
         """Unregister callbacks from a given instance, using hook tables.
-
-        Arguments:
 
         :param hclass:
             The class of the event to register with this callback.
@@ -359,8 +355,6 @@ class EventManager:
     def unregister_callbacks_from_table(self, hclass, table):
         """Unregister callbacks from the given hook table.
 
-        Arguments:
-
         :param hclass:
             The class of the event to register with this callback.
 
@@ -372,8 +366,6 @@ class EventManager:
 
     def call_event(self, hclass, event, *args):
         """Call the callbacks for a given event.
-
-        Arguments:
 
         :param hclass:
             The class of the event that is occuring.
@@ -402,8 +394,6 @@ class EventManager:
         """Call an event with the given event instance.
 
         If the event is paused, it will resume calling unless cancelled.
-
-        Arguments:
 
         :param hclass:
             The class of the event that is occuring.

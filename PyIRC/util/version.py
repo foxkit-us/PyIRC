@@ -4,6 +4,9 @@
 # for licensing information.
 
 
+"""PyIRC version information"""
+
+
 try:
     import pkg_resources
 except ImportError:
@@ -30,6 +33,7 @@ gitversion = _gitversion()
 Version = namedtuple("Version", "major minor status gitversion")
 
 
+version = Version(major, minor, status, gitversion)
 """ Current PyIRC version
 
 Attributes:
@@ -38,7 +42,6 @@ Attributes:
     status: Release status (alpha, beta, release)
     gitversion: Current git revision, may be set to "unknown"
 """
-version = Version(major, minor, status, gitversion)
 
 
 def _versionstr():
@@ -48,6 +51,11 @@ def _versionstr():
         return "{major}.{minor}-{status[0]}[{gitversion}]".format(**globals())
 
 
-""" Current PyIRC version string, freeform. Obtained from the package whenever
-possible, but may be generated from constants. """
 versionstr = _versionstr()
+"""Current PyIRC version string. Obtained from the package whenever
+possible, but may be generated from constants.
+
+.. warning::
+    Do not rely on this format remaining stable, use
+    :py:data::`~PyIRC.util.version.version` instead!
+"""

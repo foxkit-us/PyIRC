@@ -23,12 +23,10 @@ PRIORITY_LAST = 1000
 
 
 def hook(hclass, hook, priority=None):
-    """:py:decorator:: Decorator to add a class hook
+    """Decorator to add a class hook
 
     This works with py:class:`~PyIRC.hook.HookGenerator` to generate the
     hook tables used by py:class:`~PyIRC.event.EventManager`.
-
-    Arguments:
 
     :param hclass:
         hook class to use

@@ -27,15 +27,13 @@ class BaseExtension(metaclass=HookGenerator):
     Any unknown attributes in this class are redirected to the ``base``
     attribute.
 
-    Members:
-
-    requires
+    :ivar requires:
         required extensions (must be a name)
 
-    priority
+    :ivar priority:
         the priority of this extension, lower is higher (like Unix)
 
-    hook_classes
+    :ivar hook_classes:
         A Mapping of hclass to an :py:class:`~PyIRC.event.Event` subclass
     """
 
@@ -44,7 +42,7 @@ class BaseExtension(metaclass=HookGenerator):
     hook_classes = {}
 
     def __init__(self, base, **kwargs):
-        """Arguments:
+        """Initalise the BaseExtension instance.
 
         :param base:
             Base class for this method
@@ -65,8 +63,6 @@ class ExtensionManager:
 
     def __init__(self, base, kwargs, events, extensions=[]):
         """Initialise the extensions manager
-
-        Arguments:
 
         :param base:
             Base instance to pass to each extension.
@@ -95,7 +91,7 @@ class ExtensionManager:
         self.events.register_class("hooks", HookEvent)
 
     def create_default_hooks(self):
-        """ Enumerate present extensions and build the commands and hooks
+        """Enumerate present extensions and build the commands and hooks
         cache."""
 
         self.create_hooks("commands")
@@ -169,10 +165,9 @@ class ExtensionManager:
     def add_extension(self, extension):
         """Add an extension by class
 
-        .. note::
-            This does not rebuild the extensions cache.
-
-        Arguments:
+        .. warning::
+            Use with caution - this method will obliterate all present
+            instances at the moment!
 
         :param extension:
             Extension to add.
@@ -189,8 +184,6 @@ class ExtensionManager:
 
         Returns None if the extension is not found.
 
-        Arguments:
-
         :param extension:
             Extension to retrieve by name
         """
@@ -198,8 +191,6 @@ class ExtensionManager:
 
     def remove_extension(self, extension):
         """Remove a given extension by name
-
-        Arguments:
 
         :param extension:
             Extension to remove.

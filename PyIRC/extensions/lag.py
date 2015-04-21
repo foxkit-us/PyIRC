@@ -40,7 +40,7 @@ class LagCheck(BaseExtension):
 
         Keyword arguments:
 
-        :param lagcheck:
+        :key lagcheck:
             Time interval to do periodic lag checks to update the lag timer.
             Defaults to 15 seconds. Setting the value too low may result in
             being disconnected by the server.

@@ -43,25 +43,8 @@ class BanTrack(BaseExtension):
 
     requires = ["ISupport", "ChannelTrack", "BasicRFC"]
 
-    default_ban_numerics_modes = {
-        Numerics.RPL_BANLIST.value: 'b',
-        Numerics.RPL_EXCEPTLIST.value: 'e',
-        Numerics.RPL_INVITELIST.value: 'I',
-        Numerics.RPL_QUIETLIST.value: 'q',
-    }
-
     def __init__(self, base, **kwargs):
-        """Arguments:
-
-        ban_numerics_modes
-            A mapping of numerics to modes, useful on InspIRCd servers
-            A sensible default is used.
-        """
         self.base = base
-
-        # Numerics to modes
-        self.ban_numerics_modes = kwargs.get('ban_numerics_modes',
-                                             self.default_ban_numerics_modes)
 
     @hook("commands", "JOIN", PRIORITY_LAST)
     def join(self, event):

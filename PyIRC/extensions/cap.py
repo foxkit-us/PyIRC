@@ -48,17 +48,17 @@ class CapNegotiate(BaseExtension):
 
     The following attributes are available:
 
-    supported
+    :ivar supported:
         Supported capabilities - these are the capabilities we support,
         at least, in theory.
 
-    remote
+    :ivar remote:
         Remote capabilities - that is, what the server supports.
 
-    local
+    :ivar local:
         Local capabilities - these are what we actually support.
 
-    negotiating
+    :ivar negotiating:
         Whether or not CAP negotiation is in progress.
     """
 

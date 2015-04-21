@@ -33,13 +33,12 @@ class ISupport(BaseExtension):
 
     The following attributes are available:
 
-    supported
+    :ivar supported:
         parsed ISUPPORT data from the server. Do note that because ISUPPORT is
         technically non-standard, users should be prepared for data that does
         not conform to any implied standard.
     """
 
-    """Defaults until overridden, for old server compat."""
     defaults = {
         "PREFIX": ['o', 'v', '@', '+'],
         "CHANTYPES": '#&!+',  # Old channel types
@@ -47,6 +46,7 @@ class ISupport(BaseExtension):
         "CASEMAPPING": "RFC1459",  # The (Shipped) Gold Standard
         "CHANMODES": ['b', 'k', 'l', 'imnstp'],  # Old modes
     }
+    """Defaults until overridden, for old server compat."""
 
     def __init__(self, base, **kwargs):
         self.base = base
@@ -89,7 +89,6 @@ class ISupport(BaseExtension):
     @hook("commands", Numerics.RPL_ISUPPORT)
     def isupport(self, event):
         """ Handle ISUPPORT event """
-
         # To differentiate between really old ircd servers
         # (RPL_BOUNCE=005 on those)
         if not event.line.params[-1].endswith('server'):

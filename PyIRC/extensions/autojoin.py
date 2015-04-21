@@ -28,18 +28,18 @@ class AutoJoin(BaseExtension):
 
         Keyword arguments:
 
-        :param join:
+        :key join:
             A Mapping (dictionary type) or Iterable of channels to join.
             If a Mapping is passed, keys are treated as channel names and
             values are used as keys to join the channel.
             If an Iterable is passed, each value is a channel and no keys are
             specified when joining.
 
-        :param autojoin_wait_start:
+        :key autojoin_wait_start:
             How much time, in seconds, to wait for autojoin to begin.
             The default is 0.75 seconds.
 
-        :param autojoin_wait_interval:
+        :key autojoin_wait_interval:
             How much time, in seconds, to wait between each join.
             The default is 0.25 seconds.
         """

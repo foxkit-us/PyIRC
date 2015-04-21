@@ -37,25 +37,25 @@ class Channel:
 
         Keyword arguments:
 
-        :param name:
+        :key name:
             Name of the channel, not casemapped.
 
-        :param topic:
+        :key topic:
             The channel topic.
 
-        :param topictime:
+        :key topictime:
             Time the channel topic was set, in Unix time.
 
-        :param topicwho:
+        :key topicwho:
             Who set the topic, as a freeform string.
 
-        :param users:
+        :key users:
             A mapping containing user to their channel status modes.
 
-        :param timestamp:
+        :key timestamp:
             Timestamp of the channel (channel creation), in Unix time.
 
-        :param url:
+        :key url:
             URL of the channel, sent on some IRC servers.
         """
         if name is None:

@@ -35,7 +35,7 @@ class User:
 
     The following attribute is publicly available:
 
-    channels
+    :ivar channels:
         Mapping of channels, where the keys are casemapped channel names, and
         the values are their status modes on the channel.
 
@@ -56,39 +56,37 @@ class User:
         :param case:
             Casemapping to use for channels member.
 
-        Keyword arguments:
-
-        :param username:
+        :key username:
             Username of the user, or ident (depending on IRC daemon).
 
-        :param host:
+        :key host:
             Hostname of the user. May be fake due to a cloak.
 
-        :param gecos:
+        :key gecos:
             The GECOS (aka "real name") of a user. Usually just freeform data
             of dubious usefulness.
 
-        :param account:
+        :key account:
             Services account name of the user.
 
-        :param server:
+        :key server:
             Server the user is on. Not always reliable or present.
 
-        :param secure:
+        :key secure:
             User is using SSL. Always assume unsecured unless set to True.
 
-        :param operator:
+        :key operator:
             User is an operator. Being set to None does not guarantee a user
             is not an operator due to IRC daemon limitations and data hiding.
 
-        :param signon:
+        :key signon:
             Signon time for the user. May not be set.
 
-        :param ip:
+        :key ip:
             IP for the user reported from the server. May be bogus and likely
             nonexistent on networks with host cloaking.
 
-        :param realhost:
+        :key realhost:
             Real hostname for a user. Probably not present in most cases.
         """
         if nick is None:

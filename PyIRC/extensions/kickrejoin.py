@@ -43,11 +43,11 @@ class KickRejoin(BaseExtension):
 
         Keyword arguments:
 
-        :param rejoin_delay:
+        :key rejoin_delay:
             Seconds to delay until the channel is rejoined.  This defaults to 5,
             but can be set to anything.  Some people may think you're rude if
             you set it to 0.
-        :param rejoin_on_remove:
+        :key rejoin_on_remove:
             Boolean defining whether to rejoin if you are 'removed'.  Note that
             most servers propogate REMOVE as KICK to clients so it won't always
             work (the sole exception in testing this extension was Freenode).

@@ -50,7 +50,7 @@ class CTCP(BaseExtension):
 
         Keyword arguments:
 
-        :param ctcp_version:
+        :key ctcp_version:
             Version string to use, defaults to default_version.
         """
 

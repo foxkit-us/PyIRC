@@ -115,7 +115,7 @@ ack
 
 Use this to do the initial handshake. To keep other caps from running, cancel
 the event. Processing can be resumed using
-:py:meth::`~PyIRC.extensions.cap.CapNegotiate.cont``.
+:py:meth:`~PyIRC.extensions.cap.CapNegotiate.cont`.
 
 commands_cap
 ^^^^^^^^^^^^

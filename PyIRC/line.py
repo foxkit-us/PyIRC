@@ -24,6 +24,9 @@ class Tags:
 
     Message tags are a new feature proposed by IRCv3 to add enhanced
     out-of-band data to messages.
+
+    Not presently tested a whole lot due to the lack of conforming
+    servers.
     """
 
     __slots__ = ('tags', 'tagstr')
@@ -37,13 +40,7 @@ class Tags:
 
     @classmethod
     def parse(cls, raw):
-        """Parse a raw tag string into a Tags object.
-
-        Arguments:
-
-        :param raw:
-            The raw tags to parse into a Tags object.
-        """
+        """Parse a raw tag string into a Tags object."""
         if not raw:
             logger.debug("No tags on this message")
             return
@@ -104,8 +101,6 @@ class Hostmask:
     def parse(cls, raw):
         """Parse a raw hostmask into a Hostmask object.
 
-        Arguments:
-
         :param raw:
             The raw hostmask to parse.
         """
@@ -162,9 +157,11 @@ class Hostmask:
 
 class Line:
 
-    """ Stores an IRC line
+    """Stores an IRC line in the RFC1459 framing format.
 
-    This uses RFC1459 framing.
+    IRCv3 has a JSON framing format in the works, but it is unclear as to what
+    its final server and client support will be, and is unfinished at any
+    rate.
 
     >>> Line.parse(':lol.org PRIVMSG')
     ... # doctest: +ELLIPSIS
@@ -209,15 +206,14 @@ class Line:
         if self.linestr is None:
             str(self)
 
-    """ Parse an IRC line.
-
-    100% regex free, thanks to a certain fox.
-
-    Also should raise on any invalid line.  It will be quite liberal with
-    hostmasks (accepting such joys as '' and 'user1@user2@user3'), but trying
-    to enforce strict validity in hostmasks will be slow. """
     @classmethod
     def parse(cls, line):
+        """Parse a raw string into a Line.
+
+        Also should raise on any invalid line.  It will be quite liberal with
+        hostmasks (accepting such joys as '' and 'user1@user2@user3'), but
+        trying to enforce strict validity in hostmasks will be slow.
+        """
         if not line:
             logger.warning("Blank line passed in!")
             return
@@ -298,7 +294,3 @@ class Line:
 
     def __hash__(self):
         return hash(str(self))
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod()

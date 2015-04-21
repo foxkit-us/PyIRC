@@ -160,11 +160,11 @@ class BanTrack(BaseExtension):
     def end_quiet(self, event):
         self.set_synced(event, 'q')
 
-    @hook("commands", Numerics.RPL_ENDOFSPAMFILTERLIST)
+    @hook("commands", Numerics.ERR_ENDOFSPAMFILTERLIST)
     def end_spamfilter(self, event):
         self.set_synced(event, 'g')
 
-    @hook("commands", Numerics.RPL_ENDOFEXEMPTCHANOPSLIST)
+    @hook("commands", Numerics.ERR_ENDOFEXEMPTCHANOPSLIST)
     def end_exemptchanops(self, event):
         self.set_synced(event, 'X')
 

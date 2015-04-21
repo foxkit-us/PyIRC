@@ -3,7 +3,7 @@ Hooks
 
 Hooks are used in PyIRC to trigger various events to occur. Callbacks can be
 registered and deregistered at will. See the
-:py:class::`~PyIRC.event.EventManager` class for more details on how to do
+:py:class:`~PyIRC.event.EventManager` class for more details on how to do
 that.
 
 .. warning::
@@ -17,7 +17,7 @@ Event classes
 
 Hooks are broadly separated into classes. Event classes act as a form of
 namespace, where individual event types live. All events in the same class
-use the same :py:class::`~PyIRC.event.Event` subclass, which is instantiated
+use the same :py:class:`~PyIRC.event.Event` subclass, which is instantiated
 and passed in to the events on event call, also passing in any data required.
 
 This section documents the event classes and hooks used by PyIRC and its
@@ -31,7 +31,7 @@ cap_perform
 Use this to hook when to execute CAPs during either a CAP ACK or a CAP NEW
 event.
 
-A :py:class::`~PyIRC.extensions.cap.CAPEvent` is passed in.
+A :py:class:`~PyIRC.extensions.cap.CAPEvent` is passed in.
 
 commands
 ^^^^^^^^
@@ -41,14 +41,14 @@ This is similar to how most clients and servers process commands.
 
 The event can either be an IRC numeric or a string representing the command.
 
-A :py:class::`~PyIRC.event.LineEvent` is passed to each callback, containing
+A :py:class:`~PyIRC.event.LineEvent` is passed to each callback, containing
 the line that triggered the event.
 
 commands_cap
 ^^^^^^^^^^^^
 
 .. note::
-   These hooks requires the :py:class::`~PyIRC.extensions.cap.CapNegotiate`
+   These hooks requires the :py:class:`~PyIRC.extensions.cap.CapNegotiate`
    extension.
 
 CAP subcommands are handled using this event. The most interesting thing to
@@ -63,38 +63,38 @@ hooks
 
 The catch-all for many default events, particularly connection events.
 
-A :py:class::`~PyIRC.event.HookEvent` is passed in.
+A :py:class:`~PyIRC.event.HookEvent` is passed in.
 
 commands_ctcp
 ^^^^^^^^^^^^^
 
 .. note::
-   These hooks requires the :py:class::`~PyIRC.extensions.CTCP` extension.
+   These hooks requires the :py:class:`~PyIRC.extensions.CTCP` extension.
 
-These hooks is used by the :py:class::`~PyIRC.extensions.CTCP` extension to
+These hooks is used by the :py:class:`~PyIRC.extensions.CTCP` extension to
 call CTCP events. VERSION and PING events are implemented by default.
 
-A :py:class::`~PyIRC.extensions.ctcp.CTCPEvent` is passed in, which passes in
-the :py:class::`~PyIRC.auxparse.CTCPMessage` from the event.
+A :py:class:`~PyIRC.extensions.ctcp.CTCPEvent` is passed in, which passes in
+the :py:class:`~PyIRC.auxparse.CTCPMessage` from the event.
 
 commands_nctcp
 ^^^^^^^^^^^^^^
 
 .. note::
-   These hooks requires the :py:class::`PyIRC.extensions.CTCP` extension.
+   These hooks requires the :py:class:`PyIRC.extensions.CTCP` extension.
 
-These hooks is used by the :py:class::`~PyIRC.extensions.CTCP` extension to
+These hooks is used by the :py:class:`~PyIRC.extensions.CTCP` extension to
 call NCTCP events; that is, the reply to CTCP queries. No events are
 registered by default.
 
-A :py:class::`~PyIRC.extensions.ctcp.CTCPEvent` is passed in, which passes in
-the :py:class::`~PyIRC.auxparse.CTCPMessage` from the event.
+A :py:class:`~PyIRC.extensions.ctcp.CTCPEvent` is passed in, which passes in
+the :py:class:`~PyIRC.auxparse.CTCPMessage` from the event.
 
 modes
 ^^^^^
 
 .. note::
-   These hooks requires the :py:class::`~PyIRC.extensions.ModeHandler`
+   These hooks requires the :py:class:`~PyIRC.extensions.ModeHandler`
    extension.
 
 These hooks emit easier-to-use events for modes, as opposed to parsing

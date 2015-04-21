@@ -1,16 +1,16 @@
 # Tracking
 - [x] Channel tracking
 - [x] User tracking
-- [x] Introspection (what the server sees us as) (mostly done)
+- [x] Introspection (what the server sees us as)
 
 ## Channel tracking
-- [x] Known channels we've joined (mostly done)
+- [x] Known channels we've joined
 - [x] Autorejoin on kick/remove
 - [x] Basic support for known users (see user tracking)
 
 ## User tracking
 - [x] NAMES tracking
-- [ ] NAMESX support (?)
+- [ ] NAMESX support (worth doing?)
 - [x] multi-prefix support
 - [x] WHO/WHOX usage for enhanced user information
 - [x] WHOIS support
@@ -29,13 +29,18 @@
 - [x] CTCP
 - [ ] DCC
 - [x] NickServ/Q support
-- [ ] PROTOCTL (?)
+- [ ] PROTOCTL (probably not worth it)
 
-## IRCv3.x
-- [ ] Metadata
-- [ ] Enhanced SASL methods (challenge methods? certfp?)
-- [ ] Batch
+## IRCv3
+- [ ] Metadata (3.2+)
+- [ ] Enhanced SASL methods (challenge methods? external?)
+- [ ] Batch (3.2+)
 - [ ] Examine other features and add them
+
+## Enhanced SASL
+- [ ] ECDSA-NIST256P-CHALLENGE
+- [ ] DH-AES (maybe)
+- [ ] EXTERNAL (SSL machinery is there)
 
 ## CTCP
 - [x] Hooks for CTCP/NCTCP events
@@ -49,55 +54,6 @@
       data, etc).
 - [x] Outgoing command hooks
 - [x] Automatic dependency loading
-- [x] Generic canned sets of extensions
-- [ ] Unit tests
+- [ ] Unit tests (some)
 - [x] asyncio support
-- [ ] gevent support
-- [ ] stackless (?)
-
-# Docs
-- [x] extensions
-- [x] io
-- [ ] base
-- [x] util
-
-## Extension docs
-- [x] autojoin.AutoJoin
-- [x] basicrfc.BasicRFC
-- [x] cap.CapNegotiate
-- [x] channeltrack.Channel
-- [x] channeltrack.ChannelTrack
-- [x] ctcp.CTCP
-- [x] isupport.ISupport
-- [x] lag.LagCheck
-- [x] sasl.SASLBase
-- [x] sasl.SASLPlain
-- [x] services.ServicesLogin
-- [x] starttls.StartTLS
-- [x] usertrack.User
-- [x] usertrack.UserTrack
-
-## IO docs
-- [x] asyncio.IRCProtocol
-- [x] socket.IRCSocket
-
-## Base docs
-- [x] auxparse.prefix\_parse
-- [x] auxparse.mode\_parse
-- [x] auxparse.who\_flag\_parse
-- [x] auxparse.isupport\_parse
-- [x] auxparse.CTCPMessage
-- [x] base.IRCBase
-- [x] casemapping.IRCString
-- [x] event.EventState
-- [x] event.Event
-- [x] event.HookEvent
-- [x] event.LineEvent
-- [x] event.EventManager
-- [x] extension.HookGenerator
-- [x] extension.BaseExtension
-- [x] extension.ExtensionManager
-- [x] line.Tags
-- [x] line.Hostmask
-- [x] line.Line
-- [ ] numerics.Numerics (perhaps not all the members...)
+- [ ] gevent support (Py3 only, sorry!)

@@ -32,10 +32,10 @@ class ModeEvent(LineEvent):
             The event fired
 
         :param line:
-            The :py:class::`~PyIRC.line.Line` instance of the firing mode.
+            The :py:class:`~PyIRC.line.Line` instance of the firing mode.
 
         :param setter:
-            The :py:class::`~PyIRC.line.Hostmask` of the setter of this mode,
+            The :py:class:`~PyIRC.line.Hostmask` of the setter of this mode,
             or ``None`` when unknown.
 
         :param target:

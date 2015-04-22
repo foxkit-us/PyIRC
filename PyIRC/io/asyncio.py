@@ -54,8 +54,9 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
                             "limitations")
 
     def connect(self):
-        super().connect()
-        return loop.create_connection(self, *self.serverport, ssl=self.ssl)
+        loop = asyncio.get_event_loop()
+        return loop.create_connection(lambda : self, self.server, self.port,
+                                      ssl=self.ssl)
 
     def connection_made(self, transport):
         self.transport = transport

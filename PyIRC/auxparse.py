@@ -81,13 +81,14 @@ def prefix_parse(prefix):
         If prefix and modes are not properly balanced, ``ValueError`` will be
         raised.
 
-    >>> sorted(prefix_parse("(ov)@+").items())
-    [('+', 'v'), ('@', 'o'), ('o', '@'), ('v', '+')]
-    >>> sorted(prefix_parse("(qahov)~&%@+").items())[:5]
-    [('%', 'h'), ('&', 'a'), ('+', 'v'), ('@', 'o'), ('a', '&')]
-    >>> prefix_parse("(ov)@+")["@"]
+    >>> [sorted(p.items()) for p in prefix_parse("(ov)@+")]
+    [[('o', '@'), ('v', '+')], [('+', 'v'), ('@', 'o')]]
+    >>> [sorted(p.items()) for p in prefix_parse("(qahov)~&%@+")]
+    ... # doctest: +ELLIPSIS
+    [[('a', '&'), ..., ('~', 'q')]]
+    >>> prefix_parse("(ov)@+")[1]["@"]
     'o'
-    >>> prefix_parse("(ov)@+")["o"]
+    >>> prefix_parse("(ov)@+")[1]["o"]
     '@'
     >>> prefix_parse("(o)@+")
     Traceback (most recent call last):
@@ -96,6 +97,7 @@ def prefix_parse(prefix):
     """
 
     ret = dict()
+    ret2 = dict()
 
     match = prefix_match.match(prefix)
     if not match:
@@ -107,8 +109,8 @@ def prefix_parse(prefix):
 
     for k, v in zip(modes, values):
         ret[k] = v
-        ret[v] = k
-    return ret
+        ret2[v] = k
+    return ret, ret2
 
 
 def mode_parse(modes, params, modegroups, prefix):
@@ -146,8 +148,10 @@ def mode_parse(modes, params, modegroups, prefix):
     >>> f(mode_parse("+ov-v", ("a", "b", "c"), modegroups, prefixmodes))
     [('o', 'a', True), ('v', 'b', True), ('v', 'c', False)]
     """
-    if not hasattr(prefix, 'items'):
-        prefix = prefix_parse(prefix)
+    if isinstance(prefix, tuple):
+        prefix = prefix[1]
+    else:
+        prefix = prefix_parse(prefix)[1]
 
     params = list(params)
 
@@ -199,8 +203,10 @@ def status_prefix_parse(string, prefix):
     >>> sorted(modes), channel
     (['+', '@'], '#')
     """
-    if not hasattr(prefix, 'items'):
-        prefix = prefix_parse(prefix)
+    if isinstance(prefix, tuple):
+        prefix = prefix[1]
+    else:
+        prefix = prefix_parse(prefix)[1]
 
     modes = set()
     for char in str(string):

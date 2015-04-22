@@ -16,7 +16,6 @@ from time import time
 from collections import namedtuple
 from logging import getLogger
 
-from PyIRC.auxparse import mode_parse, prefix_parse
 from PyIRC.extension import BaseExtension
 from PyIRC.hook import hook, PRIORITY_LAST
 from PyIRC.line import Hostmask

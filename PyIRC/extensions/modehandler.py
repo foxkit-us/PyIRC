@@ -97,8 +97,9 @@ class ModeHandler(BaseExtension):
             # TODO - user modes
             return
 
-        for mode, param, adding in mode_parse(modes, params, modegroups,
-                                              prefix):
+        gen = mode_parse(modes, params, modegroups, prefix)
+        prefix = prefix[0]
+        for mode, param, adding in gen:
             if mode in prefix:
                 mode_call = "mode_prefix"
             elif mode in modegroups[0]:

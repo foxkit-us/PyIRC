@@ -260,15 +260,16 @@ def isupport_parse(params):
     from line :py:attr:`~PyIRC.line.Line.params`.
 
     >>> isupport_parse(["CHANTYPES=a,b,cdefg"])
-    {'CHANTYPES': ['a', 'b', 'cdefg']}
+    {'CHANTYPES': ('a', 'b', 'cdefg')}
     >>> isupport_parse(["EXCEPTS"])
     {'EXCEPTS': True}
     >>> isupport_parse(["PREFIX=(ov)@+"])
     {'PREFIX': '(ov)@+'}
+    >>> isupport_parse(["EXTBAN=,ABCNOQRSTUcjmprsz"])
+    {'EXTBAN': ('', 'ABCNOQRSTUcjmprsz')}
     >>> isupport_parse(["MAXLIST=ACCEPT:5"])
-    {'MAXLIST': ('ACCEPT', '5')}
+    {'MAXLIST': {'ACCEPT': '5'}}
     >>> isupport_parse(["MAXLIST=ACCEPT:,TEST:5"])
-    {'MAXLIST': [('ACCEPT', None), ('TEST', '5')]}
     >>> sorted((k, v) for k, v in isupport_parse(["EXCEPTS", "INVEX"]).items())
     [('EXCEPTS', True), ('INVEX', True)]
     """
@@ -283,24 +284,37 @@ def isupport_parse(params):
             supported[key] = True
             continue
 
-        # Parse into CSV
-        value = list(filter(None, value.split(',')))
-
-        # For each value, parse into pairs of val : data
-        for i, v in enumerate(value):
-            val, sep, data = v.partition(':')
+        # Split values into CSV's
+        # For each CSV, parse into pairs of val : data
+        ret_dict = {}
+        ret_list = []
+        for v in value.split(','):
+            val, sep, data = v.rpartition(':')
             if sep:
                 if not data:
                     data = None
 
-                value[i] = (val, data)
+                ret_dict[val] = data
+            else:
+                ret_list.append(data)
 
-        if len(value) == 1:
-            # Single key
-            value = value[0]
+        ret_list = tuple(ret_list)
+        if len(ret_list) == 1:
+            # No use in having a list.
+            ret_list = ret_list[0]
 
-        logger.debug("ISUPPORT [k:v]: %s:%r", key, value)
-        supported[key] = value
+        if ret_dict:
+            if ret_list:
+                # This case should be rare if not nonexistent.
+                supported[key] = (ret_dict, ret_list)
+            else:
+                supported[key] = ret_dict
+        elif ret_list:
+            supported[key] = ret_list
+        else:
+            supported[key] = True
+
+        logger.debug("ISUPPORT [k:v]: %s:%r", key, supported[key])
 
     return supported
 

@@ -17,13 +17,14 @@ format. Until that day comes, this needs to be here.
 """
 
 
+from types import SimpleNamespace
 from functools import lru_cache
-from re import compile
+from re import compile, escape
 from string import ascii_letters, digits
 from types import SimpleNamespace
 from logging import getLogger
 
-from PyIRC.line import Line
+from PyIRC.line import Line, Hostmask
 
 
 logger = getLogger(__name__)
@@ -31,6 +32,42 @@ logger = getLogger(__name__)
 
 prefix_match = compile(r"\(([A-Za-z0-9]+)\)(.+)")
 numletters = ascii_letters + digits
+
+
+@lru_cache(maxsize=16)
+def _extban_compile(char, extbans):
+    return compile("{char}([{extbans}]):(.*)".format(**locals()))
+
+
+def extban_parse(string, supported_extban):
+    reg = _extban_compile(*supported_extban)
+    match = reg.match(string)
+    return match.groups() if match else None
+
+
+def banmask_parse(string, supported_extban):
+    """Normalise a ban mask into either an extban or nick!user@host set"""
+    ret = SimpleNamespace()
+    ret.nick = ret.user = ret.host = None
+
+    extban = extban_parse(string, supported_extban)
+    if extban:
+        # Unpack
+        ret.extban, ret.extban_target = extban
+        return ret
+
+    ret.extban = ret.extban_target = None
+
+    try:
+        hostmask = Hostmask.parse(string)
+    except Exception:
+        return ret
+
+    if not hostmask:
+        return ret
+
+    ret.nick, ret.user, ret.host = hostmask.nick, hostmask.user, hostmask.host
+    return ret
 
 
 @lru_cache(maxsize=16)

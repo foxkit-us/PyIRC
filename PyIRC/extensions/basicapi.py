@@ -5,7 +5,11 @@
 # for licensing information.
 
 
-"""A basic easy-to-use API for PyIRC, for basic functions"""
+"""A basic easy-to-use API
+
+This provides simple interfaces to messaging, responses, topic setting, and
+basic channel access control.
+"""
 
 
 from logging import getLogger
@@ -18,7 +22,7 @@ logger = getLogger(__name__)
 
 class BasicAPI(BaseExtension):
 
-    """ Basic API functions, designed to make things easier to use"""
+    """Basic API functions, designed to make things easier to use"""
 
     requires = ["ISupport"]
 
@@ -48,6 +52,36 @@ class BasicAPI(BaseExtension):
             target = target.nick
 
         self.send("NOTICE" if notice else "PRIVMSG", [target, message])
+
+    def reply_target(self, line):
+        """Get the appropriate target to reply to a given line.
+
+        :param line:
+            :py:class:`~PyIRC.base.line.Line` instance of the message to get
+            the reply target of. This is needed due to the limitations of the
+            IRC framing format.
+
+        :returns:
+            Target to reply to
+        """
+        isupport = self.get_extension("ISupport")
+        channels = isupport.get("CHANTYPES")
+
+        # Check for STATUSMSG
+        statusmsg = isupport.get("STATUSMSG")
+        if statusmsg and line.params[0].startswith(*statusmsg):
+            return line.params[0]
+
+        # Channel?
+        if line.params[0].startswith(*channels):
+            return line.params[0]
+
+        # User?
+        if line.hostmask.nick:
+            return line.hostmask.nick
+
+        # Sod's law.
+        return None
 
     def topic(self, channel, topic):
         """Set the topic in a channel.

@@ -108,27 +108,15 @@ class User:
         logger.debug("Created user: %s", self.nick)
 
     def __repr__(self):
-        nick = self.nick
-        username = self.username
-        host = self.host
-        gecos = self.gecos
-        account = self.account
-        server = self.server
-        secure = self.secure
-        operator = self.operator
-        signon = self.signon
-        ip = self.ip
-        realhost = self.realhost
+        keys = ("nick", "username", "host", "gecos", "account", "server",
+                "secure", "operator", "signon", "ip", "realhost", "channels")
 
-        # Build format string
-        fmt = []
-        for k, v in locals().items():
-            if v is None or k in ('k', 'v', 'fmt', 'self'):
-                continue
+        # key={0.key!r}
+        rep = ["{0}={{0.{0}!r}}".format(k) for k in keys]
 
-            fmt.append('{}={}'.format(k, v))
-
-        return "User({})".format(', '.join(fmt))
+        # Final format
+        rep = "User({})".format(", ".join(rep))
+        return rep.format(self)
 
 
 class UserTrack(BaseExtension):

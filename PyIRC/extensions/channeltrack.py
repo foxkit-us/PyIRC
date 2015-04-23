@@ -69,6 +69,17 @@ class Channel:
         self.url = kwargs.get("url", None)
         self.users = kwargs.get("users", IRCDefaultDict(case, set))
 
+    def __repr__(self):
+        keys = ("modes", "topic", "topictime", "topicwho", "timestamp", "url",
+                "users")
+
+        # key={0.key!r}
+        rep = ["{0}={{0.{0}!r}}".format(k) for k in keys]
+
+        # Final format
+        rep = "User({})".format(", ".join(rep))
+        return rep.format(self)
+
 
 class ChannelTrack(BaseExtension):
 

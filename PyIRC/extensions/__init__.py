@@ -12,8 +12,10 @@ commands and allow new features to be easily added to the library in a
 backwards-compatible way."""
 
 
-from PyIRC.extensions.basicrfc import BasicRFC
 from PyIRC.extensions.autojoin import AutoJoin
+from PyIRC.extensions.bantrack import BanTrack
+from PyIRC.extensions.basicapi import BasicAPI
+from PyIRC.extensions.basicrfc import BasicRFC
 from PyIRC.extensions.cap import CapNegotiate
 from PyIRC.extensions.ctcp import CTCP
 from PyIRC.extensions.isupport import ISupport
@@ -21,34 +23,35 @@ from PyIRC.extensions.kickrejoin import KickRejoin
 from PyIRC.extensions.lag import LagCheck
 from PyIRC.extensions.modehandler import ModeHandler
 from PyIRC.extensions.sasl import SASLPlain
+from PyIRC.extensions.services import ServicesLogin
 from PyIRC.extensions.starttls import StartTLS
 from PyIRC.extensions.usertrack import UserTrack
 from PyIRC.extensions.channeltrack import ChannelTrack
-from PyIRC.extensions.services import ServicesLogin
-from PyIRC.extensions.bantrack import BanTrack
 
 
-__all__ = ["basicrfc", "autojoin", "cap", "ctcp", "isupport", "kickrejoin",
-           "lag", "sasl", "starttls", "usertrack", "channeltrack", "services",
-           "bantrack"]
+__all__ = ["autojoin", "bantrack", "basicapi", "basicrfc", "cap", "ctcp",
+           "isupport", "kickrejoin", "lag", "modehandler", "sasl", "services",
+           "starttls", "usertrack", "channeltrack"]
 
 
-__all_cls__ = [BasicRFC, AutoJoin, CapNegotiate, CTCP, ISupport, KickRejoin,
-               LagCheck, ModeHandler, SASLPlain, StartTLS, UserTrack,
-               ChannelTrack, ServicesLogin, BanTrack]
+__all_cls__ = [AutoJoin, BanTrack, BasicAPI, BasicRFC, CapNegotiate, CTCP,
+               ISupport, KickRejoin, LagCheck, ModeHandler, SASLPlain,
+               ServicesLogin, StartTLS, UserTrack, ChannelTrack]
 
 
-"""A reference of all extensions by name"""
 extensions_db = {cls.__name__ : cls for cls in __all_cls__}
+"""A reference of all extensions by name"""
 
 
+base_recommended = [AutoJoin, BasicRFC, CTCP, ISupport]
 """Basic recommended extensions that are compatible with most servers"""
-base_recommended = [BasicRFC, AutoJoin, CTCP, ISupport, LagCheck]
 
 
-"""Recommended extensions for use with IRCv3 compliant servers """
 ircv3_recommended = base_recommended + [CapNegotiate, SASLPlain, StartTLS]
+"""Recommended extensions for use with IRCv3 compliant servers """
 
 
+bot_recommended = ircv3_recommended + [BanTrack, ChannelTrack, LagCheck,
+                                       ServicesLogin, UserTrack]
 """Recommended extensions for bots"""
-bot_recommended = ircv3_recommended + [UserTrack, ChannelTrack]
+

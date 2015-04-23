@@ -77,7 +77,7 @@ class Channel:
         rep = ["{0}={{0.{0}!r}}".format(k) for k in keys]
 
         # Final format
-        rep = "User({})".format(", ".join(rep))
+        rep = "Channel({})".format(", ".join(rep))
         return rep.format(self)
 
 

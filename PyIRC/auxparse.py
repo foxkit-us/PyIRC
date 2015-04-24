@@ -17,12 +17,12 @@ format. Until that day comes, this needs to be here.
 """
 
 
-from types import SimpleNamespace
+from collections import namedtuple
 from functools import lru_cache
+from logging import getLogger
 from re import compile, escape
 from string import ascii_letters, digits
 from types import SimpleNamespace
-from logging import getLogger
 
 from PyIRC.line import Line, Hostmask
 
@@ -71,6 +71,9 @@ def banmask_parse(string, supported_extban):
     return ret
 
 
+ParsedPrefix = namedtuple("ParsedPrefix", "mode_to_prefix prefix_to_mode") 
+
+
 @lru_cache(maxsize=16)
 def prefix_parse(prefix):
     """Parse ISUPPORT PREFIX extension into mode : prefix and vice versa.
@@ -96,9 +99,7 @@ def prefix_parse(prefix):
         ...
     ValueError: Unbalanced modes and prefixes
     """
-
-    ret = dict()
-    ret2 = dict()
+    ret = ParsedPrefix(dict(), dict())
 
     match = prefix_match.match(prefix)
     if not match:
@@ -109,9 +110,10 @@ def prefix_parse(prefix):
         raise ValueError("Unbalanced modes and prefixes")
 
     for k, v in zip(modes, values):
-        ret[k] = v
-        ret2[v] = k
-    return ret, ret2
+        ret.mode_to_prefix[k] = v
+        ret.prefix_to_mode[v] = k
+
+    return ret
 
 
 def mode_parse(modes, params, modegroups, prefix):
@@ -149,10 +151,10 @@ def mode_parse(modes, params, modegroups, prefix):
     >>> f(mode_parse("+ov-v", ("a", "b", "c"), modegroups, prefixmodes))
     [('o', 'a', True), ('v', 'b', True), ('v', 'c', False)]
     """
-    if isinstance(prefix, tuple):
-        prefix = prefix[0]
+    if isinstance(prefix, ParsedPrefix):
+        prefix = prefix.mode_to_prefix
     else:
-        prefix = prefix_parse(prefix)[0]
+        prefix = prefix_parse(prefix).mode_to_prefix
 
     params = list(params)
 
@@ -204,10 +206,10 @@ def status_prefix_parse(string, prefix):
     >>> sorted(modes), channel
     (['+', '@'], '#')
     """
-    if isinstance(prefix, tuple):
-        prefix = prefix[1]
+    if isinstance(prefix, ParsedPrefix):
+        prefix = prefix.prefix_to_mode
     else:
-        prefix = prefix_parse(prefix)[1]
+        prefix = prefix_parse(prefix).prefix_to_mode
 
     modes = set()
     for char in str(string):

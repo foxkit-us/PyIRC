@@ -427,7 +427,7 @@ class UserTrack(BaseExtension):
         user = self.get_user(hostmask.nick)
         if not user:
             # Add the user
-            user = self.add_user(nick, user=hostmask.username,
+            user = self.add_user(hostmask.nick, user=hostmask.username,
                                  host=hostmask.host)
 
         channel = user.channels[event.target]

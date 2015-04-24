@@ -192,7 +192,7 @@ class ChannelTrack(BaseExtension):
             return
 
         if event.adding:
-            channel.modes[mode] = event.param
+            channel.modes[event.param] = event.mode
         else:
             channel.modes.pop(event.param, None)
 

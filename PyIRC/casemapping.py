@@ -39,18 +39,18 @@ class IRCString(UserString):
 
     Same as a normal string, with IRC style casemapping.
 
-    >>> s = IRCString('Søs', IRCString.ASCII)
+    >>> s = IRCString(IRCString.ASCII, 'Søs')
     >>> s
-    'Søs'
+    IRCString('Søs')
     >>> s.upper()
     'SøS'
     >>> s.lower()
     'søs'
     >>> s.casefold()
     'søs'
-    >>> s = IRCString('Têst{}|~', IRCString.RFC1459)
+    >>> s = IRCString(IRCString.RFC1459, 'Têst{}|~')
     >>> s
-    'Têst{}|~'
+    IRCString('Têst{}|~')
     >>> s.lower()
     'têst{}|~'
     >>> s.upper()
@@ -204,7 +204,7 @@ class IRCDict(UserDict):
         if isinstance(key, str):
             key = IRCString(self.case, key)
         elif hasattr(key, 'convert'):
-            key = IRCString(key.convert(self.case), self.case)
+            key = IRCString(self.case, key.convert(self.case))
 
         return super().__getitem__(key)
 
@@ -212,7 +212,7 @@ class IRCDict(UserDict):
         if isinstance(key, str):
             key = IRCString(self.case, key)
         elif hasattr(key, 'convert'):
-            key = IRCString(key.convert(self.case), self.case)
+            key = IRCString(self.case, key.convert(self.case))
 
         return super().__setitem__(key, value)
 
@@ -220,7 +220,7 @@ class IRCDict(UserDict):
         if isinstance(key, str):
             key = IRCString(self.case, key)
         elif hasattr(key, 'convert'):
-            key = IRCString(key.convert(self.case), self.case)
+            key = IRCString(self.case, key.convert(self.case))
 
         return super().__delitem__(key)
 
@@ -228,7 +228,7 @@ class IRCDict(UserDict):
         if isinstance(key, str):
             key = IRCString(self.case, key)
         elif hasattr(key, 'convert'):
-            key = IRCString(key.convert(self.case), self.case)
+            key = IRCString(self.case, key.convert(self.case))
 
         return super().__contains__(key)
 
@@ -239,7 +239,7 @@ class IRCDict(UserDict):
             if isinstance(key, str):
                 key = IRCString(self.case, key)
             elif hasattr(key, 'convert'):
-                key = IRCString(key.convert(self.case), self.case)
+                key = IRCString(self.case, key.convert(self.case))
 
             new[key] = value
 
@@ -262,7 +262,7 @@ class IRCDefaultDict(IRCDict):
         if isinstance(key, str):
             key = IRCString(self.case, key)
         elif hasattr(key, 'convert'):
-            key = IRCString(key.convert(self.case), self.case)
+            key = IRCString(self.case, key.convert(self.case))
 
         return self.default()
 
@@ -285,7 +285,7 @@ class IRCSet(MutableSet):
         if isinstance(item, str):
             item = IRCString(self.case, item)
         elif hasattr(item, 'convert'):
-            item = IRCString(item.convert(self.case), self.case)
+            item = IRCString(self.case, item.convert(self.case))
 
         self.store.add(item)
 
@@ -293,7 +293,7 @@ class IRCSet(MutableSet):
         if isinstance(item, str):
             item = IRCString(self.case, item)
         elif hasattr(item, 'convert'):
-            item = IRCString(item.convert(self.case), self.case)
+            item = IRCString(self.case, item.convert(self.case))
 
         self.store.discard(item)
 
@@ -313,7 +313,7 @@ class IRCSet(MutableSet):
         if isinstance(item, str):
             item = IRCString(self.case, item)
         elif hasattr(item, 'convert'):
-            item = IRCString(item.convert(self.case), self.case)
+            item = IRCString(self.case, item.convert(self.case))
 
         return item in self.store
 

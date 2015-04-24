@@ -89,7 +89,7 @@ def prefix_parse(prefix):
     [[('a', '&'), ..., ('~', 'q')]]
     >>> prefix_parse("(ov)@+")[1]["@"]
     'o'
-    >>> prefix_parse("(ov)@+")[1]["o"]
+    >>> prefix_parse("(ov)@+")[0]["o"]
     '@'
     >>> prefix_parse("(o)@+")
     Traceback (most recent call last):
@@ -150,9 +150,9 @@ def mode_parse(modes, params, modegroups, prefix):
     [('o', 'a', True), ('v', 'b', True), ('v', 'c', False)]
     """
     if isinstance(prefix, tuple):
-        prefix = prefix[1]
+        prefix = prefix[0]
     else:
-        prefix = prefix_parse(prefix)[1]
+        prefix = prefix_parse(prefix)[0]
 
     params = list(params)
 

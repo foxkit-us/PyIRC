@@ -314,8 +314,9 @@ def isupport_parse(params):
     {'EXTBAN': ('', 'ABCNOQRSTUcjmprsz')}
     >>> isupport_parse(["MAXLIST=ACCEPT:5"])
     {'MAXLIST': {'ACCEPT': '5'}}
-    >>> isupport_parse(["MAXLIST=ACCEPT:,TEST:5"])
-    >>> sorted((k, v) for k, v in isupport_parse(["EXCEPTS", "INVEX"]).items())
+    >>> sorted(isupport_parse(["MAXLIST=ACCEPT:,TEST:5"])["MAXLIST"].items())
+    [('ACCEPT', None), ('TEST', '5')]
+    >>> sorted((k,v) for k, v in isupport_parse(["EXCEPTS", "INVEX"]).items())
     [('EXCEPTS', True), ('INVEX', True)]
     """
     supported = dict()

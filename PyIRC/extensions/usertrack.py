@@ -235,6 +235,8 @@ class UserTrack(BaseExtension):
 
         Avoid using this method directly unless you know what you are doing.
         """
+        logger.debug("Timing out user: %s", nick)
+
         if nick in self.u_expire_timers:
             self.unschedule(self.u_expire_timers[nick])
 
@@ -421,9 +423,13 @@ class UserTrack(BaseExtension):
     def prefix(self, event):
         # Parse into hostmask in case of usernames-in-host
         hostmask = Hostmask(event.param)
+
+        assert hostmask
+
         user = self.get_user(hostmask.nick)
         if not user:
             # Add the user
+            logger.debug("New user via mode_prefix: %s", param)
             user = self.add_user(nick, user=hostmask.username,
                                  host=hostmask.host)
 

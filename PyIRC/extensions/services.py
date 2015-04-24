@@ -61,8 +61,9 @@ class ServicesLogin(BaseExtension):
         self.base = base
 
         self.username = kwargs.get("services_username", self.nick)
-        password = kwargs["services_password"]  # Not for attr storage!
+        self.password = kwargs.get("services_password")
 
+        if password:
         # Usable with atheme and probably anope
         self.identify = kwargs.get("services_identify_fmt",
                                    "IDENTIFY {username} {password}")
@@ -79,6 +80,9 @@ class ServicesLogin(BaseExtension):
     @hook("commands", "NOTICE")
     @hook("commands", "PRIVMSG")
     def authenticate(self, event):
+        if self.password is None:
+            return
+
         if self.authenticated or not self.registered:
             return
 

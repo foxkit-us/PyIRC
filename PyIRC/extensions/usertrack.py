@@ -141,7 +141,7 @@ class UserTrack(BaseExtension):
         "userhost-in-names": [],
     }
 
-    requires = ["BasicRFC", "ISupport"]
+    requires = ["BasicRFC", "ISupport", "ModeHandler"]
 
     def __init__(self, base, **kwargs):
         self.base = base
@@ -235,8 +235,6 @@ class UserTrack(BaseExtension):
 
         Avoid using this method directly unless you know what you are doing.
         """
-        logger.debug("Timing out user: %s", nick)
-
         if nick in self.u_expire_timers:
             self.unschedule(self.u_expire_timers[nick])
 

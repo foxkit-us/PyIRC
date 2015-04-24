@@ -65,15 +65,15 @@ class BasicAPI(BaseExtension):
             Target to reply to
         """
         isupport = self.get_extension("ISupport")
-        channels = isupport.get("CHANTYPES")
 
         # Check for STATUSMSG
-        statusmsg = isupport.get("STATUSMSG")
-        if statusmsg and line.params[0].startswith(*statusmsg):
+        statusmsg = tuple(isupport.get("STATUSMSG"))
+        if statusmsg and line.params[0].startswith(statusmsg):
             return line.params[0]
 
         # Channel?
-        if line.params[0].startswith(*channels):
+        channels = tuple(isupport.get("CHANTYPES"))
+        if line.params[0].startswith(channels):
             return line.params[0]
 
         # User?

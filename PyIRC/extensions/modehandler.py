@@ -9,13 +9,16 @@
 
 
 from time import time
+from logging import getLogger
 
-
-from PyIRC.auxparse import mode_parse, prefix_parse
+from PyIRC.auxparse import mode_parse, prefix_parse, status_prefix_parse
 from PyIRC.extension import BaseExtension
 from PyIRC.event import LineEvent, EventState
 from PyIRC.hook import hook
 from PyIRC.numerics import Numerics
+
+
+logger = getLogger(__name__)
 
 
 class ModeEvent(LineEvent):
@@ -93,7 +96,8 @@ class ModeHandler(BaseExtension):
         target = params.pop(0)
         modes = params.pop(0)
 
-        if not target.startswith(*isupport.get("CHANTYPES")):
+        channels = tuple(isupport.get("CHANTYPES"))
+        if not target.startswith(channels):
             # TODO - user modes
             return
 
@@ -125,8 +129,12 @@ class ModeHandler(BaseExtension):
         isupport = self.get_extension("ISupport")
         prefix = prefix_parse(isupport.get("PREFIX"))
 
-        for nick in params[-1].split():
+        logger.debug("params=%r", params)
+
+        for nick in params[-1].split(' '):
             modes, nick = status_prefix_parse(nick, prefix)
+
+            logger.debug("NAMES: %s", nick)
 
             for mode in modes:
                 # TODO - aggregation
@@ -182,7 +190,7 @@ class ModeHandler(BaseExtension):
             target = params[1]
             mask = params[2]
             if len(params) > 3:
-                setter = Hostmask(params[3])
+                setter = Hostmask.parse(params[3])
                 if len(params) > 4:
                     timestamp = int(params[4])
             else:

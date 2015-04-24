@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name="PyIRC",
-      version="3.0-alpha",
+      version="3.0a0",
       description="A Python IRC library",
       author="Elizabeth Myers",
       author_email="elizabeth@interlinked.me",

@@ -106,7 +106,7 @@ class BanTrack(BaseExtension):
             return
 
         basicrfc = self.get_extension("BasicRFC")
-        if not self.casecmp(event.target, basicrfc.nick):
+        if not self.casecmp(event.param, basicrfc.nick):
             # Not us, don't care
             return
 

@@ -18,7 +18,8 @@ from functools import partial
 from collections import defaultdict
 from logging import getLogger
 
-from PyIRC.auxparse import prefix_parse, who_flag_parse, status_prefix_parse
+from PyIRC.auxparse import (prefix_parse, who_flag_parse, status_prefix_parse,
+                            userhost_parse)
 from PyIRC.casemapping import IRCDict, IRCDefaultDict, IRCSet
 from PyIRC.extension import BaseExtension
 from PyIRC.hook import hook
@@ -244,6 +245,10 @@ class UserTrack(BaseExtension):
         """Update a user's basic info, based on line hostmask info.
 
         Avoid using this method directly unless you know what you are doing.
+
+        .. note::
+            This mostly exists for brain-dead networks that don't quit users
+            when they get cloaked.
         """
         if not line.hostmask or not line.hostmask.nick:
             return
@@ -286,6 +291,52 @@ class UserTrack(BaseExtension):
 
         self.users.clear()
         self.whox_send.clear()
+
+    @hook("commands", Numerics.RPL_WELCOME)
+    def welcome(self, event):
+        # Obtain our own host
+        self.send("USERHOST", [event.line.params[0]])
+
+    @hook("commands", Numerics.RPL_USERHOST)
+    def userhost(self, event):
+        line = event.line
+        params = line.params
+        if not (len(params) > 1 and params[1]):
+            return
+
+        basicrfc = self.get_extension("BasicRFC")
+
+        for mask in params[1].split(' '):
+            if not mask:
+                continue
+
+            parse = userhost_parse(mask)
+            hostmask = parse.hostmask
+            user = self.get_user(hostmask.nick)
+            if not user:
+                continue
+
+            if hostmask.username:
+                user.username = hostmask.username
+
+            user.operator = parse.operator
+            if not parse.away:
+                user.away = False
+
+            if self.casecmp(hostmask.nick, basicrfc.nick):
+                user.realhost = hostmask.host
+            else:
+                user.host = hostmask.host
+
+    @hook("commands", Numerics.RPL_HOSTHIDDEN)
+    def host_hidden(self, event):
+        line = event.line
+        params = line.params
+
+        user = self.get_user(params[0])
+        assert user  # This should NEVER fire!
+
+        user.host = params[1]
 
     @hook("commands", "ACCOUNT")
     def account(self, event):

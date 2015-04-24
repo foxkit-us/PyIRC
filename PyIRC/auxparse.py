@@ -36,6 +36,7 @@ numletters = ascii_letters + digits
 
 @lru_cache(maxsize=16)
 def _extban_compile(char, extbans):
+    # TODO - inspircd chained extbans (BLEH)
     return compile("{char}([{extbans}]):(.*)".format(**locals()))
 
 
@@ -217,14 +218,15 @@ def status_prefix_parse(string, prefix):
             return (modes, string)
 
 
-@lru_cache()
+@lru_cache(maxsize=32)
 def who_flag_parse(flags):
     """ Parse WHO flags.
 
     :param flags:
         Flags to parse.
 
-    :returns: A namespace object containing the following attributes:
+    :returns:
+        A namespace object containing the following attributes:
 
         :param operator:
             Whether or not the user is an operator.
@@ -235,10 +237,8 @@ def who_flag_parse(flags):
         :param modes:
             A set of the user's present modes (prefixes).
     """
-    ret = SimpleNamespace()
+    ret = SimpleNamespace(operator=False, away=False, modes=set())
     ret.operator = False
-    ret.away = False
-    ret.modes = set()
 
     for char in flags:
         if char == '*':
@@ -252,6 +252,51 @@ def who_flag_parse(flags):
         else:
             logger.debug("No known way to handle WHO flag %s", char)
 
+    return ret
+
+
+@lru_cache(maxsize=128)
+def userhost_parse(mask):
+    """Parse a USERHOST reply.
+
+    :returns:
+        An object with the following attributes set:
+
+        :param hostmask:
+            :py:class:`~PyIRC.line.Hostmask` of the user. This may be a cloak.
+
+        :param operator:
+            Whether or not the user is an operator. False does not mean they
+            are not an operator, as operators may be hidden on the server.
+
+        :param away:
+            Whether or not the user is away.
+    """
+    if not mask:
+        raise ValueError("Need a mask to parse")
+
+    ret = SimpleNamespace(hostmask=None, operator=None, away=None)
+
+    nick, sep, userhost = mask.partition('=')
+    if not sep:
+        return ret
+
+    if nick.endswith('*'):
+        nick = nick[:-1]
+        ret.operator = True
+
+    if userhost.startswith(('+', '-')):
+        away, userhost = userhost[0], userhost[:1]
+        ret.away = (away == '+')
+
+    # user@host
+    username, sep, host = userhost.partition('@')
+    if not sep:
+        host = username
+        username = None
+
+    ret.hostmask = Hostmask(nick=nick, username=username, host=host)
+    
     return ret
 
 

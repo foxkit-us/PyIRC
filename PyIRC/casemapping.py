@@ -42,18 +42,18 @@ class IRCString(UserString):
     >>> s = IRCString('Søs', IRCString.ASCII)
     >>> s
     'Søs'
-    >>> s.irc_upper()
+    >>> s.upper()
     'SøS'
-    >>> s.irc_lower()
+    >>> s.lower()
     'søs'
-    >>> s.irc_casefold()
+    >>> s.casefold()
     'søs'
     >>> s = IRCString('Têst{}|~', IRCString.RFC1459)
     >>> s
     'Têst{}|~'
-    >>> s.irc_lower()
+    >>> s.lower()
     'têst{}|~'
-    >>> s.irc_upper()
+    >>> s.upper()
     'TêST[]\\^'
     """
 

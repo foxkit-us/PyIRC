@@ -427,7 +427,6 @@ class UserTrack(BaseExtension):
         user = self.get_user(hostmask.nick)
         if not user:
             # Add the user
-            logger.debug("New user via mode_prefix: %s", param)
             user = self.add_user(nick, user=hostmask.username,
                                  host=hostmask.host)
 

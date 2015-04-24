@@ -203,24 +203,32 @@ class IRCDict(UserDict):
     def __getitem__(self, key):
         if isinstance(key, str):
             key = IRCString(self.case, key)
+        elif hasattr(key, 'convert'):
+            key = IRCString(key.convert(self.case), self.case)
 
         return super().__getitem__(key)
 
     def __setitem__(self, key, value):
         if isinstance(key, str):
             key = IRCString(self.case, key)
+        elif hasattr(key, 'convert'):
+            key = IRCString(key.convert(self.case), self.case)
 
         return super().__setitem__(key, value)
 
     def __delitem__(self, key):
         if isinstance(key, str):
             key = IRCString(self.case, key)
+        elif hasattr(key, 'convert'):
+            key = IRCString(key.convert(self.case), self.case)
 
         return super().__delitem__(key)
 
     def __contains__(self, key):
         if isinstance(key, str):
             key = IRCString(self.case, key)
+        elif hasattr(key, 'convert'):
+            key = IRCString(key.convert(self.case), self.case)
 
         return super().__contains__(key)
 
@@ -228,8 +236,10 @@ class IRCDict(UserDict):
         """Convert dictionary to new casemapping"""
         new = IRCDict(case)
         for key, value in self.items():
-            if hasattr(key, 'convert'):
-                key = key.convert(case)
+            if isinstance(key, str):
+                key = IRCString(self.case, key)
+            elif hasattr(key, 'convert'):
+                key = IRCString(key.convert(self.case), self.case)
 
             new[key] = value
 
@@ -249,8 +259,10 @@ class IRCDefaultDict(IRCDict):
         super().__init__(case, *args, **kwargs)
 
     def __missing__(self, key):
-        if hasattr(key, 'convert'):
-            key = key.convert(self.case)
+        if isinstance(key, str):
+            key = IRCString(self.case, key)
+        elif hasattr(key, 'convert'):
+            key = IRCString(key.convert(self.case), self.case)
 
         return self.default()
 
@@ -272,19 +284,25 @@ class IRCSet(MutableSet):
     def add(self, item):
         if isinstance(item, str):
             item = IRCString(self.case, item)
+        elif hasattr(item, 'convert'):
+            item = IRCString(item.convert(self.case), self.case)
 
         self.store.add(item)
 
     def discard(self, item):
         if isinstance(item, str):
             item = IRCString(self.case, item)
+        elif hasattr(item, 'convert'):
+            item = IRCString(item.convert(self.case), self.case)
 
         self.store.discard(item)
 
     def convert(self, case):
         new = IRCSet(case)
         for item in self:
-            if hasattr(key, 'convert'):
+            if isinstance(item, str):
+                item = IRCString(self.case, item)
+            elif hasattr(item, 'convert'):
                 item = item.convert(case)
 
             new.add(item)
@@ -294,6 +312,8 @@ class IRCSet(MutableSet):
     def __contains__(self, item):
         if isinstance(item, str):
             item = IRCString(self.case, item)
+        elif hasattr(item, 'convert'):
+            item = IRCString(item.convert(self.case), self.case)
 
         return item in self.store
 

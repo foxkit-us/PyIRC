@@ -79,10 +79,10 @@ class BanTrack(BaseExtension):
 
         modes = channel.modes[event.mode]
 
-        entry = BanEntry(param, event.setter, event.timestamp)
+        entry = BanEntry(event.param, event.setter, event.timestamp)
 
         # Check for existing ban
-        for i, (string, _, _) in enumerate(list(modes[event.mode])):
+        for i, (string, _, _) in enumerate(list(modes)):
             if self.casecmp(event.param, string):
                 if event.adding:
                     # Update timestamp and setter

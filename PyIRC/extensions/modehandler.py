@@ -14,6 +14,7 @@ from logging import getLogger
 from PyIRC.auxparse import mode_parse, prefix_parse, status_prefix_parse
 from PyIRC.extension import BaseExtension
 from PyIRC.event import LineEvent, EventState
+from PyIRC.line import Hostmask
 from PyIRC.hook import hook
 from PyIRC.numerics import Numerics
 
@@ -196,8 +197,9 @@ class ModeHandler(BaseExtension):
             else:
                 setter = line.hostmask
                 timestamp = None
-        except Exception:
-            logger.warning("Bogus list mode received: %s", mode)
+        except Exception as e:
+            logger.warning("Bogus list mode received: %s (exception: %s)",
+                           mode, e)
             return
 
         self.call_event("modes", "mode_list", line, setter, target, True,

@@ -63,7 +63,6 @@ class ServicesLogin(BaseExtension):
         self.username = kwargs.get("services_username", self.nick)
         self.password = kwargs.get("services_password")
 
-        if password:
         # Usable with atheme and probably anope
         self.identify = kwargs.get("services_identify_fmt",
                                    "IDENTIFY {username} {password}")

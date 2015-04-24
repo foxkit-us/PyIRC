@@ -103,7 +103,7 @@ class ModeHandler(BaseExtension):
             return
 
         gen = mode_parse(modes, params, modegroups, prefix)
-        prefix = prefix[0]
+        prefix = prefix.mode_to_prefix
         for mode, param, adding in gen:
             if mode in prefix:
                 mode_call = "mode_prefix"

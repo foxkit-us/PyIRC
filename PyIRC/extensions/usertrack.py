@@ -746,7 +746,7 @@ class UserTrack(BaseExtension):
         if channel != '*':
             # Convert symbols to modes
             isupport = self.get_extension("ISupport")
-            prefix = prefix_parse(isupport.get("PREFIX")).prefix_to_modes
+            prefix = prefix_parse(isupport.get("PREFIX")).prefix_to_mode
 
             mode = set()
             for char in flags.modes:

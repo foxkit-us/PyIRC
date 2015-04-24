@@ -228,7 +228,7 @@ class IRCDict(UserDict):
         """Convert dictionary to new casemapping"""
         new = IRCDict(case)
         for key, value in self.items():
-            if isinstance(key, IRCString):
+            if hasattr(key, 'convert'):
                 key = key.convert(case)
 
             new[key] = value
@@ -249,8 +249,8 @@ class IRCDefaultDict(IRCDict):
         super().__init__(case, *args, **kwargs)
 
     def __missing__(self, key):
-        if isinstance(key, IRCString):
-            key = key.convert(case)
+        if hasattr(key, 'convert'):
+            key = key.convert(self.case)
 
         self[key] = default()
 
@@ -284,7 +284,7 @@ class IRCSet(MutableSet):
     def convert(self, case):
         new = IRCSet(case)
         for item in self:
-            if isinstance(item, IRCString):
+            if hasattr(key, 'convert'):
                 item = item.convert(case)
 
             new.add(item)

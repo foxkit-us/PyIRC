@@ -226,6 +226,8 @@ class ChannelTrack(BaseExtension):
                     pass
             return
 
+        logger.debug("users before deletion: %r", channel.users)
+
         del channel.users[hostmask.nick]
 
     @hook("commands", Numerics.RPL_TOPIC)

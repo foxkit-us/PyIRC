@@ -106,8 +106,6 @@ class User:
         self.realhost = kwargs.get("realhost", None)
         self.channels = IRCDefaultDict(case, set)
 
-        logger.debug("Created user: %s", self.nick)
-
     def __repr__(self):
         keys = ("nick", "username", "host", "gecos", "account", "server",
                 "secure", "operator", "signon", "ip", "realhost", "channels")

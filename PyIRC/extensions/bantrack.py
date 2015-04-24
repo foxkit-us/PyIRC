@@ -160,7 +160,7 @@ class BanTrack(BaseExtension):
 
     def set_synced(self, event, mode):
         channeltrack = self.get_extension("ChannelTrack")
-        channel = channeltrack.get_channel(event.params[1])
+        channel = channeltrack.get_channel(event.line.params[1])
         if not channel:
             # Not a channel or we don't know about it.
             return

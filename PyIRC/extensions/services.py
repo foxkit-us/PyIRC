@@ -72,7 +72,7 @@ class ServicesLogin(BaseExtension):
 
         # Cache format string
         self.identify = self.identify.format(username=self.username,
-                                             password=password)
+                                             password=self.password)
 
         self.authenticated = False
 

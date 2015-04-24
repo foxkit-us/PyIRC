@@ -33,16 +33,22 @@ class TestProtocol(IRCProtocol):
     def respond(self, event):
         line = event.line
         params = line.params
-        target = params[0]
-        if (target != self.nick and params[-1].startswith(self.nick)):
-            self.send("PRIVMSG", [target, choice(self.flirtlines)])
+        
+        if len(params) < 2:
             return
+        
+        basicrfc = self.get_extension("BasicRFC")
+        if self.casecmp(basicrfc.nick, params[0]):
+            params = [line.hostmask.nick, choice(self.yifflines)]
+        else:
+            # Ensure it starts with us
+            check_self = params[-1][:len(basicrfc.nick)]
+            if not self.casecmp(basicrfc.nick, check_self):
+                return
 
-        hostmask = line.hostmask
-        if not (hostmask and hostmask.nick):
-            return
+            params = [params[0], choice(self.flirtlines)]
 
-        self.send("PRIVMSG", [hostmask.nick, choice(self.yifflines)])
+        self.send("PRIVMSG", params)
 
 
 basicConfig(level="DEBUG")

@@ -422,7 +422,7 @@ class UserTrack(BaseExtension):
     @hook("modes", "mode_prefix")
     def prefix(self, event):
         # Parse into hostmask in case of usernames-in-host
-        hostmask = Hostmask(event.param)
+        hostmask = Hostmask.parse(event.param)
 
         assert hostmask
 

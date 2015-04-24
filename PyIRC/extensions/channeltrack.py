@@ -177,7 +177,7 @@ class ChannelTrack(BaseExtension):
                            event.target)
             return
 
-        hostmask = Hostmask(event.param)
+        hostmask = Hostmask.parse(event.param)
         if event.adding:
             channel.users[hostmask.nick].add(event.mode)
         else:

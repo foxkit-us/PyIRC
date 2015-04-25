@@ -413,7 +413,7 @@ class UserTrack(BaseExtension):
             self.who_timers[channel] = sched
 
         # Add the channel
-        user.channels[channel] = set
+        user.channels[channel] = set()
 
     @hook("modes", "mode_prefix")
     def prefix(self, event):

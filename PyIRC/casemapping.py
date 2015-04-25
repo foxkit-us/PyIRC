@@ -43,18 +43,18 @@ class IRCString(UserString):
     >>> s
     IRCString('Søs')
     >>> s.upper()
-    'SøS'
+    IRCString('SøS')
     >>> s.lower()
-    'søs'
+    IRCString('søs')
     >>> s.casefold()
-    'søs'
+    IRCString('søs')
     >>> s = IRCString(IRCString.RFC1459, 'Têst{}|~')
     >>> s
     IRCString('Têst{}|~')
     >>> s.lower()
-    'têst{}|~'
+    IRCString('têst{}|~')
     >>> s.upper()
-    'TêST[]\\^'
+    IRCString('TêST[]\\^')
     """
 
     UNICODE = 0
@@ -76,8 +76,8 @@ class IRCString(UserString):
         self.case = case
         super().__init__(string)
 
-    def upper(self):
-        """Uppercase string according to default semantics"""
+    def str_upper(self):
+        """Uppercase string into a real Python string"""
         if self.case == IRCString.ASCII:
             return self.ascii_upper()
         elif self.case == IRCString.RFC1459:
@@ -85,8 +85,8 @@ class IRCString(UserString):
         else:
             return str.upper(self.data)
 
-    def lower(self):
-        """Lowercase string according to default semantics"""
+    def str_lower(self):
+        """Lowercase string into a real python string"""
         if self.case == IRCString.ASCII:
             return self.ascii_lower()
         elif self.case == IRCString.RFC1459:
@@ -94,8 +94,8 @@ class IRCString(UserString):
         else:
             return str.lower(self.data)
 
-    def casefold(self):
-        """Casefold string according to default semantics"""
+    def str_casefold(self):
+        """Casefold string into a real Python string"""
         if self.case == IRCString.ASCII:
             return self.ascii_casefold()
         elif self.case == IRCString.RFC1459:
@@ -103,56 +103,68 @@ class IRCString(UserString):
         else:
             return str.casefold(self.data)
 
+    def upper(self):
+        """Uppercase string according to default semantics"""
+        return IRCString(self.case, self.str_upper())
+
+    def lower(self):
+        """Lowercase string according to default semantics"""
+        return IRCString(self.case, self.str_lower())
+
+    def casefold(self):
+        """Casefold string according to default semantics"""
+        return IRCString(self.case, self.str_casefold())
+
     def __hash__(self):
-        return hash(self.casefold())
+        return hash(self.str_casefold())
 
     def __gt__(self, other):
-        if not hasattr(other, 'case'):
-            other = IRCString(self.case, other)
-        elif other.case != self.case:
-            other = other.convert(self.case)
+        if hasattr(other, 'str_casefold'):
+            other = other.str_casefold()
+        else:
+            other = other.casefold()
 
-        return self.casefold() > other.casefold()
+        return self.str_casefold() > other
 
     def __lt__(self, other):
-        if not hasattr(other, 'case'):
-            other = IRCString(self.case, other)
-        elif other.case != self.case:
-            other = other.convert(self.case)
+        if hasattr(other, 'str_casefold'):
+            other = other.str_casefold()
+        else:
+            other = other.casefold()
 
-        return self.casefold() < other.casefold()
+        return self.str_casefold() < other
 
     def __eq__(self, other):
-        if not hasattr(other, 'case'):
-            other = IRCString(self.case, other)
-        elif other.case != self.case:
-            other = other.convert(self.case)
+        if hasattr(other, 'str_casefold'):
+            other = other.str_casefold()
+        else:
+            other = other.casefold()
 
-        return self.casefold() == other.casefold()
+        return self.str_casefold() == other
 
     def __ne__(self, other):
-        if not hasattr(other, 'case'):
-            other = IRCString(self.case, other)
-        elif other.case != self.case:
-            other = other.convert(self.case)
+        if hasattr(other, 'str_casefold'):
+            other = other.str_casefold()
+        else:
+            other = other.casefold()
 
-        return self.casefold() != other.casefold()
+        return self.str_casefold() != other
 
     def __ge__(self, other):
-        if not hasattr(other, 'case'):
-            other = IRCString(self.case, other)
-        elif other.case != self.case:
-            other = other.convert(self.case)
+        if hasattr(other, 'str_casefold'):
+            other = other.str_casefold()
+        else:
+            other = other.casefold()
 
-        return self.casefold() >= other.casefold()
+        return self.str_casefold() >= other
 
     def __le__(self, other):
-        if not hasattr(other, 'case'):
-            other = IRCString(self.case, other)
-        elif other.case != self.case:
-            other = other.convert(self.case)
+        if hasattr(other, 'str_casefold'):
+            other = other.str_casefold()
+        else:
+            other = other.casefold()
 
-        return self.casefold() <= other.casefold()
+        return self.str_casefold() <= other
 
     def convert(self, case):
         """Convert string into another caseform"""
@@ -266,6 +278,7 @@ class IRCDefaultDict(IRCDict):
 
         ret = self.default()
         self[key] = ret
+        print("KEY", self[key])
         return ret
 
     def __repr__(self):

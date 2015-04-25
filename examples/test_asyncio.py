@@ -2,6 +2,7 @@
 
 
 import asyncio, ssl
+import signal
 
 from random import choice
 from logging import basicConfig
@@ -49,8 +50,7 @@ class TestProtocol(IRCProtocol):
             params = [params[0], choice(self.flirtlines)]
 
         self.send("PRIVMSG", params)
-
-
+   
 basicConfig(level="DEBUG")
 
 args = {
@@ -65,9 +65,27 @@ args = {
     'join' : ['#PyIRC'],
 }
 
+
+def sigint(*protos):
+    for proto in protos:
+        try:
+            proto.send("QUIT", ["Terminating due to ctrl-c!"])
+            proto.close()
+        except Exception as e:
+            # Ugh! A race probably happened. Yay, signals.
+            pass
+
+    print()
+    print("Terminating due to ctrl-c!")
+
+    quit()
+
+
 inst = TestProtocol(**args)
+coro = inst.connect()
 
 loop = asyncio.get_event_loop()
-loop.run_until_complete(inst.connect())
+loop.add_signal_handler(signal.SIGINT, sigint, inst)
+loop.run_until_complete(coro)
 loop.run_forever()
 loop.close()

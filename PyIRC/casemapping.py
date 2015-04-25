@@ -168,7 +168,7 @@ class IRCString(UserString):
 
     def convert(self, case):
         """Convert string into another caseform"""
-        return IRCString(self, case)
+        return IRCString(case, self)
 
     def ascii_lower(self):
         """Return a copy of the string S converted to lowercase, using ASCII

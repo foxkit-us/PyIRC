@@ -72,7 +72,13 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
         for line in lines:
             line = Line.parse(line.decode('utf-8', 'ignore'))
             logger.debug("IN: %s", str(line).rstrip())
-            super().recv(line)
+            try:
+                super().recv(line)
+            except Exception as e:
+                # We should never get here!
+                self.send("QUIT", ["Exception received!"])
+                self.transport.close()
+                raise
 
     def connection_closed(self, exc):
         logger.info("Connection lost: %s", str(e))

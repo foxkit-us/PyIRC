@@ -264,7 +264,9 @@ class IRCDefaultDict(IRCDict):
         elif hasattr(key, 'convert'):
             key = IRCString(self.case, key.convert(self.case))
 
-        return self.default()
+        ret = self.default()
+        self[key] = ret
+        return ret
 
     def __repr__(self):
         return "IRCDefaultDict({}, {}, {})".format(self.case, self.default,

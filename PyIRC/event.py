@@ -364,7 +364,7 @@ class EventManager:
         for event, (callback, _) in table.items():
             self.unregister_callback(hclass, event, callback)
 
-    def call_event(self, hclass, event, *args):
+    def call_event(self, hclass, event, *args, **kwargs):
         """Call the callbacks for a given event.
 
         :param hclass:
@@ -382,7 +382,8 @@ class EventManager:
 
         type = self.events_reg[hclass].type
         event = type.key(event)
-        return self.call_event_inst(hclass, event, type(event, *args))
+        return self.call_event_inst(hclass, event,
+                                    type(event, *args, **kwargs))
 
     def _call_generator(self, events, event_inst):
         for _, _, function in events:

@@ -157,10 +157,10 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
         :py:meth:`~PyIRC.extension.ExtensionManager.get_extension`"""
         return self.extensions.get_extension(extension)
 
-    def call_event(self, hclass, event, *args):
+    def call_event(self, hclass, event, *args, **kwargs):
         """A convenience method for
         :py:meth:`~PyIRC.event.EventManager.call_event`"""
-        return self.events.call_event(hclass, event, *args)
+        return self.events.call_event(hclass, event, *args, **kwargs)
     
     def call_event_inst(self, hclass, event, inst):
         """A convenience method for

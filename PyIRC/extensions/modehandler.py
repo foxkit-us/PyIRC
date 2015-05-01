@@ -120,28 +120,6 @@ class ModeHandler(BaseExtension):
             self.call_event("modes", mode_call, line, line.hostmask, target,
                             adding, mode, param)
 
-    @hook("commands", Numerics.RPL_NAMREPLY)
-    def names(self, event):
-        line = event.line
-        params = line.params
-
-        target = params[2]
-
-        isupport = self.get_extension("ISupport")
-        prefix = prefix_parse(isupport.get("PREFIX"))
-
-        logger.debug("params=%r", params)
-
-        for nick in params[-1].split(' '):
-            modes, nick = status_prefix_parse(nick, prefix)
-
-            logger.debug("NAMES: %s", nick)
-
-            for mode in modes:
-                # TODO - aggregation
-                self.call_event("modes", "mode_prefix", line, line.hostmask,
-                                target, True, mode, nick)
-
     @hook("commands", Numerics.RPL_BANLIST)
     def ban_list(self, event):
         return self.handle_list(event, 'b')

@@ -23,7 +23,6 @@ from PyIRC.extensions.ctcp import CTCP
 from PyIRC.extensions.isupport import ISupport
 from PyIRC.extensions.kickrejoin import KickRejoin
 from PyIRC.extensions.lag import LagCheck
-from PyIRC.extensions.modehandler import ModeHandler
 from PyIRC.extensions.sasl import SASLPlain
 from PyIRC.extensions.services import ServicesLogin
 from PyIRC.extensions.starttls import StartTLS
@@ -31,13 +30,13 @@ from PyIRC.extensions.usertrack import UserTrack
 
 
 __all__ = ["autojoin", "bantrack", "basetrack", "basicapi", "basicrfc", "cap",
-           "channeltrack", "ctcp", "isupport", "kickrejoin", "lag",
-           "modehandler", "sasl", "services", "starttls", "usertrack"]
+           "channeltrack", "ctcp", "isupport", "kickrejoin", "lag", "sasl",
+           "services", "starttls", "usertrack"]
 
 
 __all_cls__ = [AutoJoin, BanTrack, BaseTrack, BasicAPI, BasicRFC, CapNegotiate,
-               ChannelTrack, CTCP, ISupport, KickRejoin, LagCheck, ModeHandler,
-               SASLPlain, ServicesLogin, StartTLS, UserTrack]
+               ChannelTrack, CTCP, ISupport, KickRejoin, LagCheck, SASLPlain,
+               ServicesLogin, StartTLS, UserTrack]
 
 
 extensions_db = {cls.__name__ : cls for cls in __all_cls__}

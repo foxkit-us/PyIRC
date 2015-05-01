@@ -139,7 +139,7 @@ class UserTrack(BaseExtension):
         "userhost-in-names": [],
     }
 
-    requires = ["BasicRFC", "ISupport", "ModeHandler"]
+    requires = ["BasicRFC", "ISupport", "BaseTrack"]
 
     def __init__(self, base, **kwargs):
         self.base = base

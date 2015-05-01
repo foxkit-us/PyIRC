@@ -101,7 +101,7 @@ class ChannelTrack(BaseExtension):
         "multi-prefix": [],
     }
 
-    requires = ["ISupport"]
+    requires = ["BaseTrack", "BasicRFC", "ISupport"]
 
     def __init__(self, base, **kwargs):
         self.base = base
@@ -196,26 +196,43 @@ class ChannelTrack(BaseExtension):
         else:
             channel.modes.pop(event.param, None)
 
-    @hook("commands", "JOIN")
-    def join(self, event):
-        hostmask = event.line.hostmask
-        channel = self.get_channel(event.line.params[0])
+    @hook("scope", "user_join")
+    @hook("scope", "user_burst")
+    def burst(self, event):
+        # NAMES event
+        channel = self.get_channel(event.scope)
         if not channel:
-            # We are joining
-            channel = self.add_channel(event.line.params[0])
+            return
 
-        channel.users[hostmask.nick] = set()
+        user = event.target.nick
 
-    @hook("commands", "KICK")
-    @hook("commands", "PART")
+        if user not in channel.users:
+            channel.users[user] = set()
+
+        modes = event.modes
+        if modes:
+            channel.users[user].update(m[0] for m in modes)
+
+    @hook("scope", "user_join")
+    def join(self, event):
+        channel = self.get_channel(event.scope)
+        if not channel:
+            return
+
+        user = event.target.nick
+
+        channel.users[user] = set()
+
+    @hook("scope", "user_part")
+    @hook("scope", "user_kick")
     def part(self, event):
-        hostmask = event.line.hostmask
-        channel = self.get_channel(event.line.params[0])
+        channel = self.get_channel(event.scope)
         assert channel
 
-        basicrfc = self.get_extension("BasicRFC")
+        user = event.target.nick
 
-        if self.casecmp(hostmask.nick, basicrfc.nick):
+        basicrfc = self.get_extension("BasicRFC")
+        if self.casecmp(user, basicrfc.nick):
             # We are leaving
             self.remove_channel(channel.name)
             timer = self.mode_timers.pop(channel.name, None)
@@ -228,7 +245,14 @@ class ChannelTrack(BaseExtension):
 
         logger.debug("users before deletion: %r", channel.users)
 
-        del channel.users[hostmask.nick]
+        del channel.users[user]
+
+    @hook("scope", "user_quit")
+    def quit(self, event):
+        user = event.target.nick
+
+        for channel in self.channels.values():
+            channel.users.pop(user, None)
 
     @hook("commands", Numerics.RPL_TOPIC)
     @hook("commands", "TOPIC")
@@ -312,9 +336,3 @@ class ChannelTrack(BaseExtension):
             # Change the nick
             channel.users[newnick] = channel.users.pop(oldnick)
 
-    @hook("commands", "QUIT")
-    def quit(self, event):
-        nick = event.line.hostmask.nick
-
-        for channel in self.channels.values():
-            channel.users.pop(nick, None)

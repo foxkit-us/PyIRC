@@ -14,9 +14,11 @@ backwards-compatible way."""
 
 from PyIRC.extensions.autojoin import AutoJoin
 from PyIRC.extensions.bantrack import BanTrack
+from PyIRC.extensions.basetrack import BaseTrack
 from PyIRC.extensions.basicapi import BasicAPI
 from PyIRC.extensions.basicrfc import BasicRFC
 from PyIRC.extensions.cap import CapNegotiate
+from PyIRC.extensions.channeltrack import ChannelTrack
 from PyIRC.extensions.ctcp import CTCP
 from PyIRC.extensions.isupport import ISupport
 from PyIRC.extensions.kickrejoin import KickRejoin
@@ -26,17 +28,16 @@ from PyIRC.extensions.sasl import SASLPlain
 from PyIRC.extensions.services import ServicesLogin
 from PyIRC.extensions.starttls import StartTLS
 from PyIRC.extensions.usertrack import UserTrack
-from PyIRC.extensions.channeltrack import ChannelTrack
 
 
-__all__ = ["autojoin", "bantrack", "basicapi", "basicrfc", "cap", "ctcp",
-           "isupport", "kickrejoin", "lag", "modehandler", "sasl", "services",
-           "starttls", "usertrack", "channeltrack"]
+__all__ = ["autojoin", "bantrack", "basetrack", "basicapi", "basicrfc", "cap",
+           "channeltrack", "ctcp", "isupport", "kickrejoin", "lag",
+           "modehandler", "sasl", "services", "starttls", "usertrack"]
 
 
-__all_cls__ = [AutoJoin, BanTrack, BasicAPI, BasicRFC, CapNegotiate, CTCP,
-               ISupport, KickRejoin, LagCheck, ModeHandler, SASLPlain,
-               ServicesLogin, StartTLS, UserTrack, ChannelTrack]
+__all_cls__ = [AutoJoin, BanTrack, BaseTrack, BasicAPI, BasicRFC, CapNegotiate,
+               ChannelTrack, CTCP, ISupport, KickRejoin, LagCheck, ModeHandler,
+               SASLPlain, ServicesLogin, StartTLS, UserTrack]
 
 
 extensions_db = {cls.__name__ : cls for cls in __all_cls__}

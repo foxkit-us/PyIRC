@@ -87,28 +87,12 @@ class ScopeEvent(TrackEvent):
         self.cause = cause
 
 
-class ModeEvent(TrackEvent):
-
-    """Mode changing event"""
-
-    def __init__(self, event, target, modes):
-        """Initalise the ModeEvent instance.
-
-        :param modes:
-            Modes that are changing, should be a ``Sequence`` of
-            :py:class::`~PyIRC.extensions.basetrack.Mode`s.
-        """
-        super().__init__(event, target)
-        self.modes = modes
-
-
 class BaseTracking(BaseExtension):
 
     """Base tracking extension, providing events for other tracking
     extensions."""
 
     hook_classes = {
-        "mode": ModeEvent,
         "scope": ScopeEvent,
     }
 
@@ -189,9 +173,3 @@ class BaseTracking(BaseExtension):
         self.call_event("scope", "user_quit", line.hostmask, None, True,
                         reason=reason, cause=line.hostmask)
 
-    @hook("commands", "MODE", PRIORITY_FIRST)
-    def mode(self, event):
-        line = event.line
-        params = line.params
-
-        # TODO 

@@ -335,9 +335,12 @@ class UserTrack(BaseExtension):
     @hook("scope", "user_join")
     def join(self, event):
         self.burst(event)
+        
+        target = event.target
+        channel = event.scope
 
         basicrfc = self.get_extension("BasicRFC")
-        if self.casecmp(event.target.nick, basicrfc.nick):
+        if self.casecmp(target.nick, basicrfc.nick):
             # It's us!
             isupport = self.get_extension("ISupport")
             params = [channel]

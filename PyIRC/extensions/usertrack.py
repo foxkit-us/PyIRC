@@ -313,8 +313,7 @@ class UserTrack(BaseExtension):
             channel.discard(event.mode)
 
     @hook("scope", "user_burst")
-    @hook("scope", "user_join")
-    def join(self, event):
+    def burst(self, event):
         target = event.target
         channel = event.scope
         modes = {m[0] for m in event.modes} if event.modes else set()
@@ -329,13 +328,18 @@ class UserTrack(BaseExtension):
                                  account=event.account)
         else:
             self.update_username_host(target)
+        
+        # Add the channel
+        user.channels[channel] = modes
+
+    @hook("scope", "user_join")
+    def join(self, event):
+        self.burst(event)
 
         basicrfc = self.get_extension("BasicRFC")
-
         if self.casecmp(target.nick, basicrfc.nick):
             # It's us!
             isupport = self.get_extension("ISupport")
-
             params = [channel]
             if isupport.get("WHOX"):
                 # Use WHOX if possible
@@ -345,9 +349,6 @@ class UserTrack(BaseExtension):
 
             sched = self.schedule(2, partial(self.send, "WHO", params))
             self.who_timers[channel] = sched
-
-        # Add the channel
-        user.channels[channel] = modes
 
     @hook("scope", "user_part")
     @hook("scope", "user_kick")

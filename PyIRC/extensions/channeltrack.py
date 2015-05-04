@@ -325,3 +325,73 @@ class ChannelTrack(BaseExtension):
             # Change the nick
             channel.users[newnick] = channel.users.pop(oldnick)
 
+    @hook("commands", "QUIT")
+    def quit(self, event):
+        nick = event.line.hostmask.nick
+
+        for channel in self.channels.values():
+            channel.users.pop(nick, None)
+
+    @hook("commands", Numerics.RPL_BANLIST)
+    def ban_list(self, event):
+        return self.handle_list(event, 'b')
+
+    @hook("commands", Numerics.RPL_EXCEPTLIST)
+    def except_list(self, event):
+        return self.handle_list(event, 'e')
+
+    @hook("commands", Numerics.RPL_INVITELIST)
+    def invite_list(self, event):
+        return self.handle_list(event, 'I')
+
+    @hook("commands", Numerics.RPL_QUIETLIST)
+    def quiet_list(self, event):
+        isupport = self.get_extension("ISupport")
+        if 'q' in isupport.get("PREFIX"):
+            logger.critical("Got a quiet mode, but mode for quiet is " \
+                            "unknown to us!")
+            logger.critical("Please report a bug to the PyIRC team with " \
+                            "the mode your IRC daemon uses, along with its " \
+                            "version information")
+            return
+
+        return self.handle_list(event, 'q')
+
+    @hook("commands", Numerics.RPL_SPAMFILTERLIST)
+    def spamfilter_list(self, event):
+        return self.handle_list(event, 'g')
+
+    @hook("commands", Numerics.RPL_EXEMPTCHANOPSLIST)
+    def exemptchanops_list(self, event):
+        return self.handle_list(event, 'X')
+
+    @hook("commands", Numerics.RPL_AUTOOPLIST)
+    def autoop_list(self, event):
+        return self.handle_list(event, 'w')
+
+    @hook("commands", Numerics.RPL_REOPLIST)
+    def reop_list(self, event):
+        return self.handle_list(event, 'R')
+
+    def handle_list(self, event, mode):
+        line = event.line
+        params = line.params
+
+        try:
+            target = params[1]
+            mask = params[2]
+            if len(params) > 3:
+                setter = Hostmask.parse(params[3])
+                if len(params) > 4:
+                    timestamp = int(params[4])
+            else:
+                setter = line.hostmask
+                timestamp = None
+        except Exception as e:
+            logger.warning("Bogus list mode received: %s (exception: %s)",
+                           mode, e)
+            return
+
+        self.call_event("modes", "mode_list", line, setter, target, True,
+                        mode, mask, timestamp)
+>>>>>>> 1807f03866e9c8c4a7177e08bcf863142a146eab

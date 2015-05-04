@@ -14,11 +14,13 @@ ingestion into the other tracking components.
 
 from collections import namedtuple
 from logging import getLogger
+from time import time
 
+from PyIRC.auxparse import mode_parse, prefix_parse, status_prefix_parse
+from PyIRC.event import Event, EventState, LineEvent
 from PyIRC.extension import BaseExtension
-from PyIRC.line import Hostmask
 from PyIRC.hook import hook, PRIORITY_FIRST
-from PyIRC.event import Event, EventState
+from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
 
 
@@ -27,6 +29,55 @@ logger = getLogger(__name__)
 
 Mode = namedtuple("Mode", "mode param adding")
 """A mode being added or removed"""
+
+
+class ModeEvent(LineEvent):
+
+    """An event triggered upon mode changes."""
+
+    def __init__(self, event, line, setter, target, adding, mode, param=None,
+                 timestamp=None):
+        """Initalise the ModeEvent instance.
+
+        Arguments:
+
+        :param event:
+            The event fired
+
+        :param line:
+            The :py:class:`~PyIRC.line.Line` instance of the firing mode.
+
+        :param setter:
+            The :py:class:`~PyIRC.line.Hostmask` of the setter of this mode,
+            or ``None`` when unknown.
+
+        :param target:
+            The target of this command, as a regular string.
+
+        :param adding:
+            Set to ``True`` if the mode is being added to the target, or
+            ``False`` if being removed. Consumers should be prepared for
+            redundant modes, as many IRC daemons do not do strict checking
+            for performance reasons.
+
+        :param mode:
+            The mode being set or unset.
+
+        :param param:
+            The parameter of the mode, set to ``None`` for most modes.
+
+        :param timestamp:
+            The time this mode was set. If None, the current system time will
+            be used.
+        """
+        super().__init__(event, line)
+
+        self.setter = setter
+        self.target = target
+        self.adding = adding
+        self.mode = mode
+        self.param = param
+        self.timestamp = timestamp if timestamp else round(time())
 
 
 class TrackEvent(Event):
@@ -87,12 +138,13 @@ class ScopeEvent(TrackEvent):
         self.cause = cause
 
 
-class BaseTracking(BaseExtension):
+class BaseTrack(BaseExtension):
 
     """Base tracking extension, providing events for other tracking
     extensions."""
 
     hook_classes = {
+        "mode": ModeEvent,
         "scope": ScopeEvent,
     }
 
@@ -173,3 +225,41 @@ class BaseTracking(BaseExtension):
         self.call_event("scope", "user_quit", line.hostmask, None, True,
                         reason=reason, cause=line.hostmask)
 
+    @hook("commands", Numerics.RPL_CHANNELMODEIS)
+    @hook("commands", "MODE")
+    def mode(self, event):
+        # Offer an easy to use interface for mode
+        isupport = self.get_extension("ISupport")
+        modegroups = isupport.get("CHANMODES")
+        prefix = prefix_parse(isupport.get("PREFIX"))
+
+        line = event.line
+        params = list(line.params)
+        if line.command == Numerics.RPL_CHANNELMODEIS.value:
+            params.pop(0)
+
+        target = params.pop(0)
+        modes = params.pop(0)
+
+        channels = tuple(isupport.get("CHANTYPES"))
+        if not target.startswith(channels):
+            # TODO - user modes
+            return
+
+        gen = mode_parse(modes, params, modegroups, prefix)
+        prefix = prefix.mode_to_prefix
+        for mode, param, adding in gen:
+            if mode in prefix:
+                mode_call = "mode_prefix"
+            elif mode in modegroups[0]:
+                mode_call = "mode_list",
+            elif mode in modegroups[1]:
+                mode_call = "mode_key",
+            elif mode in modegroups[2]:
+                mode_call = "mode_param",
+            else:
+                mode_call = "mode_normal"
+
+            # TODO - aggregation
+            self.call_event("modes", mode_call, line, line.hostmask, target,
+                            adding, mode, param)

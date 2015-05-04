@@ -387,4 +387,3 @@ class ChannelTrack(BaseExtension):
 
         self.call_event("modes", "mode_list", line, setter, target, True,
                         mode, mask, timestamp)
->>>>>>> 1807f03866e9c8c4a7177e08bcf863142a146eab

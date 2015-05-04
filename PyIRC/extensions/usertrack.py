@@ -239,7 +239,7 @@ class UserTrack(BaseExtension):
         callback = partial(self.remove_user, nick)
         self.u_expire_timers[nick] = self.schedule(30, callback)
 
-    def update_username_host(self, line):
+    def update_username_host(self, hostmask_or_line):
         """Update a user's basic info, based on line hostmask info.
 
         Avoid using this method directly unless you know what you are doing.
@@ -248,10 +248,16 @@ class UserTrack(BaseExtension):
             This mostly exists for brain-dead networks that don't quit users
             when they get cloaked.
         """
-        if not line.hostmask or not line.hostmask.nick:
+        if hasattr(hostmask_or_line, 'hostmask'):
+            hostmask = hostmask_or_line.hostmask
+        elif hasattr(hostmask_or_line, 'nick'):
+            hostmask = hostmask_or_line
+        else:
+            raise ValueError("Expected a Hostmask or Line instance")
+
+        if not hostmask or hostmask.nick:
             return
 
-        hostmask = line.hostmask
         user = self.get_user(hostmask.nick)
         if not user:
             return

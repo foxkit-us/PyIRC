@@ -144,7 +144,7 @@ class BaseTrack(BaseExtension):
     extensions."""
 
     hook_classes = {
-        "mode": ModeEvent,
+        "modes": ModeEvent,
         "scope": ScopeEvent,
     }
 
@@ -183,7 +183,7 @@ class BaseTrack(BaseExtension):
             if not hostmask:
                 continue
 
-            modes, hostmask = status_prefix_parse(nick, prefix)
+            modes, hostmask = status_prefix_parse(hostmask, prefix)
             hostmask = Hostmask.parse(hostmask)
             
             modes = [(m, hostmask, True) for m in modes]

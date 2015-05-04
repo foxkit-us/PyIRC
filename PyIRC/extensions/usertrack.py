@@ -343,6 +343,53 @@ class UserTrack(BaseExtension):
         # Add the channel
         user.channels[channel] = modes
 
+    @hook("scope", "user_part")
+    @hook("scope", "user_kick")
+    def part(self, event):
+        target = event.target
+        channel = event.scope
+
+        user = self.get_user(target.nick)
+        if not user:
+            logger.warning("Got a part/kick for a user not found: %s (in %s)",
+                           target.nick, channel)
+            return
+        elif channel not in user.channels:
+            logger.warning("Got a part/kick for a user not in a channel: %s "
+                           "(in %s)", target.nick, channel)
+            return
+
+        user.channels.pop(channel)
+
+        basicrfc = self.get_extension("BasicRFC")
+        if self.casecmp(target.nick, basicrfc.nick):
+            # We left the channel, scan all users to remove unneeded ones
+            for u_nick, u_user in list(self.users.items()):
+                if channel in u_user.channels:
+                    # Purge from the cache since we don't know for certain.
+                    del u_user.channels[channel]
+
+                if self.casecmp(u_nick, basicrfc.nick):
+                    # Don't delete ourselves!
+                    continue
+
+                if not u_user.channels:
+                    # Delete the user outright to purge any cached data
+                    # The data must be considered invalid when we leave
+                    # TODO - possible MONITOR support?
+                    self.remove_user(u_nick)
+                    continue
+
+        elif not user.channels:
+            # No more channels and not us, delete
+            # TODO - possible MONITOR support?
+            self.remove_user(target.nick)
+
+    @hook("scope", "user_quit")
+    def quit(self, event):
+        # User's gone
+        self.remove_user(event.target)
+
     @hook("commands", Numerics.RPL_WELCOME)
     def welcome(self, event):
         # Obtain our own host
@@ -483,49 +530,6 @@ class UserTrack(BaseExtension):
                 self.whois_send.add(hostmask.nick)
 
             self.timeout_user(hostmask.nick)
-
-    @hook("commands", "KICK")
-    @hook("commands", "PART")
-    def part(self, event):
-        channel = event.line.params[0]
-
-        if event.line.command.lower() == 'part':
-            user = self.get_user(event.line.hostmask.nick)
-        elif event.line.command.lower() == 'kick':
-            user = self.get_user(event.line.params[1])
-        assert user
-
-        assert channel in user.channels
-        del user.channels[channel]
-
-        basicrfc = self.get_extension("BasicRFC")
-        if self.casecmp(user.nick, basicrfc.nick):
-            # We left the channel, scan all users to remove unneeded ones
-            for u_nick, u_user in list(self.users.items()):
-                if channel in u_user.channels:
-                    # Purge from the cache since we don't know for certain.
-                    del u_user.channels[channel]
-
-                if self.casecmp(u_nick, basicrfc.nick):
-                    # Don't delete ourselves!
-                    continue
-
-                if not u_user.channels:
-                    # Delete the user outright to purge any cached data
-                    # The data must be considered invalid when we leave
-                    # TODO - possible MONITOR support?
-                    self.remove_user(u_nick)
-                    continue
-
-        elif not user.channels:
-            # No more channels and not us, delete
-            # TODO - possible MONITOR support?
-            self.remove_user(event.line.hostmask.nick)
-
-    @hook("commands", "QUIT")
-    def quit(self, event):
-        assert event.line.hostmask.nick in self.users
-        self.remove_user(event.line.hostmask.nick)
 
     @hook("commands", Numerics.RPL_ENDOFWHO)
     def who_end(self, event):

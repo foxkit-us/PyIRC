@@ -197,6 +197,15 @@ class ChannelTrack(BaseExtension):
             channel.modes.pop(event.param, None)
 
     @hook("scope", "user_join")
+    def join(self, event):
+        # JOIN event
+        basicrfc = self.get_extension("BasicRFC")
+        if self.casecmp(event.target.nick, basicrfc.nick):
+            # We're joining
+            self.add_channel(event.scope)
+
+        self.burst(event)
+
     @hook("scope", "user_burst")
     def burst(self, event):
         # NAMES event

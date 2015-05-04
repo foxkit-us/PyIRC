@@ -337,7 +337,7 @@ class UserTrack(BaseExtension):
         self.burst(event)
 
         basicrfc = self.get_extension("BasicRFC")
-        if self.casecmp(target.nick, basicrfc.nick):
+        if self.casecmp(event.target.nick, basicrfc.nick):
             # It's us!
             isupport = self.get_extension("ISupport")
             params = [channel]

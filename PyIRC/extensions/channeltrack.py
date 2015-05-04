@@ -325,13 +325,6 @@ class ChannelTrack(BaseExtension):
             # Change the nick
             channel.users[newnick] = channel.users.pop(oldnick)
 
-    @hook("commands", "QUIT")
-    def quit(self, event):
-        nick = event.line.hostmask.nick
-
-        for channel in self.channels.values():
-            channel.users.pop(nick, None)
-
     @hook("commands", Numerics.RPL_BANLIST)
     def ban_list(self, event):
         return self.handle_list(event, 'b')

@@ -290,6 +290,59 @@ class UserTrack(BaseExtension):
         self.users.clear()
         self.whox_send.clear()
 
+    @hook("modes", "mode_prefix")
+    def prefix(self, event):
+        # Parse into hostmask in case of usernames-in-host
+        hostmask = Hostmask.parse(event.param)
+
+        assert hostmask
+
+        user = self.get_user(hostmask.nick)
+        assert user
+
+        channel = user.channels[event.target]
+        if event.adding:
+            channel.add(event.mode)
+        else:
+            channel.discard(event.mode)
+
+    @hook("scope", "user_burst")
+    @hook("scope", "user_join")
+    def join(self, event):
+        target = event.target
+        channel = event.scope
+        modes = {m[0] for m in event.modes} if event.modes else set()
+
+        # User no longer expiring
+        self.u_expire_timers.pop(target.nick, None)
+
+        user = self.get_user(target.nick)
+        if not user:
+            user = self.add_user(target.nick, username=target.username,
+                                 host=target.host, gecos=event.gecos,
+                                 account=event.account)
+        else:
+            self.update_username_host(target)
+
+        basicrfc = self.get_extension("BasicRFC")
+
+        if self.casecmp(nick, basicrfc.nick):
+            # It's us!
+            isupport = self.get_extension("ISupport")
+
+            params = [channel]
+            if isupport.get("WHOX"):
+                # Use WHOX if possible
+                num = ''.join(str(randint(0, 9)) for x in range(randint(1, 3)))
+                params.append("%tcuihsnflar," + num)
+                self.whox_send.append(num)
+
+            sched = self.schedule(2, partial(self.send, "WHO", params))
+            self.who_timers[channel] = sched
+
+        # Add the channel
+        user.channels[channel] = modes
+
     @hook("commands", Numerics.RPL_WELCOME)
     def welcome(self, event):
         # Obtain our own host
@@ -372,67 +425,6 @@ class UserTrack(BaseExtension):
 
         user.username = event.line.params[0]
         user.host = event.line.params[1]
-
-    @hook("commands", "JOIN")
-    def join(self, event):
-        channel = event.line.params[0]
-        nick = event.line.hostmask.nick
-
-        user = self.get_user(nick)
-        if user:
-            # Remove any pending expiration timer
-            self.u_expire_timers.pop(nick, None)
-        else:
-            # Create a new user with available info
-            cap_negotiate = self.get_extension("CapNegotiate")
-            if cap_negotiate and 'extended-join' in cap_negotiate.local:
-                account = event.line.params[1]
-                if account == '*':
-                    account = ''
-
-                gecos = event.line.params[2]
-
-            user = self.add_user(nick, account=account, gecos=gecos)
-
-        # Update info
-        self.update_username_host(event.line)
-
-        basicrfc = self.get_extension("BasicRFC")
-        if self.casecmp(nick, basicrfc.nick):
-            # It's us!
-            isupport = self.get_extension("ISupport")
-
-            params = [channel]
-            if isupport.get("WHOX"):
-                # Use WHOX if possible
-                num = ''.join(str(randint(0, 9)) for x in range(randint(1, 3)))
-                params.append("%tcuihsnflar," + num)
-                self.whox_send.append(num)
-
-            sched = self.schedule(2, partial(self.send, "WHO", params))
-            self.who_timers[channel] = sched
-
-        # Add the channel
-        user.channels[channel] = set()
-
-    @hook("modes", "mode_prefix")
-    def prefix(self, event):
-        # Parse into hostmask in case of usernames-in-host
-        hostmask = Hostmask.parse(event.param)
-
-        assert hostmask
-
-        user = self.get_user(hostmask.nick)
-        if not user:
-            # Add the user
-            user = self.add_user(hostmask.nick, user=hostmask.username,
-                                 host=hostmask.host)
-
-        channel = user.channels[event.target]
-        if event.adding:
-            channel.add(event.mode)
-        else:
-            channel.discard(event.mode)
 
     @hook("commands", "NICK")
     def nick(self, event):

@@ -209,19 +209,8 @@ class ChannelTrack(BaseExtension):
         if user not in channel.users:
             channel.users[user] = set()
 
-        modes = event.modes
-        if modes:
-            channel.users[user].update(m[0] for m in modes)
-
-    @hook("scope", "user_join")
-    def join(self, event):
-        channel = self.get_channel(event.scope)
-        if not channel:
-            return
-
-        user = event.target.nick
-
-        channel.users[user] = set()
+        modes = {m[0] for m in event.modes} if event.modes else set()
+        channel.users[user] = modes
 
     @hook("scope", "user_part")
     @hook("scope", "user_kick")

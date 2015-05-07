@@ -81,7 +81,7 @@ class ModeEvent(LineEvent):
 
 
 class TrackEvent(Event):
-    
+
     """Base tracking event"""
 
     def __init__(self, event, target):
@@ -148,6 +148,12 @@ class BaseTrack(BaseExtension):
         "scope": ScopeEvent,
     }
 
+    caps = {
+        "extended-join": [],
+        "multi-prefix": [],
+        "userhost-in-names": [],
+    }
+
     requires = ["ISupport"]
 
     def __init__(self, *args, **kwargs):
@@ -182,7 +188,7 @@ class BaseTrack(BaseExtension):
         channel = params[2]
 
         isupport = self.get_extension("ISupport")
-        prefix = prefix_parse(isupport.get("PREFIX")) 
+        prefix = prefix_parse(isupport.get("PREFIX"))
 
         for hostmask in params[3].split(' '):
             if not hostmask:
@@ -190,7 +196,7 @@ class BaseTrack(BaseExtension):
 
             modes, hostmask = status_prefix_parse(hostmask, prefix)
             hostmask = Hostmask.parse(hostmask)
-            
+
             modes = [(m, hostmask, True) for m in modes]
 
             self.call_event("scope", "user_burst", hostmask, channel, False,
@@ -287,5 +293,5 @@ class BaseTrack(BaseExtension):
 
         if protoctl:
             self.send("PROTOCTL", protoctl)
-        
+
         self.sent_protoctl = True

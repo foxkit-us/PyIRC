@@ -134,9 +134,6 @@ class UserTrack(BaseExtension):
         "account-notify": [],
         "away-notify": [],
         "chghost": [],
-        "extended-join": [],
-        "multi-prefix": [],
-        "userhost-in-names": [],
     }
 
     requires = ["BasicRFC", "ISupport", "BaseTrack"]

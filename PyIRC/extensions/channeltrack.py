@@ -97,10 +97,6 @@ class ChannelTrack(BaseExtension):
 
     For more elaborate user tracking, see usertrack.UserTrack. """
 
-    caps = {
-        "multi-prefix": [],
-    }
-
     requires = ["BaseTrack", "BasicRFC", "ISupport"]
 
     def __init__(self, base, **kwargs):

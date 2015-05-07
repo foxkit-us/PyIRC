@@ -150,6 +150,11 @@ class BaseTrack(BaseExtension):
 
     requires = ["ISupport"]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.sent_protoctl = False
+
     @hook("commands", "JOIN", PRIORITY_FIRST)
     def join(self, event):
         line = event.line
@@ -263,3 +268,24 @@ class BaseTrack(BaseExtension):
             # TODO - aggregation
             self.call_event("modes", mode_call, line, line.hostmask, target,
                             adding, mode, param)
+
+    @hook("commands", Numerics.RPL_ENDOFMOTD)
+    @hook("commands", Numerics.ERR_NOMOTD)
+    def send_protoctl(self, event):
+        # Send the PROTOCTL NAMESX/UHNAMES stuff if we have to
+        if self.sent_protoctl:
+            return
+
+        isupport = self.get_extension("ISupport")
+
+        protoctl = []
+        if isupport.get("UHNAMES"):
+            protoctl.append("UHNAMES")
+
+        if isupport.get("NAMESX"):
+            protoctl.append("NAMESX")
+
+        if protoctl:
+            self.send("PROTOCTL", protoctl)
+        
+        self.sent_protoctl = True

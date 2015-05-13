@@ -55,16 +55,6 @@ CAP subcommands are handled using this event. The most interesting thing to
 most clients is the ``ack`` subcommand, used to acknowedge capabilities.
 However, any subcommand may be hooked.
 
-hooks
-^^^^^
-
-.. warning::
-   This will be renamed/broken up at some point in the future.
-
-The catch-all for many default events, particularly connection events.
-
-A :py:class:`~PyIRC.event.HookEvent` is passed in.
-
 commands_ctcp
 ^^^^^^^^^^^^^
 
@@ -90,15 +80,35 @@ registered by default.
 A :py:class:`~PyIRC.extensions.ctcp.CTCPEvent` is passed in, which passes in
 the :py:class:`~PyIRC.auxparse.CTCPMessage` from the event.
 
+hooks
+^^^^^
+
+.. warning::
+   This will be renamed/broken up at some point in the future.
+
+The catch-all for many default events, particularly connection events.
+
+A :py:class:`~PyIRC.event.HookEvent` is passed in.
+
 modes
 ^^^^^
 
 .. note::
-   These hooks requires the :py:class:`~PyIRC.extensions.ModeHandler`
+   These hooks requires the :py:class:`~PyIRC.extensions.basetrack.BaseTrack`
    extension.
 
 These hooks emit easier-to-use events for modes, as opposed to parsing
 ``MODE`` commands yourself.
+
+scope
+^^^^^
+
+.. note::
+   These hooks require the :py:class:`~PyIRC.extensions.basetrack.BaseTrack`
+   extension.
+
+These hooks emit events when a user either becomes visible (connects/joins),
+or loses visibility (leaves/disconnects).
 
 Events
 ------
@@ -196,3 +206,33 @@ mode_normal
 
 Fired when receiving a mode that takes no parameters. This is the vast
 majority of modes, and includes ``+c``, ``+t``, etc.
+
+scope
+^^^^^
+
+These events are fired when a user enters or leaves scope.
+
+user_join
+"""""""""
+
+Fired when a user joins a channel.
+
+user_burst
+""""""""""
+
+Fired when multiple users join a channel, one event per user.
+
+user_part
+"""""""""
+
+Fired when a user leaves a channel.
+
+user_kick
+"""""""""
+
+Fired when a user is removed from a channel by an administrator.
+
+user_quit
+"""""""""
+
+Fired when a user disconnects from IRC.

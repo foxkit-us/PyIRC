@@ -193,18 +193,18 @@ def status_prefix_parse(string, prefix):
         The mode prefixes from ISupport.supported['PREFIX'], optionally parsed
         by :py:func:`prefix_parse`.
 
-    :returns: (status, string) tuple, where `status` is a list of each sigil and
+    :returns: (status, string) tuple, where `status` is a set of the statuses.
               `string` is the string with all leading status sigils removed.
 
     >>> status_prefix_parse("@#channel", "(ov)@+")
-    ({'@'}, '#channel')
+    ({'o'}, '#channel')
     >>> status_prefix_parse("+#ch@nnel", "(ov)@+")
-    ({'+'}, '#ch@nnel')
+    ({'v'}, '#ch@nnel')
     >>> status_prefix_parse("+#", "(ov)@+")
-    ({'+'}, '#')
+    ({'v'}, '#')
     >>> modes, channel = status_prefix_parse("@+#", "(ov)@+")
     >>> sorted(modes), channel
-    (['+', '@'], '#')
+    (['o', 'v'], '#')
     """
     if isinstance(prefix, ParsedPrefix):
         prefix = prefix.prefix_to_mode
@@ -215,7 +215,7 @@ def status_prefix_parse(string, prefix):
     for char in str(string):
         if string[0] in prefix:
             prefix_char, string = string[0], string[1:]
-            modes.add(prefix_char)
+            modes.add(prefix.prefix_to_mode[prefix_char])
         else:
             return (modes, string)
 

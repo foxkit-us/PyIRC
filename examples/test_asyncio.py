@@ -38,13 +38,12 @@ class TestProtocol(IRCProtocol):
         if len(params) < 2:
             return
         
-        basicrfc = self.get_extension("BasicRFC")
-        if self.casecmp(basicrfc.nick, params[0]):
+        if self.casecmp(self.basic_rfc.nick, params[0]):
             params = [line.hostmask.nick, choice(self.yifflines)]
         else:
             # Ensure it starts with us
-            check_self = params[-1][:len(basicrfc.nick)]
-            if not self.casecmp(basicrfc.nick, check_self):
+            check_self = params[-1][:len(self.basic_rfc.nick)]
+            if not self.casecmp(self.basic_rfc.nick, check_self):
                 return
 
             params = [params[0], choice(self.flirtlines)]

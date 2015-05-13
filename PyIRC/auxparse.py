@@ -215,7 +215,7 @@ def status_prefix_parse(string, prefix):
     for char in str(string):
         if string[0] in prefix:
             prefix_char, string = string[0], string[1:]
-            modes.add(prefix.prefix_to_mode[prefix_char])
+            modes.add(prefix[prefix_char])
         else:
             return (modes, string)
 

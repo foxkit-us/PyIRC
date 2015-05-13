@@ -70,7 +70,7 @@ class ModeEvent(Event):
             The time this mode was set. If None, the current system time will
             be used.
         """
-        super().__init__(event, line)
+        super().__init__(event)
 
         self.setter = setter
         self.target = target

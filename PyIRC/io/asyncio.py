@@ -33,7 +33,7 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
     Python 3.4 and above in the standard library, and 3.3 via an external
     module.
 
-    The same methods as :py:class::`~PyIRC.base.IRCBase` are available.
+    The same methods as :py:class:`~PyIRC.base.IRCBase` are available.
 
     .. warning:
         This module is incompatible with StartTLS, and will unload that

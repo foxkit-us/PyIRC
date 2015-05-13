@@ -131,7 +131,7 @@ class UserTrack(BaseExtension):
     :ivar users:
         Mapping of users, where the keys are casemapped nicks, and values are
         User instances. You should probably prefer
-        :py:class::`~PyIRC.extensions.usertrack.Usertrack.get_user` to direct
+        :py:class:`~PyIRC.extensions.usertrack.Usertrack.get_user` to direct
         lookups on this dictionary.
     """
 

@@ -251,7 +251,7 @@ class BaseTrack(BaseExtension):
         prefix = prefix_parse(isupport.get("PREFIX"))
 
         line = event.line
-        params = params[:] if line.command == "MODE" else params[1:]
+        params = line.params[:] if line.command == "MODE" else line.params[1:]
 
         target = params[0]
         modes = params[1]

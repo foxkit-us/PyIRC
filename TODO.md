@@ -10,7 +10,7 @@
 
 ## User tracking
 - [x] NAMES tracking
-- [ ] NAMESX support (worth doing?)
+- [x] NAMESX support (worth doing?)
 - [x] multi-prefix support
 - [x] WHO/WHOX usage for enhanced user information
 - [x] WHOIS support
@@ -29,7 +29,7 @@
 - [x] CTCP
 - [ ] DCC
 - [x] NickServ/Q support
-- [ ] PROTOCTL (probably not worth it)
+- [x] PROTOCTL
 
 ## IRCv3
 - [ ] Metadata (3.2+)
@@ -57,3 +57,5 @@
 - [ ] Unit tests (some)
 - [x] asyncio support
 - [ ] gevent support (Py3 only, sorry!)
+- [ ] Allow addition of extensions without deleting every instance
+- [ ] Clean way to reload extensions

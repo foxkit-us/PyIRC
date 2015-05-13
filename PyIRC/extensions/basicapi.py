@@ -64,7 +64,7 @@ class BasicAPI(BaseExtension):
         :returns:
             Target to reply to
         """
-        isupport = self.get_extension("ISupport")
+        isupport = self.base.isupport
 
         # Check for STATUSMSG
         statusmsg = tuple(isupport.get("STATUSMSG"))
@@ -148,18 +148,17 @@ class BasicAPI(BaseExtension):
 
             params.append(param)
 
-        isupport = self.get_extension("ISupport")
-        if isupport:
-            modes = isupport.get("MODES")
-            if modes:
-                modes = int(modes)
-            else:
-                # Be conservative
-                modes = 4
+        isupport = self.base.isupport
+        modes = isupport.get("MODES")
+        if modes:
+            modes = int(modes)
+        else:
+            # Be conservative
+            modes = 4
 
-            if modes > 8:
-                # Insanity...
-                modes = 8
+        if modes > 8:
+            # Insanity...
+            modes = 8
 
         groups = (params[n:n + modes] for n in range(0, len(params), modes))
         flag = '+' if add else '-'
@@ -290,7 +289,7 @@ class BasicAPI(BaseExtension):
         if not args:
             raise ValueError("args are needed for this function")
 
-        isupport = self.get_extension("ISupport")
+        isupport = self.base.isupport
         if not isupport:
             extbans = False
         else:
@@ -372,7 +371,7 @@ class BasicAPI(BaseExtension):
         .. note::
             All items are passed through :meth:`process_bantargs`.
         """
-        isupport = self.get_extension("ISupport")
+        isupport = self.base.isupport
         if isupport and not (isupport.get("EXCEPTS") or 'e' in
                              isupport.get("CHANMODES")[0]):
             return False
@@ -401,7 +400,7 @@ class BasicAPI(BaseExtension):
         .. note::
             All items are passed through :meth:`process_bantargs`.
         """
-        isupport = self.get_extension("ISupport")
+        isupport = self.base.isupport
         if isupport and not (isupport.get("EXCEPTS") or 'e' in
                              isupport.get("CHANMODES")[0]):
             return False
@@ -425,7 +424,7 @@ class BasicAPI(BaseExtension):
         .. note::
             All items are passed through :meth:`process_bantargs`.
         """
-        isupport = self.get_extension("ISupport")
+        isupport = self.base.isupport
         if isupport and not (isupport.get("EXCEPTS") or 'I' in
                              isupport.get("CHANMODES")[0]):
             return False
@@ -454,7 +453,7 @@ class BasicAPI(BaseExtension):
         .. note::
             All items are passed through :meth:`process_bantargs`.
         """
-        isupport = self.get_extension("ISupport")
+        isupport = self.base.isupport
         if isupport and not (isupport.get("EXCEPTS") or 'I' in
                              isupport.get("CHANMODES")[0]):
             return False
@@ -485,7 +484,7 @@ class BasicAPI(BaseExtension):
         .. note::
             All items are passed through :meth:`process_bantargs`.
         """
-        isupport = self.get_extension("ISupport")
+        isupport = self.base.isupport
         if not isupport:
             return False
 
@@ -528,7 +527,7 @@ class BasicAPI(BaseExtension):
         .. note::
             All items are passed through :meth:`process_bantargs`.
         """
-        isupport = self.get_extension("ISupport")
+        isupport = self.base.isupport
         if not isupport:
             return False
 

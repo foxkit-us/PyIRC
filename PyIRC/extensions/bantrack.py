@@ -50,12 +50,12 @@ class BanTrack(BaseExtension):
         params = event.line.params
         logger.debug("Creating ban modes for channel %s",
                      params[0])
-        channeltrack = self.get_extension("ChannelTrack")
+        channeltrack = self.base.channel_track
         channel = channeltrack.get_channel(params[0])
 
         channel.synced_list = dict()
 
-        isupport = self.get_extension("ISupport")
+        isupport = self.base.isupport
         modes = isupport.get("CHANMODES")[0]
 
         for mode in modes:
@@ -71,7 +71,7 @@ class BanTrack(BaseExtension):
         if event.param is None:
             return
 
-        channeltrack = self.get_extension("ChannelTrack")
+        channeltrack = self.base.channel_track
         channel = channeltrack.get_channel(event.target)
         if not channel:
             # Not a channel or we don't know about it.
@@ -105,12 +105,12 @@ class BanTrack(BaseExtension):
             # Voice, don't care
             return
 
-        basicrfc = self.get_extension("BasicRFC")
+        basicrfc = self.base.basic_rfc
         if not self.casecmp(event.param, basicrfc.nick):
             # Not us, don't care
             return
 
-        channeltrack = self.get_extension("ChannelTrack")
+        channeltrack = self.base.channel_track
         channel = channeltrack.get_channel(event.target)
         if not channel:
             # Not a channel or we don't know about it.
@@ -123,7 +123,7 @@ class BanTrack(BaseExtension):
                     check += sync
 
             if check:
-                isupport = self.get_extension("ISupport")
+                isupport = self.base.isupport
                 self.send("MODE", [event.target, check])
 
     @hook("commands", Numerics.RPL_ENDOFBANLIST)
@@ -159,7 +159,7 @@ class BanTrack(BaseExtension):
         self.set_synced(event, 'w')
 
     def set_synced(self, event, mode):
-        channeltrack = self.get_extension("ChannelTrack")
+        channeltrack = self.base.channel_track
         channel = channeltrack.get_channel(event.line.params[1])
         if not channel:
             # Not a channel or we don't know about it.

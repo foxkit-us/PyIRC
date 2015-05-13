@@ -85,7 +85,7 @@ class KickRejoin(BaseExtension):
         # This is how you can get another extension. In our case we retrieve
         # ISUPPORT, for dynamic discovery of valid channel types. Note that
         # these are case-sensitive.
-        isupport = self.get_extension("ISupport")
+        isupport = self.base.isupport
 
         # Now that we have it (and it's required so we don't have to check for
         # None), we can call methods from it. :D
@@ -115,7 +115,7 @@ class KickRejoin(BaseExtension):
         take.
         """
         # Retrieve the BasicRFC extension handle.
-        basicrfc = self.get_extension("BasicRFC")
+        basicrfc = self.base.basic_rfc
 
         params = event.line.params
 

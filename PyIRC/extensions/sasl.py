@@ -58,7 +58,7 @@ class SASLBase(BaseExtension):
 
     @property
     def caps(self):
-        cap_negotiate = self.get_extension("CapNegotiate")
+        cap_negotiate = self.base.cap_negotiate
 
         if "sasl" not in cap_negotiate.remote:
             # No SASL
@@ -86,7 +86,7 @@ class SASLBase(BaseExtension):
 
         self.authenticated = False
 
-        cap_negotiate = self.get_extension("CapNegotiate")
+        cap_negotiate = self.base.cap_negotiate
         if cap_negotiate.remote["sasl"]:
             # 3.2 style
             params = cap_negotiate.remote["sasl"]
@@ -109,12 +109,12 @@ class SASLBase(BaseExtension):
 
         self.authenticated = True
 
-        services_login = self.get_extension("ServicesLogin")
+        services_login = self.base.services_login
         if services_login:
             # No need to authenticate
             services_login.authenticated = True
 
-        cap_negotiate = self.get_extension("CapNegotiate")
+        cap_negotiate = self.base.cap_negotiate
         cap_negotiate.cont(self.cap_event)
 
     @hook("commands", Numerics.ERR_SASLFAIL)
@@ -123,7 +123,7 @@ class SASLBase(BaseExtension):
     def fail(self, event):
         logger.info("SASL authentication failed as %s", self.username)
 
-        cap_negotiate = self.get_extension("CapNegotiate")
+        cap_negotiate = self.base.cap_negotiate
         cap_negotiate.cont(self.cap_event)
 
     @hook("commands", Numerics.ERR_SASLALREADY)

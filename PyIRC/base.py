@@ -116,8 +116,10 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
 
         Do not call this unless you know what you're doing
         """
-        isupport = self.extensions.get_extension("ISupport")
-        case = isupport.get("CASEMAPPING").upper()
+        if not hasattr(self, "isupport"):
+            case = "RFC1459"
+        else:
+            case = self.isupport.get("CASEMAPPING").upper()
 
         if case == "ASCII":
             case = IRCString.ASCII

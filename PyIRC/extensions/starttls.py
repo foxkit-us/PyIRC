@@ -66,12 +66,12 @@ class StartTLS(BaseExtension):
         logger.info("Performing STARTTLS initiation...")
         self.wrap_ssl()
 
-        cap_negotiate = self.get_extension("CapNegotiate")
+        cap_negotiate = self.base.cap_negotiate
         cap_negotiate.cont(self.tls_event)
 
     @hook("commands", Numerics.ERR_STARTTLS)
     def abort(self, event):
         logger.critical("STARTTLS initiation failed, connection not secure")
 
-        cap_negotiate = self.get_extension("CapNegotiate")
+        cap_negotiate = self.base.cap_negotiate
         cap_negotiate.cont(self.tls_event)

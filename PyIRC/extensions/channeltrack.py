@@ -201,7 +201,7 @@ class ChannelTrack(BaseExtension):
     @hook("scope", "user_join")
     def join(self, event):
         # JOIN event
-        basicrfc = self.get_extension("BasicRFC")
+        basicrfc = self.base.basic_rfc
         if self.casecmp(event.target.nick, basicrfc.nick):
             # We're joining
             self.add_channel(event.scope)
@@ -231,7 +231,7 @@ class ChannelTrack(BaseExtension):
 
         user = event.target.nick
 
-        basicrfc = self.get_extension("BasicRFC")
+        basicrfc = self.base.basic_rfc
         if self.casecmp(user, basicrfc.nick):
             # We are leaving
             self.remove_channel(channel.name)
@@ -346,7 +346,7 @@ class ChannelTrack(BaseExtension):
 
     @hook("commands", Numerics.RPL_QUIETLIST)
     def quiet_list(self, event):
-        isupport = self.get_extension("ISupport")
+        isupport = self.base.isupport
         if 'q' in isupport.get("PREFIX"):
             logger.critical("Got a quiet mode, but mode for quiet is " \
                             "unknown to us!")

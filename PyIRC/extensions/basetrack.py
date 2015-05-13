@@ -193,7 +193,7 @@ class BaseTrack(BaseExtension):
 
         channel = params[2]
 
-        isupport = self.get_extension("ISupport")
+        isupport = self.base.isupport
         prefix = prefix_parse(isupport.get("PREFIX"))
 
         for hostmask in params[3].split(' '):
@@ -246,7 +246,7 @@ class BaseTrack(BaseExtension):
     @hook("commands", "MODE")
     def mode(self, event):
         # Offer an easy to use interface for mode
-        isupport = self.get_extension("ISupport")
+        isupport = self.base.isupport
         modegroups = isupport.get("CHANMODES")
         prefix = prefix_parse(isupport.get("PREFIX"))
 
@@ -287,7 +287,7 @@ class BaseTrack(BaseExtension):
         if self.sent_protoctl:
             return
 
-        isupport = self.get_extension("ISupport")
+        isupport = self.base.isupport
 
         protoctl = []
         if isupport.get("UHNAMES"):

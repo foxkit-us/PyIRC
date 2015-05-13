@@ -161,7 +161,7 @@ class UserTrack(BaseExtension):
         self.whox_send = list()
 
         # Create ourselves
-        basicrfc = self.get_extension("BasicRFC")
+        basicrfc = self.base.basic_rfc
         self.add_user(basicrfc.nick, user=self.username,
                       gecos=self.gecos)
 
@@ -343,10 +343,10 @@ class UserTrack(BaseExtension):
         target = event.target
         channel = event.scope
 
-        basicrfc = self.get_extension("BasicRFC")
+        basicrfc = self.base.basic_rfc
         if self.casecmp(target.nick, basicrfc.nick):
             # It's us!
-            isupport = self.get_extension("ISupport")
+            isupport = self.base.isupport
             params = [channel]
             if isupport.get("WHOX"):
                 # Use WHOX if possible
@@ -375,7 +375,7 @@ class UserTrack(BaseExtension):
 
         user.channels.pop(channel)
 
-        basicrfc = self.get_extension("BasicRFC")
+        basicrfc = self.base.basic_rfc
         if self.casecmp(target.nick, basicrfc.nick):
             # We left the channel, scan all users to remove unneeded ones
             for u_nick, u_user in list(self.users.items()):
@@ -416,7 +416,7 @@ class UserTrack(BaseExtension):
         if not (len(params) > 1 and params[1]):
             return
 
-        basicrfc = self.get_extension("BasicRFC")
+        basicrfc = self.base.basic_rfc
 
         for mask in params[1].split(' '):
             if not mask:
@@ -594,7 +594,7 @@ class UserTrack(BaseExtension):
         if not user:
             return
 
-        isupport = self.get_extension("ISupport")
+        isupport = self.base.isupport
         prefix = prefix_parse(isupport.get("PREFIX"))
 
         for channel in event.line.params[-1].split():
@@ -684,7 +684,7 @@ class UserTrack(BaseExtension):
         if not user:
             return
 
-        isupport = self.get_extension("ISupport")
+        isupport = self.base.isupport
 
         if isupport.get("RFC2812"):
             # IRCNet, for some stupid braindead reason, sends SID here. Why? I
@@ -755,7 +755,7 @@ class UserTrack(BaseExtension):
 
         if channel != '*':
             # Convert symbols to modes
-            isupport = self.get_extension("ISupport")
+            isupport = self.base.isupport
             prefix = prefix_parse(isupport.get("PREFIX")).prefix_to_mode
 
             mode = set()

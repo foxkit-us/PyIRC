@@ -21,7 +21,7 @@
 ## Introspection
 - [x] Our present nick (knowing about SANICK/FORCENICK/SVSNICK)
 - [x] Present hostname (mostly)
-- [ ] Present cloak
+- [x] Present cloak
 - [x] Lag checking
 
 # Standards compliance

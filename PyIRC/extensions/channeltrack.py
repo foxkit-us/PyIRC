@@ -251,10 +251,6 @@ class ChannelTrack(BaseExtension):
     @hook("commands", Numerics.RPL_TOPIC)
     @hook("commands", "TOPIC")
     def topic(self, event):
-        channel = self.get_channel(event.line.params[0])
-        if not channel:
-            return
-
         if event.line.command.lower() == "topic":
             channel = self.get_channel(event.line.params[0])
 
@@ -268,7 +264,7 @@ class ChannelTrack(BaseExtension):
 
     @hook("commands", Numerics.RPL_NOTOPIC)
     def no_topic(self, event):
-        channel = self.get_channel(event.line.params[0])
+        channel = self.get_channel(event.line.params[1])
         if not channel:
             return
 
@@ -276,7 +272,7 @@ class ChannelTrack(BaseExtension):
 
     @hook("commands", Numerics.RPL_TOPICWHOTIME)
     def topic_who_time(self, event):
-        channel = self.get_channel(event.line.params[0])
+        channel = self.get_channel(event.line.params[1])
         if not channel:
             return
 

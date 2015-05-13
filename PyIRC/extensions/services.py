@@ -29,7 +29,11 @@ class ServicesLogin(BaseExtension):
 
     It also creates a security hole, as you can never be 100% sure who or
     what you're talking to (though some networks support a full nick!user@host
-    in the target to message a user).
+    in the target to message a user). This makes password disclosure much more
+    likely.
+
+    This extension adds ``base.services_login` as itself as an alias for
+    ``get_extension("ServicesLogin").``.
     """
 
     def __init__(self, base, **kwargs):
@@ -59,6 +63,8 @@ class ServicesLogin(BaseExtension):
         """
 
         self.base = base
+
+        self.base.services_login = self
 
         self.username = kwargs.get("services_username", self.nick)
         self.password = kwargs.get("services_password")

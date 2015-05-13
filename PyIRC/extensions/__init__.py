@@ -40,7 +40,7 @@ __all_cls__ = [AutoJoin, BanTrack, BaseTrack, BasicAPI, BasicRFC, CapNegotiate,
 
 
 extensions_db = {cls.__name__ : cls for cls in __all_cls__}
-"""A reference of all extensions by name"""
+"""A reference of all built-in extensions by name"""
 
 
 base_recommended = [AutoJoin, BasicRFC, CTCP, ISupport]

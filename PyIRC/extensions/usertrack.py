@@ -123,11 +123,16 @@ class UserTrack(BaseExtension):
     """ Track various user metrics, such as account info, and some channel
     tracking.
 
+    This extension adds ``base.user_track`` as itself as an alias for
+    ``get_extension("UserlTrack").``.
+
     The following attribute is publlicly available:
 
-    users
+    :ivar users:
         Mapping of users, where the keys are casemapped nicks, and values are
-        User instances.
+        User instances. You should probably prefer
+        :py:class::`~PyIRC.extensions.usertrack.Usertrack.get_user` to direct
+        lookups on this dictionary.
     """
 
     caps = {
@@ -140,6 +145,8 @@ class UserTrack(BaseExtension):
 
     def __init__(self, base, **kwargs):
         self.base = base
+
+        self.base.user_track = self
 
         self.u_expire_timers = IRCDict(self.case)
         self.who_timers = IRCDict(self.case)

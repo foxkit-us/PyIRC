@@ -29,7 +29,11 @@ class ISupport(BaseExtension):
 
     """ Parse ISUPPORT attributes into useful things.
 
-    Parsing is done according to auxparse.isupport_parse semantics.
+    Parsing is done according to the semantics defined by
+    :py:class::`~PyIRC.auxparse.isupport_parse``.
+
+    This extension adds ``base.isupport`` as itself as an alias for
+    ``get_extension("ISupport").``.
 
     The following attributes are available:
 

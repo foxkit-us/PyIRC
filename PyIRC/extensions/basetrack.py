@@ -141,7 +141,11 @@ class ScopeEvent(TrackEvent):
 class BaseTrack(BaseExtension):
 
     """Base tracking extension, providing events for other tracking
-    extensions."""
+    extensions.
+
+    This extension adds ``base.base_track`` as itself as an alias for
+    ``get_extension("BaseTrack").``.
+    """
 
     hook_classes = {
         "modes": ModeEvent,
@@ -158,6 +162,8 @@ class BaseTrack(BaseExtension):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.base.base_track = self
 
         self.sent_protoctl = False
 

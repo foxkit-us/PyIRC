@@ -89,18 +89,24 @@ class ChannelTrack(BaseExtension):
     They are stored casemapped to make it easier to look them up in other
     extensions.
 
+    This extension adds ``base.channel_track`` as itself as an alias for
+    ``get_extension("ChannelTrack").``.
+
     The following attribute is publicly available:
 
-    channels
+    :ivar channels:
         Mapping of channels, where the keys are casemapped channel names, and
         the values are Channel instances.
 
-    For more elaborate user tracking, see usertrack.UserTrack. """
+    For more elaborate user tracking, see usertrack.UserTrack."""
 
     requires = ["BaseTrack", "BasicRFC", "ISupport"]
 
     def __init__(self, base, **kwargs):
         self.base = base
+
+        # Convenience method
+        self.base.channel_track = self
 
         # Our channel set
         self.channels = IRCDict(self.case)

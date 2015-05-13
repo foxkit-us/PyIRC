@@ -46,6 +46,9 @@ class CapNegotiate(BaseExtension):
 
     This extension does little on its own, but provides a public API.
 
+    This extension adds ``base.cap_negotiate`` as itself as an alias for
+    ``get_extension("CapNegotiate").``.
+
     The following attributes are available:
 
     :ivar supported:
@@ -76,6 +79,8 @@ class CapNegotiate(BaseExtension):
     def __init__(self, base, **kwargs):
 
         self.base = base
+
+        self.base.cap_negotiate = self
 
         # What we support - other extensions can add doodads to this
         self.supported = dict()

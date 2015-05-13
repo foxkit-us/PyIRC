@@ -25,6 +25,9 @@ class BasicRFC(BaseExtension):
     can track its own nick. Nobody is making you use this implementation, but
     it is highly recommended.
 
+    This extension adds ``base.basic_rfc`` as itself as an alias for
+    ``get_extension("BasicRFC").``.
+
     This extension implements the following user-facing attributes:
 
     :ivar nick:
@@ -40,6 +43,8 @@ class BasicRFC(BaseExtension):
 
     def __init__(self, base, **kwargs):
         self.base = base
+
+        self.base.basic_rfc = self
 
         self.prev_nick = None
         self.nick = self.base.nick

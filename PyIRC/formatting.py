@@ -48,11 +48,11 @@ class ColourEscape(namedtuple("ColourEscape", "intense base")):
 @unique
 class Colour(IntEnum):
 
-    """A list of colour numbers from name to index
+    """A list of colour numbers from name to index.
 
-    mIRC maintains a list of ``colour indexes to names``.
+    mIRC maintains a list of `colour indexes to names`_.
 
-    .. ``colour indexes to names``: http://www.mirc.com/colors.html
+    .. _colour indexes to names: http://www.mirc.com/colors.html
     """
 
     white = 0
@@ -76,7 +76,7 @@ class Colour(IntEnum):
 @unique
 class ColourRGB(Enum):
 
-    """Colours used on IRC, converted to RGB values
+    """Colours used on IRC, converted to RGB values.
 
     mIRC maintains a list_ of colour codes to values.
 
@@ -127,9 +127,9 @@ class ColourVT100(Enum):
 @unique
 class FormattingCodes(Enum):
 
-    """IRC formatting codes
+    """IRC formatting codes.
 
-    A list is maintained by WikiChip_
+    A list is maintained by WikiChip_.
 
     .. _WikiChip: http://en.wikichip.org/wiki/irc/colors
     """
@@ -144,26 +144,24 @@ class FormattingCodes(Enum):
 
 class Formatter:
 
-    """A basic format parser that uses callbacks to perform formatting
+    """A basic format parser that uses callbacks to perform formatting.
 
     The callbacks return a string which is then added to the final output.
 
-    The following attributes are available:
+    :ivar bold:
+        Set when text should be bold.
 
-    :param bold:
-        Set when text should be bold
-
-    :param colour:
+    :ivar colour:
         A (foreground, background) tuple; members not set are set to None.
 
-    :param reverse:
-        Set when colours are being reversed
+    :ivar reverse:
+        Set when colours are being reversed.
 
-    :param italic:
-        Set when text should be in italics
+    :ivar italic:
+        Set when text should be in italics.
 
-    :param underline:
-        Set when text should be underline
+    :ivar underline:
+        Set when text should be underline.
     """
 
     # Used for matching colour codes
@@ -173,9 +171,9 @@ class Formatter:
         self.reset()
 
     def reset(self):
-        """Reset all colours
+        """Reset all colours.
 
-        You should not need to override this"""
+        You should not need to override this."""
         self.bold = False
         self.colour = (None, None)
         self.reverse = False
@@ -192,10 +190,8 @@ class Formatter:
         for normal which cannot work in any other way (due to needing to know
         what formatters to reset).
 
-        Arguments
-
         :param string:
-            String to reformat
+            String to reformat.
         """
         ret = list()
         index = 0

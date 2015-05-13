@@ -26,20 +26,16 @@ class BaseExtension(metaclass=HookGenerator):
 
     Any unknown attributes in this class are redirected to the ``base``
     attribute.
-
-    :ivar requires:
-        required extensions (must be a name)
-
-    :ivar priority:
-        the priority of this extension, lower is higher (like Unix)
-
-    :ivar hook_classes:
-        A Mapping of hclass to an :py:class:`~PyIRC.event.Event` subclass
     """
-
+    
     priority = PRIORITY_DONTCARE
+    """The priority of this extension, lower is higher (like Unix)"""
+
     requires = []
+    """Required extensions (must be a name)"""
+
     hook_classes = {}
+    """A Mapping of hclass to an :py:class:`~PyIRC.event.Event` subclass"""
 
     def __init__(self, base, **kwargs):
         """Initalise the BaseExtension instance.

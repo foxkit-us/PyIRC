@@ -17,7 +17,7 @@ from logging import getLogger
 from time import time
 
 from PyIRC.auxparse import mode_parse, prefix_parse, status_prefix_parse
-from PyIRC.event import Event, EventState, LineEvent
+from PyIRC.event import Event, EventState
 from PyIRC.extension import BaseExtension
 from PyIRC.hook import hook, PRIORITY_FIRST
 from PyIRC.line import Hostmask
@@ -31,11 +31,11 @@ Mode = namedtuple("Mode", "mode param adding")
 """A mode being added or removed"""
 
 
-class ModeEvent(LineEvent):
+class ModeEvent(Event):
 
     """An event triggered upon mode changes."""
 
-    def __init__(self, event, line, setter, target, adding, mode, param=None,
+    def __init__(self, event, setter, target, mode, param=None, adding=True,
                  timestamp=None):
         """Initalise the ModeEvent instance.
 
@@ -245,12 +245,11 @@ class BaseTrack(BaseExtension):
         prefix = prefix_parse(isupport.get("PREFIX"))
 
         line = event.line
-        params = list(line.params)
-        if line.command == Numerics.RPL_CHANNELMODEIS.value:
-            params.pop(0)
+        params = params[:] if line.command == "MODE" else params[1:]
 
-        target = params.pop(0)
-        modes = params.pop(0)
+        target = params[0]
+        modes = params[1]
+        params = params[2:]
 
         channels = tuple(isupport.get("CHANTYPES"))
         if not target.startswith(channels):
@@ -272,8 +271,8 @@ class BaseTrack(BaseExtension):
                 mode_call = "mode_normal"
 
             # TODO - aggregation
-            self.call_event("modes", mode_call, line, line.hostmask, target,
-                            adding, mode, param)
+            self.call_event("modes", mode_call, line.hostmask, target, mode,
+                            param, adding)
 
     @hook("commands", Numerics.RPL_ENDOFMOTD)
     @hook("commands", Numerics.ERR_NOMOTD)

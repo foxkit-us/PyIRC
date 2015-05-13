@@ -188,9 +188,9 @@ class ChannelTrack(BaseExtension):
             return
 
         if event.adding:
-            channel.modes[event.param] = event.mode
+            channel.modes[event.mode] = event.param
         else:
-            channel.modes.pop(event.param, None)
+            channel.modes.pop(event.mode, None)
 
     @hook("scope", "user_join")
     def join(self, event):

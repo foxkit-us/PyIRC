@@ -541,3 +541,68 @@ class BasicAPI(BaseExtension):
 
         self.mode_params(False, 'q', channel, *self.process_bantargs(*args))
 
+    def join(self, channel, key=None):
+        """Attempt to join a channel.
+
+        :param channel:
+            Name of the Channel to join.
+        
+        :param key:
+            Channel key to use, if needed.
+        """
+        params = [channel]
+        if key is not None:
+            params.append(key)
+
+        self.send("JOIN", params)
+
+    def part(self, channel, reason=None):
+        """Part a channel.
+
+        :param channel:
+            Channel to part from. This can be a
+            :py:class:`~PyIRC.extensions.channeltrack.Channel` instance, or a
+            string.
+
+        :param reason:
+            Freeform reason to leave the channel.
+        """
+        if hasattr(channel, "name"):
+            channel = channel.name
+
+        params = [channel]
+        if reason is not None:
+            params.append(reason)
+
+        self.send("PART", params)
+
+    def kick(self, channel, user, reason=None):
+        """Kick a user from a channel.
+
+        ..note:: This command usually requires channel operator privileges.
+
+        :param channel:
+            Where to kick the user from. This may be a
+            :py:class:`~PyIRC.extensions.channeltrack.Channel` instance, or a
+            string.
+
+        :param user:
+            User to kick from the channel. This may be a
+            :py:class:`~PyIRC.extensions.usertrack.User` instance, or a
+            string.
+
+        :param reason:
+            Freeform reason to kick the user.
+        """
+        if hasattr(channel, "name"):
+            channel = channel.name
+
+        if hasattr(user, "nick"):
+            user = user.nick
+        
+        params = [channel, user]
+
+        if reason is not None:
+            params.append(reason)
+
+        self.send("KICK", params)

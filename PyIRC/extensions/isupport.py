@@ -55,6 +55,8 @@ class ISupport(BaseExtension):
     def __init__(self, base, **kwargs):
         self.base = base
 
+        self.base.isupport = self
+
         # State
         self.supported = deepcopy(self.defaults)
 

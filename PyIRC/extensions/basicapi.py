@@ -22,9 +22,18 @@ logger = getLogger(__name__)
 
 class BasicAPI(BaseExtension):
 
-    """Basic API functions, designed to make things easier to use"""
+    """Basic API functions, designed to make things easier to use.
+    
+    
+    This extension adds ``base.basicapi`` as itself as an alias for
+    ``get_extension("basicapi").``.
+    """
 
     requires = ["ISupport"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.base.basicapi = self
 
     def message(self, target, message, notice=False):
         """Send a message to a target.

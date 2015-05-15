@@ -24,7 +24,6 @@ class BasicAPI(BaseExtension):
 
     """Basic API functions, designed to make things easier to use.
     
-    
     This extension adds ``base.basicapi`` as itself as an alias for
     ``get_extension("basicapi").``.
     """

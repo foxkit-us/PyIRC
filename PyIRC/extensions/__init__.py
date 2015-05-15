@@ -43,7 +43,7 @@ extensions_db = {cls.__name__ : cls for cls in __all_cls__}
 """A reference of all built-in extensions by name"""
 
 
-base_recommended = [AutoJoin, BasicRFC, CTCP, ISupport]
+base_recommended = [AutoJoin, BasicAPI, BasicRFC, CTCP, ISupport]
 """Basic recommended extensions that are compatible with most servers"""
 
 

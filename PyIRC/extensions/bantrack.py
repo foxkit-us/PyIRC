@@ -32,8 +32,12 @@ class BanTrack(BaseExtension):
 
     """Track bans and other "list" modes.
 
-    This supports +beI, Inspircd +g, and Charybdis-style +q. Others may be
-    added for other IRC daemons in the future.
+    This augments the :py:class:`~PyIRC.extensions.channeltrack.ChannelTrack`
+    extension.
+
+    Although the actual reporting is done by
+    :py:class:`~PyIRC.extensions.basetrack.BaseTrack`, this helps with
+    the actual retrieval of the modes, and setting synched states.
 
     .. note::
         Unless you are opped, your view of modes such as +eI may be limited
@@ -66,8 +70,6 @@ class BanTrack(BaseExtension):
 
     @hook("modes", "mode_list")
     def mode_list(self, event):
-        line = event.line
-
         if event.param is None:
             return
 

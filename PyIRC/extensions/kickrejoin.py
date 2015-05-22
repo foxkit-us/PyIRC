@@ -41,8 +41,6 @@ class KickRejoin(BaseExtension):
     def __init__(self, base, **kwargs):
         """ Initialise the KickRejoin extension.
 
-        Keyword arguments:
-
         :key rejoin_delay:
             Seconds to delay until the channel is rejoined.  This defaults to 5,
             but can be set to anything.  Some people may think you're rude if

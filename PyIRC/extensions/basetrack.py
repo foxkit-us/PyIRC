@@ -39,8 +39,6 @@ class ModeEvent(Event):
                  timestamp=None):
         """Initalise the ModeEvent instance.
 
-        Arguments:
-
         :param event:
             The event fired
 
@@ -103,7 +101,7 @@ class ScopeEvent(TrackEvent):
         """Initalise the UserScopeEvent instance
 
         :param target:
-            `~PyIRC.line.Hostmask` of user that is changing scope
+            :py:class:`~PyIRC.line.Hostmask` of user that is changing scope.
 
         :param scope:
             Scope of the change, None for global, or set to a channel.

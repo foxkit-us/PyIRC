@@ -29,12 +29,10 @@ class SASLBase(BaseExtension):
 
     """ Base SASL support. Does nothing on its own.
 
-    The following attributes are available:
-
-    mechanisms
+    :ivar mechanisms:
         Mechanisms supported by the server
 
-    authenticated
+    :ivar authenticated:
         Whether or not we are authenticated to services
     """
 

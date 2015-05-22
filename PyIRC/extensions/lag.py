@@ -27,9 +27,7 @@ class LagCheck(BaseExtension):
 
     """ Lag measurement extension. Checks latency periodically.
 
-    The following attributes are available:
-
-    lag
+    :ivar lag:
         Current lag measurements from the server, measured in seconds. It is
         not advisable to rely on less than a millisecond of precision on most
         systems and real-world networks.
@@ -37,8 +35,6 @@ class LagCheck(BaseExtension):
 
     def __init__(self, base, **kwargs):
         """ Initialise the LagCheck extension
-
-        Keyword arguments:
 
         :key lagcheck:
             Time interval to do periodic lag checks to update the lag timer.

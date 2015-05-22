@@ -49,8 +49,6 @@ class CapNegotiate(BaseExtension):
     This extension adds ``base.cap_negotiate`` as itself as an alias for
     ``get_extension("CapNegotiate").``.
 
-    The following attributes are available:
-
     :ivar supported:
         Supported capabilities - these are the capabilities we support,
         at least, in theory.
@@ -257,8 +255,6 @@ class CapNegotiate(BaseExtension):
     def register(self, cap, params=list(), replace=False):
         """Register that we support a specific CAP
 
-        Arguments:
-
         :param cap:
             The capability to register support for
 
@@ -275,8 +271,6 @@ class CapNegotiate(BaseExtension):
 
     def unregister(self, cap):
         """Unregister support for a specific CAP.
-
-        Arguments:
 
         :param cap:
             Capability to remove

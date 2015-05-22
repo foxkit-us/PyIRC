@@ -34,8 +34,6 @@ class Channel:
         Unknown values are stored as None, whereas empty ones are stored as
         '' or 0, so take care in comparisons involving values from this class.
 
-        Keyword arguments:
-
         :key name:
             Name of the channel, not casemapped.
 
@@ -92,13 +90,11 @@ class ChannelTrack(BaseExtension):
     This extension adds ``base.channel_track`` as itself as an alias for
     ``get_extension("ChannelTrack").``.
 
-    The following attribute is publicly available:
-
-    :ivar channels:
+    channels
         Mapping of channels, where the keys are casemapped channel names, and
         the values are Channel instances.
 
-    For more elaborate user tracking, see usertrack.UserTrack."""
+    For more elaborate user tracking, see :py:module:`~PyIRC.extensions.usertrack`. """
 
     requires = ["BaseTrack", "BasicRFC", "ISupport"]
 

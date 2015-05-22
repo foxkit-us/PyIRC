@@ -35,10 +35,8 @@ class ISupport(BaseExtension):
     This extension adds ``base.isupport`` as itself as an alias for
     ``get_extension("ISupport").``.
 
-    The following attributes are available:
-
     :ivar supported:
-        parsed ISUPPORT data from the server. Do note that because ISUPPORT is
+        Parsed ISUPPORT data from the server. Do note that because ISUPPORT is
         technically non-standard, users should be prepared for data that does
         not conform to any implied standard.
     """
@@ -76,8 +74,6 @@ class ISupport(BaseExtension):
         - CHANMODES (list of values enumerating modes into four distinct classes,
           respectively: list modes, modes that send a parameter, modes that send a
           parameter only when set, and parameterless modes)
-
-        Arguments:
 
         :param string:
             ISUPPORT string to look up.

@@ -116,9 +116,7 @@ class EventManager:
 
     """EventManager manages event registration and dispatch.
 
-    The following attributes are available:
-
-    events_reg
+    :ivar events_reg:
         The hclass to (events, type) mapping. Useful for advanced usage.
     """
 

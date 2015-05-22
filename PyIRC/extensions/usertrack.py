@@ -34,13 +34,11 @@ class User:
 
     """ A user entity.
 
-    The following attribute is publicly available:
-
     :ivar channels:
         Mapping of channels, where the keys are casemapped channel names, and
         the values are their status modes on the channel.
 
-    For more elaborate channel tracking, see channeltrack.ChannelTrack.
+    For more elaborate channel tracking, see :py:module:`~PyIRC.extensions.channeltrack`.
     """
 
     def __init__(self, case, nick, **kwargs):
@@ -48,8 +46,6 @@ class User:
 
         Unknown values are stored as None, whereas empty ones are stored as
         '' or 0, so take care in comparisons involving values from this class.
-
-        Arguments:
 
         :param nick:
             Nickname of the user, not casemapped.
@@ -126,8 +122,6 @@ class UserTrack(BaseExtension):
     This extension adds ``base.user_track`` as itself as an alias for
     ``get_extension("UserlTrack").``.
 
-    The following attribute is publlicly available:
-
     :ivar users:
         Mapping of users, where the keys are casemapped nicks, and values are
         User instances. You should probably prefer
@@ -168,8 +162,6 @@ class UserTrack(BaseExtension):
     def authenticate(self, nick, callback):
         """Get authentication for a user and return result in a callback
 
-        Arguments:
-
         :param nick:
             Nickname of user to check authentication for
 
@@ -198,12 +190,10 @@ class UserTrack(BaseExtension):
         Use of this method is preferred to directly accessing the user
         dictionary.
 
-        Returns None if user not found.
-
-        Arguments:
-
         :param nick:
             Nickname of the user to retrieve.
+
+        :returns: A :class:`User` instance, or None if user not found.
         """
         return self.users.get(nick)
 

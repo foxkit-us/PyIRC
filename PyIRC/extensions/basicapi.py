@@ -44,10 +44,10 @@ class BasicAPI(BaseExtension):
             string.
 
         :param message:
-            Message to send
+            Message to send.
 
         :param notice:
-            Send the message as a notice
+            Whether to send the message as a notice.
 
         .. warning::
             Use notice judiciously, as many users find them irritating!

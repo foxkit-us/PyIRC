@@ -39,8 +39,6 @@ class ServicesLogin(BaseExtension):
     def __init__(self, base, **kwargs):
         """ Initalise the ServicesLogin extension.
 
-        Keyword arguments:
-
         :key services_username:
             The username to use for authentication.
 

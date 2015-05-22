@@ -26,8 +26,6 @@ class AutoJoin(BaseExtension):
     def __init__(self, base, **kwargs):
         """ Initialise the AutoJoin extension.
 
-        Keyword arguments:
-
         :key join:
             A Mapping (dictionary type) or Iterable of channels to join.
             If a Mapping is passed, keys are treated as channel names and

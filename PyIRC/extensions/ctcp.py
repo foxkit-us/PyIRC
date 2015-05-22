@@ -48,8 +48,6 @@ class CTCP(BaseExtension):
     def __init__(self, base, **kwargs):
         """ Initalise the CTCP extension.
 
-        Keyword arguments:
-
         :key ctcp_version:
             Version string to use, defaults to default_version.
         """

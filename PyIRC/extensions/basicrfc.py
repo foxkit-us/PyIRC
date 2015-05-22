@@ -28,8 +28,6 @@ class BasicRFC(BaseExtension):
     This extension adds ``base.basic_rfc`` as itself as an alias for
     ``get_extension("BasicRFC").``.
 
-    This extension implements the following user-facing attributes:
-
     :ivar nick:
         Our present real nickname as reported by the IRC server.
 

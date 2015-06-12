@@ -44,7 +44,7 @@ class AutoJoin(BaseExtension):
 
         self.base = base
 
-        self.join_dict = kwargs['join']
+        self.join_dict = kwargs.get('join', None)
 
         # If a list is passed in for join_dict, we will use a comprehension
         # to set null keys

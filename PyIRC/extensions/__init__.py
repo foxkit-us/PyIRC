@@ -12,21 +12,8 @@ commands and allow new features to be easily added to the library in a
 backwards-compatible way."""
 
 
-from PyIRC.extensions.autojoin import AutoJoin
-from PyIRC.extensions.bantrack import BanTrack
-from PyIRC.extensions.basetrack import BaseTrack
-from PyIRC.extensions.basicapi import BasicAPI
-from PyIRC.extensions.basicrfc import BasicRFC
-from PyIRC.extensions.cap import CapNegotiate
-from PyIRC.extensions.channeltrack import ChannelTrack
-from PyIRC.extensions.ctcp import CTCP
-from PyIRC.extensions.isupport import ISupport
-from PyIRC.extensions.kickrejoin import KickRejoin
-from PyIRC.extensions.lag import LagCheck
-from PyIRC.extensions.sasl import SASLPlain
-from PyIRC.extensions.services import ServicesLogin
-from PyIRC.extensions.starttls import StartTLS
-from PyIRC.extensions.usertrack import UserTrack
+from collections import UserDict
+from importlib import import_module
 
 
 __all__ = ["autojoin", "bantrack", "basetrack", "basicapi", "basicrfc", "cap",
@@ -34,24 +21,55 @@ __all__ = ["autojoin", "bantrack", "basetrack", "basicapi", "basicrfc", "cap",
            "services", "starttls", "usertrack"]
 
 
-__all_cls__ = [AutoJoin, BanTrack, BaseTrack, BasicAPI, BasicRFC, CapNegotiate,
-               ChannelTrack, CTCP, ISupport, KickRejoin, LagCheck, SASLPlain,
-               ServicesLogin, StartTLS, UserTrack]
+class ExtensionsDatabase(UserDict):
+    """A helper to late-bind extensions to avoid unnecessary imports and
+    bloat"""
+
+    # Default extensions and their requisite default modules
+    _default_ext_mods = {
+        "AutoJoin": "autojoin",
+        "BanTrack": "bantrack",
+        "BaseTrack": "basetrack",
+        "BasicAPI": "basicapi",
+        "BasicRFC": "basicrfc",
+        "CapNegotiate": "cap",
+        "ChannelTrack": "channeltrack",
+        "CTCP": "ctcp",
+        "ISupport": "isupport",
+        "KickRejoin": "kickrejoin",
+        "LagCheck": "lag",
+        "SASLPlain": "sasl",
+        "ServicesLogin": "services",
+        "StartTLS": "starttls",
+        "UserTrack": "usertrack",
+    }
+
+    def lookup_module(self, extension):
+        """Lookup a module for import"""
+        module = self._default_ext_mods[extension]
+        return import_module("PyIRC.extensions." + module)
+
+    def __missing__(self, item):
+        try:
+            module = self.lookup_module(item)
+        except KeyError:
+            error = "No such module in the database: {}".format(item)
+            raise KeyError(error) from e
+
+        self.data[item] = getattr(module, item)
+        return self.data[item]
 
 
-extensions_db = {cls.__name__ : cls for cls in __all_cls__}
-"""A reference of all built-in extensions by name"""
-
-
-base_recommended = [AutoJoin, BasicAPI, BasicRFC, CTCP, ISupport]
+base_recommended = ["AutoJoin", "BasicAPI", "BasicRFC", "CTCP", "ISupport"]
 """Basic recommended extensions that are compatible with most servers"""
 
 
-ircv3_recommended = base_recommended + [CapNegotiate, SASLPlain, StartTLS]
+ircv3_recommended = base_recommended + ["CapNegotiate", "SASLPlain",
+                                        "StartTLS"]
 """Recommended extensions for use with IRCv3 compliant servers """
 
 
-bot_recommended = ircv3_recommended + [BanTrack, ChannelTrack, LagCheck,
-                                       ServicesLogin, UserTrack]
+bot_recommended = ircv3_recommended + ["BanTrack", "ChannelTrack", "LagCheck",
+                                       "ServicesLogin", "UserTrack"]
 """Recommended extensions for bots"""
 

@@ -9,6 +9,7 @@ from functools import lru_cache
 from logging import getLogger
 
 from PyIRC.event import LineEvent, HookEvent
+from PyIRC.extensions import ExtensionsDatabase
 from PyIRC.hook import HookGenerator, PRIORITY_DONTCARE
 from PyIRC.numerics import Numerics
 
@@ -49,15 +50,11 @@ class BaseExtension(metaclass=HookGenerator):
         return getattr(self.base, attr)
 
 
-# Here to avoid circular dependency
-from PyIRC.extensions import extensions_db
-
-
 class ExtensionManager:
 
     """ Manage extensions to PyIRC's library, and register their hooks. """
 
-    def __init__(self, base, kwargs, events, extensions=[]):
+    def __init__(self, base, kwargs, events, extensions=[], database=None):
         """Initialise the extensions manager
 
         :param base:
@@ -71,12 +68,24 @@ class ExtensionManager:
 
         :param extensions:
             Initial list of extensions.
+
+        :param database:
+            Optional extensions database to use.
         """
 
         self.base = base
         self.kwargs = kwargs
         self.events = events
-        self.extensions = list(extensions)
+
+        if database is not None:
+            self.default_db = database
+        else:
+            self.default_db = ExtensionsDatabase()
+        
+        # Serialise the extensions list into real extensions classes
+        # Strings are looked up in the extensions database
+        self.extensions = [self.default_db[e] if isinstance(e, str) else e
+                           for e in extensions]
 
         self.db = OrderedDict()
 
@@ -138,7 +147,7 @@ class ExtensionManager:
 
                 try:
                     # Push extension to the tail
-                    extensions.append(extensions_db[require])
+                    extensions.append(self.default_db[require])
                 except KeyError as e:
                     raise KeyError("Required extension not found: {}".format(
                         require)) from e

@@ -6,9 +6,10 @@
 """ A null backend, used for testing purposes.  No connections are made. """
 
 
-from time import sleep
-from sched import scheduler
 from logging import getLogger
+from queue import Empty, Queue
+from sched import scheduler
+from time import sleep
 
 from PyIRC.base import IRCBase
 from PyIRC.line import Line
@@ -24,8 +25,8 @@ class NullSocket(IRCBase):
     def connect(self):
         self.scheduler = scheduler()
 
-        self.recvq = []
-        self.sendq = []
+        self.recvq = Queue()
+        self.sendq = Queue()
 
         self.disconnect_on_next = False
 
@@ -35,17 +36,16 @@ class NullSocket(IRCBase):
         if self.disconnect_on_next:
             raise OSError('Connection reset by test.')
 
-        for line in self.recvq:
-            logger.debug("IN: %s", str(line).rstrip())
-            super().recv(line)
-            self.recvq.remove(line)
+        line = self.recvq.get()
+        logger.debug("IN: %s", str(line).rstrip())
+        super().recv(line)
 
         return
 
     def inject_line(self, line):
         """ Inject a Line into the recvq for the client. """
         assert isinstance(Line, line)
-        self.recvq.append(line)
+        self.recvq.put(line)
 
     def loop(self):
         """ Simple loop, unchanged from IRCSocket. """
@@ -67,17 +67,17 @@ class NullSocket(IRCBase):
         if self.disconnect_on_next:
             raise OSError("Connection reset by peer")
 
-        self.sendq.append(line)
+        self.sendq.put(line)
         logger.debug("OUT: %s", str(line).rstrip())
 
     def draw_line(self):
         """ Draw the earliest Line in the sendq from the client.
 
         Returns None if there are no lines currently in the sendq. """
-        if len(self.sendq) == 0:
+        try:
+            return self.sendq.get()
+        except Empty:
             return None
-
-        return self.sendq.pop(0)
 
     def reset_connection(self):
         """ Emulate a server forcibly disconnecting the client.  Maybe useful

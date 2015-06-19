@@ -33,8 +33,8 @@ class StartTLS(BaseExtension):
 
     requires = ["CapNegotiate"]
 
-    def __init__(self, base, **kwargs):
-        self.base = base
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.tls_event = None
 

@@ -50,8 +50,8 @@ class ISupport(BaseExtension):
     }
     """Defaults until overridden, for old server compat."""
 
-    def __init__(self, base, **kwargs):
-        self.base = base
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.base.isupport = self
 

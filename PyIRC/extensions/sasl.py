@@ -43,9 +43,8 @@ class SASLBase(BaseExtension):
     method = None
     """ Authentication method to use """
 
-    def __init__(self, base, **kwargs):
-
-        self.base = base
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.mechanisms = set()
         self.username = kwargs.get("sasl_username")

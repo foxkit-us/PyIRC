@@ -21,19 +21,14 @@ from PyIRC.numerics import Numerics
 from PyIRC.casemapping import IRCString
 from PyIRC.line import Line
 from PyIRC.extension import ExtensionManager
-from PyIRC.hook import HookGenerator, hook
+from PyIRC.hook import hook, build_hook_table
 from PyIRC.event import EventManager, EventState
 
 
 logger = getLogger(__name__)
 
 
-class ABCMetaHookGenerator(HookGenerator, ABCMeta):
-    # A stub metaclass for IRCBase
-    pass
-
-
-class IRCBase(metaclass=ABCMetaHookGenerator):
+class IRCBase(metaclass=ABCMeta):
 
     """The base IRC class meant to be used as a base for more concrete
     implementations.
@@ -109,6 +104,7 @@ class IRCBase(metaclass=ABCMetaHookGenerator):
         self.extensions.create_db()
 
         # Create hooks
+        build_hook_table(self)
         events.register_callbacks_from_inst_all(self)
 
     def case_change(self):

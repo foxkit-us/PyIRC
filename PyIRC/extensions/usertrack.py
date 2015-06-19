@@ -137,8 +137,8 @@ class UserTrack(BaseExtension):
 
     requires = ["BasicRFC", "ISupport", "BaseTrack"]
 
-    def __init__(self, base, **kwargs):
-        self.base = base
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.base.user_track = self
 

@@ -33,7 +33,7 @@ class LagCheck(BaseExtension):
         systems and real-world networks.
     """
 
-    def __init__(self, base, **kwargs):
+    def __init__(self, *args, **kwargs):
         """ Initialise the LagCheck extension
 
         :key lagcheck:
@@ -41,7 +41,7 @@ class LagCheck(BaseExtension):
             Defaults to 15 seconds. Setting the value too low may result in
             being disconnected by the server.
         """
-        self.base = base
+        super().__init__(*args, **kwargs)
 
         self.lagcheck = kwargs.get("lagcheck", 15)
 

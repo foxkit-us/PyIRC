@@ -45,14 +45,13 @@ class CTCP(BaseExtension):
         "commands_nctcp": CTCPEvent,
     }
 
-    def __init__(self, base, **kwargs):
+    def __init__(self, *args, **kwargs):
         """ Initalise the CTCP extension.
 
         :key ctcp_version:
             Version string to use, defaults to default_version.
         """
-
-        self.base = base
+        super().__init__(*args, **kwargs)
 
         self.version = kwargs.get("ctcp_version", self.default_version)
 

@@ -38,7 +38,7 @@ class KickRejoin(BaseExtension):
     :py:class:`isupport.ISupport` is used for prefixes discovery.
     """
 
-    def __init__(self, base, **kwargs):
+    def __init__(self, *args, **kwargs):
         """ Initialise the KickRejoin extension.
 
         :key rejoin_delay:
@@ -51,10 +51,10 @@ class KickRejoin(BaseExtension):
             work (the sole exception in testing this extension was Freenode).
             Defaults to True, because REMOVE is silly anyway.
         """
-
-        # Allow us to access the base class later on.  This is common to every
-        # extension.
-        self.base = base
+        # When overriding __init__, ALWAYS call the superclass! This sets up
+        # the hook tables correctly and future-proofs you from other
+        # initalisation that may be done in the base class.
+        super().__init__(*args, **kwargs)
 
         # Read our configuration variables from kwargs.  You should always have
         # sane defaults.

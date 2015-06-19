@@ -10,20 +10,20 @@ from logging import getLogger
 
 from PyIRC.event import LineEvent, HookEvent
 from PyIRC.extensions import ExtensionsDatabase
-from PyIRC.hook import HookGenerator, PRIORITY_DONTCARE
+from PyIRC.hook import build_hook_table, PRIORITY_DONTCARE
 from PyIRC.numerics import Numerics
 
 
 logger = getLogger(__name__)
 
 
-class BaseExtension(metaclass=HookGenerator):
+class BaseExtension:
 
     """ The base class for extensions.
 
     Hooks may exist in this, in a hclass_hooks dictionary. These can be
     created by hand, but it is recommended to let them be created by the
-    :py:class:`~PyIRC.hook.HookGenerator` metaclass and the hook decorator.
+    :py:class:`~PyIRC.hook.build_hook_table` function and the hook decorator.
 
     Any unknown attributes in this class are redirected to the ``base``
     attribute.
@@ -45,6 +45,7 @@ class BaseExtension(metaclass=HookGenerator):
             Base class for this method
         """
         self.base = base
+        build_hook_table(self)
 
     def __getattr__(self, attr):
         return getattr(self.base, attr)

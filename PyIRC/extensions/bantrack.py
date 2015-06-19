@@ -46,9 +46,6 @@ class BanTrack(BaseExtension):
 
     requires = ["ISupport", "ChannelTrack", "BasicRFC"]
 
-    def __init__(self, base, **kwargs):
-        self.base = base
-
     @hook("commands", "JOIN", PRIORITY_LAST)
     def join(self, event):
         params = event.line.params

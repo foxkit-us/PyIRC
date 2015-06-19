@@ -36,7 +36,7 @@ class ServicesLogin(BaseExtension):
     ``get_extension("ServicesLogin").``.
     """
 
-    def __init__(self, base, **kwargs):
+    def __init__(self, *args, **kwargs):
         """ Initalise the ServicesLogin extension.
 
         :key services_username:
@@ -59,8 +59,7 @@ class ServicesLogin(BaseExtension):
             NS/NICKSERV are recommended for networks that support it for some
             improved security.
         """
-
-        self.base = base
+        super().__init__(*args, **kwargs)
 
         self.base.services_login = self
 

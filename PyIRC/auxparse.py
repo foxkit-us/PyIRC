@@ -230,13 +230,13 @@ def who_flag_parse(flags):
     :returns:
         A namespace object containing the following attributes:
 
-        :param operator:
+        :operator:
             Whether or not the user is an operator.
 
-        :param away:
+        :away:
             Whether or not the user is away.
 
-        :param modes:
+        :modes:
             A set of the user's present modes (prefixes).
     """
     ret = SimpleNamespace(operator=False, away=False, modes=set())
@@ -264,14 +264,14 @@ def userhost_parse(mask):
     :returns:
         An object with the following attributes set:
 
-        :param hostmask:
+        :hostmask:
             :py:class:`~PyIRC.line.Hostmask` of the user. This may be a cloak.
 
-        :param operator:
+        :operator:
             Whether or not the user is an operator. False does not mean they
             are not an operator, as operators may be hidden on the server.
 
-        :param away:
+        :away:
             Whether or not the user is away.
     """
     if not mask:

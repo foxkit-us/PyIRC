@@ -9,27 +9,34 @@
 
 import unittest
 
-from PyIRC.extensions.basicrfc import BasicRFC
-from PyIRC.io.null import NullSocket
+from test_helpers import new_connection
 
 
 class TestHandshakeBehaviour(unittest.TestCase):
-    def setUp(self):
-        self.username = 'TestUser'
-        self.gecos = 'Test User'
-        self.ns = NullSocket(serverport=(None, None), username=self.username,
-                            nick='Test', gecos=self.gecos,
-                            extensions=[BasicRFC])
-        self.ns.connect()
-
     def test_user(self):
-        line = self.ns.draw_line()
+        ns = new_connection(username='TestUser', gecos='Test User')
+        line = ns.draw_line()
         while line:
             if line.command == 'USER':
-                self.assertEquals(line.params[0], self.username,
-                                  "Incorrect username")
-                self.assertEquals(line.params[3], self.gecos,
-                                  "Incorrect GECOS")
+                self.assertEqual(line.params[0], 'TestUser',
+                                 "Incorrect username")
+                self.assertEqual(line.params[3], 'Test User',
+                                 "Incorrect GECOS")
                 return
-            line = self.ns.draw_line()
+            line = ns.draw_line()
         self.assertFalse(True, "No USER command received!")
+
+    def test_invalid_user(self):
+        with self.assertRaises(ValueError, msg="Invalid username accepted!"):
+            ns = new_connection(username='This should not work')
+
+    def test_nick(self):
+        nick = 'Tester'
+        ns = new_connection(nick=nick)
+        line = ns.draw_line()
+        while line:
+            if line.command == 'NICK':
+                self.assertEqual(line.params[0], nick, "Incorrect nickname")
+                return
+            line = ns.draw_line()
+        self.assertFalse(True, "No NICK command received!")

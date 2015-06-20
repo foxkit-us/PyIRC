@@ -310,7 +310,7 @@ class EventManager:
 
         remove = False
         for i, (_, _, l_callback) in enumerate(list(items)):
-            if l_callback is callback:
+            if l_callback == callback:
                 del items[i]
                 remove = True
 

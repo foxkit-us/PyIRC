@@ -94,7 +94,8 @@ class ChannelTrack(BaseExtension):
         Mapping of channels, where the keys are casemapped channel names, and
         the values are Channel instances.
 
-    For more elaborate user tracking, see :py:module:`~PyIRC.extensions.usertrack`. """
+    For more elaborate user tracking, see
+    :py:module::`~PyIRC.extensions.usertrack`."""
 
     requires = ["BaseTrack", "BasicRFC", "ISupport"]
 

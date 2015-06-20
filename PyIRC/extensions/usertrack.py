@@ -38,7 +38,8 @@ class User:
         Mapping of channels, where the keys are casemapped channel names, and
         the values are their status modes on the channel.
 
-    For more elaborate channel tracking, see :py:module:`~PyIRC.extensions.channeltrack`.
+    For more elaborate channel tracking, see
+    :py:module::`~PyIRC.extensions.channeltrack`.
     """
 
     def __init__(self, case, nick, **kwargs):

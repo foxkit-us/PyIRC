@@ -2,9 +2,19 @@
 
 from setuptools import setup
 
+long_description = (
+      """This is PyIRC, an IRC library designed to be flexible, extensible,
+      well- documented, and easy to use. It is aimed at not only beginners
+      and those who don't want to spend too much time writing boilerplate to
+      get something going¸ but also the advanced user who knows exactly what
+      they're doing."""
+)
+
 setup(name="PyIRC",
       version="3.0a2",
       description="A Python IRC library",
+      long_description=long_description,
+      keywords="IRC chat development",
       author="Elizabeth Myers",
       author_email="elizabeth@interlinked.me",
       url="https://elizafox.github.io/PyIRC",

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from distutils.core import setup
+from setuptools import setup
 
 setup(name="PyIRC",
       version="3.0a2",
@@ -21,4 +21,4 @@ setup(name="PyIRC",
           "Operating System :: OS Independent",
           "License :: DFSG approved",
       ]
-      )
+)

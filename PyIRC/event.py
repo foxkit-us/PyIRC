@@ -269,7 +269,7 @@ class EventManager:
         if table is None:
             return False
 
-        logger.debug("Registering %s callbacks from class %s:",
+        logger.debug("Registering %s callbacks from class %s",
                      hclass, inst.__class__.__name__)
 
         self.register_callbacks_from_table(hclass, table)

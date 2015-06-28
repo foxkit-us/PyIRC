@@ -30,7 +30,7 @@ class ChannelEvent(Event):
     """Fired when a channel instance is created or destroyed"""
 
     def __init__(self, event, channel):
-        self.event = event
+        super().__init__(event)
         self.channel = channel
 
 

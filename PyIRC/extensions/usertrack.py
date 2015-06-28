@@ -36,7 +36,7 @@ class UserEvent(Event):
     """Fired when a user instance is created or destroyed"""
 
     def __init__(self, event, user):
-        self.event = event
+        super().__init__(event)
         self.user = user
 
 

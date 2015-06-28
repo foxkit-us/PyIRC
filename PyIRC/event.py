@@ -133,7 +133,7 @@ class EventManager:
             py:class:`~PyIRC.event.Event` type for a given class, you must
             unregister the class with
             :py:meth:`~PyIRC.event.EventManager.unregister_class`, and then
-            re-register it wiht the new type.
+            re-register it with the new type.
 
         :param type:
             The type of :py:class:`~PyIRC.event.Event` that will be passed to

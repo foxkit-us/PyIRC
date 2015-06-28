@@ -167,17 +167,10 @@ class IRCBase(metaclass=ABCMeta):
 
     def connect(self):
         """Do the connection handshake """
-        # XXX late binding sucks but we can't do it in __init__.
-        # Else we get a chicken and egg problem.
-        self.events.register_callbacks_from_inst_all(self)
-
         return self.events.call_event("hooks", "connected")
 
     def close(self):
         """Do the connection teardown """
-        # XXX cheesy hack
-        self.events.unregister_callbacks_from_inst_all(self)
-
         return self.events.call_event("hooks", "disconnected")
 
     def recv(self, line):

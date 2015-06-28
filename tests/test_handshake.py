@@ -40,3 +40,11 @@ class TestHandshakeBehaviour(unittest.TestCase):
                 return
             line = ns.draw_line()
         self.assertFalse(True, "No NICK command received!")
+
+    def test_pass(self):
+        # this test password is inspired by ZNC, if anyone's wondering.
+        password = 'password/with:symbols and such'
+        ns = new_connection(server_password=password)
+        line = ns.draw_line()
+        self.assertEqual(line.command, 'PASS', "PASS must be sent first")
+        self.assertEqual(line.params[0], password, "Passwords don't match")

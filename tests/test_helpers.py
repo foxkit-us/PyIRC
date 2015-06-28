@@ -12,15 +12,15 @@ from PyIRC.line import Line
 
 
 def new_connection(username='TestUser', nick='Test', gecos='Test User',
-                   extensions=[BasicRFC]):
+                   extensions=[BasicRFC], **kwargs):
     ns = NullSocket(serverport=(None, None), username=username, nick=nick,
-                    gecos=gecos, extensions=extensions)
+                    gecos=gecos, extensions=extensions, **kwargs)
     ns.connect()
     return ns
 
 def new_conn_with_handshake(username='TestUser', nick='Test', gecos='Test User',
-                            extensions=[BasicRFC]):
-    ns = new_connection(username, nick, gecos, extensions)
+                            extensions=[BasicRFC], **kwargs):
+    ns = new_connection(username, nick, gecos, extensions, **kwargs)
     ns.draw_line()  # the USER
     ns.draw_line()  # and the NICK
     ns.inject_line(Line(command='001',

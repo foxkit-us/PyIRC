@@ -222,7 +222,10 @@ class UserTrack(BaseExtension):
             user = User(self.case, nick, **kwargs)
             self.users[nick] = user
 
-        self.call_event("user", "user_create", user)
+        basicrfc = self.base.basic_rfc
+        if not self.casecmp(nick, basicrfc.nick):
+            # FIXME - Sigh, hclass isn't yet created when we're first made...
+            self.call_event("user", "user_create", user)
 
         return user
 

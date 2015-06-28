@@ -52,10 +52,6 @@ class User:
     :py:module::`~PyIRC.extensions.channeltrack`.
     """
 
-    hook_classes = {
-        "user": UserEvent,
-    }
-
     def __init__(self, case, nick, **kwargs):
         """Store the data for a user.
 
@@ -148,6 +144,10 @@ class UserTrack(BaseExtension):
         "account-notify": [],
         "away-notify": [],
         "chghost": [],
+    }
+    
+    hook_classes = {
+        "user": UserEvent,
     }
 
     requires = ["BasicRFC", "ISupport", "BaseTrack"]

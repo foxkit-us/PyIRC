@@ -48,6 +48,10 @@ class BaseExtension:
         build_hook_table(self)
 
     def __getattr__(self, attr):
+        if attr.endswith('_hooks') or attr.startswith('_'):
+            # Private or internal state!
+            raise AttributeError
+
         return getattr(self.base, attr)
 
 

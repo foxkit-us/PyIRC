@@ -53,7 +53,7 @@ class User:
     """
 
     hook_classes = {
-        "users": UserEvent,
+        "user": UserEvent,
     }
 
     def __init__(self, case, nick, **kwargs):

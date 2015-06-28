@@ -16,12 +16,22 @@ from logging import getLogger
 
 from PyIRC.casemapping import IRCDict, IRCDefaultDict
 from PyIRC.extension import BaseExtension
+from PyIRC.event import Event
 from PyIRC.hook import hook
 from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
 
 
 logger = getLogger(__name__)
+
+
+class ChannelEvent(Event):
+
+    """Fired when a channel instance is created or destroyed"""
+
+    def __init__(self, event, channel):
+        self.event = event
+        self.channel = channel
 
 
 class Channel:
@@ -97,6 +107,10 @@ class ChannelTrack(BaseExtension):
     For more elaborate user tracking, see
     :py:module::`~PyIRC.extensions.usertrack`."""
 
+    hook_classes = {
+        "channel": ChannelEvent,
+    }
+
     requires = ["BaseTrack", "BasicRFC", "ISupport"]
 
     def __init__(self, *args, **kwargs):
@@ -139,6 +153,8 @@ class ChannelTrack(BaseExtension):
             channel = Channel(self.case, name, **kwargs)
             self.channels[name] = channel
 
+        self.call_event("channel", "channel_create", channel)
+
         return channel
 
     def remove_channel(self, name):
@@ -150,6 +166,8 @@ class ChannelTrack(BaseExtension):
         channel = self.get_channel(name)
         if not channel:
             return
+
+        self.call_event("channel", "channel_delete", self.channels[name])
 
         del self.channels[name]
 

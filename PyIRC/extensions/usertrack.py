@@ -22,12 +22,22 @@ from PyIRC.auxparse import (prefix_parse, who_flag_parse, status_prefix_parse,
                             userhost_parse)
 from PyIRC.casemapping import IRCDict, IRCDefaultDict, IRCSet
 from PyIRC.extension import BaseExtension
+from PyIRC.event import Event
 from PyIRC.hook import hook
 from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
 
 
 logger = getLogger(__name__)
+
+
+class UserEvent(Event):
+
+    """Fired when a user instance is created or destroyed"""
+
+    def __init__(self, event, user):
+        self.event = event
+        self.user = user
 
 
 class User:
@@ -41,6 +51,10 @@ class User:
     For more elaborate channel tracking, see
     :py:module::`~PyIRC.extensions.channeltrack`.
     """
+
+    hook_classes = {
+        "users": UserEvent,
+    }
 
     def __init__(self, case, nick, **kwargs):
         """Store the data for a user.
@@ -208,6 +222,8 @@ class UserTrack(BaseExtension):
             user = User(self.case, nick, **kwargs)
             self.users[nick] = user
 
+        self.call_event("user", "user_create", user)
+
         return user
 
     def remove_user(self, nick):
@@ -218,6 +234,8 @@ class UserTrack(BaseExtension):
         if nick not in self.users:
             logger.warning("Deleting nonexistent user: %s", nick)
             return
+
+        self.call_event("user", "user_delete", self.users[nick])
 
         logger.debug("Deleted user: %s", nick)
 

@@ -53,9 +53,9 @@ class BasicRFC(BaseExtension):
             if self.server_password:
                 self.send("PASS", [self.server_password])
 
+            self.send("NICK", [self.nick])
             self.send("USER", [self.username, "*", "*",
                                     self.gecos])
-            self.send("NICK", [self.nick])
 
     @hook("hooks", "disconnected")
     def disconnected(self, event):

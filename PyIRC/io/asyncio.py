@@ -18,6 +18,8 @@ except ImportError as e:
     else:
         raise ImportError("Must install asyncio module from PyPI") from e
 
+from collections import namedtuple
+from functools import update_wrapper, partial
 from logging import getLogger
 
 from PyIRC.base import IRCBase
@@ -43,8 +45,12 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
     .. _`asyncio bug`: https://bugs.python.org/issue23749
     """
 
+    _ScheduleItem = namedtuple("_ScheduleItem", "time callback sched")
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.sched_events = set()
 
         # Sadly we are not compatible with StartTLS because of a deficiency in
         # Python 3.4/3.5. See https://bugs.python.org/issue23749
@@ -57,6 +63,13 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
         loop = asyncio.get_event_loop()
         return loop.create_connection(lambda : self, self.server, self.port,
                                       ssl=self.ssl)
+
+    def close(self):
+        super().close(self)
+
+        # XXX it's in this order for backwards compat
+        for sched in self.sched_events:
+            self.unschedule(sched)
 
     def connection_made(self, transport):
         self.transport = transport
@@ -76,6 +89,7 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
                 super().recv(line)
             except Exception as e:
                 # We should never get here!
+                logger.exception("Exception received in recv loop")
                 self.send("QUIT", ["Exception received!"])
                 self.transport.close()
                 raise
@@ -93,11 +107,20 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
         logger.debug("OUT: %s", str(line).rstrip())
 
     def schedule(self, time, callback):
+        def cb_cleanup(time, callback):
+            self.sched_events.discard((time, callback))
+            return callback()
+
+        callback_wrap = partial(cb_cleanup, time, callback)
+        update_wrapper(callback_wrap, callback)
+
         loop = asyncio.get_event_loop()
-        return loop.call_later(time, callback)
+        val = loop.call_later(time, callback_wrap)
+        return self._ScheduleItem(time, callback, val)
 
     def unschedule(self, sched):
-        sched.cancel()
+        self.sched_events.discard((sched.time, sched.callback))
+        sched.sched.cancel()
 
     def wrap_ssl(self):
         raise NotImplementedError("Cannot wrap SSL after connect due to " \

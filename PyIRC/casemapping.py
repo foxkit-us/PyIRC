@@ -72,12 +72,13 @@ class IRCString(UserString):
 
         :param string:
             String to use
+
         """
         self.case = case
         super().__init__(string)
 
     def str_upper(self):
-        """Uppercase string into a real Python string"""
+        """Uppercase string into a real Python string."""
         if self.case == IRCString.ASCII:
             return self.ascii_upper()
         elif self.case == IRCString.RFC1459:
@@ -86,7 +87,7 @@ class IRCString(UserString):
             return str.upper(self.data)
 
     def str_lower(self):
-        """Lowercase string into a real python string"""
+        """Lowercase string into a real python string."""
         if self.case == IRCString.ASCII:
             return self.ascii_lower()
         elif self.case == IRCString.RFC1459:
@@ -95,7 +96,7 @@ class IRCString(UserString):
             return str.lower(self.data)
 
     def str_casefold(self):
-        """Casefold string into a real Python string"""
+        """Casefold string into a real Python string."""
         if self.case == IRCString.ASCII:
             return self.ascii_casefold()
         elif self.case == IRCString.RFC1459:
@@ -104,15 +105,15 @@ class IRCString(UserString):
             return str.casefold(self.data)
 
     def upper(self):
-        """Uppercase string according to default semantics"""
+        """Uppercase string according to default semantics."""
         return IRCString(self.case, self.str_upper())
 
     def lower(self):
-        """Lowercase string according to default semantics"""
+        """Lowercase string according to default semantics."""
         return IRCString(self.case, self.str_lower())
 
     def casefold(self):
-        """Casefold string according to default semantics"""
+        """Casefold string according to default semantics."""
         return IRCString(self.case, self.str_casefold())
 
     def __hash__(self):
@@ -167,7 +168,7 @@ class IRCString(UserString):
         return self.str_casefold() <= other
 
     def convert(self, case):
-        """Convert string into another caseform"""
+        """Convert string into another caseform."""
         return IRCString(case, self)
 
     def ascii_lower(self):
@@ -181,8 +182,8 @@ class IRCString(UserString):
         return str.translate(self.data, ascii_toupper)
 
     def ascii_casefold(self):
-        """Return a version of S suitable for caseless comparisons, using
-        ASCII semantics."""
+        """Return a version of S suitable for caseless comparisons, using ASCII
+        semantics."""
         return str.translate(self.data, ascii_tolower)
 
     def rfc1459_lower(self):
@@ -206,7 +207,7 @@ class IRCString(UserString):
 
 class IRCDict(UserDict):
 
-    """An IRC dictionary class, with caseless key lookup"""
+    """An IRC dictionary class, with caseless key lookup."""
 
     def __init__(self, case, *args, **kwargs):
         self.case = case
@@ -245,7 +246,7 @@ class IRCDict(UserDict):
         return super().__contains__(key)
 
     def convert(self, case):
-        """Convert dictionary to new casemapping"""
+        """Convert dictionary to new casemapping."""
         new = IRCDict(case)
         for key, value in self.items():
             if isinstance(key, str):
@@ -288,7 +289,7 @@ class IRCDefaultDict(IRCDict):
 
 class IRCSet(MutableSet):
 
-    """An IRC set class, with caseless members"""
+    """An IRC set class, with caseless members."""
 
     def __init__(self, case, iterable=set()):
         self.case = case

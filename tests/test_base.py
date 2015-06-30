@@ -5,7 +5,7 @@
 # for licensing information.
 
 
-"""Exercise the base modules a bit"""
+"""Exercise the base modules a bit."""
 
 
 import unittest
@@ -20,5 +20,3 @@ def load_tests(loader, tests, ignore):
     tests.addTests(doctest.DocTestSuite(line))
     tests.addTests(doctest.DocTestSuite(casemapping))
     return tests
-
-

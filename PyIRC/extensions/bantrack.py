@@ -7,8 +7,9 @@
 
 """Track IRC ban modes (+beIq)
 
-In order to be taught about new types, this extension must know the numerics
-used for ban listing.
+In order to be taught about new types, this extension must know the
+numerics used for ban listing.
+
 """
 
 
@@ -42,6 +43,7 @@ class BanTrack(BaseExtension):
     .. note::
         Unless you are opped, your view of modes such as +eI may be limited
         and incomplete.
+
     """
 
     requires = ["ISupport", "ChannelTrack", "BasicRFC"]
@@ -170,4 +172,3 @@ class BanTrack(BaseExtension):
             return
 
         channel.synced_list[mode] = True
-

@@ -19,7 +19,7 @@ logger = getLogger(__name__)
 
 class BaseExtension:
 
-    """ The base class for extensions.
+    """The base class for extensions.
 
     Hooks may exist in this, in a hclass_hooks dictionary. These can be
     created by hand, but it is recommended to let them be created by the
@@ -27,8 +27,9 @@ class BaseExtension:
 
     Any unknown attributes in this class are redirected to the ``base``
     attribute.
+
     """
-    
+
     priority = PRIORITY_DONTCARE
     """The priority of this extension, lower is higher (like Unix)"""
 
@@ -43,6 +44,7 @@ class BaseExtension:
 
         :param base:
             Base class for this method
+
         """
         self.base = base
         build_hook_table(self)
@@ -57,10 +59,10 @@ class BaseExtension:
 
 class ExtensionManager:
 
-    """ Manage extensions to PyIRC's library, and register their hooks. """
+    """Manage extensions to PyIRC's library, and register their hooks."""
 
     def __init__(self, base, kwargs, events, extensions=[], database=None):
-        """Initialise the extensions manager
+        """Initialise the extensions manager.
 
         :param base:
             Base instance to pass to each extension.
@@ -76,6 +78,7 @@ class ExtensionManager:
 
         :param database:
             Optional extensions database to use.
+
         """
 
         self.base = base
@@ -86,7 +89,7 @@ class ExtensionManager:
             self.default_db = database
         else:
             self.default_db = ExtensionsDatabase()
-        
+
         # Serialise the extensions list into real extensions classes
         # Strings are looked up in the extensions database
         self.extensions = [self.default_db[e] if isinstance(e, str) else e
@@ -95,7 +98,7 @@ class ExtensionManager:
         self.db = OrderedDict()
 
     def create_default_events(self):
-        """Create default events and classes"""
+        """Create default events and classes."""
         self.events.register_class("commands", LineEvent)
         self.events.register_class("commands_out", LineEvent)
         self.events.register_class("hooks", HookEvent)
@@ -109,19 +112,21 @@ class ExtensionManager:
         self.create_hooks("hooks")
 
     def create_hooks(self, hclass):
-        """Register hooks contained in the given attribute from loaded
+        """Register hooks contained in the given attribute from loaded.
+
         :param extensions:
 
         Arguments:
 
         :param hclass:
             Class to create hooks for
+
         """
         for extension in self.db.values():
             self.events.register_callbacks_from_inst(hclass, extension)
 
     def create_db(self):
-        """Build the extensions database"""
+        """Build the extensions database."""
         self.db.clear()
         self.events.clear()
         self.get_extension.cache_clear()
@@ -173,7 +178,7 @@ class ExtensionManager:
             self.create_hooks(hclass)
 
     def add_extension(self, extension):
-        """Add an extension by class
+        """Add an extension by class.
 
         .. warning::
             Use with caution - this method will obliterate all present
@@ -181,6 +186,7 @@ class ExtensionManager:
 
         :param extension:
             Extension to add.
+
         """
         if extension in self.extensions:
             return
@@ -190,20 +196,22 @@ class ExtensionManager:
 
     @lru_cache(maxsize=32)
     def get_extension(self, extension):
-        """Get an extension by name
+        """Get an extension by name.
 
         Returns None if the extension is not found.
 
         :param extension:
             Extension to retrieve by name
+
         """
         return self.db.get(extension)
 
     def remove_extension(self, extension):
-        """Remove a given extension by name
+        """Remove a given extension by name.
 
         :param extension:
             Extension to remove.
+
         """
         extensions = list(self.extensions)
         for i, name in enumerate(e.__name__ for e in extensions):

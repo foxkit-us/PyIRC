@@ -5,11 +5,12 @@
 # for licensing information.
 
 
-"""Enumeration of IRC server features and extensions
+"""Enumeration of IRC server features and extensions.
 
 ISUPPORT is a non-standard but widely supported IRC extension that is used to
 advertise what a server supports to a client. Whilst non-standard, most
 servers follow a standard format for many parameters.
+
 """
 
 from copy import deepcopy
@@ -27,7 +28,7 @@ logger = getLogger(__name__)
 
 class ISupport(BaseExtension):
 
-    """ Parse ISUPPORT attributes into useful things.
+    """Parse ISUPPORT attributes into useful things.
 
     Parsing is done according to the semantics defined by
     :py:class:`~PyIRC.auxparse.isupport_parse``.
@@ -39,6 +40,7 @@ class ISupport(BaseExtension):
         Parsed ISUPPORT data from the server. Do note that because ISUPPORT is
         technically non-standard, users should be prepared for data that does
         not conform to any implied standard.
+
     """
 
     defaults = {
@@ -77,6 +79,7 @@ class ISupport(BaseExtension):
 
         :param string:
             ISUPPORT string to look up.
+
         """
         if string not in self.supported:
             return False
@@ -90,7 +93,7 @@ class ISupport(BaseExtension):
 
     @hook("commands", Numerics.RPL_ISUPPORT)
     def isupport(self, event):
-        """ Handle ISUPPORT event """
+        """Handle ISUPPORT event."""
         # To differentiate between really old ircd servers
         # (RPL_BOUNCE=005 on those)
         if not event.line.params[-1].endswith('server'):

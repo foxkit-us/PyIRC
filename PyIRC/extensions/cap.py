@@ -26,7 +26,7 @@ logger = getLogger(__name__)
 
 class CAPEvent(LineEvent):
 
-    """A CAP ACK/NEW event"""
+    """A CAP ACK/NEW event."""
 
     def __init__(self, event, line, caps):
         super().__init__(event, line)
@@ -39,7 +39,7 @@ class CAPEvent(LineEvent):
 
 class CapNegotiate(BaseExtension):
 
-    """ Basic CAP negotiation
+    """Basic CAP negotiation.
 
     IRCv3.2 negotiation is attempted, but earlier specifications will be used
     in a backwards compatible manner.
@@ -61,6 +61,7 @@ class CapNegotiate(BaseExtension):
 
     :ivar negotiating:
         Whether or not CAP negotiation is in progress.
+
     """
 
     priority = PRIORITY_FIRST
@@ -99,7 +100,7 @@ class CapNegotiate(BaseExtension):
 
     @staticmethod
     def extract_caps(line):
-        """ Extract caps from a line """
+        """Extract caps from a line."""
 
         caps = line.params[-1].split()
         caps = (CapNegotiate.parse_cap(cap) for cap in caps)
@@ -107,7 +108,7 @@ class CapNegotiate(BaseExtension):
 
     @staticmethod
     def parse_cap(string):
-        """ Parse a capability string """
+        """Parse a capability string."""
 
         cap, sep, param = string.partition('=')
         if not sep:
@@ -117,7 +118,7 @@ class CapNegotiate(BaseExtension):
 
     @staticmethod
     def create_str(cap, params):
-        """ Create a capability string """
+        """Create a capability string."""
 
         if params:
             return "{}={}".format(cap, ','.join(params))
@@ -154,7 +155,7 @@ class CapNegotiate(BaseExtension):
 
     @hook("commands", "CAP")
     def dispatch(self, event):
-        """ Dispatch the CAP command """
+        """Dispatch the CAP command."""
 
         if self.timer is not None:
             try:
@@ -252,7 +253,7 @@ class CapNegotiate(BaseExtension):
         self.call_event("hooks", "connected")
 
     def register(self, cap, params=list(), replace=False):
-        """Register that we support a specific CAP
+        """Register that we support a specific CAP.
 
         :param cap:
             The capability to register support for
@@ -262,6 +263,7 @@ class CapNegotiate(BaseExtension):
 
         :param replace:
             Replace existing CAP report, if present
+
         """
         if replace or cap not in self.supported:
             self.supported[cap] = params
@@ -273,11 +275,12 @@ class CapNegotiate(BaseExtension):
 
         :param cap:
             Capability to remove
+
         """
         self.supported.pop(cap, None)
 
     def cont(self, event):
-        """Continue negotiation of caps"""
+        """Continue negotiation of caps."""
         # Reset event status
         event.status = EventState.ok
         self.call_event_inst("cap_perform", "ack", event)

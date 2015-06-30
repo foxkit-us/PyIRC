@@ -1,7 +1,8 @@
 #!/usr/bin/env python3.4
 
 
-import asyncio, ssl
+import asyncio
+import ssl
 import signal
 
 from random import choice
@@ -34,10 +35,10 @@ class TestProtocol(IRCProtocol):
     def respond(self, event):
         line = event.line
         params = line.params
-        
+
         if len(params) < 2:
             return
-        
+
         if self.casecmp(self.basic_rfc.nick, params[0]):
             params = [line.hostmask.nick, choice(self.yifflines)]
         else:
@@ -49,19 +50,19 @@ class TestProtocol(IRCProtocol):
             params = [params[0], choice(self.flirtlines)]
 
         self.send("PRIVMSG", params)
-   
+
 basicConfig(level="DEBUG")
 
 args = {
-    'serverport' : ('irc.interlinked.me', 6667),
-    'ssl' : False,
-    'username' : 'Testbot',
-    'nick' : 'Testbot',
-    'gecos' : 'I am a test, pls ignore :)',
-    'extensions' : bot_recommended,
-    'sasl_username' : 'Testbot',
-    'sasl_password' : 'loldongs123',
-    'join' : ['#PyIRC'],
+    'serverport': ('irc.interlinked.me', 6667),
+    'ssl': False,
+    'username': 'Testbot',
+    'nick': 'Testbot',
+    'gecos': 'I am a test, pls ignore :)',
+    'extensions': bot_recommended,
+    'sasl_username': 'Testbot',
+    'sasl_password': 'loldongs123',
+    'join': ['#PyIRC'],
 }
 
 

@@ -151,7 +151,7 @@ Enum = None
 
 class EnumMeta(type):
 
-    """Metaclass for Enum"""
+    """Metaclass for Enum."""
     @classmethod
     def __prepare__(metacls, cls, bases):
         return _EnumDict()
@@ -314,10 +314,10 @@ class EnumMeta(type):
     def __getattr__(cls, name):
         """Return the enum member matching `name`
 
-        We use __getattr__ instead of descriptors or inserting into the enum
-        class' __dict__ in order to support `name` and `value` being both
-        properties for enum members (which live in the class' __dict__) and
-        enum members themselves.
+        We use __getattr__ instead of descriptors or inserting into the
+        enum class' __dict__ in order to support `name` and `value`
+        being both properties for enum members (which live in the class'
+        __dict__) and enum members themselves.
 
         """
         if _is_dunder(name):
@@ -355,9 +355,9 @@ class EnumMeta(type):
     def __setattr__(cls, name, value):
         """Block attempts to reassign Enum members.
 
-        A simple assignment to the class namespace only changes one of the
-        several possible ways to get an Enum member from the Enum class,
-        resulting in an inconsistent Enumeration.
+        A simple assignment to the class namespace only changes one of
+        the several possible ways to get an Enum member from the Enum
+        class, resulting in an inconsistent Enumeration.
 
         """
         member_map = cls.__dict__.get('_member_map_', {})
@@ -589,7 +589,7 @@ class Enum(metaclass=EnumMeta):
 
 class IntEnum(int, Enum):
 
-    """Enum where members are also (and must be) ints"""
+    """Enum where members are also (and must be) ints."""
 
 
 def unique(enumeration):

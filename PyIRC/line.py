@@ -5,7 +5,7 @@
 # for licensing information.
 
 
-"""Objects and utilities related to IRC messages"""
+"""Objects and utilities related to IRC messages."""
 
 
 import operator
@@ -20,13 +20,14 @@ logger = getLogger(__name__)
 
 class Tags:
 
-    """Stores message tags
+    """Stores message tags.
 
     Message tags are a new feature proposed by IRCv3 to add enhanced
     out-of-band data to messages.
 
     Not presently tested a whole lot due to the lack of conforming
     servers.
+
     """
 
     __slots__ = ('tags', 'tagstr')
@@ -71,7 +72,7 @@ class Tags:
 
 class Hostmask:
 
-    """ Stores a hostmask
+    """Stores a hostmask.
 
     Hostmasks are used to store sources and destinations in IRC messages.
 
@@ -83,12 +84,13 @@ class Hostmask:
     Hostmask(nick=None, username=None, host='host.org')
     >>> Hostmask.parse('nickname')
     Hostmask(nick='nickname', username=None, host=None)
+
     """
 
     __slots__ = ('nick', 'username', 'host', 'maskstr')
 
     def __init__(self, *, nick=None, username=None, host=None, mask=None):
-        """Initalise the Hostmask object"""
+        """Initalise the Hostmask object."""
         self.nick = nick
         self.username = username
         self.host = host
@@ -103,6 +105,7 @@ class Hostmask:
 
         :param raw:
             The raw hostmask to parse.
+
         """
         if not raw:
             logger.debug("No hostmask found")
@@ -177,6 +180,7 @@ class Line:
     >>> Line.parse(':nick!user@host PRIVMSG #testroom meow :testing')
     ... # doctest: +ELLIPSIS
     Line(..., command='PRIVMSG', params=['#testroom', 'meow', 'testing'])
+
     """
 
     __slots__ = ('tags', 'hostmask', 'command', 'params', 'linestr')
@@ -213,6 +217,7 @@ class Line:
         Also should raise on any invalid line.  It will be quite liberal with
         hostmasks (accepting such joys as '' and 'user1@user2@user3'), but
         trying to enforce strict validity in hostmasks will be slow.
+
         """
         if not line:
             logger.warning("Blank line passed in!")

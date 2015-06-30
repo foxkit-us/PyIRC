@@ -3,7 +3,7 @@
 # for licensing information.
 
 
-"""Latency measurements to the server"""
+"""Latency measurements to the server."""
 
 
 from PyIRC.extension import BaseExtension
@@ -25,21 +25,23 @@ logger = getLogger(__name__)
 
 class LagCheck(BaseExtension):
 
-    """ Lag measurement extension. Checks latency periodically.
+    """Lag measurement extension. Checks latency periodically.
 
     :ivar lag:
         Current lag measurements from the server, measured in seconds. It is
         not advisable to rely on less than a millisecond of precision on most
         systems and real-world networks.
+
     """
 
     def __init__(self, *args, **kwargs):
-        """ Initialise the LagCheck extension
+        """Initialise the LagCheck extension.
 
         :key lagcheck:
             Time interval to do periodic lag checks to update the lag timer.
             Defaults to 15 seconds. Setting the value too low may result in
             being disconnected by the server.
+
         """
         super().__init__(*args, **kwargs)
 
@@ -52,7 +54,7 @@ class LagCheck(BaseExtension):
 
     @staticmethod
     def timestr(time):
-        """ Return a random string based on the current time """
+        """Return a random string based on the current time."""
 
         length = randint(5, 10)
         chars = letters + digits
@@ -61,7 +63,7 @@ class LagCheck(BaseExtension):
         return "{}-{}".format(time, randstr)
 
     def ping(self):
-        """ Callback for ping """
+        """Callback for ping."""
 
         if self.last is not None:
             raise OSError("Connection timed out")
@@ -84,13 +86,13 @@ class LagCheck(BaseExtension):
 
     @hook("commands", Numerics.RPL_WELCOME)
     def start(self, event):
-        """ Begin sending PING requests as soon as possible """
+        """Begin sending PING requests as soon as possible."""
 
         self.ping()
 
     @hook("commands", "PONG")
     def pong(self, event):
-        """ Use PONG reply to check lag """
+        """Use PONG reply to check lag."""
 
         if self.last is None:
             return

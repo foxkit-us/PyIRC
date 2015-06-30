@@ -23,9 +23,10 @@ logger = getLogger(__name__)
 class BasicAPI(BaseExtension):
 
     """Basic API functions, designed to make things easier to use.
-    
+
     This extension adds ``base.basicapi`` as itself as an alias for
     ``get_extension("basicapi").``.
+
     """
 
     requires = ["ISupport"]
@@ -51,6 +52,7 @@ class BasicAPI(BaseExtension):
 
         .. warning::
             Use notice judiciously, as many users find them irritating!
+
         """
         if hasattr(target, "name"):
             # channel
@@ -71,6 +73,7 @@ class BasicAPI(BaseExtension):
 
         :returns:
             Target to reply to
+
         """
         isupport = self.base.isupport
 
@@ -107,6 +110,7 @@ class BasicAPI(BaseExtension):
         :param topic:
             Topic to set in channel. Will unset the topic if set to None or
             the empty string.
+
         """
         if hasattr(channel, "name"):
             channel = channel.name
@@ -136,6 +140,7 @@ class BasicAPI(BaseExtension):
         :param \*args:
             Targets or params for modes. Can be either
             :py:class:`~PyIRC.extensions.usertrack.User` instances or strings.
+
         """
         if not args:
             raise ValueError("args are needed for this function")
@@ -187,6 +192,7 @@ class BasicAPI(BaseExtension):
         :param \*args:
             Users to op. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or strings.
+
         """
         if not args:
             raise ValueError("args are needed for this function")
@@ -204,6 +210,7 @@ class BasicAPI(BaseExtension):
         :param \*args:
             Users to deop. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or strings.
+
         """
         if not args:
             raise ValueError("args are needed for this function")
@@ -221,6 +228,7 @@ class BasicAPI(BaseExtension):
         :param \*args:
             Users to voice. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or strings.
+
         """
         if not args:
             raise ValueError("args are needed for this function")
@@ -238,6 +246,7 @@ class BasicAPI(BaseExtension):
         :param \*args:
             Users to devoice. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or strings.
+
         """
         if not args:
             raise ValueError("args are needed for this function")
@@ -258,6 +267,7 @@ class BasicAPI(BaseExtension):
         :param \*args:
             Users to halfop. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or strings.
+
         """
         if not args:
             raise ValueError("args are needed for this function")
@@ -278,6 +288,7 @@ class BasicAPI(BaseExtension):
         :param \*args:
             Users to dehalfop. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or strings.
+
         """
         if not args:
             raise ValueError("args are needed for this function")
@@ -293,6 +304,7 @@ class BasicAPI(BaseExtension):
             bans. The fallback is ``*!*@host``. This may not be suitable for
             all uses. It is recommended more advanced users use strings
             instead of User instances.
+
         """
         if not args:
             raise ValueError("args are needed for this function")
@@ -337,6 +349,7 @@ class BasicAPI(BaseExtension):
 
         .. note::
             All items are passed through :meth:`process_bantargs`.
+
         """
         self.mode_params(True, 'b', channel, *self.process_bantargs(*args))
 
@@ -359,6 +372,7 @@ class BasicAPI(BaseExtension):
 
         .. note::
             All items are passed through :meth:`process_bantargs`.
+
         """
         self.mode_params(False, 'b', channel, *self.process_bantargs(*args))
 
@@ -378,6 +392,7 @@ class BasicAPI(BaseExtension):
 
         .. note::
             All items are passed through :meth:`process_bantargs`.
+
         """
         isupport = self.base.isupport
         if isupport and not (isupport.get("EXCEPTS") or 'e' in
@@ -431,6 +446,7 @@ class BasicAPI(BaseExtension):
 
         .. note::
             All items are passed through :meth:`process_bantargs`.
+
         """
         isupport = self.base.isupport
         if isupport and not (isupport.get("EXCEPTS") or 'I' in
@@ -491,6 +507,7 @@ class BasicAPI(BaseExtension):
 
         .. note::
             All items are passed through :meth:`process_bantargs`.
+
         """
         isupport = self.base.isupport
         if not isupport:
@@ -534,6 +551,7 @@ class BasicAPI(BaseExtension):
 
         .. note::
             All items are passed through :meth:`process_bantargs`.
+
         """
         isupport = self.base.isupport
         if not isupport:
@@ -553,9 +571,10 @@ class BasicAPI(BaseExtension):
 
         :param channel:
             Name of the Channel to join.
-        
+
         :param key:
             Channel key to use, if needed.
+
         """
         params = [channel]
         if key is not None:
@@ -573,6 +592,7 @@ class BasicAPI(BaseExtension):
 
         :param reason:
             Freeform reason to leave the channel.
+
         """
         if hasattr(channel, "name"):
             channel = channel.name
@@ -600,13 +620,14 @@ class BasicAPI(BaseExtension):
 
         :param reason:
             Freeform reason to kick the user.
+
         """
         if hasattr(channel, "name"):
             channel = channel.name
 
         if hasattr(user, "nick"):
             user = user.nick
-        
+
         params = [channel, user]
 
         if reason is not None:

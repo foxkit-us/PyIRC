@@ -4,12 +4,13 @@
 # for licensing information.
 
 
-"""The event subsystem
+"""The event subsystem.
 
 PyIRC is built on a powerful yet easy-to-use event system.  In addition to
 command events (each command and numeric has its own event you can hook), your
 code can define its own event types wherever necessary - for example, the CTCP
 extension defines a CTCP message event.
+
 """
 
 
@@ -58,17 +59,19 @@ class Event:
 
     :ivar last_function:
         Set to the function who cancelled us, if we are cancelled.
+
     """
 
     __slots__ = ('event', 'status', 'last_function', 'pause_state')
 
     def __init__(self, event):
-        """Initalise the event object
+        """Initalise the event object.
 
         Arguments:
 
         :param event:
             The event type occuring
+
         """
         self.event = event
         self.status = EventState.ok
@@ -79,18 +82,18 @@ class Event:
 
     @staticmethod
     def key(k):
-        """Key function"""
+        """Key function."""
         return k.lower()
 
 
 class HookEvent(Event):
 
-    """The event for hooks"""
+    """The event for hooks."""
 
 
 class LineEvent(Event):
 
-    """The event for lines"""
+    """The event for lines."""
 
     def __init__(self, event, line):
         """Initalise a LineEvent object.
@@ -99,6 +102,7 @@ class LineEvent(Event):
             The event type occurring, should mirror line.command.
         :param line:
             The parsed IRC message of this event
+
         """
         super().__init__(event)
 
@@ -118,6 +122,7 @@ class EventManager:
 
     :ivar events_reg:
         The hclass to (events, type) mapping. Useful for advanced usage.
+
     """
 
     def __init__(self):
@@ -138,6 +143,7 @@ class EventManager:
         :param type:
             The type of :py:class:`~PyIRC.event.Event` that will be passed to
             event handlers.
+
         """
 
         if hclass in self.events_reg:
@@ -149,7 +155,7 @@ class EventManager:
         self.events_reg[hclass] = EventRegistry(dict(), type)
 
     def unregister_class(self, hclass):
-        """Unregister a class of events. """
+        """Unregister a class of events."""
         if hclass not in self.events_reg:
             raise KeyError("hclass not found")
 
@@ -163,6 +169,7 @@ class EventManager:
         .. warning::
             This will clear all callbacks, events, and event classes.
             Do not use unless you really know what you're doing.
+
         """
         logger.debug("Clearing hooks")
         self.events_reg.clear()
@@ -177,6 +184,7 @@ class EventManager:
             The name of the event to register.
 
         If ``event`` is already registered in ``hclass``, this method is a no-op.
+
         """
         if hclass not in self.events_reg:
             raise KeyError("hclass not found")
@@ -200,6 +208,7 @@ class EventManager:
             The name of the event to unregister.
 
         .. note:: It is an error to unregister an event that does not exist.
+
         """
         if hclass not in self.events_reg:
             raise KeyError("hclass not found")
@@ -228,6 +237,7 @@ class EventManager:
 
         :param callback:
             A Callable to invoke when this event occurs.
+
         """
 
         events = self.events_reg[hclass].events
@@ -245,24 +255,28 @@ class EventManager:
         events[event].items.append(item)
         events[event].items.sort()
 
+        logger.debug("event items now %r", events[event].items)
+
     def register_callbacks_from_inst_all(self, inst):
         """Register all (known) callback classes from a given instance, using
-        hook tables
+        hook tables.
 
         :param inst:
             The instance to process
+
         """
         for hclass in self.events_reg.keys():
             self.register_callbacks_from_inst(hclass, inst)
 
     def register_callbacks_from_inst(self, hclass, inst):
-        """Register callbacks from a given instance, using hook tables
+        """Register callbacks from a given instance, using hook tables.
 
         :param hclass:
             The instance of the event to register with this callback
 
         :param inst:
             The instance to process
+
         """
         attr = hclass + '_hooks'
         table = getattr(inst, attr, None)
@@ -283,6 +297,7 @@ class EventManager:
 
         :param table:
             The table to process.
+
         """
         for event, (callback, priority) in table.items():
             self.register_callback(hclass, event, priority, callback)
@@ -298,6 +313,7 @@ class EventManager:
 
         :param callback:
             The callback to unregister.
+
         """
         if hclass not in self.events_reg:
             raise KeyError("hclass not found")
@@ -322,10 +338,11 @@ class EventManager:
 
     def unregister_callbacks_from_inst_all(self, inst):
         """Unregister all (known) callback classes from a given instance, using
-        hook tables
+        hook tables.
 
         :param inst:
             The instance to process
+
         """
         for hclass in self.events_reg.keys():
             self.unregister_callbacks_from_inst(hclass, inst)
@@ -338,6 +355,7 @@ class EventManager:
 
         :param inst:
             The class to process.
+
         """
         attr = hclass + '_hooks'
         table = getattr(inst, attr, None)
@@ -358,6 +376,7 @@ class EventManager:
 
         :param table:
             The table to process
+
         """
         for event, (callback, _) in table.items():
             self.unregister_callback(hclass, event, callback)
@@ -374,6 +393,7 @@ class EventManager:
         :param \*args:
             The arguments to pass to the :py:class:`~PyIRC.event.Event` type constructor used
             for the event class.
+
         """
         if hclass not in self.events_reg:
             raise KeyError("hclass not found")
@@ -402,6 +422,7 @@ class EventManager:
 
         :param event_inst:
             The :py:class:`~PyIRC.event.Event` type we are reusing for this call.
+
         """
         if hclass not in self.events_reg:
             raise KeyError("hclass not found")

@@ -4,7 +4,7 @@
 # for licensing information.
 
 
-""" Bare minimum IRC RFC standards support """
+"""Bare minimum IRC RFC standards support."""
 
 
 from logging import getLogger
@@ -19,7 +19,7 @@ logger = getLogger(__name__)
 
 class BasicRFC(BaseExtension):
 
-    """ Basic RFC1459 support.
+    """Basic RFC1459 support.
 
     This is basically just a module that ensures your bot doesn't time out and
     can track its own nick. Nobody is making you use this implementation, but
@@ -36,6 +36,7 @@ class BasicRFC(BaseExtension):
         will be stored here. Useful in case of services collisions that change
         our nick, SANICK/FORCENICK operator abuse, or another extension
         changes our nick.
+
     """
     priority = PRIORITY_LAST
 
@@ -55,7 +56,7 @@ class BasicRFC(BaseExtension):
 
             self.send("NICK", [self.nick])
             self.send("USER", [self.username, "*", "*",
-                                    self.gecos])
+                               self.gecos])
 
     @hook("hooks", "disconnected")
     def disconnected(self, event):

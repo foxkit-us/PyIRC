@@ -50,6 +50,7 @@ class IRCSocket(IRCBase):
     :key family:
         The family to use for the socket (default AF_INET, IPv4). Set to
         socket.AF_INET6 for IPv6 usage.
+
     """
 
     def connect(self):
@@ -106,7 +107,9 @@ class IRCSocket(IRCBase):
     def loop(self):
         """Simple loop for bots.
 
-        Does not return, but raises exception when the connection is closed.
+        Does not return, but raises exception when the connection is
+        closed.
+
         """
         self.connect()
 

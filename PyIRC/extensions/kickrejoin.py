@@ -4,10 +4,12 @@
 # for licensing information.
 
 
-""" Rejoin automatically after being kicked from a channel.
+"""Rejoin automatically after being kicked from a channel.
 
-This extension is also meant to serve as an example for extension authors.  It
-is heavily documented and designed to be very easy to follow.
+This extension is also meant to serve as an example for extension
+authors.  It is heavily documented and designed to be very easy to
+follow.
+
 """
 
 
@@ -30,7 +32,7 @@ logger = getLogger(__name__)
 
 class KickRejoin(BaseExtension):
 
-    """ Rejoin a channel automatically after being kicked or removed. """
+    """Rejoin a channel automatically after being kicked or removed."""
 
     requires = ["BasicRFC", "ISupport"]
     """ Describes what extensions are required to use this extension.  We use
@@ -39,7 +41,7 @@ class KickRejoin(BaseExtension):
     """
 
     def __init__(self, *args, **kwargs):
-        """ Initialise the KickRejoin extension.
+        """Initialise the KickRejoin extension.
 
         :key rejoin_delay:
             Seconds to delay until the channel is rejoined.  This defaults to 5,
@@ -50,6 +52,7 @@ class KickRejoin(BaseExtension):
             most servers propogate REMOVE as KICK to clients so it won't always
             work (the sole exception in testing this extension was Freenode).
             Defaults to True, because REMOVE is silly anyway.
+
         """
         # When overriding __init__, ALWAYS call the superclass! This sets up
         # the hook tables correctly and future-proofs you from other
@@ -72,9 +75,11 @@ class KickRejoin(BaseExtension):
 
     @hook("commands_out", "PART")
     def on_part_out(self, event):
-        """ Command handler for PART's that are outgoing
+        """Command handler for PART's that are outgoing.
 
-        This is used to ensure we know when we PART a channel, it's voluntary.
+        This is used to ensure we know when we PART a channel, it's
+        voluntary.
+
         """
         if not self.rejoin_on_remove:
             # No bookkeeping
@@ -106,11 +111,12 @@ class KickRejoin(BaseExtension):
     @hook("commands", "KICK")
     @hook("commands", "PART")
     def on_kick(self, event):
-        """ Command handler for KICK and PART.
+        """Command handler for KICK and PART.
 
-        This method receives a LineEvent object as its parameter, and will use
-        it to determine if we were the ones kick/removed, and what action to
-        take.
+        This method receives a LineEvent object as its parameter, and
+        will use it to determine if we were the ones kick/removed, and
+        what action to take.
+
         """
         # Retrieve the BasicRFC extension handle.
         basicrfc = self.base.basic_rfc
@@ -150,18 +156,20 @@ class KickRejoin(BaseExtension):
         self.scheduled[channel] = future
 
     def join(self, channel):
-        """ Join the specified channel and remove the channel from the pending
-        rejoin list. """
+        """Join the specified channel and remove the channel from the pending
+        rejoin list."""
         self.send("JOIN", [channel])
         self.parts.discard(channel)
         del self.scheduled[channel]
 
     @hook("hooks", "disconnected")
     def on_disconnected(self, event):
-        """ Disconnection event handler.
+        """Disconnection event handler.
 
-        We must ensure that any pending rejoins are unscheduled, so that we
-        don't do something silly like sending JOIN to a closed socket.
+        We must ensure that any pending rejoins are unscheduled, so that
+        we don't do something silly like sending JOIN to a closed
+        socket.
+
         """
 
         for future in self.scheduled.values():

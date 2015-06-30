@@ -4,9 +4,10 @@
 # for licensing information.
 
 
-""" Track channels that we have joined and their associated data
+"""Track channels that we have joined and their associated data.
 
 This data includes ops, modes, the topic, and associated data.
+
 """
 
 
@@ -27,7 +28,7 @@ logger = getLogger(__name__)
 
 class ChannelEvent(Event):
 
-    """Fired when a channel instance is created or destroyed"""
+    """Fired when a channel instance is created or destroyed."""
 
     def __init__(self, event, channel):
         super().__init__(event)
@@ -36,7 +37,7 @@ class ChannelEvent(Event):
 
 class Channel:
 
-    """ A channel entity """
+    """A channel entity."""
 
     def __init__(self, case, name, **kwargs):
         """Store the data for a channel.
@@ -64,6 +65,7 @@ class Channel:
 
         :key url:
             URL of the channel, sent on some IRC servers.
+
         """
         if name is None:
             raise ValueError("name must not be None")
@@ -91,7 +93,7 @@ class Channel:
 
 class ChannelTrack(BaseExtension):
 
-    """ Tracks channels and the users on the channels.
+    """Tracks channels and the users on the channels.
 
     Only the user's casemapped nicks are stored, as well as their statuses.
     They are stored casemapped to make it easier to look them up in other
@@ -105,7 +107,9 @@ class ChannelTrack(BaseExtension):
         the values are Channel instances.
 
     For more elaborate user tracking, see
-    :py:module::`~PyIRC.extensions.usertrack`."""
+    :py:module::`~PyIRC.extensions.usertrack`.
+
+    """
 
     hook_classes = {
         "channel": ChannelEvent,
@@ -137,6 +141,7 @@ class ChannelTrack(BaseExtension):
 
         :param name:
             Name of the channel to retrieve.
+
         """
 
         return self.channels.get(name)
@@ -144,7 +149,9 @@ class ChannelTrack(BaseExtension):
     def add_channel(self, name, **kwargs):
         """Add a channel to the tracking dictionary.
 
-        Avoid using this method directly unless you know what you are doing.
+        Avoid using this method directly unless you know what you are
+        doing.
+
         """
         channel = self.get_channel(name)
         if channel is None:
@@ -160,7 +167,9 @@ class ChannelTrack(BaseExtension):
     def remove_channel(self, name):
         """Remove a channel from the tracking dictionary.
 
-        Avoid using this method directly unless you know what you are doing.
+        Avoid using this method directly unless you know what you are
+        doing.
+
         """
 
         channel = self.get_channel(name)
@@ -346,4 +355,3 @@ class ChannelTrack(BaseExtension):
 
             # Change the nick
             channel.users[newnick] = channel.users.pop(oldnick)
-

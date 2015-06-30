@@ -3,7 +3,11 @@
 # for licensing information.
 
 
-""" A null backend, used for testing purposes.  No connections are made. """
+"""A null backend, used for testing purposes.
+
+No connections are made.
+
+"""
 
 
 from logging import getLogger
@@ -20,7 +24,7 @@ logger = getLogger(__name__)
 
 class NullSocket(IRCBase):
 
-    """ The fake socket implementation of the IRC protocol. """
+    """The fake socket implementation of the IRC protocol."""
 
     def connect(self):
         self.scheduler = scheduler()
@@ -43,12 +47,12 @@ class NullSocket(IRCBase):
         return
 
     def inject_line(self, line):
-        """ Inject a Line into the recvq for the client. """
+        """Inject a Line into the recvq for the client."""
         assert isinstance(Line, line)
         self.recvq.put(line)
 
     def loop(self):
-        """ Simple loop, unchanged from IRCSocket. """
+        """Simple loop, unchanged from IRCSocket."""
         self.connect()
 
         while True:
@@ -71,17 +75,22 @@ class NullSocket(IRCBase):
         logger.debug("OUT: %s", str(line).rstrip())
 
     def draw_line(self):
-        """ Draw the earliest Line in the sendq from the client.
+        """Draw the earliest Line in the sendq from the client.
 
-        Returns None if there are no lines currently in the sendq. """
+        Returns None if there are no lines currently in the sendq.
+
+        """
         try:
             return self.sendq.get()
         except Empty:
             return None
 
     def reset_connection(self):
-        """ Emulate a server forcibly disconnecting the client.  Maybe useful
-        for ERROR or QUIT. """
+        """Emulate a server forcibly disconnecting the client.
+
+        Maybe useful for ERROR or QUIT.
+
+        """
         self.disconnect_on_next = True
 
     def schedule(self, time, callback):
@@ -91,7 +100,11 @@ class NullSocket(IRCBase):
         self.scheduler.cancel(sched)
 
     def wrap_ssl(self):
-        """ Mock wrapping SSL.  Not sure if this is even useful. """
+        """Mock wrapping SSL.
+
+        Not sure if this is even useful.
+
+        """
         if self.ssl:
             # Wrapped already
             return False

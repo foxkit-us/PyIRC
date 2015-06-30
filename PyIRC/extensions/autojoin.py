@@ -5,7 +5,7 @@
 # for licensing information.
 
 
-""" Join channels on connection automatically """
+"""Join channels on connection automatically."""
 
 
 from collections.abc import Mapping
@@ -19,12 +19,16 @@ from PyIRC.numerics import Numerics
 
 class AutoJoin(BaseExtension):
 
-    """ This extension will autojoin the channels you specify, without flooding
-    off the network.  The initial delay to first join and delay between each
-    successive channel is customisable. """
+    """This extension will autojoin the channels you specify, without flooding
+    off the network.
+
+    The initial delay to first join and delay between each successive
+    channel is customisable.
+
+    """
 
     def __init__(self, *args, **kwargs):
-        """ Initialise the AutoJoin extension.
+        """Initialise the AutoJoin extension.
 
         :key join:
             A Mapping (dictionary type) or Iterable of channels to join.
@@ -40,6 +44,7 @@ class AutoJoin(BaseExtension):
         :key autojoin_wait_interval:
             How much time, in seconds, to wait between each join.
             The default is 0.25 seconds.
+
         """
         super().__init__(*args, **kwargs)
 

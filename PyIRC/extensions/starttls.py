@@ -5,11 +5,12 @@
 # for licensing information.
 
 
-"""Automatic SSL negotiation
+"""Automatic SSL negotiation.
 
-It's a little like the ESMTP STARTTLS command, but the server does not forget
-all of the client state after it is issued. Therefore, it should be issued as
-quickly as possible.
+It's a little like the ESMTP STARTTLS command, but the server does not
+forget all of the client state after it is issued. Therefore, it should
+be issued as quickly as possible.
+
 """
 
 
@@ -26,9 +27,10 @@ logger = getLogger(__name__)
 
 class StartTLS(BaseExtension):
 
-    """ Support for the STARTTLS extension.
+    """Support for the STARTTLS extension.
 
     Not all I/O backends support this, notably :py:class:`~PyIRC.io.asyncio`.
+
     """
 
     requires = ["CapNegotiate"]

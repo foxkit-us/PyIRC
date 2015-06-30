@@ -71,7 +71,7 @@ def banmask_parse(string, supported_extban):
     return ret
 
 
-ParsedPrefix = namedtuple("ParsedPrefix", "mode_to_prefix prefix_to_mode") 
+ParsedPrefix = namedtuple("ParsedPrefix", "mode_to_prefix prefix_to_mode")
 
 
 @lru_cache(maxsize=16)
@@ -117,7 +117,7 @@ def prefix_parse(prefix):
 
 
 def mode_parse(modes, params, modegroups, prefix):
-    """ Parse IRC mode strings
+    """Parse IRC mode strings.
 
     A generator that yields (modechar, param, adding).  param may be `None`.
     `adding` will either be `True` or `False`, depending on what is happening
@@ -150,6 +150,7 @@ def mode_parse(modes, params, modegroups, prefix):
     >>> prefixmodes = prefix_parse(prefixmodes)
     >>> f(mode_parse("+ov-v", ("a", "b", "c"), modegroups, prefixmodes))
     [('o', 'a', True), ('v', 'b', True), ('v', 'c', False)]
+
     """
     if isinstance(prefix, ParsedPrefix):
         prefix = prefix.mode_to_prefix
@@ -184,7 +185,7 @@ def mode_parse(modes, params, modegroups, prefix):
 
 
 def status_prefix_parse(string, prefix):
-    """ Parse a string containing status sigils.
+    """Parse a string containing status sigils.
 
     :param string:
         Nick or channel containing leading sigils.
@@ -205,6 +206,7 @@ def status_prefix_parse(string, prefix):
     >>> modes, channel = status_prefix_parse("@+#", "(ov)@+")
     >>> sorted(modes), channel
     (['o', 'v'], '#')
+
     """
     if isinstance(prefix, ParsedPrefix):
         prefix = prefix.prefix_to_mode
@@ -222,7 +224,7 @@ def status_prefix_parse(string, prefix):
 
 @lru_cache(maxsize=32)
 def who_flag_parse(flags):
-    """ Parse WHO flags.
+    """Parse WHO flags.
 
     :param flags:
         Flags to parse.
@@ -238,6 +240,7 @@ def who_flag_parse(flags):
 
         :modes:
             A set of the user's present modes (prefixes).
+
     """
     ret = SimpleNamespace(operator=False, away=False, modes=set())
     ret.operator = False
@@ -273,6 +276,7 @@ def userhost_parse(mask):
 
         :away:
             Whether or not the user is away.
+
     """
     if not mask:
         raise ValueError("Need a mask to parse")
@@ -298,7 +302,7 @@ def userhost_parse(mask):
         username = None
 
     ret.hostmask = Hostmask(nick=nick, username=username, host=host)
-    
+
     return ret
 
 
@@ -400,6 +404,7 @@ class CTCPMessage:
 
         :param param:
             The param(s) of the CTCP message, with no parsing attempted.
+
         """
         self.msgtype = msgtype
         self.command = command

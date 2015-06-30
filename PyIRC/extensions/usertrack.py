@@ -4,11 +4,12 @@
 # for licensing information.
 
 
-"""Track users we have seen and their associated data
+"""Track users we have seen and their associated data.
 
-Tracks users we know about, whether on channels or through private messages.
-Maintains state such as nicknames, channel statuses, away status, and the
-like.
+Tracks users we know about, whether on channels or through private
+messages. Maintains state such as nicknames, channel statuses, away
+status, and the like.
+
 """
 
 
@@ -33,7 +34,7 @@ logger = getLogger(__name__)
 
 class UserEvent(Event):
 
-    """Fired when a user instance is created or destroyed"""
+    """Fired when a user instance is created or destroyed."""
 
     def __init__(self, event, user):
         super().__init__(event)
@@ -42,7 +43,7 @@ class UserEvent(Event):
 
 class User:
 
-    """ A user entity.
+    """A user entity.
 
     :ivar channels:
         Mapping of channels, where the keys are casemapped channel names, and
@@ -50,6 +51,7 @@ class User:
 
     For more elaborate channel tracking, see
     :py:module::`~PyIRC.extensions.channeltrack`.
+
     """
 
     def __init__(self, case, nick, **kwargs):
@@ -96,6 +98,7 @@ class User:
 
         :key realhost:
             Real hostname for a user. Probably not present in most cases.
+
         """
         if nick is None:
             raise ValueError("nick may not be None")
@@ -127,7 +130,7 @@ class User:
 
 class UserTrack(BaseExtension):
 
-    """ Track various user metrics, such as account info, and some channel
+    """Track various user metrics, such as account info, and some channel
     tracking.
 
     This extension adds ``base.user_track`` as itself as an alias for
@@ -138,6 +141,7 @@ class UserTrack(BaseExtension):
         User instances. You should probably prefer
         :py:class:`~PyIRC.extensions.usertrack.Usertrack.get_user` to direct
         lookups on this dictionary.
+
     """
 
     caps = {
@@ -145,7 +149,7 @@ class UserTrack(BaseExtension):
         "away-notify": [],
         "chghost": [],
     }
-    
+
     hook_classes = {
         "user": UserEvent,
     }
@@ -175,7 +179,7 @@ class UserTrack(BaseExtension):
                       gecos=self.gecos)
 
     def authenticate(self, nick, callback):
-        """Get authentication for a user and return result in a callback
+        """Get authentication for a user and return result in a callback.
 
         :param nick:
             Nickname of user to check authentication for
@@ -184,6 +188,7 @@ class UserTrack(BaseExtension):
             Callback to call for user when authentication is discovered. The
             User instance is passed in as the first parameter, or None if the
             user is not found. Use functools.partial to pass other arguments.
+
         """
         user = self.get_user(nick)
         if not user:
@@ -209,13 +214,16 @@ class UserTrack(BaseExtension):
             Nickname of the user to retrieve.
 
         :returns: A :class:`User` instance, or None if user not found.
+
         """
         return self.users.get(nick)
 
     def add_user(self, nick, **kwargs):
         """Add a user to the tracking dictionary.
 
-        Avoid using this method directly unless you know what you are doing.
+        Avoid using this method directly unless you know what you are
+        doing.
+
         """
         user = self.get_user(nick)
         if not user:
@@ -232,7 +240,9 @@ class UserTrack(BaseExtension):
     def remove_user(self, nick):
         """Remove a user from the tracking dictionary.
 
-        Avoid using this method directly unless you know what you are doing.
+        Avoid using this method directly unless you know what you are
+        doing.
+
         """
         if nick not in self.users:
             logger.warning("Deleting nonexistent user: %s", nick)
@@ -245,9 +255,11 @@ class UserTrack(BaseExtension):
         del self.users[nick]
 
     def timeout_user(self, nick):
-        """Time a user out, cancelling existing timeouts
+        """Time a user out, cancelling existing timeouts.
 
-        Avoid using this method directly unless you know what you are doing.
+        Avoid using this method directly unless you know what you are
+        doing.
+
         """
         if nick in self.u_expire_timers:
             self.unschedule(self.u_expire_timers[nick])
@@ -263,6 +275,7 @@ class UserTrack(BaseExtension):
         .. note::
             This mostly exists for brain-dead networks that don't quit users
             when they get cloaked.
+
         """
         if hasattr(hostmask_or_line, 'hostmask'):
             hostmask = hostmask_or_line.hostmask
@@ -344,14 +357,14 @@ class UserTrack(BaseExtension):
                                  account=event.account)
         else:
             self.update_username_host(target)
-        
+
         # Add the channel
         user.channels[channel] = modes
 
     @hook("scope", "user_join")
     def join(self, event):
         self.burst(event)
-        
+
         target = event.target
         channel = event.scope
 

@@ -5,10 +5,11 @@
 # for licensing information.
 
 
-"""Library base classes
+"""Library base classes.
 
-Contains the most fundamental parts of PyIRC. This is the glue that binds
-everything together.
+Contains the most fundamental parts of PyIRC. This is the glue that
+binds everything together.
+
 """
 
 
@@ -45,6 +46,7 @@ class IRCBase(metaclass=ABCMeta):
     :ivar registered:
         If True, we have completed the server handshake and are ready
         to send commands.
+
     """
 
     priority = 10000
@@ -79,6 +81,7 @@ class IRCBase(metaclass=ABCMeta):
         .. note::
             Keyword arguments may be used by extensions. kwargs is passed
             as-is to all extensions.
+
         """
         self.server, self.port = serverport
         self.username = username
@@ -108,9 +111,10 @@ class IRCBase(metaclass=ABCMeta):
         events.register_callbacks_from_inst_all(self)
 
     def case_change(self):
-        """Change server casemapping semantics
+        """Change server casemapping semantics.
 
         Do not call this unless you know what you're doing
+
         """
         if not hasattr(self, "isupport"):
             case = "RFC1459"
@@ -135,6 +139,7 @@ class IRCBase(metaclass=ABCMeta):
 
         :param string:
             The string to casefold according to the IRC server semantics.
+
         """
         return IRCString(self.case, string).casefold()
 
@@ -147,30 +152,40 @@ class IRCBase(metaclass=ABCMeta):
             String to compare
         :param other:
             String to compare
+
         """
         return self.casefold(string) == self.casefold(other)
 
     def get_extension(self, extension):
-        """A convenience method for
-        :py:meth:`~PyIRC.extension.ExtensionManager.get_extension`"""
+        """A convenience method for.
+
+        :py:meth:`~PyIRC.extension.ExtensionManager.get_extension`
+
+        """
         return self.extensions.get_extension(extension)
 
     def call_event(self, hclass, event, *args, **kwargs):
-        """A convenience method for
-        :py:meth:`~PyIRC.event.EventManager.call_event`"""
+        """A convenience method for.
+
+        :py:meth:`~PyIRC.event.EventManager.call_event`
+
+        """
         return self.events.call_event(hclass, event, *args, **kwargs)
-    
+
     def call_event_inst(self, hclass, event, inst):
-        """A convenience method for
-        :py:meth:`~PyIRC.event.EventManager.call_event_inst`"""
+        """A convenience method for.
+
+        :py:meth:`~PyIRC.event.EventManager.call_event_inst`
+
+        """
         return self.events.call_event_inst(hclass, event, inst)
 
     def connect(self):
-        """Do the connection handshake """
+        """Do the connection handshake."""
         return self.events.call_event("hooks", "connected")
 
     def close(self):
-        """Do the connection teardown """
+        """Do the connection teardown."""
         return self.events.call_event("hooks", "disconnected")
 
     def recv(self, line):
@@ -178,6 +193,7 @@ class IRCBase(metaclass=ABCMeta):
 
         :param line:
             A :class:`~PyIRC.line.Line` instance to recieve from the wire.
+
         """
         command = line.command.lower()
 
@@ -194,6 +210,7 @@ class IRCBase(metaclass=ABCMeta):
             A Sequence of parameters to send with the command. Only the last
             parameter may contain spaces due to IRC framing format
             limitations.
+
         """
         line = Line(command=command, params=params)
         event = self.events.call_event("commands_out", command, line)
@@ -213,6 +230,7 @@ class IRCBase(metaclass=ABCMeta):
             Seconds into the future to perform the callback.
         :param callback:
             Callback to perform. Use :meth:`functools.partial` to pass arguments.
+
         """
         raise NotImplementedError()
 
@@ -222,6 +240,7 @@ class IRCBase(metaclass=ABCMeta):
 
         :param sched:
             Event to unschedule returned by schedule.
+
         """
         raise NotImplementedError()
 
@@ -230,5 +249,6 @@ class IRCBase(metaclass=ABCMeta):
 
         .. warning::
             Not all backends support this!
+
         """
         raise NotImplementedError()

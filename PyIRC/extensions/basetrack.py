@@ -7,8 +7,9 @@
 
 """Base tracking API.
 
-This is not really meant for direct use; it converts commands into events for
-ingestion into the other tracking components.
+This is not really meant for direct use; it converts commands into
+events for ingestion into the other tracking components.
+
 """
 
 
@@ -67,6 +68,7 @@ class ModeEvent(Event):
         :param timestamp:
             The time this mode was set. If None, the current system time will
             be used.
+
         """
         super().__init__(event)
 
@@ -80,13 +82,14 @@ class ModeEvent(Event):
 
 class TrackEvent(Event):
 
-    """Base tracking event"""
+    """Base tracking event."""
 
     def __init__(self, event, target):
-        """Initialise the TrackEvent instance
+        """Initialise the TrackEvent instance.
 
         :param target:
             Target that is being tracked
+
         """
         super().__init__(event)
         self.target = target
@@ -94,11 +97,11 @@ class TrackEvent(Event):
 
 class ScopeEvent(TrackEvent):
 
-    """User changing scope event"""
+    """User changing scope event."""
 
     def __init__(self, event, target, scope=None, leaving=None, reason=None,
                  gecos=None, account=None, modes=None, cause=None):
-        """Initalise the UserScopeEvent instance
+        """Initalise the UserScopeEvent instance.
 
         :param target:
             :py:class:`~PyIRC.line.Hostmask` of user that is changing scope.
@@ -125,6 +128,7 @@ class ScopeEvent(TrackEvent):
 
         :param cause:
             User that caused this change.
+
         """
         super().__init__(event, target)
         self.scope = scope
@@ -138,11 +142,11 @@ class ScopeEvent(TrackEvent):
 
 class BaseTrack(BaseExtension):
 
-    """Base tracking extension, providing events for other tracking
-    extensions.
+    """Base tracking extension, providing events for other tracking extensions.
 
     This extension adds ``base.base_track`` as itself as an alias for
     ``get_extension("BaseTrack").``.
+
     """
 
     hook_classes = {
@@ -361,4 +365,3 @@ class BaseTrack(BaseExtension):
 
         self.call_event("modes", "mode_list", setter, target, mode, mask,
                         True)
-

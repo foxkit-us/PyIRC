@@ -10,6 +10,7 @@ This module contains IRC formatting-related data, and reformatting classes to
 deal with this formatting.
 
 Bold, italic, underline, reverse, and colours are handled.
+
 """
 
 
@@ -28,7 +29,7 @@ class ColourRGB(namedtuple("ColourRGB", "red green blue")):
 
     @property
     def html(self):
-        """Convert triplet to HTML format"""
+        """Convert triplet to HTML format."""
         return "#{:02X}{:02X}{:02X}".format(self.red, self.green, self.blue)
 
 
@@ -53,6 +54,7 @@ class Colour(IntEnum):
     mIRC maintains a list of `colour indexes to names`_.
 
     .. _colour indexes to names: http://www.mirc.com/colors.html
+
     """
 
     white = 0
@@ -81,6 +83,7 @@ class ColourRGB(Enum):
     mIRC maintains a list_ of colour codes to values.
 
     .. _list: http://www.mirc.com/colors.html
+
     """
 
     white = ColourRGB(255, 255, 255)
@@ -132,6 +135,7 @@ class FormattingCodes(Enum):
     A list is maintained by WikiChip_.
 
     .. _WikiChip: http://en.wikichip.org/wiki/irc/colors
+
     """
 
     bold = '\x02'
@@ -162,6 +166,7 @@ class Formatter:
 
     :ivar underline:
         Set when text should be underline.
+
     """
 
     # Used for matching colour codes
@@ -173,7 +178,9 @@ class Formatter:
     def reset(self):
         """Reset all colours.
 
-        You should not need to override this."""
+        You should not need to override this.
+
+        """
         self.bold = False
         self.colour = (None, None)
         self.reverse = False
@@ -192,6 +199,7 @@ class Formatter:
 
         :param string:
             String to reformat.
+
         """
         ret = list()
         index = 0
@@ -257,15 +265,15 @@ class Formatter:
         return ''.join(ret)
 
     def do_bold(self):
-        """Callback to do bold formatting"""
+        """Callback to do bold formatting."""
         raise NotImplementedError()
 
     def do_colour(self):
-        """Callback to do colour formatting"""
+        """Callback to do colour formatting."""
         raise NotImplementedError()
 
     def do_normal(self):
-        """Callback to remove all formatting"""
+        """Callback to remove all formatting."""
         raise NotImplementedError()
 
     def do_reverse(self):
@@ -273,17 +281,17 @@ class Formatter:
         raise NotImplementedError()
 
     def do_italic(self):
-        """Callback to do italic formatting"""
+        """Callback to do italic formatting."""
         raise NotImplementedError()
 
     def do_underline(self):
-        """Callback to do underline formatting"""
+        """Callback to do underline formatting."""
         raise NotImplementedError()
 
 
 class NullFormatter(Formatter):
 
-    """A stripping formatter that simply removes formatting"""
+    """A stripping formatter that simply removes formatting."""
 
     do_bold = lambda self : ''
     do_colour = lambda self : ''
@@ -295,7 +303,7 @@ class NullFormatter(Formatter):
 
 class HTMLFormatter(Formatter):
 
-    """A basic HTML IRC formatting class"""
+    """A basic HTML IRC formatting class."""
 
     def do_bold(self):
         return '<b>' if self.bold else '</b>'

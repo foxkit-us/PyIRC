@@ -5,11 +5,12 @@
 # for licensing information.
 
 
-"""Identification to services
+"""Identification to services.
 
 SASL is a mechanism used by IRCv3 to authenticate clients to services in a
 standard and user-friendly way. A variety of mechanisms are supported by most
 servers, but only PLAIN is supported by this module at the moment.
+
 """
 
 
@@ -27,13 +28,14 @@ logger = getLogger(__name__)
 
 class SASLBase(BaseExtension):
 
-    """ Base SASL support. Does nothing on its own.
+    """Base SASL support. Does nothing on its own.
 
     :ivar mechanisms:
         Mechanisms supported by the server
 
     :ivar authenticated:
         Whether or not we are authenticated to services
+
     """
 
     # We should come after things like STARTTLS
@@ -139,8 +141,12 @@ class SASLBase(BaseExtension):
 
 class SASLPlain(SASLBase):
 
-    """ PLAIN authentication. No security or encryption is performed on the
-    string sent to the server, but still suitable for use over TLS. """
+    """PLAIN authentication.
+
+    No security or encryption is performed on the string sent to the
+    server, but still suitable for use over TLS.
+
+    """
 
     # Least preferred auth method
     priority = PRIORITY_FIRST + 10
@@ -149,7 +155,7 @@ class SASLPlain(SASLBase):
 
     @hook("commands", "AUTHENTICATE")
     def authenticate(self, event):
-        """ Implement the plaintext authentication method """
+        """Implement the plaintext authentication method."""
 
         logger.info("Logging in with PLAIN method as %s", self.username)
 

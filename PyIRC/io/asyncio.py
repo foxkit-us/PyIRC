@@ -92,6 +92,10 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
                 logger.exception("Exception received in recv loop")
                 self.send("QUIT", ["Exception received!"])
                 self.transport.close()
+                
+                loop = asyncio.get_event_loop()
+                loop.stop()
+
                 raise
 
     def connection_closed(self, exc):

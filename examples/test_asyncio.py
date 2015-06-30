@@ -86,6 +86,9 @@ coro = inst.connect()
 
 loop = asyncio.get_event_loop()
 loop.add_signal_handler(signal.SIGINT, sigint, inst)
-loop.run_until_complete(coro)
-loop.run_forever()
-loop.close()
+
+try:
+    loop.run_until_complete(coro)
+    loop.run_forever()
+finally:
+    loop.close()

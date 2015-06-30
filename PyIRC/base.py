@@ -157,25 +157,22 @@ class IRCBase(metaclass=ABCMeta):
         return self.casefold(string) == self.casefold(other)
 
     def get_extension(self, extension):
-        """A convenience method for.
-
-        :py:meth:`~PyIRC.extension.ExtensionManager.get_extension`
+        """A convenience method for
+        :py:meth:`~PyIRC.extension.ExtensionManager.get_extension`.
 
         """
         return self.extensions.get_extension(extension)
 
     def call_event(self, hclass, event, *args, **kwargs):
-        """A convenience method for.
-
-        :py:meth:`~PyIRC.event.EventManager.call_event`
+        """A convenience method for
+        :py:meth:`~PyIRC.event.EventManager.call_event`.
 
         """
         return self.events.call_event(hclass, event, *args, **kwargs)
 
     def call_event_inst(self, hclass, event, inst):
-        """A convenience method for.
-
-        :py:meth:`~PyIRC.event.EventManager.call_event_inst`
+        """A convenience method for
+        :py:meth:`~PyIRC.event.EventManager.call_event_inst`.
 
         """
         return self.events.call_event_inst(hclass, event, inst)

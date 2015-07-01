@@ -13,7 +13,6 @@ from functools import partial
 
 from PyIRC.extension import BaseExtension
 from PyIRC.hook import hook
-from PyIRC.event import EventState
 from PyIRC.numerics import Numerics
 
 

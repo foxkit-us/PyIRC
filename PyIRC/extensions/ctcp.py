@@ -11,8 +11,7 @@ from logging import getLogger
 
 from PyIRC.extension import BaseExtension
 from PyIRC.hook import hook
-from PyIRC.event import EventState, LineEvent
-from PyIRC.numerics import Numerics
+from PyIRC.event import LineEvent
 from PyIRC.auxparse import CTCPMessage
 from PyIRC.util.version import versionstr
 

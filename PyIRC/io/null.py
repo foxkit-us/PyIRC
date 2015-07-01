@@ -13,7 +13,7 @@ No connections are made.
 from logging import getLogger
 from queue import Empty, Queue
 from sched import scheduler
-from time import sleep
+#from time import sleep
 
 from PyIRC.base import IRCBase
 from PyIRC.line import Line
@@ -58,7 +58,7 @@ class NullSocket(IRCBase):
         while True:
             try:
                 self.recv()
-            except OSError as e:
+            except OSError:
                 # Connection closed
                 self.close()
                 raise

@@ -15,7 +15,7 @@ servers, but only PLAIN is supported by this module at the moment.
 
 
 from logging import getLogger
-from base64 import b64encode, b64decode
+from base64 import b64encode
 
 from PyIRC.extension import BaseExtension
 from PyIRC.hook import hook, PRIORITY_FIRST

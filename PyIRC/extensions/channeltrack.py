@@ -285,7 +285,7 @@ class ChannelTrack(BaseExtension):
             channel = self.get_channel(event.line.params[0])
 
             # TODO server/local time deltas for more accurate timestamps
-            channel.topicwho = line.hostmask
+            channel.topicwho = event.line.hostmask
             channel.topictime = int(time())
         else:
             channel = self.get_channel(event.line.params[1])

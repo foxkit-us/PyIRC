@@ -20,7 +20,7 @@ format. Until that day comes, this needs to be here.
 from collections import namedtuple
 from functools import lru_cache
 from logging import getLogger
-from re import compile, escape
+from re import compile
 from string import ascii_letters, digits
 from types import SimpleNamespace
 

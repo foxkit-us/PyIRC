@@ -17,7 +17,7 @@ This also serves as a useful example.
 import socket
 import ssl
 
-from time import sleep
+#from time import sleep
 from sched import scheduler
 from logging import getLogger
 
@@ -116,7 +116,7 @@ class IRCSocket(IRCBase):
         while True:
             try:
                 self.recv()
-            except OSError as e:
+            except OSError:
                 # Connection closed
                 self.close()
                 raise

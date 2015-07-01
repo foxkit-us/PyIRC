@@ -14,15 +14,12 @@ binds everything together.
 
 
 from abc import ABCMeta, abstractmethod
-from collections import OrderedDict
-from itertools import zip_longest
 from logging import getLogger
 
-from PyIRC.numerics import Numerics
 from PyIRC.casemapping import IRCString
 from PyIRC.line import Line
 from PyIRC.extension import ExtensionManager
-from PyIRC.hook import hook, build_hook_table
+from PyIRC.hook import build_hook_table
 from PyIRC.event import EventManager, EventState
 
 

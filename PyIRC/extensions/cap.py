@@ -204,7 +204,7 @@ class CapNegotiate(BaseExtension):
 
     @hook("commands_cap", "list")
     def get_local(self, event):
-        self.local = caps = extract_caps(event.line)
+        self.local = caps = self.extract_caps(event.line)
         logger.debug("CAPs active: %s", caps)
 
     @hook("commands_cap", "ack")

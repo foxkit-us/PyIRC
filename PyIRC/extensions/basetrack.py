@@ -18,7 +18,7 @@ from logging import getLogger
 from time import time
 
 from PyIRC.auxparse import mode_parse, prefix_parse, status_prefix_parse
-from PyIRC.event import Event, EventState
+from PyIRC.event import Event
 from PyIRC.extension import BaseExtension
 from PyIRC.hook import hook, PRIORITY_FIRST
 from PyIRC.line import Hostmask
@@ -364,4 +364,4 @@ class BaseTrack(BaseExtension):
             return
 
         self.call_event("modes", "mode_list", setter, target, mode, mask,
-                        True)
+                        True, timestamp)

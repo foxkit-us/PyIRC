@@ -87,7 +87,7 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
             logger.debug("IN: %s", str(line).rstrip())
             try:
                 super().recv(line)
-            except Exception as e:
+            except Exception:
                 # We should never get here!
                 logger.exception("Exception received in recv loop")
                 self.send("QUIT", ["Exception received!"])

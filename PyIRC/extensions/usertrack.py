@@ -16,7 +16,6 @@ status, and the like.
 from itertools import chain
 from random import randint
 from functools import partial
-from collections import defaultdict
 from logging import getLogger
 
 from PyIRC.auxparse import (prefix_parse, who_flag_parse, status_prefix_parse,
@@ -479,6 +478,8 @@ class UserTrack(BaseExtension):
     def account(self, event):
         self.update_username_host(event.line)
 
+        account = event.line.params[0]
+
         user = self.get_user(event.line.hostmask.nick)
         assert user
 
@@ -716,10 +717,10 @@ class UserTrack(BaseExtension):
             # don't know. They mentioned it might break clients in the commit
             # log. I really have no idea why it exists, why it's useful to
             # anyone, or anything like that. But honestly, WHO sucks enough...
-            sid, _, realname = other.partition(' ')
+            sid, _, gecos = other.partition(' ')
         else:
             sid = None
-            realname = other
+            gecos = other
 
         if channel != '*':
             # Convert symbols to modes
@@ -736,21 +737,15 @@ class UserTrack(BaseExtension):
         away = flags.away
         operator = flags.operator
 
-        if account == '0':
-            # Not logged in
-            account = ''
-
-        if ip == '255.255.255.255':
-            # Cloaked
-            ip = None
+        # NB - these two members aren't guaranteed to exist (yet?)
+        user.sid = sid
+        user.server = server
 
         user.username = username
         user.host = host
         user.gecos = gecos
         user.away = away
         user.operator = operator
-        user.account = account
-        user.ip = ip
 
     @hook("commands", Numerics.RPL_WHOSPCRPL)
     def whox(self, event):
@@ -766,7 +761,7 @@ class UserTrack(BaseExtension):
         server = event.line.params[6]
         nick = event.line.params[7]
         flags = who_flag_parse(event.line.params[8])
-        # idle = event.line.params[9]
+        idle = event.line.params[9]
         account = event.line.params[10]
         gecos = event.line.params[11]
 
@@ -802,6 +797,8 @@ class UserTrack(BaseExtension):
             # Cloaked
             ip = None
 
+        user.server = server
+        user.idle = idle
         user.username = username
         user.host = host
         user.server = server

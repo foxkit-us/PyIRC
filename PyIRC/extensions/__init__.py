@@ -55,7 +55,7 @@ class ExtensionsDatabase(UserDict):
     def __missing__(self, item):
         try:
             module = self.lookup_module(item)
-        except KeyError:
+        except KeyError as e:
             error = "No such module in the database: {}".format(item)
             raise KeyError(error) from e
 

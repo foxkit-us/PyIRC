@@ -13,13 +13,11 @@ numerics used for ban listing.
 """
 
 
-from time import time
 from collections import namedtuple
 from logging import getLogger
 
 from PyIRC.extension import BaseExtension
 from PyIRC.hook import hook, PRIORITY_LAST
-from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
 
 
@@ -124,7 +122,6 @@ class BanTrack(BaseExtension):
                     check += sync
 
             if check:
-                isupport = self.base.isupport
                 self.send("MODE", [event.target, check])
 
     @hook("commands", Numerics.RPL_ENDOFBANLIST)

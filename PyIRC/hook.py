@@ -7,7 +7,7 @@
 from inspect import getmembers, ismethod
 from logging import getLogger
 
-from PyIRC.util.classutil import private_mangle
+#from PyIRC.util.classutil import private_mangle
 
 logger = getLogger(__name__)
 

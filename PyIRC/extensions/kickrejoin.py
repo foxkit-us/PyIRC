@@ -20,10 +20,8 @@ from logging import getLogger
 
 # * All extensions inherit from BaseExtension.
 # * hook is the decorator for event handlers.
-# * PRIORITY_LAST is a helpful constant for extensions that don't need immediate
-#   procesing/filtering of messages.
 from PyIRC.extension import BaseExtension
-from PyIRC.hook import hook, PRIORITY_LAST
+from PyIRC.hook import hook
 
 
 # Initialise our logger.
@@ -105,8 +103,7 @@ class KickRejoin(BaseExtension):
             # Nicks and channels are case-insensitive, so always casemap them
             # for comparisons.
             channel = self.casefold(channel)
-
-            self.parts.add(casefold)
+            self.parts.add(channel)
 
     @hook("commands", "KICK")
     @hook("commands", "PART")

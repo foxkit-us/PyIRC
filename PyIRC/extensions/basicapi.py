@@ -177,7 +177,7 @@ class BasicAPI(BaseExtension):
         flag = '+' if add else '-'
         for group in groups:
             modes = flag + (mode * len(group))
-            params = [channel, flag + (mode * len(group))]
+            params = [target, flag + (mode * len(group))]
             params.extend(group)
             self.send("MODE", params)
 

@@ -11,7 +11,6 @@ from logging import getLogger
 from PyIRC.event import LineEvent, HookEvent
 from PyIRC.extensions import ExtensionsDatabase
 from PyIRC.hook import build_hook_table, PRIORITY_DONTCARE
-from PyIRC.numerics import Numerics
 
 
 logger = getLogger(__name__)

@@ -60,7 +60,7 @@ class ExtensionManager:
 
     """Manage extensions to PyIRC's library, and register their hooks."""
 
-    def __init__(self, base, kwargs, events, extensions=[], database=None):
+    def __init__(self, base, kwargs, events, extensions=(), database=None):
         """Initialise the extensions manager.
 
         :param base:

@@ -20,7 +20,7 @@ from string import ascii_letters as letters, digits
 from logging import getLogger
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class LagCheck(BaseExtension):
@@ -106,4 +106,4 @@ class LagCheck(BaseExtension):
 
         self.lag = round(time() - float(self.last), 3)
         self.last = None
-        logger.info("Lag: %f", self.lag)
+        _logger.info("Lag: %f", self.lag)

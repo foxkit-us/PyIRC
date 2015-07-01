@@ -19,7 +19,7 @@ from PyIRC.base import IRCBase
 from PyIRC.line import Line
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class NullSocket(IRCBase):
@@ -41,7 +41,7 @@ class NullSocket(IRCBase):
             raise OSError('Connection reset by test.')
 
         line = self.recvq.get()
-        logger.debug("IN: %s", str(line).rstrip())
+        _logger.debug("IN: %s", str(line).rstrip())
         super().recv(line)
 
         return
@@ -72,7 +72,7 @@ class NullSocket(IRCBase):
             raise OSError("Connection reset by peer")
 
         self.sendq.put(line)
-        logger.debug("OUT: %s", str(line).rstrip())
+        _logger.debug("OUT: %s", str(line).rstrip())
 
     def draw_line(self):
         """Draw the earliest Line in the sendq from the client.

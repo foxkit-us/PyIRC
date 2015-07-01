@@ -17,7 +17,7 @@ from logging import getLogger
 from PyIRC.extension import BaseExtension
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class BasicAPI(BaseExtension):
@@ -121,7 +121,7 @@ class BasicAPI(BaseExtension):
         self.send("TOPIC", [channel, topic])
 
     def mode_params(self, add, mode, target, *args):
-        """Set modes on a channel with a given target list.
+        r"""Set modes on a channel with a given target list.
 
         This is suitable for mass bans/unbans, special status modes, and more.
 
@@ -182,7 +182,7 @@ class BasicAPI(BaseExtension):
             self.send("MODE", params)
 
     def op(self, channel, *args):
-        """Op a user (or users) on a given channel.
+        r"""Op a user (or users) on a given channel.
 
         :param channel:
             Channel to op the user or users in. This can be a
@@ -200,7 +200,7 @@ class BasicAPI(BaseExtension):
         self.mode_params(True, 'o', channel, *args)
 
     def deop(self, channel, *args):
-        """Deop a user (or users) on a given channel.
+        r"""Deop a user (or users) on a given channel.
 
         :param channel:
             Channel to deopop the user or users in. This can be a
@@ -218,7 +218,7 @@ class BasicAPI(BaseExtension):
         self.mode_params(False, 'o', channel, *args)
 
     def voice(self, channel, *args):
-        """Voice a user (or users) on a given channel.
+        r"""Voice a user (or users) on a given channel.
 
         :param channel:
             Channel to voice the user or users in. This can be a
@@ -236,7 +236,7 @@ class BasicAPI(BaseExtension):
         self.mode_params(True, 'v', channel, *args)
 
     def devoice(self, channel, *args):
-        """Devoice a user (or users) on a given channel.
+        r"""Devoice a user (or users) on a given channel.
 
         :param channel:
             Channel to devoice the user or users in. This can be a
@@ -254,7 +254,7 @@ class BasicAPI(BaseExtension):
         self.mode_params(False, 'v', channel, *args)
 
     def halfop(self, channel, *args):
-        """Halfop a user (or users) on a given channel.
+        r"""Halfop a user (or users) on a given channel.
 
         This may not be supported by your IRC server. Notably, FreeNode,
         EfNet, and IRCNet do not support this.
@@ -275,7 +275,7 @@ class BasicAPI(BaseExtension):
         self.mode_params(True, 'h', channel, *args)
 
     def dehalfop(self, channel, *args):
-        """Dehalfop a user (or users) on a given channel.
+        r"""Dehalfop a user (or users) on a given channel.
 
         This may not be supported by your IRC server. Notably, FreeNode,
         EfNet, and IRCNet do not support this.
@@ -336,7 +336,7 @@ class BasicAPI(BaseExtension):
         return params
 
     def ban(self, channel, *args):
-        """Ban a user (or users) on a given channel.
+        r"""Ban a user (or users) on a given channel.
 
         :param channel:
             Channel to ban the user or users in. This can be a
@@ -354,7 +354,7 @@ class BasicAPI(BaseExtension):
         self.mode_params(True, 'b', channel, *self.process_bantargs(*args))
 
     def unban(self, channel, *args):
-        """Unban a user (or users) on a given channel.
+        r"""Unban a user (or users) on a given channel.
 
         Note at present this is not reliable if User instances are passed in.
         This is an unfortunate side effect of the way IRC works (ban masks may
@@ -377,7 +377,7 @@ class BasicAPI(BaseExtension):
         self.mode_params(False, 'b', channel, *self.process_bantargs(*args))
 
     def banexempt(self, channel, *args):
-        """Exempt a user (or users) from being banned on a given channel.
+        r"""Exempt a user (or users) from being banned on a given channel.
 
         Most (but not all) servers support this. IRCNet notably does not.
 
@@ -402,7 +402,7 @@ class BasicAPI(BaseExtension):
         self.mode_params(True, 'e', channel, *self.process_bantargs(*args))
 
     def unbanexempt(self, channel, *args):
-        """Un-exempt a user (or users) from being banned on a given channel.
+        r"""Un-exempt a user (or users) from being banned on a given channel.
 
         Most (but not all) servers support this. IRCNet notably does not.
 
@@ -431,7 +431,7 @@ class BasicAPI(BaseExtension):
         self.mode_params(False, 'e', channel, *self.process_bantargs(*args))
 
     def inviteexempt(self, channel, *args):
-        """Invite exempt a user (or users) on a given channel.
+        r"""Invite exempt a user (or users) on a given channel.
 
         Most (but not all) servers support this. IRCNet notably does not.
 
@@ -456,7 +456,7 @@ class BasicAPI(BaseExtension):
         self.mode_params(True, 'I', channel, *self.process_bantargs(*args))
 
     def uninviteexempt(self, channel, *args):
-        """Un-invite exempt a user (or users) on a given channel.
+        r"""Un-invite exempt a user (or users) on a given channel.
 
         Most (but not all) servers support this. IRCNet notably does not.
 
@@ -485,7 +485,7 @@ class BasicAPI(BaseExtension):
         self.mode_params(False, 'I', channel, *self.process_bantargs(*args))
 
     def quiet(self, channel, *args):
-        """Quiet a user (or users) on a given channel.
+        r"""Quiet a user (or users) on a given channel.
 
         Many servers do not support this. This supports the charybdis-derived
         variant. This means it will work on Charybdis and ircd-seven networks
@@ -523,7 +523,7 @@ class BasicAPI(BaseExtension):
         self.mode_params(True, 'q', channel, *self.process_bantargs(*args))
 
     def unquiet(self, channel, *args):
-        """Unquiet a user (or users) on a given channel.
+        r"""Unquiet a user (or users) on a given channel.
 
         Many servers do not support this. This supports the charybdis-derived
         variant. This means it will work on Charybdis and ircd-seven networks
@@ -567,7 +567,7 @@ class BasicAPI(BaseExtension):
         self.mode_params(False, 'q', channel, *self.process_bantargs(*args))
 
     def join(self, channel, key=None):
-        """Attempt to join a channel.
+        r"""Attempt to join a channel.
 
         :param channel:
             Name of the Channel to join.
@@ -604,7 +604,7 @@ class BasicAPI(BaseExtension):
         self.send("PART", params)
 
     def kick(self, channel, user, reason=None):
-        """Kick a user from a channel.
+        r"""Kick a user from a channel.
 
         ..note:: This command usually requires channel operator privileges.
 

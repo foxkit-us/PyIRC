@@ -21,7 +21,7 @@ from PyIRC.hook import hook, PRIORITY_LAST
 from PyIRC.numerics import Numerics
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 BanEntry = namedtuple("BanEntry", "string setter timestamp")
@@ -49,8 +49,8 @@ class BanTrack(BaseExtension):
     @hook("commands", "JOIN", PRIORITY_LAST)
     def join(self, event):
         params = event.line.params
-        logger.debug("Creating ban modes for channel %s",
-                     params[0])
+        _logger.debug("Creating ban modes for channel %s",
+                      params[0])
         channeltrack = self.base.channel_track
         channel = channeltrack.get_channel(params[0])
 
@@ -85,17 +85,17 @@ class BanTrack(BaseExtension):
             if self.casecmp(event.param, string):
                 if event.adding:
                     # Update timestamp and setter
-                    logger.debug("Replacing entry: %r -> %r",
-                                 modes[i], entry)
+                    _logger.debug("Replacing entry: %r -> %r",
+                                  modes[i], entry)
                     modes[i] = entry
                 else:
                     # Delete ban
-                    logger.debug("Removing ban: %r", modes[i])
+                    _logger.debug("Removing ban: %r", modes[i])
                     del modes[i]
 
                 return
 
-        logger.debug("Adding entry: %r", entry)
+        _logger.debug("Adding entry: %r", entry)
         modes.append(entry)
 
     @hook("modes", "mode_prefix")
@@ -164,8 +164,8 @@ class BanTrack(BaseExtension):
             return
 
         if mode not in channel.synced_list:
-            logger.warning("Got bogus/invalid end of list sync for mode %s",
-                           mode)
+            _logger.warning("Got bogus/invalid end of list sync for mode %s",
+                            mode)
             return
 
         channel.synced_list[mode] = True

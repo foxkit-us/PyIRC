@@ -24,8 +24,8 @@ from PyIRC.extension import BaseExtension
 from PyIRC.hook import hook
 
 
-# Initialise our logger.
-logger = getLogger(__name__)
+# Initialise our _logger.
+_logger = getLogger(__name__)
 
 
 class KickRejoin(BaseExtension):

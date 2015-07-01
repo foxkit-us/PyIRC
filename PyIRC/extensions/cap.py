@@ -21,7 +21,7 @@ from PyIRC.event import EventState, LineEvent
 from PyIRC.numerics import Numerics
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class CAPEvent(LineEvent):
@@ -130,7 +130,7 @@ class CapNegotiate(BaseExtension):
         if not self.negotiating:
             return
 
-        logger.debug("Requesting CAP list")
+        _logger.debug("Requesting CAP list")
 
         self.send("CAP", ["LS", self.version])
 
@@ -195,17 +195,17 @@ class CapNegotiate(BaseExtension):
 
             if supported:
                 caps = ' '.join(supported)
-                logger.debug("Requesting caps: %s", caps)
+                _logger.debug("Requesting caps: %s", caps)
                 self.send("CAP", ["REQ", caps])
             else:
                 # Negotiaton ends, no caps
-                logger.debug("No CAPs to request!")
+                _logger.debug("No CAPs to request!")
                 self.end(event)
 
     @hook("commands_cap", "list")
     def get_local(self, event):
         self.local = caps = self.extract_caps(event.line)
-        logger.debug("CAPs active: %s", caps)
+        _logger.debug("CAPs active: %s", caps)
 
     @hook("commands_cap", "ack")
     def ack(self, event):
@@ -213,7 +213,7 @@ class CapNegotiate(BaseExtension):
         for cap, params in self.extract_caps(event.line).items():
             if cap.startswith('-'):
                 cap = cap[1:]
-                logger.debug("CAP removed: %s", cap)
+                _logger.debug("CAP removed: %s", cap)
                 self.local.pop(cap, None)
                 caps.pop(cap, None)  # Just in case
                 continue
@@ -222,7 +222,7 @@ class CapNegotiate(BaseExtension):
                 cap = cap[1:]
 
             assert cap in self.supported
-            logger.debug("Acknowledged CAP: %s", cap)
+            _logger.debug("Acknowledged CAP: %s", cap)
             caps[cap] = self.local[cap] = params
 
         event = self.call_event("cap_perform", "ack", event.line, caps)
@@ -231,12 +231,12 @@ class CapNegotiate(BaseExtension):
 
     @hook("commands_cap", "nak")
     def nak(self, event):
-        logger.warn("Rejected CAPs: %s", event.line.params[-1].lower())
+        _logger.warn("Rejected CAPs: %s", event.line.params[-1].lower())
 
     @hook("commands_cap", "end")
     @hook("commands", Numerics.RPL_HELLO)
     def end(self, event):
-        logger.debug("Ending CAP negotiation")
+        _logger.debug("Ending CAP negotiation")
 
         if self.timer is not None:
             try:

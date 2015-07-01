@@ -14,7 +14,7 @@ from PyIRC.extension import BaseExtension
 from PyIRC.hook import hook
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class ServicesLogin(BaseExtension):
@@ -90,8 +90,8 @@ class ServicesLogin(BaseExtension):
         if self.authenticated or not self.registered:
             return
 
-        logger.debug("Authenticating to services bot %s with username %s",
-                     self.services_bot, self.username)
+        _logger.debug("Authenticating to services bot %s with username %s",
+                      self.services_bot, self.username)
 
         if self.services_command.lower() in ("PRIVMSG", "NOTICE"):
             self.send(self.services_command, [self.services_bot,

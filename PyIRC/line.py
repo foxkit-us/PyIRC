@@ -15,7 +15,7 @@ from functools import reduce
 from logging import getLogger
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class Tags:
@@ -43,7 +43,7 @@ class Tags:
     def parse(cls, raw):
         """Parse a raw tag string into a Tags object."""
         if not raw:
-            logger.debug("No tags on this message")
+            _logger.debug("No tags on this message")
             return
 
         tags = dict()
@@ -108,7 +108,7 @@ class Hostmask:
 
         """
         if not raw:
-            logger.debug("No hostmask found")
+            _logger.debug("No hostmask found")
             return
 
         host_sep = raw.find('@')
@@ -220,7 +220,7 @@ class Line:
 
         """
         if not line:
-            logger.warning("Blank line passed in!")
+            _logger.warning("Blank line passed in!")
             return
 
         raw_line = line

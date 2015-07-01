@@ -13,7 +13,7 @@ from PyIRC.extensions import ExtensionsDatabase
 from PyIRC.hook import build_hook_table, PRIORITY_DONTCARE
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class BaseExtension:
@@ -172,7 +172,7 @@ class ExtensionManager:
 
         # Post-load hook
         for hclass, event in hook_classes.items():
-            logger.debug("Registering new event class: %s", hclass)
+            _logger.debug("Registering new event class: %s", hclass)
             self.events.register_class(hclass, event)
             self.create_hooks(hclass)
 
@@ -217,7 +217,7 @@ class ExtensionManager:
             if name != extension:
                 continue
 
-            logger.debug("Removing extension: %s", name)
+            _logger.debug("Removing extension: %s", name)
             del self.extensions[i]
 
             if name not in self.db:

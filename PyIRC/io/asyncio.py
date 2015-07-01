@@ -26,7 +26,7 @@ from PyIRC.base import IRCBase
 from PyIRC.line import Line
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class IRCProtocol(IRCBase, asyncio.Protocol):
@@ -52,16 +52,18 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
 
         self.sched_events = set()
 
+        self.data = None
+
         # Sadly we are not compatible with StartTLS because of a deficiency in
         # Python 3.4/3.5. See https://bugs.python.org/issue23749
         # Once it's fixed, it's okay to remove this whole __init__ function.
         if self.extensions.remove_extension("StartTLS"):
-            logger.critical("Removing StartTLS extension due to asyncio " \
-                            "limitations")
+            _logger.critical("Removing StartTLS extension due to asyncio " \
+                             "limitations")
 
     def connect(self):
         loop = asyncio.get_event_loop()
-        return loop.create_connection(lambda : self, self.server, self.port,
+        return loop.create_connection(lambda: self, self.server, self.port,
                                       ssl=self.ssl)
 
     def close(self):
@@ -84,22 +86,22 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
 
         for line in lines:
             line = Line.parse(line.decode('utf-8', 'ignore'))
-            logger.debug("IN: %s", str(line).rstrip())
+            _logger.debug("IN: %s", str(line).rstrip())
             try:
                 super().recv(line)
             except Exception:
                 # We should never get here!
-                logger.exception("Exception received in recv loop")
+                _logger.exception("Exception received in recv loop")
                 self.send("QUIT", ["Exception received!"])
                 self.transport.close()
-                
+
                 loop = asyncio.get_event_loop()
                 loop.stop()
 
                 raise
 
     def connection_closed(self, exc):
-        logger.info("Connection lost: %s", str(e))
+        _logger.info("Connection lost: %s", str(e))
         super().close()
 
     def send(self, command, params):
@@ -108,7 +110,7 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
             return
 
         self.transport.write(bytes(line))
-        logger.debug("OUT: %s", str(line).rstrip())
+        _logger.debug("OUT: %s", str(line).rstrip())
 
     def schedule(self, time, callback):
         def cb_cleanup(time, callback):

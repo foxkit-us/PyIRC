@@ -25,7 +25,7 @@ from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 Mode = namedtuple("Mode", "mode param adding")
@@ -319,11 +319,11 @@ class BaseTrack(BaseExtension):
     def quiet_list(self, event):
         isupport = self.base.isupport
         if 'q' in isupport.get("PREFIX"):
-            logger.critical("Got a quiet mode, but mode for quiet is " \
-                            "unknown to us!")
-            logger.critical("Please report a bug to the PyIRC team with " \
-                            "the mode your IRC daemon uses, along with its " \
-                            "version information")
+            _logger.critical("Got a quiet mode, but mode for quiet is " \
+                             "unknown to us!")
+            _logger.critical("Please report a bug to the PyIRC team with " \
+                             "the mode your IRC daemon uses, along with its " \
+                             "version information")
             return
 
         return self.handle_list(event, 'q')
@@ -359,8 +359,8 @@ class BaseTrack(BaseExtension):
                 setter = line.hostmask
                 timestamp = None
         except Exception as e:
-            logger.warning("Bogus list mode received: %s (exception: %s)",
-                           mode, e)
+            _logger.warning("Bogus list mode received: %s (exception: %s)",
+                            mode, e)
             return
 
         self.call_event("modes", "mode_list", setter, target, mode, mask,

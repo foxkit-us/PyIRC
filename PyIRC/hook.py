@@ -9,7 +9,7 @@ from logging import getLogger
 
 #from PyIRC.util.classutil import private_mangle
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 PRIORITY_DONTCARE = 0

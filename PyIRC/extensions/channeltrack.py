@@ -23,7 +23,7 @@ from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class ChannelEvent(Event):
@@ -155,7 +155,7 @@ class ChannelTrack(BaseExtension):
         """
         channel = self.get_channel(name)
         if channel is None:
-            logger.debug("Adding channel: %s", name)
+            _logger.debug("Adding channel: %s", name)
 
             channel = Channel(self.case, name, **kwargs)
             self.channels[name] = channel
@@ -199,8 +199,8 @@ class ChannelTrack(BaseExtension):
         # Parse into hostmask in case of usernames-in-host
         channel = self.get_channel(event.target)
         if not channel:
-            logger.warning("Got a PREFIX event for an unknown channel: %s",
-                           event.target)
+            _logger.warning("Got a PREFIX event for an unknown channel: %s",
+                            event.target)
             return
 
         hostmask = Hostmask.parse(event.param)
@@ -267,7 +267,7 @@ class ChannelTrack(BaseExtension):
                     pass
             return
 
-        logger.debug("users before deletion: %r", channel.users)
+        _logger.debug("users before deletion: %r", channel.users)
 
         del channel.users[user]
 

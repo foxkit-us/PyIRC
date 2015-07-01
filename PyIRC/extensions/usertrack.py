@@ -28,7 +28,7 @@ from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class UserEvent(Event):
@@ -244,12 +244,12 @@ class UserTrack(BaseExtension):
 
         """
         if nick not in self.users:
-            logger.warning("Deleting nonexistent user: %s", nick)
+            _logger.warning("Deleting nonexistent user: %s", nick)
             return
 
         self.call_event("user", "user_delete", self.users[nick])
 
-        logger.debug("Deleted user: %s", nick)
+        _logger.debug("Deleted user: %s", nick)
 
         del self.users[nick]
 
@@ -389,12 +389,12 @@ class UserTrack(BaseExtension):
 
         user = self.get_user(target.nick)
         if not user:
-            logger.warning("Got a part/kick for a user not found: %s (in %s)",
-                           target.nick, channel)
+            _logger.warning("Got a part/kick for a user not found: %s (in %s)",
+                            target.nick, channel)
             return
         elif channel not in user.channels:
-            logger.warning("Got a part/kick for a user not in a channel: %s "
-                           "(in %s)", target.nick, channel)
+            _logger.warning("Got a part/kick for a user not in a channel: %s "
+                            "(in %s)", target.nick, channel)
             return
 
         user.channels.pop(channel)
@@ -694,7 +694,7 @@ class UserTrack(BaseExtension):
     def who(self, event):
         if len(event.line.params) < 8:
             # Some bizarre RFC breaking server
-            logger.warn("Malformed WHO from server")
+            _logger.warn("Malformed WHO from server")
             return
 
         channel = event.line.params[1]

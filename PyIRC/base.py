@@ -23,7 +23,7 @@ from PyIRC.hook import build_hook_table
 from PyIRC.event import EventManager, EventState
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class IRCBase(metaclass=ABCMeta):

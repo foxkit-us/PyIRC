@@ -22,7 +22,7 @@ from PyIRC.event import EventState
 from PyIRC.numerics import Numerics
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class StartTLS(BaseExtension):
@@ -65,7 +65,7 @@ class StartTLS(BaseExtension):
 
     @hook("commands", Numerics.RPL_STARTTLS)
     def wrap(self, event):
-        logger.info("Performing STARTTLS initiation...")
+        _logger.info("Performing STARTTLS initiation...")
         self.wrap_ssl()
 
         cap_negotiate = self.base.cap_negotiate
@@ -73,7 +73,7 @@ class StartTLS(BaseExtension):
 
     @hook("commands", Numerics.ERR_STARTTLS)
     def abort(self, event):
-        logger.critical("STARTTLS initiation failed, connection not secure")
+        _logger.critical("STARTTLS initiation failed, connection not secure")
 
         cap_negotiate = self.base.cap_negotiate
         cap_negotiate.cont(self.tls_event)

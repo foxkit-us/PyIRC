@@ -24,7 +24,7 @@ from collections import namedtuple
 from logging import getLogger
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class EventState(Enum):
@@ -149,7 +149,8 @@ class EventManager:
         if hclass in self.events_reg:
             return
 
-        logger.debug("Registering class %s with type %s", hclass, type.__name__)
+        _logger.debug(
+            "Registering class %s with type %s", hclass, type.__name__)
 
         # Set the events list
         self.events_reg[hclass] = EventRegistry(dict(), type)
@@ -159,7 +160,7 @@ class EventManager:
         if hclass not in self.events_reg:
             raise KeyError("hclass not found")
 
-        logger.debug("Unregistering class %s", hclass)
+        _logger.debug("Unregistering class %s", hclass)
 
         del self.events_reg[hclass]
 
@@ -171,7 +172,7 @@ class EventManager:
             Do not use unless you really know what you're doing.
 
         """
-        logger.debug("Clearing hooks")
+        _logger.debug("Clearing hooks")
         self.events_reg.clear()
 
     def register_event(self, hclass, event):
@@ -255,7 +256,7 @@ class EventManager:
         events[event].items.append(item)
         events[event].items.sort()
 
-        logger.debug("event items now %r", events[event].items)
+        _logger.debug("event items now %r", events[event].items)
 
     def register_callbacks_from_inst_all(self, inst):
         """Register all (known) callback classes from a given instance, using
@@ -283,8 +284,8 @@ class EventManager:
         if table is None:
             return False
 
-        logger.debug("Registering %s callbacks from class %s",
-                     hclass, inst.__class__.__name__)
+        _logger.debug("Registering %s callbacks from class %s",
+                      hclass, inst.__class__.__name__)
 
         self.register_callbacks_from_table(hclass, table)
         return True
@@ -333,8 +334,8 @@ class EventManager:
         if not remove:
             raise ValueError("Event not found")
 
-        logger.debug("Unregistering callback for hclass %s event %s: %r",
-                     hclass, event, callback)
+        _logger.debug("Unregistering callback for hclass %s event %s: %r",
+                      hclass, event, callback)
 
     def unregister_callbacks_from_inst_all(self, inst):
         """Unregister all (known) callback classes from a given instance, using
@@ -362,8 +363,8 @@ class EventManager:
         if table is None:
             return False
 
-        logger.debug("Unregistering %s callbacks from class %s:",
-                     hclass, inst.__class__.__name__)
+        _logger.debug("Unregistering %s callbacks from class %s:",
+                      hclass, inst.__class__.__name__)
 
         self.unregister_callbacks_from_table(hclass, table)
         return True
@@ -382,7 +383,7 @@ class EventManager:
             self.unregister_callback(hclass, event, callback)
 
     def call_event(self, hclass, event, *args, **kwargs):
-        """Call the callbacks for a given event.
+        r"""Call the callbacks for a given event.
 
         :param hclass:
             The class of the event that is occuring.
@@ -436,7 +437,7 @@ class EventManager:
         if event_inst.pause_state:
             gen = event_inst.pause_state
             event_inst.pause_state = None
-            logger.debug("Resuming event: %r", gen)
+            _logger.debug("Resuming event: %r", gen)
         else:
             items = events[event].items
             if not items:
@@ -448,7 +449,7 @@ class EventManager:
             if status == EventState.ok:
                 continue
             elif status == EventState.pause:
-                logger.debug("Pausing event: %r", gen)
+                _logger.debug("Pausing event: %r", gen)
                 event_inst.pause_state = gen
                 break
             elif status == EventState.cancel:

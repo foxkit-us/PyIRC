@@ -14,7 +14,7 @@ from PyIRC.extension import BaseExtension
 from PyIRC.hook import hook, PRIORITY_LAST
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class BasicRFC(BaseExtension):
@@ -47,6 +47,7 @@ class BasicRFC(BaseExtension):
 
         self.prev_nick = None
         self.nick = self.base.nick
+        self.registered = False
 
     @hook("hooks", "connected")
     def handshake(self, event):

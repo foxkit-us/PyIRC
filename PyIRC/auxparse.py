@@ -27,7 +27,7 @@ from types import SimpleNamespace
 from PyIRC.line import Line, Hostmask
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 prefix_match = compile(r"\(([A-Za-z0-9]+)\)(.+)")
@@ -67,7 +67,8 @@ def banmask_parse(string, supported_extban):
     if not hostmask:
         return ret
 
-    ret.nick, ret.user, ret.host = hostmask.nick, hostmask.user, hostmask.host
+    ret.nick, ret.user, ret.host = (hostmask.nick, hostmask.username,
+                                    hostmask.host)
     return ret
 
 
@@ -255,7 +256,7 @@ def who_flag_parse(flags):
         elif char not in numletters:
             ret.modes.add(char)
         else:
-            logger.debug("No known way to handle WHO flag %s", char)
+            _logger.debug("No known way to handle WHO flag %s", char)
 
     return ret
 
@@ -332,7 +333,7 @@ def isupport_parse(params):
         key, _, value = param.partition('=')
 
         if not value:
-            logger.debug("ISUPPORT [k]: %s", key)
+            _logger.debug("ISUPPORT [k]: %s", key)
             supported[key] = True
             continue
 
@@ -366,7 +367,7 @@ def isupport_parse(params):
         else:
             supported[key] = True
 
-        logger.debug("ISUPPORT [k:v]: %s:%r", key, supported[key])
+        _logger.debug("ISUPPORT [k:v]: %s:%r", key, supported[key])
 
     return supported
 

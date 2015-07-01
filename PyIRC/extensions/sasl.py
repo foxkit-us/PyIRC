@@ -23,7 +23,7 @@ from PyIRC.event import EventState
 from PyIRC.numerics import Numerics
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class SASLBase(BaseExtension):
@@ -64,11 +64,11 @@ class SASLBase(BaseExtension):
             return None
         elif not cap_negotiate.remote["sasl"]:
             # 3.1 style SASL
-            logger.debug("Registering old-style SASL capability")
+            _logger.debug("Registering old-style SASL capability")
             return {"sasl" : []}
         else:
             # 3.2 style SASL
-            logger.debug("Registering new-style SASL capability")
+            _logger.debug("Registering new-style SASL capability")
             return {"sasl" : [m.method for m in SASLBase.__subclasses__()]}
 
     @hook("hooks", "disconnected")
@@ -104,7 +104,7 @@ class SASLBase(BaseExtension):
 
     @hook("commands", Numerics.RPL_SASLSUCCESS)
     def success(self, event):
-        logger.info("SASL authentication succeeded as %s", self.username)
+        _logger.info("SASL authentication succeeded as %s", self.username)
 
         self.authenticated = True
 
@@ -120,14 +120,14 @@ class SASLBase(BaseExtension):
     @hook("commands", Numerics.ERR_SASLTOOLONG)
     @hook("commands", Numerics.ERR_SASLABORTED)
     def fail(self, event):
-        logger.info("SASL authentication failed as %s", self.username)
+        _logger.info("SASL authentication failed as %s", self.username)
 
         cap_negotiate = self.base.cap_negotiate
         cap_negotiate.cont(self.cap_event)
 
     @hook("commands", Numerics.ERR_SASLALREADY)
     def already(self, event):
-        logger.critical("Tried to log in twice, this shouldn't happen!")
+        _logger.critical("Tried to log in twice, this shouldn't happen!")
 
         if self.cap_event and self.cap_event.pause_state:
             # Paused, keep going
@@ -136,7 +136,7 @@ class SASLBase(BaseExtension):
     @hook("commands", Numerics.RPL_SASLMECHS)
     def get_mechanisms(self, event):
         self.mechanisms = set(event.line.params[1].lower().split(','))
-        logger.info("Supported SASL mechanisms: %r", self.mechanisms)
+        _logger.info("Supported SASL mechanisms: %r", self.mechanisms)
 
 
 class SASLPlain(SASLBase):
@@ -157,7 +157,7 @@ class SASLPlain(SASLBase):
     def authenticate(self, event):
         """Implement the plaintext authentication method."""
 
-        logger.info("Logging in with PLAIN method as %s", self.username)
+        _logger.info("Logging in with PLAIN method as %s", self.username)
 
         if event.line.params[-1] != '+':
             return

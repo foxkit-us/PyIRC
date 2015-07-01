@@ -16,7 +16,7 @@ from PyIRC.auxparse import CTCPMessage
 from PyIRC.util.version import versionstr
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class CTCPEvent(LineEvent):

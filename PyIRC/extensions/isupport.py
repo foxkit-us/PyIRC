@@ -23,7 +23,7 @@ from PyIRC.hook import hook
 from PyIRC.numerics import Numerics
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class ISupport(BaseExtension):
@@ -97,8 +97,8 @@ class ISupport(BaseExtension):
         # To differentiate between really old ircd servers
         # (RPL_BOUNCE=005 on those)
         if not event.line.params[-1].endswith('server'):
-            logger.warning("Really old IRC server detected!")
-            logger.warning("It's probably fine but things might break.")
+            _logger.warning("Really old IRC server detected!")
+            _logger.warning("It's probably fine but things might break.")
             return
 
         values = isupport_parse(event.line.params[1:-1])

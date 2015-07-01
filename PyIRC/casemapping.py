@@ -23,14 +23,14 @@ from collections.abc import MutableSet
 
 # Translation tables
 # NB - IRC is only ASCII-aware, not unicode-aware!
-rfc1459_lower = ascii_lowercase + "{}|~"   # I don't make the rules,
-rfc1459_upper = ascii_uppercase + "[]\\^"  # I just enforce them.
+RFC1459_LOWER = ascii_lowercase + "{}|~"   # I don't make the rules,
+RFC1459_UPPER = ascii_uppercase + "[]\\^"  # I just enforce them.
 
-rfc1459_tolower = str.maketrans(rfc1459_upper, rfc1459_lower)
-rfc1459_toupper = str.maketrans(rfc1459_lower, rfc1459_upper)
+RFC1459_TOLOWER = str.maketrans(RFC1459_UPPER, RFC1459_LOWER)
+RFC1459_TOUPPER = str.maketrans(RFC1459_LOWER, RFC1459_UPPER)
 
-ascii_tolower = str.maketrans(ascii_uppercase, ascii_lowercase)
-ascii_toupper = str.maketrans(ascii_lowercase, ascii_uppercase)
+ASCII_TOLOWER = str.maketrans(ascii_uppercase, ascii_lowercase)
+ASCII_TOUPPER = str.maketrans(ascii_lowercase, ascii_uppercase)
 
 
 class IRCString(UserString):
@@ -174,32 +174,32 @@ class IRCString(UserString):
     def ascii_lower(self):
         """Return a copy of the string S converted to lowercase, using ASCII
         semantics."""
-        return str.translate(self.data, ascii_tolower)
+        return str.translate(self.data, ASCII_TOLOWER)
 
     def ascii_upper(self):
         """Return a copy of the string S converted to uppercase, using ASCII
         semantics."""
-        return str.translate(self.data, ascii_toupper)
+        return str.translate(self.data, ASCII_TOUPPER)
 
     def ascii_casefold(self):
         """Return a version of S suitable for caseless comparisons, using ASCII
         semantics."""
-        return str.translate(self.data, ascii_tolower)
+        return str.translate(self.data, ASCII_TOLOWER)
 
     def rfc1459_lower(self):
         """Return a copy of the string S converted to lowercase, using RFC1459
         semantics."""
-        return str.translate(self.data, rfc1459_tolower)
+        return str.translate(self.data, RFC1459_TOLOWER)
 
     def rfc1459_upper(self):
         """Return a copy of the string S converted to uppercase, using RFC1459
         semantics."""
-        return str.translate(self.data, rfc1459_toupper)
+        return str.translate(self.data, RFC1459_TOUPPER)
 
     def rfc1459_casefold(self):
         """Return a version of S suitable for caseless comparisons, using
         RFC1459 semantics."""
-        return str.translate(self.data, rfc1459_tolower)
+        return str.translate(self.data, RFC1459_TOLOWER)
 
     def __repr__(self):
         return "IRCString({})".format(super().__repr__())

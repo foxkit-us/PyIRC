@@ -16,9 +16,9 @@ be issued as quickly as possible.
 
 from logging import getLogger
 
+from taillight.signal import Signal, SignalDefer
+
 from PyIRC.extension import BaseExtension
-from PyIRC.hook import hook, PRIORITY_FIRST
-from PyIRC.event import EventState
 from PyIRC.numerics import Numerics
 
 
@@ -45,11 +45,11 @@ class StartTLS(BaseExtension):
                 "tls": [],
             }
 
-    @hook("hooks", "disconnected")
+    @Signal(("hooks", "disconnected")).add_wraps()
     def close(self, event):
         self.tls_event = None
 
-    @hook("cap_perform", "ack", PRIORITY_FIRST)
+    @Signal(("cap_perform", "ack")).add_wraps(priority=-1000)
     def starttls(self, event):
         if self.ssl:
             # Unnecessary
@@ -61,9 +61,9 @@ class StartTLS(BaseExtension):
         if "tls" in event.caps:
             self.tls_event = event
             self.send("STARTTLS", None)
-            event.status = EventState.pause
+            raise SignalDefer
 
-    @hook("commands", Numerics.RPL_STARTTLS)
+    @Signal(("commands", Numerics.RPL_STARTTLS)).add_wraps()
     def wrap(self, event):
         _logger.info("Performing STARTTLS initiation...")
         self.wrap_ssl()
@@ -71,7 +71,7 @@ class StartTLS(BaseExtension):
         cap_negotiate = self.base.cap_negotiate
         cap_negotiate.cont(self.tls_event)
 
-    @hook("commands", Numerics.ERR_STARTTLS)
+    @Signal(("commands", Numerics.ERR_STARTTLS)).add_wraps()
     def abort(self, event):
         _logger.critical("STARTTLS initiation failed, connection not secure")
 

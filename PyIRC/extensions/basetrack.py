@@ -17,10 +17,10 @@ from collections import namedtuple
 from logging import getLogger
 from time import time
 
+from taillight.signal import Signal
+
 from PyIRC.auxparse import mode_parse, prefix_parse, status_prefix_parse
-from PyIRC.event import Event
 from PyIRC.extension import BaseExtension
-from PyIRC.hook import hook, PRIORITY_FIRST
 from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
 
@@ -169,7 +169,7 @@ class BaseTrack(BaseExtension):
 
         self.sent_protoctl = False
 
-    @hook("commands", "JOIN", PRIORITY_FIRST)
+    @Signal(("commands", "JOIN")).add_wraps(priority=-1000)
     def join(self, event):
         line = event.line
         params = line.params
@@ -188,7 +188,7 @@ class BaseTrack(BaseExtension):
         self.call_event("scope", "user_join", hostmask, channel, False,
                         gecos=gecos, account=account)
 
-    @hook("commands", Numerics.RPL_NAMREPLY, PRIORITY_FIRST)
+    @Signal(("commands", Numerics.RPL_NAMREPLY)).add_wraps(priority=-1000)
     def names(self, event):
         line = event.line
         params = line.params
@@ -210,7 +210,7 @@ class BaseTrack(BaseExtension):
             self.call_event("scope", "user_burst", hostmask, channel, False,
                             cause=line.hostmask, modes=modes)
 
-    @hook("commands", "PART", PRIORITY_FIRST)
+    @Signal(("commands", "PART")).add_wraps(priority=-1000)
     def part(self, event):
         line = event.line
         params = line.params
@@ -221,7 +221,7 @@ class BaseTrack(BaseExtension):
         self.call_event("scope", "user_part", line.hostmask, channel, True,
                         reason=reason, cause=line.hostmask)
 
-    @hook("commands", "KICK", PRIORITY_FIRST)
+    @Signal(("commands", "KICK")).add_wraps(priority=-1000)
     def kick(self, event):
         line = event.line
         params = line.params
@@ -233,7 +233,7 @@ class BaseTrack(BaseExtension):
         self.call_event("scope", "user_kick", target, channel, True,
                         reason=reason, cause=line.hostmask)
 
-    @hook("commands", "QUIT", PRIORITY_FIRST)
+    @Signal(("commands", "QUIT")).add_wraps(priority=-1000)
     def quit(self, event):
         line = event.line
         params = line.params
@@ -244,8 +244,8 @@ class BaseTrack(BaseExtension):
         self.call_event("scope", "user_quit", line.hostmask, None, True,
                         reason=reason, cause=line.hostmask)
 
-    @hook("commands", Numerics.RPL_CHANNELMODEIS)
-    @hook("commands", "MODE")
+    @Signal(("commands", Numerics.RPL_CHANNELMODEIS)).add_wraps()
+    @Signal(("commands", "MODE")).add_wraps()
     def mode(self, event):
         # Offer an easy to use interface for mode
         isupport = self.base.isupport
@@ -282,8 +282,8 @@ class BaseTrack(BaseExtension):
             self.call_event("modes", mode_call, line.hostmask, target, mode,
                             param, adding)
 
-    @hook("commands", Numerics.RPL_ENDOFMOTD)
-    @hook("commands", Numerics.ERR_NOMOTD)
+    @Signal(("commands", Numerics.RPL_ENDOFMOTD)).add_wraps()
+    @Signal(("commands", Numerics.ERR_NOMOTD)).add_wraps()
     def send_protoctl(self, event):
         # Send the PROTOCTL NAMESX/UHNAMES stuff if we have to
         if self.sent_protoctl:
@@ -303,19 +303,19 @@ class BaseTrack(BaseExtension):
 
         self.sent_protoctl = True
 
-    @hook("commands", Numerics.RPL_BANLIST)
+    @Signal(("commands", Numerics.RPL_BANLIST)).add_wraps()
     def ban_list(self, event):
         return self.handle_list(event, 'b')
 
-    @hook("commands", Numerics.RPL_EXCEPTLIST)
+    @Signal(("commands", Numerics.RPL_EXCEPTLIST)).add_wraps()
     def except_list(self, event):
         return self.handle_list(event, 'e')
 
-    @hook("commands", Numerics.RPL_INVITELIST)
+    @Signal(("commands", Numerics.RPL_INVITELIST)).add_wraps()
     def invite_list(self, event):
         return self.handle_list(event, 'I')
 
-    @hook("commands", Numerics.RPL_QUIETLIST)
+    @Signal(("commands", Numerics.RPL_QUIETLIST)).add_wraps()
     def quiet_list(self, event):
         isupport = self.base.isupport
         if 'q' in isupport.get("PREFIX"):
@@ -328,19 +328,19 @@ class BaseTrack(BaseExtension):
 
         return self.handle_list(event, 'q')
 
-    @hook("commands", Numerics.RPL_SPAMFILTERLIST)
+    @Signal(("commands", Numerics.RPL_SPAMFILTERLIST)).add_wraps()
     def spamfilter_list(self, event):
         return self.handle_list(event, 'g')
 
-    @hook("commands", Numerics.RPL_EXEMPTCHANOPSLIST)
+    @Signal(("commands", Numerics.RPL_EXEMPTCHANOPSLIST)).add_wraps()
     def exemptchanops_list(self, event):
         return self.handle_list(event, 'X')
 
-    @hook("commands", Numerics.RPL_AUTOOPLIST)
+    @Signal(("commands", Numerics.RPL_AUTOOPLIST)).add_wraps()
     def autoop_list(self, event):
         return self.handle_list(event, 'w')
 
-    @hook("commands", Numerics.RPL_REOPLIST)
+    @Signal(("commands", Numerics.RPL_REOPLIST)).add_wraps()
     def reop_list(self, event):
         return self.handle_list(event, 'R')
 

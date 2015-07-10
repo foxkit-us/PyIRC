@@ -17,9 +17,9 @@ servers, but only PLAIN is supported by this module at the moment.
 from logging import getLogger
 from base64 import b64encode
 
+from taillight.signal import Signal, SignalStop, SignalDefer
+
 from PyIRC.extension import BaseExtension
-from PyIRC.hook import hook, PRIORITY_FIRST
-from PyIRC.event import EventState
 from PyIRC.numerics import Numerics
 
 
@@ -38,8 +38,6 @@ class SASLBase(BaseExtension):
 
     """
 
-    # We should come after things like STARTTLS
-    priority = PRIORITY_FIRST + 5
     requires = ["CapNegotiate"]
 
     method = None
@@ -71,12 +69,12 @@ class SASLBase(BaseExtension):
             _logger.debug("Registering new-style SASL capability")
             return {"sasl" : [m.method for m in SASLBase.__subclasses__()]}
 
-    @hook("hooks", "disconnected")
+    @Signal(("hooks", "disconnected")).add_wraps(priority=500)
     def close(self, event):
         self.mechanisms.clear()
         self.cap_event = None
 
-    @hook("cap_perform", "ack")
+    @Signal(("cap_perform", "ack")).add_wraps(priority=500)
     def auth(self, event):
         if self.cap_event or "sasl" not in event.caps:
             return
@@ -95,14 +93,14 @@ class SASLBase(BaseExtension):
 
         # Defer end of CAP
         self.cap_event = event
-        event.status = EventState.pause
+        raise SignalDefer
 
-    @hook("commands_cap", "end")
+    @Signal(("commands_cap", "end")).add_wraps(priority=500)
     def end_cap(self, event):
         # A quick n' dirty hack used to rearm cap_event
         self.cap_event = None
 
-    @hook("commands", Numerics.RPL_SASLSUCCESS)
+    @Signal(("commands", Numerics.RPL_SASLSUCCESS)).add_wraps(priority=500)
     def success(self, event):
         _logger.info("SASL authentication succeeded as %s", self.username)
 
@@ -116,16 +114,16 @@ class SASLBase(BaseExtension):
         cap_negotiate = self.base.cap_negotiate
         cap_negotiate.cont(self.cap_event)
 
-    @hook("commands", Numerics.ERR_SASLFAIL)
-    @hook("commands", Numerics.ERR_SASLTOOLONG)
-    @hook("commands", Numerics.ERR_SASLABORTED)
+    @Signal(("commands", Numerics.ERR_SASLFAIL)).add_wraps(priority=500)
+    @Signal(("commands", Numerics.ERR_SASLTOOLONG)).add_wraps(priority=500)
+    @Signal(("commands", Numerics.ERR_SASLABORTED)).add_wraps(priority=500)
     def fail(self, event):
         _logger.info("SASL authentication failed as %s", self.username)
 
         cap_negotiate = self.base.cap_negotiate
         cap_negotiate.cont(self.cap_event)
 
-    @hook("commands", Numerics.ERR_SASLALREADY)
+    @Signal(("commands", Numerics.ERR_SASLALREADY)).add_wraps(priority=500)
     def already(self, event):
         _logger.critical("Tried to log in twice, this shouldn't happen!")
 
@@ -133,7 +131,7 @@ class SASLBase(BaseExtension):
             # Paused, keep going
             self.fail(event)
 
-    @hook("commands", Numerics.RPL_SASLMECHS)
+    @Signal(("commands", Numerics.RPL_SASLMECHS)).add_wraps(priority=500)
     def get_mechanisms(self, event):
         self.mechanisms = set(event.line.params[1].lower().split(','))
         _logger.info("Supported SASL mechanisms: %r", self.mechanisms)
@@ -148,12 +146,9 @@ class SASLPlain(SASLBase):
 
     """
 
-    # Least preferred auth method
-    priority = PRIORITY_FIRST + 10
-
     method = "PLAIN"
 
-    @hook("commands", "AUTHENTICATE")
+    @Signal(("commands", "AUTHENTICATE")).add_wraps(priority=250)
     def authenticate(self, event):
         """Implement the plaintext authentication method."""
 
@@ -174,4 +169,4 @@ class SASLPlain(SASLBase):
             self.send("AUTHENTICATE", [l])
 
         # Stop other auth methods.
-        event.status = EventState.cancel
+        raise SignalStop

@@ -15,9 +15,9 @@ http://ircv3.atheme.org/specification/capability-negotiation-3.1
 from functools import partial
 from logging import getLogger
 
+from taillight.signal import Signal, SignalStop
+
 from PyIRC.extension import BaseExtension
-from PyIRC.hook import hook, PRIORITY_FIRST
-from PyIRC.event import EventState, LineEvent
 from PyIRC.numerics import Numerics
 
 
@@ -64,7 +64,6 @@ class CapNegotiate(BaseExtension):
 
     """
 
-    priority = PRIORITY_FIRST
     requires = ["BasicRFC"]
 
     """ Presently supported maximum CAP version. """
@@ -125,7 +124,7 @@ class CapNegotiate(BaseExtension):
         else:
             return cap
 
-    @hook("hooks", "connected")
+    @Signal(("hooks", "connected")).add_wraps(priority=-1000))
     def send_cap(self, event):
         if not self.negotiating:
             return
@@ -139,9 +138,9 @@ class CapNegotiate(BaseExtension):
         self.negotiating = True
 
         # Ensure no other connected events get fired
-        event.status = EventState.cancel
+        raise SignalStop
 
-    @hook("hooks", "disconnected")
+    @Signal(("hooks", "disconnected")).add_wraps(priority=-1000))
     def close(self, event):
         if self.timer is not None:
             try:
@@ -153,7 +152,7 @@ class CapNegotiate(BaseExtension):
         self.remote.clear()
         self.local.clear()
 
-    @hook("commands", "CAP")
+    @Signal(("commands", "CAP")).add_wraps(priority=-1000))
     def dispatch(self, event):
         """Dispatch the CAP command."""
 
@@ -167,8 +166,8 @@ class CapNegotiate(BaseExtension):
         cap_command = event.line.params[1].lower()
         self.call_event("commands_cap", cap_command, event.line)
 
-    @hook("commands_cap", "new")
-    @hook("commands_cap", "ls")
+    @Signal(("commands_cap", "new")).add_wraps(priority=-1000))
+    @Signal(("commands_cap", "ls")).add_wraps(priority=-1000))
     def get_remote(self, event):
         remote = self.extract_caps(event.line)
         self.remote.update(remote)
@@ -202,12 +201,12 @@ class CapNegotiate(BaseExtension):
                 _logger.debug("No CAPs to request!")
                 self.end(event)
 
-    @hook("commands_cap", "list")
+    @Signal(("commands_cap", "list")).add_wraps(priority=-1000))
     def get_local(self, event):
         self.local = caps = self.extract_caps(event.line)
         _logger.debug("CAPs active: %s", caps)
 
-    @hook("commands_cap", "ack")
+    @Signal(("commands_cap", "ack")).add_wraps(priority=-1000))
     def ack(self, event):
         caps = dict()
         for cap, params in self.extract_caps(event.line).items():
@@ -226,15 +225,14 @@ class CapNegotiate(BaseExtension):
             caps[cap] = self.local[cap] = params
 
         event = self.call_event("cap_perform", "ack", event.line, caps)
-        if event.status != EventState.ok:
-            self.ack_chains.add(event)
+        self.ack_chains.add(event)
 
-    @hook("commands_cap", "nak")
+    @Signal(("commands_cap", "nak")).add_wraps(priority=-1000))
     def nak(self, event):
         _logger.warn("Rejected CAPs: %s", event.line.params[-1].lower())
 
-    @hook("commands_cap", "end")
-    @hook("commands", Numerics.RPL_HELLO)
+    @Signal(("commands_cap", "end")).add_wraps(priority=-1000))
+    @Signal(("commands", Numerics.RPL_HELLO)).add_wraps(priority=-1000))
     def end(self, event):
         _logger.debug("Ending CAP negotiation")
 
@@ -282,10 +280,8 @@ class CapNegotiate(BaseExtension):
     def cont(self, event):
         """Continue negotiation of caps."""
         # Reset event status
-        event.status = EventState.ok
         self.call_event_inst("cap_perform", "ack", event)
-        if event.status == EventState.ok:
-            self.ack_chains.discard(event)
-            if not self.ack_chains and self.negotiating:
-                # No more chains.
-                self.end(event)
+        self.ack_chains.discard(event)
+        if not self.ack_chains and self.negotiating:
+            # No more chains.
+            self.end(event)

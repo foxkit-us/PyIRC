@@ -9,9 +9,9 @@
 
 from logging import getLogger
 
+from taillight.signal import Signal
+
 from PyIRC.extension import BaseExtension
-from PyIRC.hook import hook
-from PyIRC.event import LineEvent
 from PyIRC.auxparse import CTCPMessage
 from PyIRC.util.version import versionstr
 
@@ -70,7 +70,7 @@ class CTCP(BaseExtension):
 
         self.send(line.command, line.params)
 
-    @hook("commands", "PRIVMSG")
+    @Signal(("commands", "PRIVMSG")).add_wraps()
     def ctcp_in(self, event):
         """Check message for CTCP (incoming) and dispatch if necessary."""
         ctcp = CTCPMessage.parse(event.line)
@@ -80,7 +80,7 @@ class CTCP(BaseExtension):
         command = ctcp.command
         self.call_event("commands_ctcp", command, ctcp, event.line)
 
-    @hook("commands", "NOTICE")
+    @Signal(("commands", "NOTICE")).add_wraps()
     def nctcp_in(self, event):
         """Check message for NCTCP (incoming) and dispatch if necessary."""
         ctcp = CTCPMessage.parse(event.line)
@@ -90,12 +90,12 @@ class CTCP(BaseExtension):
         command = ctcp.command
         self.call_event("commands_ctcp", command, ctcp, event.line)
 
-    @hook("commands_ctcp", "ping")
+    @Signal(("commands_ctcp", "ping")).add_wraps()
     def c_ping(self, event):
         """Respond to CTCP ping."""
         self.nctcp(event.ctcp.target, "PING", event.ctcp.param)
 
-    @hook("commands_ctcp", "version")
+    @Signal(("commands_ctcp", "version")).add_wraps()
     def c_version(self, event):
         """Respond to CTCP version."""
         self.nctcp(event.ctcp.target, "VERSION", self.version)

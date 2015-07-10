@@ -9,9 +9,10 @@
 
 from logging import getLogger
 
+from taillight.signal import Signal
+
 from PyIRC.numerics import Numerics
 from PyIRC.extension import BaseExtension
-from PyIRC.hook import hook, PRIORITY_LAST
 
 
 _logger = getLogger(__name__)
@@ -38,8 +39,6 @@ class BasicRFC(BaseExtension):
         changes our nick.
 
     """
-    priority = PRIORITY_LAST
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -49,7 +48,7 @@ class BasicRFC(BaseExtension):
         self.nick = self.base.nick
         self.registered = False
 
-    @hook("hooks", "connected")
+    @Signal(("hooks", "connected")).add_wraps()
     def handshake(self, event):
         if not self.registered:
             if self.server_password:
@@ -59,21 +58,21 @@ class BasicRFC(BaseExtension):
             self.send("USER", [self.username, "*", "*",
                                self.gecos])
 
-    @hook("hooks", "disconnected")
+    @Signal(("hooks", "disconnected")).add_wraps()
     def disconnected(self, event):
         self.connected = False
         self.registered = False
 
-    @hook("commands", Numerics.RPL_HELLO)
-    @hook("commands", "NOTICE")
+    @Signal(("commands", Numerics.RPL_HELLO)).add_wraps()
+    @Signal(("commands", "NOTICE")).add_wraps()
     def connected(self, event):
         self.connected = True
 
-    @hook("commands", "PING")
+    @Signal(("commands", "PING")).add_wraps()
     def pong(self, event):
         self.send("PONG", event.line.params)
 
-    @hook("commands", "NICK")
+    @Signal(("commands", "NICK")).add_wraps()
     def nick(self, event):
         if event.line.hostmask.nick != self.nick:
             return
@@ -82,6 +81,6 @@ class BasicRFC(BaseExtension):
         self.prev_nick = self.nick
         self.nick = event.line.params[0]
 
-    @hook("commands", Numerics.RPL_WELCOME)
+    @Signal(("commands", Numerics.RPL_WELCOME)).add_wraps()
     def welcome(self, event):
         self.registered = True

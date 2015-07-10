@@ -18,10 +18,12 @@ from functools import partial
 # PyIRC uses the standard Python logging framework.
 from logging import getLogger
 
+# PyIRC uses taillight.Signal everywhere for events.
+from taillight.signal import Signal
+
 # * All extensions inherit from BaseExtension.
 # * hook is the decorator for event handlers.
 from PyIRC.extension import BaseExtension
-from PyIRC.hook import hook
 
 
 # Initialise our _logger.
@@ -71,7 +73,7 @@ class KickRejoin(BaseExtension):
             # This is used to ensure we know our part was voluntary
             self.parts = set()
 
-    @hook("commands_out", "PART")
+    @Signal(("commands_out", "PART")).add_wraps()
     def on_part_out(self, event):
         """Command handler for PART's that are outgoing.
 
@@ -105,8 +107,8 @@ class KickRejoin(BaseExtension):
             channel = self.casefold(channel)
             self.parts.add(channel)
 
-    @hook("commands", "KICK")
-    @hook("commands", "PART")
+    @Signal(("commands", "KICK")).add_wraps()
+    @Signal(("commands", "PART")).add_wraps()
     def on_kick(self, event):
         """Command handler for KICK and PART.
 
@@ -159,7 +161,7 @@ class KickRejoin(BaseExtension):
         self.parts.discard(channel)
         del self.scheduled[channel]
 
-    @hook("hooks", "disconnected")
+    @Signal(("hooks", "disconnected")).add_wraps()
     def on_disconnected(self, event):
         """Disconnection event handler.
 

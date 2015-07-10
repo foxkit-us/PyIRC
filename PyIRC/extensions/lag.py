@@ -6,18 +6,20 @@
 """Latency measurements to the server."""
 
 
-from PyIRC.extension import BaseExtension
-from PyIRC.hook import hook
-from PyIRC.numerics import Numerics
-
 try:
+    # NB - this import cannot fail on Py3.4+
     from time import monotonic as time
 except ImportError:
     from time import time
 
+from taillight.signal import Signal
+
 from random import randint, choice
 from string import ascii_letters as letters, digits
 from logging import getLogger
+
+from PyIRC.extension import BaseExtension
+from PyIRC.numerics import Numerics
 
 
 _logger = getLogger(__name__)
@@ -73,7 +75,7 @@ class LagCheck(BaseExtension):
         self.send("PING", [s])
         self.timer = self.schedule(self.lagcheck, self.ping)
 
-    @hook("hooks", "close")
+    @Signal(("hooks", "close")).add_wraps()
     def close(self, event):
         self.last = None
         self.lag = None
@@ -84,13 +86,13 @@ class LagCheck(BaseExtension):
             except ValueError:
                 pass
 
-    @hook("commands", Numerics.RPL_WELCOME)
+    @Signal(("commands", Numerics.RPL_WELCOME)).add_wraps()
     def start(self, event):
         """Begin sending PING requests as soon as possible."""
 
         self.ping()
 
-    @hook("commands", "PONG")
+    @Signal(("commands", "PONG")).add_wraps()
     def pong(self, event):
         """Use PONG reply to check lag."""
 

@@ -77,11 +77,11 @@ class CTCP(BaseExtension):
         self.call_event("commands_ctcp", command, ctcp, line)
 
     @Signal(("commands_ctcp", "ping")).add_wraps()
-    def c_ping(self, caller, line):
+    def c_ping(self, caller, ctcp, line):
         """Respond to CTCP ping."""
-        self.nctcp(event.ctcp.target, "PING", event.ctcp.param)
+        self.nctcp(ctcp.target, "PING", ctcp.param)
 
     @Signal(("commands_ctcp", "version")).add_wraps()
-    def c_version(self, caller, line):
+    def c_version(self, caller, ctcp, line):
         """Respond to CTCP version."""
-        self.nctcp(event.ctcp.target, "VERSION", self.version)
+        self.nctcp(ctcp.target, "VERSION", self.version)

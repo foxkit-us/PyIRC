@@ -217,7 +217,7 @@ class ChannelTrack(BaseExtension):
             # We're joining
             self.add_channel(scope.scope)
 
-        self.burst(scope)
+        self.burst(caller, scope)
 
     @Signal(("scope", "user_burst")).add_wraps()
     def burst(self, caller, scope):

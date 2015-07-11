@@ -127,35 +127,35 @@ class BanTrack(BaseExtension):
 
     @Signal(("commands", Numerics.RPL_ENDOFBANLIST)).add_wraps()
     def end_ban(self, caller, line):
-        self.set_synced(event, 'b')
+        self.set_synced(line, 'b')
 
     @Signal(("commands", Numerics.RPL_ENDOFEXCEPTLIST)).add_wraps()
     def end_except(self, caller, line):
-        self.set_synced(event, 'e')
+        self.set_synced(line, 'e')
 
     @Signal(("commands", Numerics.RPL_ENDOFINVEXLIST)).add_wraps()
     def end_invex(self, caller, line):
-        self.set_synced(event, 'I')
+        self.set_synced(line, 'I')
 
     @Signal(("commands", Numerics.RPL_ENDOFQUIETLIST)).add_wraps()
     def end_quiet(self, caller, line):
-        self.set_synced(event, 'q')
+        self.set_synced(line, 'q')
 
     @Signal(("commands", Numerics.ERR_ENDOFSPAMFILTERLIST)).add_wraps()
     def end_spamfilter(self, caller, line):
-        self.set_synced(event, 'g')
+        self.set_synced(line, 'g')
 
     @Signal(("commands", Numerics.ERR_ENDOFEXEMPTCHANOPSLIST)).add_wraps()
     def end_exemptchanops(self, caller, line):
-        self.set_synced(event, 'X')
+        self.set_synced(line, 'X')
 
     @Signal(("commands", Numerics.RPL_ENDOFREOPLIST)).add_wraps()
     def end_reop(self, caller, line):
-        self.set_synced(event, 'R')
+        self.set_synced(line, 'R')
 
     @Signal(("commands", Numerics.RPL_ENDOFAUTOOPLIST)).add_wraps()
     def end_autoop(self, caller, line):
-        self.set_synced(event, 'w')
+        self.set_synced(line, 'w')
 
     def set_synced(self, line, mode):
         channeltrack = self.base.channel_track

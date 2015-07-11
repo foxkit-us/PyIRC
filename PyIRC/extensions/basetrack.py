@@ -234,15 +234,15 @@ class BaseTrack(BaseExtension):
 
     @Signal(("commands", Numerics.RPL_BANLIST)).add_wraps()
     def ban_list(self, caller, line):
-        return self.handle_list(event, 'b')
+        return self.handle_list(line, 'b')
 
     @Signal(("commands", Numerics.RPL_EXCEPTLIST)).add_wraps()
     def except_list(self, caller, line):
-        return self.handle_list(event, 'e')
+        return self.handle_list(line, 'e')
 
     @Signal(("commands", Numerics.RPL_INVITELIST)).add_wraps()
     def invite_list(self, caller, line):
-        return self.handle_list(event, 'I')
+        return self.handle_list(line, 'I')
 
     @Signal(("commands", Numerics.RPL_QUIETLIST)).add_wraps()
     def quiet_list(self, caller, line):
@@ -255,23 +255,23 @@ class BaseTrack(BaseExtension):
                              "version information")
             return
 
-        return self.handle_list(event, 'q')
+        return self.handle_list(line, 'q')
 
     @Signal(("commands", Numerics.RPL_SPAMFILTERLIST)).add_wraps()
     def spamfilter_list(self, caller, line):
-        return self.handle_list(event, 'g')
+        return self.handle_list(line, 'g')
 
     @Signal(("commands", Numerics.RPL_EXEMPTCHANOPSLIST)).add_wraps()
     def exemptchanops_list(self, caller, line):
-        return self.handle_list(event, 'X')
+        return self.handle_list(line, 'X')
 
     @Signal(("commands", Numerics.RPL_AUTOOPLIST)).add_wraps()
     def autoop_list(self, caller, line):
-        return self.handle_list(event, 'w')
+        return self.handle_list(line, 'w')
 
     @Signal(("commands", Numerics.RPL_REOPLIST)).add_wraps()
     def reop_list(self, caller, line):
-        return self.handle_list(event, 'R')
+        return self.handle_list(line, 'R')
 
     def handle_list(self, line, mode):
         params = line.params

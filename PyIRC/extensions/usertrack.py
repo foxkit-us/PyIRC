@@ -347,7 +347,7 @@ class UserTrack(BaseExtension):
 
     @Signal(("scope", "user_join")).add_wraps()
     def join(self, caller, scope):
-        self.burst(event)
+        self.burst(caller, scope)
 
         target = scope.target
         channel = scope.scope

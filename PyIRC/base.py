@@ -26,6 +26,17 @@ from PyIRC.extension import ExtensionManager
 _logger = getLogger(__name__)
 
 
+class Event:
+    """A basic event passed around extensions, wherein state can be set.
+
+    :ivar cancelled:
+        The present event is "soft cancelled". Other events may undo this.
+    """
+    def __init__(self, caller, cancelled=False):
+        self.caller = caller
+        self.cancelled = cancelled
+
+
 class IRCBase(metaclass=ABCMeta):
 
     """The base IRC class meant to be used as a base for more concrete
@@ -158,12 +169,17 @@ class IRCBase(metaclass=ABCMeta):
         If no args are passed in, and the signal is in a deferred state, the
         arguments from the last call_event will be used.
 
+        :returns:
+            An (:py:class:`~PyIRC.base.Event`, return values from events)
+            tuple.
+
         """
         signal = Signal((hclass, event))
         if not signal.slots:
             return []
 
-        return signal.call(*args, **kwargs)
+        event = Event(self)
+        return (event, signal.call(event, *args, **kwargs))
 
     def connect(self):
         """Do the connection handshake."""
@@ -198,8 +214,8 @@ class IRCBase(metaclass=ABCMeta):
 
         """
         line = Line(command=command, params=params)
-        self.call_event("commands_out", command, line)
-        if line.cancelled:
+        event, results = self.call_event("commands_out", command, line)
+        if event.cancelled:
             return None
 
         return line

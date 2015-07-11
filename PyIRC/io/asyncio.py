@@ -22,7 +22,7 @@ from collections import namedtuple
 from functools import update_wrapper, partial
 from logging import getLogger
 
-from PyIRC.base import IRCBase
+from PyIRC.base import IRCBase, Event
 from PyIRC.line import Line
 
 
@@ -123,8 +123,10 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
         if not signal.slots:
             return []
 
-        ret = yield from signal.call_async(*args, **kwargs)
-        return ret
+        event = Event(self)
+        loop = asyncio.get_event_loop()
+        ret = loop.run_until_complete(signal.call_async(event, *args, **kwargs))
+        return (event, ret)
 
     def schedule(self, time, callback):
         def cb_cleanup(time, callback):

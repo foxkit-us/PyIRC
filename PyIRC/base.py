@@ -16,6 +16,8 @@ binds everything together.
 from abc import ABCMeta, abstractmethod
 from logging import getLogger
 
+from taillight.signal import Signal
+
 from PyIRC.casemapping import IRCString
 from PyIRC.line import Line
 from PyIRC.extension import ExtensionManager

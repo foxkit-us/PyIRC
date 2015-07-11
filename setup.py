@@ -19,7 +19,7 @@ setup(name="PyIRC",
       author_email="elizabeth@interlinked.me",
       url="https://elizafox.github.io/PyIRC",
       packages=["PyIRC", "PyIRC.extensions", "PyIRC.util", "PyIRC.io"],
-      install_requires=["taillight >= 0.1b2"],
+      install_requires=["taillight >= 0.1b4"],
       classifiers=[
           "Development Status :: 3 - Alpha",
           "Intended Audience :: Developers",

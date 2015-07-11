@@ -76,9 +76,6 @@ class CapNegotiate(BaseExtension):
         # Timer for CAP disarm
         self.timer = None
 
-        # pending ACK's to finish
-        self.ack_chains = set()
-
     @staticmethod
     def extract_caps(line):
         """Extract caps from a line."""
@@ -206,8 +203,7 @@ class CapNegotiate(BaseExtension):
             _logger.debug("Acknowledged CAP: %s", cap)
             caps[cap] = self.local[cap] = params
 
-        event = self.call_event("cap_perform", "ack", line, caps)
-        self.ack_chains.add(event)
+        self.call_event("cap_perform", "ack", line, caps)
 
     @Signal(("commands_cap", "nak")).add_wraps(priority=-1000))
     def nak(self, caller, line):
@@ -258,12 +254,3 @@ class CapNegotiate(BaseExtension):
 
         """
         self.supported.pop(cap, None)
-
-    def cont(self, caller, line):
-        """Continue negotiation of caps."""
-        # Reset event status
-        self.call_event_inst("cap_perform", "ack", event)
-        self.ack_chains.discard(event)
-        if not self.ack_chains and self.negotiating:
-            # No more chains.
-            self.end(event)

@@ -50,7 +50,6 @@ class SASLBase(BaseExtension):
         self.username = kwargs.get("sasl_username")
         self.password = kwargs.get("sasl_password")
 
-        self.cap_event = None
         self.authenticated = False
 
     @property
@@ -72,11 +71,10 @@ class SASLBase(BaseExtension):
     @Signal(("hooks", "disconnected")).add_wraps()
     def close(self, caller):
         self.mechanisms.clear()
-        self.cap_event = None
 
     @Signal(("cap_perform", "ack")).add_wraps(priority=500)
-    def auth(self, caller, line):
-        if self.cap_event or "sasl" not in event.caps:
+    def auth(self, caller, caps):
+        if "sasl" not in caps:
             return
         elif self.method is None:
             raise NotImplementedError("Need an authentication method!")
@@ -92,13 +90,7 @@ class SASLBase(BaseExtension):
         self.send("AUTHENTICATE", [self.method])
 
         # Defer end of CAP
-        self.cap_event = event
-        raise SignalDefer
-
-    @Signal(("commands_cap", "end")).add_wraps(priority=500)
-    def end_cap(self, caller, line):
-        # A quick n' dirty hack used to rearm cap_event
-        self.cap_event = None
+        raise SignalDefer()
 
     @Signal(("commands", Numerics.RPL_SASLSUCCESS)).add_wraps(priority=500)
     def success(self, caller, line):
@@ -112,7 +104,10 @@ class SASLBase(BaseExtension):
             services_login.authenticated = True
 
         cap_negotiate = self.base.cap_negotiate
-        cap_negotiate.cont(self.cap_event)
+
+        signal = Signal(("cap_perform", "ack"))
+        if signal.last_status == signal.STATUS_DEFER:
+            signal.call(self)
 
     @Signal(("commands", Numerics.ERR_SASLFAIL)).add_wraps(priority=500)
     @Signal(("commands", Numerics.ERR_SASLTOOLONG)).add_wraps(priority=500)
@@ -121,15 +116,13 @@ class SASLBase(BaseExtension):
         _logger.info("SASL authentication failed as %s", self.username)
 
         cap_negotiate = self.base.cap_negotiate
-        cap_negotiate.cont(self.cap_event)
+        signal = Signal(("cap_perform", "ack"))
+        if signal.last_status == signal.STATUS_DEFER:
+            signal.call(self)
 
     @Signal(("commands", Numerics.ERR_SASLALREADY)).add_wraps(priority=500)
     def already(self, caller, line):
         _logger.critical("Tried to log in twice, this shouldn't happen!")
-
-        if self.cap_event and self.cap_event.pause_state:
-            # Paused, keep going
-            self.fail(event)
 
     @Signal(("commands", Numerics.RPL_SASLMECHS)).add_wraps(priority=500)
     def get_mechanisms(self, caller, line):

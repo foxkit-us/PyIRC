@@ -28,109 +28,46 @@ from PyIRC.numerics import Numerics
 _logger = getLogger(__name__)
 
 
-Mode = namedtuple("Mode", "mode param adding")
+Mode = namedtuple("Mode", "mode param adding timestamp")
 """A mode being added or removed"""
 
 
-class ModeEvent(Event):
+class Scope:
+    """A scope object passed to receivers of scope events.
 
-    """An event triggered upon mode changes."""
+    :param target:
+        The :py:class:`~PyIRC.line.Hostmask` of user that is changing scope.
 
-    def __init__(self, event, setter, target, mode, param=None, adding=True,
-                 timestamp=None):
-        """Initalise the ModeEvent instance.
+    :param scope:
+        Scope of the change, None for global, or set to a channel.
 
-        :param event:
-            The event fired
+    :param leaving:
+        whether or not the user is leaving, may be ``none`` for not
+        applicable.
 
-        :param line:
-            The :py:class:`~PyIRC.line.Line` instance of the firing mode.
+    :param reason:
+        The reason for the change (part/kick reason).
 
-        :param setter:
-            The :py:class:`~PyIRC.line.Hostmask` of the setter of this mode,
-            or ``None`` when unknown.
+    :param gecos:
+        The GECOS of the user changing scope, may be ``none``.
 
-        :param target:
-            The target of this command, as a regular string.
+    :param account:
+        The account of the user changing scope, may be ``none``.
 
-        :param adding:
-            Set to ``True`` if the mode is being added to the target, or
-            ``False`` if being removed. Consumers should be prepared for
-            redundant modes, as many IRC daemons do not do strict checking
-            for performance reasons.
+    :param modes:
+        The modes of the user that are being explicitly added or removed by
+        scope change.
 
-        :param mode:
-            The mode being set or unset.
+    :param cause:
+        The user that caused this change (for kicks, etc).
 
-        :param param:
-            The parameter of the mode, set to ``None`` for most modes.
+    """
 
-        :param timestamp:
-            The time this mode was set. If None, the current system time will
-            be used.
+    __slots__ = ["target", "scope", "leaving", "reason", "gecos", "account",
+                 "modes", "cause"]
 
-        """
-        super().__init__(event)
-
-        self.setter = setter
-        self.target = target
-        self.adding = adding
-        self.mode = mode
-        self.param = param
-        self.timestamp = timestamp if timestamp else round(time())
-
-
-class TrackEvent(Event):
-
-    """Base tracking event."""
-
-    def __init__(self, event, target):
-        """Initialise the TrackEvent instance.
-
-        :param target:
-            Target that is being tracked
-
-        """
-        super().__init__(event)
-        self.target = target
-
-
-class ScopeEvent(TrackEvent):
-
-    """User changing scope event."""
-
-    def __init__(self, event, target, scope=None, leaving=None, reason=None,
-                 gecos=None, account=None, modes=None, cause=None):
-        """Initalise the UserScopeEvent instance.
-
-        :param target:
-            :py:class:`~PyIRC.line.Hostmask` of user that is changing scope.
-
-        :param scope:
-            Scope of the change, None for global, or set to a channel.
-
-        :param leaving:
-            Whether or not the user is leaving, may be ``None`` for not
-            applicable.
-
-        :param reason:
-            Reason for change.
-
-        :param gecos:
-            GECOS of the user changing scope, may be ``None``.
-
-        :param account:
-            Account of the user changing scope, may be ``None``.
-
-        :param modes:
-            Modes of the user that are being explicitly added or removed by
-            scope change.
-
-        :param cause:
-            User that caused this change.
-
-        """
-        super().__init__(event, target)
+    def __init__(self, target, scope=None, leaving=None, reason=None,
+                 gecos=None, account=None, modes=[], cause=None):
         self.scope = scope
         self.leaving = leaving
         self.reason = reason
@@ -149,11 +86,6 @@ class BaseTrack(BaseExtension):
 
     """
 
-    hook_classes = {
-        "modes": ModeEvent,
-        "scope": ScopeEvent,
-    }
-
     caps = {
         "extended-join": [],
         "multi-prefix": [],
@@ -170,8 +102,7 @@ class BaseTrack(BaseExtension):
         self.sent_protoctl = False
 
     @Signal(("commands", "JOIN")).add_wraps(priority=-1000)
-    def join(self, event):
-        line = event.line
+    def join(self, caller, line):
         params = line.params
 
         hostmask = line.hostmask
@@ -185,12 +116,11 @@ class BaseTrack(BaseExtension):
             if len(params) > 2:
                 gecos = params[2]
 
-        self.call_event("scope", "user_join", hostmask, channel, False,
-                        gecos=gecos, account=account)
+        scope = Scope(hostmask, channel, False, gecos=gecos, account=account)
+        self.call_event("scope", "user_join", scope)
 
     @Signal(("commands", Numerics.RPL_NAMREPLY)).add_wraps(priority=-1000)
-    def names(self, event):
-        line = event.line
+    def names(self, caller, line):
         params = line.params
 
         channel = params[2]
@@ -205,54 +135,53 @@ class BaseTrack(BaseExtension):
             modes, hostmask = status_prefix_parse(hostmask, prefix)
             hostmask = Hostmask.parse(hostmask)
 
-            modes = [(m, hostmask, True) for m in modes]
+            modes = [(m, hostmask, True, None) for m in modes]
 
-            self.call_event("scope", "user_burst", hostmask, channel, False,
-                            cause=line.hostmask, modes=modes)
+            scope = Scope(hostmask, channel, False, cause=line.hostmask, modes=modes)
+            self.call_event("scope", "user_burst", scope)
 
     @Signal(("commands", "PART")).add_wraps(priority=-1000)
-    def part(self, event):
-        line = event.line
+    def part(self, caller, line):
         params = line.params
 
         channel = params[0]
         reason = (params[1] if len(params) > 1 else None)
 
-        self.call_event("scope", "user_part", line.hostmask, channel, True,
-                        reason=reason, cause=line.hostmask)
+        scope = Scope(line.hostmask, channel, True, reason=reason,
+                      cause=line.hostmask)
+        self.call_event("scope", "user_part", scope)
 
     @Signal(("commands", "KICK")).add_wraps(priority=-1000)
-    def kick(self, event):
-        line = event.line
+    def kick(self, caller, line):
         params = line.params
 
         channel = params[0]
         target = Hostmask(nick=params[1])
         reason = params[2]
 
-        self.call_event("scope", "user_kick", target, channel, True,
-                        reason=reason, cause=line.hostmask)
+        scope = Scope(target, channel, True, reason=reason,
+                      cause=line.hostmask)
+        self.call_event("scope", "user_kick", scope)
 
     @Signal(("commands", "QUIT")).add_wraps(priority=-1000)
-    def quit(self, event):
-        line = event.line
+    def quit(self, caller, line):
         params = line.params
 
         reason = params[0] if params else None
 
         # TODO - KILL events
-        self.call_event("scope", "user_quit", line.hostmask, None, True,
-                        reason=reason, cause=line.hostmask)
+        scope = Scope(line.hostmask, None, True, reason=reason,
+                      cause=line.hostmask)
+        self.call_event("scope", "user_quit", scope)
 
     @Signal(("commands", Numerics.RPL_CHANNELMODEIS)).add_wraps()
     @Signal(("commands", "MODE")).add_wraps()
-    def mode(self, event):
+    def mode(self, caller, line):
         # Offer an easy to use interface for mode
         isupport = self.base.isupport
         modegroups = isupport.get("CHANMODES")
         prefix = prefix_parse(isupport.get("PREFIX"))
 
-        line = event.line
         params = line.params[:] if line.command == "MODE" else line.params[1:]
 
         target = params[0]
@@ -279,12 +208,12 @@ class BaseTrack(BaseExtension):
                 mode_call = "mode_normal"
 
             # TODO - aggregation
-            self.call_event("modes", mode_call, line.hostmask, target, mode,
-                            param, adding)
+            mode = Mode(mode, param, adding, None)
+            self.call_event("modes", mode_call, line.hostmask, target, mode)
 
     @Signal(("commands", Numerics.RPL_ENDOFMOTD)).add_wraps()
     @Signal(("commands", Numerics.ERR_NOMOTD)).add_wraps()
-    def send_protoctl(self, event):
+    def send_protoctl(self, caller, line):
         # Send the PROTOCTL NAMESX/UHNAMES stuff if we have to
         if self.sent_protoctl:
             return
@@ -304,19 +233,19 @@ class BaseTrack(BaseExtension):
         self.sent_protoctl = True
 
     @Signal(("commands", Numerics.RPL_BANLIST)).add_wraps()
-    def ban_list(self, event):
+    def ban_list(self, caller, line):
         return self.handle_list(event, 'b')
 
     @Signal(("commands", Numerics.RPL_EXCEPTLIST)).add_wraps()
-    def except_list(self, event):
+    def except_list(self, caller, line):
         return self.handle_list(event, 'e')
 
     @Signal(("commands", Numerics.RPL_INVITELIST)).add_wraps()
-    def invite_list(self, event):
+    def invite_list(self, caller, line):
         return self.handle_list(event, 'I')
 
     @Signal(("commands", Numerics.RPL_QUIETLIST)).add_wraps()
-    def quiet_list(self, event):
+    def quiet_list(self, caller, line):
         isupport = self.base.isupport
         if 'q' in isupport.get("PREFIX"):
             _logger.critical("Got a quiet mode, but mode for quiet is " \
@@ -329,23 +258,22 @@ class BaseTrack(BaseExtension):
         return self.handle_list(event, 'q')
 
     @Signal(("commands", Numerics.RPL_SPAMFILTERLIST)).add_wraps()
-    def spamfilter_list(self, event):
+    def spamfilter_list(self, caller, line):
         return self.handle_list(event, 'g')
 
     @Signal(("commands", Numerics.RPL_EXEMPTCHANOPSLIST)).add_wraps()
-    def exemptchanops_list(self, event):
+    def exemptchanops_list(self, caller, line):
         return self.handle_list(event, 'X')
 
     @Signal(("commands", Numerics.RPL_AUTOOPLIST)).add_wraps()
-    def autoop_list(self, event):
+    def autoop_list(self, caller, line):
         return self.handle_list(event, 'w')
 
     @Signal(("commands", Numerics.RPL_REOPLIST)).add_wraps()
-    def reop_list(self, event):
+    def reop_list(self, caller, line):
         return self.handle_list(event, 'R')
 
-    def handle_list(self, event, mode):
-        line = event.line
+    def handle_list(self, line, mode):
         params = line.params
 
         try:
@@ -363,5 +291,5 @@ class BaseTrack(BaseExtension):
                             mode, e)
             return
 
-        self.call_event("modes", "mode_list", setter, target, mode, mask,
-                        True, timestamp)
+        mode = Mode(mode, mask, True, timestamp)
+        self.call_event("modes", "mode_list", setter, target, mode)

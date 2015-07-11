@@ -84,7 +84,7 @@ class ServicesLogin(BaseExtension):
 
     @Signal(("commands", "NOTICE")).add_wraps()
     @Signal(("commands", "PRIVMSG")).add_wraps()
-    def authenticate(self, event):
+    def authenticate(self, caller, line):
         if self.password is None:
             return
 

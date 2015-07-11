@@ -49,7 +49,7 @@ class BasicRFC(BaseExtension):
         self.registered = False
 
     @Signal(("hooks", "connected")).add_wraps()
-    def handshake(self, event):
+    def handshake(self, caller):
         if not self.registered:
             if self.server_password:
                 self.send("PASS", [self.server_password])
@@ -59,28 +59,28 @@ class BasicRFC(BaseExtension):
                                self.gecos])
 
     @Signal(("hooks", "disconnected")).add_wraps()
-    def disconnected(self, event):
+    def disconnected(self, caller):
         self.connected = False
         self.registered = False
 
     @Signal(("commands", Numerics.RPL_HELLO)).add_wraps()
     @Signal(("commands", "NOTICE")).add_wraps()
-    def connected(self, event):
+    def connected(self, caller, line):
         self.connected = True
 
     @Signal(("commands", "PING")).add_wraps()
-    def pong(self, event):
-        self.send("PONG", event.line.params)
+    def pong(self, caller, line):
+        self.send("PONG", line.params)
 
     @Signal(("commands", "NICK")).add_wraps()
-    def nick(self, event):
-        if event.line.hostmask.nick != self.nick:
+    def nick(self, caller, line):
+        if line.hostmask.nick != self.nick:
             return
 
         # Set nick
         self.prev_nick = self.nick
-        self.nick = event.line.params[0]
+        self.nick = line.params[0]
 
     @Signal(("commands", Numerics.RPL_WELCOME)).add_wraps()
-    def welcome(self, event):
+    def welcome(self, caller, line):
         self.registered = True

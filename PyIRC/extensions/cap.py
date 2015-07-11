@@ -24,19 +24,6 @@ from PyIRC.numerics import Numerics
 _logger = getLogger(__name__)
 
 
-class CAPEvent(LineEvent):
-
-    """A CAP ACK/NEW event."""
-
-    def __init__(self, event, line, caps):
-        super().__init__(event, line)
-        self.caps = caps
-
-    @staticmethod
-    def key(k):
-        return k.lower()
-
-
 class CapNegotiate(BaseExtension):
 
     """Basic CAP negotiation.
@@ -68,11 +55,6 @@ class CapNegotiate(BaseExtension):
 
     """ Presently supported maximum CAP version. """
     version = "302"
-
-    hook_classes = {
-        "commands_cap": LineEvent,
-        "cap_perform": CAPEvent,
-    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -125,7 +107,7 @@ class CapNegotiate(BaseExtension):
             return cap
 
     @Signal(("hooks", "connected")).add_wraps(priority=-1000))
-    def send_cap(self, event):
+    def send_cap(self, caller):
         if not self.negotiating:
             return
 
@@ -141,7 +123,7 @@ class CapNegotiate(BaseExtension):
         raise SignalStop
 
     @Signal(("hooks", "disconnected")).add_wraps(priority=-1000))
-    def close(self, event):
+    def close(self, caller):
         if self.timer is not None:
             try:
                 self.unschedule(self.timer)
@@ -153,7 +135,7 @@ class CapNegotiate(BaseExtension):
         self.local.clear()
 
     @Signal(("commands", "CAP")).add_wraps(priority=-1000))
-    def dispatch(self, event):
+    def dispatch(self, caller, line):
         """Dispatch the CAP command."""
 
         if self.timer is not None:
@@ -163,13 +145,13 @@ class CapNegotiate(BaseExtension):
                 pass
             self.timer = None
 
-        cap_command = event.line.params[1].lower()
-        self.call_event("commands_cap", cap_command, event.line)
+        cap_command = line.params[1].lower()
+        self.call_event("commands_cap", cap_command, line)
 
     @Signal(("commands_cap", "new")).add_wraps(priority=-1000))
     @Signal(("commands_cap", "ls")).add_wraps(priority=-1000))
-    def get_remote(self, event):
-        remote = self.extract_caps(event.line)
+    def get_remote(self, caller, line):
+        remote = self.extract_caps(line)
         self.remote.update(remote)
 
         extensions = self.extensions
@@ -202,14 +184,14 @@ class CapNegotiate(BaseExtension):
                 self.end(event)
 
     @Signal(("commands_cap", "list")).add_wraps(priority=-1000))
-    def get_local(self, event):
-        self.local = caps = self.extract_caps(event.line)
+    def get_local(self, caller, line):
+        self.local = caps = self.extract_caps(line)
         _logger.debug("CAPs active: %s", caps)
 
     @Signal(("commands_cap", "ack")).add_wraps(priority=-1000))
-    def ack(self, event):
+    def ack(self, caller, line):
         caps = dict()
-        for cap, params in self.extract_caps(event.line).items():
+        for cap, params in self.extract_caps(line).items():
             if cap.startswith('-'):
                 cap = cap[1:]
                 _logger.debug("CAP removed: %s", cap)
@@ -224,16 +206,16 @@ class CapNegotiate(BaseExtension):
             _logger.debug("Acknowledged CAP: %s", cap)
             caps[cap] = self.local[cap] = params
 
-        event = self.call_event("cap_perform", "ack", event.line, caps)
+        event = self.call_event("cap_perform", "ack", line, caps)
         self.ack_chains.add(event)
 
     @Signal(("commands_cap", "nak")).add_wraps(priority=-1000))
-    def nak(self, event):
-        _logger.warn("Rejected CAPs: %s", event.line.params[-1].lower())
+    def nak(self, caller, line):
+        _logger.warn("Rejected CAPs: %s", line.params[-1].lower())
 
     @Signal(("commands_cap", "end")).add_wraps(priority=-1000))
     @Signal(("commands", Numerics.RPL_HELLO)).add_wraps(priority=-1000))
-    def end(self, event):
+    def end(self, caller, line):
         _logger.debug("Ending CAP negotiation")
 
         if self.timer is not None:
@@ -277,7 +259,7 @@ class CapNegotiate(BaseExtension):
         """
         self.supported.pop(cap, None)
 
-    def cont(self, event):
+    def cont(self, caller, line):
         """Continue negotiation of caps."""
         # Reset event status
         self.call_event_inst("cap_perform", "ack", event)

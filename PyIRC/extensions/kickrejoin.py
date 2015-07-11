@@ -74,7 +74,7 @@ class KickRejoin(BaseExtension):
             self.parts = set()
 
     @Signal(("commands_out", "PART")).add_wraps()
-    def on_part_out(self, event):
+    def on_part_out(self, caller, line):
         """Command handler for PART's that are outgoing.
 
         This is used to ensure we know when we PART a channel, it's
@@ -95,7 +95,7 @@ class KickRejoin(BaseExtension):
         chantypes = isupport.get("CHANTYPES")
 
         # Parts are sent out as a comma-separated list
-        for channel in event.line.params[0].split(","):
+        for channel in line.params[0].split(","):
             if not channel.startswith(*chantypes):
                 # Not a valid channel... we COULD cancel but that might break
                 # some expectations of clients... so let's not :).
@@ -109,18 +109,17 @@ class KickRejoin(BaseExtension):
 
     @Signal(("commands", "KICK")).add_wraps()
     @Signal(("commands", "PART")).add_wraps()
-    def on_kick(self, event):
+    def on_kick(self, caller, line):
         """Command handler for KICK and PART.
 
-        This method receives a LineEvent object as its parameter, and
-        will use it to determine if we were the ones kick/removed, and
-        what action to take.
+        This method receives a line as its parameter, and will use it to
+        determine if we were the ones kick/removed, and what action to take.
 
         """
         # Retrieve the BasicRFC extension handle.
         basicrfc = self.base.basic_rfc
 
-        params = event.line.params
+        params = line.params
 
         # What channel were we kicked from?
         channel = self.casefold(params[0])
@@ -129,7 +128,7 @@ class KickRejoin(BaseExtension):
         if self.casefold(params[1]) != self.casefold(basicrfc.nick):
             return  # It isn't us, so we don't care.
 
-        if event.line.command == 'PART':
+        if line.command == 'PART':
             # Do not rejoin if we are being 'nice'
             if not self.rejoin_on_remove:
                 return
@@ -162,7 +161,7 @@ class KickRejoin(BaseExtension):
         del self.scheduled[channel]
 
     @Signal(("hooks", "disconnected")).add_wraps()
-    def on_disconnected(self, event):
+    def on_disconnected(self, caller):
         """Disconnection event handler.
 
         We must ensure that any pending rejoins are unscheduled, so that

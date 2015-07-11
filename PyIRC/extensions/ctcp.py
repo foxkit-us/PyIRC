@@ -19,15 +19,6 @@ from PyIRC.util.version import versionstr
 _logger = getLogger(__name__)
 
 
-class CTCPEvent(LineEvent):
-
-    """A CTCP event."""
-
-    def __init__(self, event, ctcp, line):
-        super().__init__(event, line)
-        self.ctcp = ctcp
-
-
 class CTCP(BaseExtension):
 
     """Add CTCP dispatch functionaltiy.
@@ -39,11 +30,6 @@ class CTCP(BaseExtension):
 
     default_version = "Powered by PyIRC v{}".format(versionstr)
     """ Default CTCP version string to use """
-
-    hook_classes = {
-        "commands_ctcp": CTCPEvent,
-        "commands_nctcp": CTCPEvent,
-    }
 
     def __init__(self, *args, **kwargs):
         """Initalise the CTCP extension.
@@ -71,31 +57,31 @@ class CTCP(BaseExtension):
         self.send(line.command, line.params)
 
     @Signal(("commands", "PRIVMSG")).add_wraps()
-    def ctcp_in(self, event):
+    def ctcp_in(self, caller, ctcp, line):
         """Check message for CTCP (incoming) and dispatch if necessary."""
-        ctcp = CTCPMessage.parse(event.line)
+        ctcp = CTCPMessage.parse(line)
         if not ctcp:
             return
 
         command = ctcp.command
-        self.call_event("commands_ctcp", command, ctcp, event.line)
+        self.call_event("commands_ctcp", command, ctcp, line)
 
     @Signal(("commands", "NOTICE")).add_wraps()
-    def nctcp_in(self, event):
+    def nctcp_in(self, caller, line):
         """Check message for NCTCP (incoming) and dispatch if necessary."""
-        ctcp = CTCPMessage.parse(event.line)
+        ctcp = CTCPMessage.parse(line)
         if not ctcp:
             return
 
         command = ctcp.command
-        self.call_event("commands_ctcp", command, ctcp, event.line)
+        self.call_event("commands_ctcp", command, ctcp, line)
 
     @Signal(("commands_ctcp", "ping")).add_wraps()
-    def c_ping(self, event):
+    def c_ping(self, caller, line):
         """Respond to CTCP ping."""
         self.nctcp(event.ctcp.target, "PING", event.ctcp.param)
 
     @Signal(("commands_ctcp", "version")).add_wraps()
-    def c_version(self, event):
+    def c_version(self, caller, line):
         """Respond to CTCP version."""
         self.nctcp(event.ctcp.target, "VERSION", self.version)

@@ -76,7 +76,7 @@ class LagCheck(BaseExtension):
         self.timer = self.schedule(self.lagcheck, self.ping)
 
     @Signal(("hooks", "close")).add_wraps()
-    def close(self, event):
+    def close(self, caller):
         self.last = None
         self.lag = None
 
@@ -87,19 +87,19 @@ class LagCheck(BaseExtension):
                 pass
 
     @Signal(("commands", Numerics.RPL_WELCOME)).add_wraps()
-    def start(self, event):
+    def start(self, caller, line):
         """Begin sending PING requests as soon as possible."""
 
         self.ping()
 
     @Signal(("commands", "PONG")).add_wraps()
-    def pong(self, event):
+    def pong(self, caller, line):
         """Use PONG reply to check lag."""
 
         if self.last is None:
             return
 
-        t, sep, s = event.line.params[-1].partition('-')
+        t, sep, s = line.params[-1].partition('-')
         if not sep or not s:
             return
 

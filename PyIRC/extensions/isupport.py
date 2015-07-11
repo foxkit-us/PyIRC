@@ -89,20 +89,20 @@ class ISupport(BaseExtension):
         return (True if value is None else value)
 
     @Signal(("hooks", "disconnected")).add_wraps()
-    def close(self, event):
+    def close(self, caller):
         self.supported.clear()
 
     @Signal(("commands", Numerics.RPL_ISUPPORT)).add_wraps()
-    def isupport(self, event):
+    def isupport(self, caller, line):
         """Handle ISUPPORT event."""
         # To differentiate between really old ircd servers
         # (RPL_BOUNCE=005 on those)
-        if not event.line.params[-1].endswith('server'):
+        if not line.params[-1].endswith('server'):
             _logger.warning("Really old IRC server detected!")
             _logger.warning("It's probably fine but things might break.")
             return
 
-        values = isupport_parse(event.line.params[1:-1])
+        values = isupport_parse(line.params[1:-1])
         if 'CASEMAPPING' in values:
             self.case_change()
 

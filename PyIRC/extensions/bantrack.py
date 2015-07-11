@@ -48,8 +48,8 @@ class BanTrack(BaseExtension):
     requires = ["ISupport", "ChannelTrack", "BasicRFC"]
 
     @Signal(("commands", "JOIN")).add_wraps(priority=1000)
-    def join(self, event):
-        params = event.line.params
+    def join(self, caller, line):
+        params = line.params
         _logger.debug("Creating ban modes for channel %s",
                       params[0])
         channeltrack = self.base.channel_track
@@ -67,24 +67,24 @@ class BanTrack(BaseExtension):
         self.send("MODE", [channel.name, modes])
 
     @Signal(("modes", "mode_list")).add_wraps()
-    def mode_list(self, event):
-        if event.param is None:
+    def mode_list(self, caller, setter, target, mode):
+        if mode.param is None:
             return
 
         channeltrack = self.base.channel_track
-        channel = channeltrack.get_channel(event.target)
+        channel = channeltrack.get_channel(mode.target)
         if not channel:
             # Not a channel or we don't know about it.
             return
 
-        modes = channel.modes[event.mode]
+        modes = channel.modes[mode.mode]
 
-        entry = BanEntry(event.param, event.setter, event.timestamp)
+        entry = BanEntry(mode.param, setter, mode.timestamp)
 
         # Check for existing ban
         for i, (string, _, _) in enumerate(list(modes)):
-            if self.casecmp(event.param, string):
-                if event.adding:
+            if self.casecmp(mode.param, string):
+                if mode.adding:
                     # Update timestamp and setter
                     _logger.debug("Replacing entry: %r -> %r",
                                   modes[i], entry)
@@ -100,66 +100,66 @@ class BanTrack(BaseExtension):
         modes.append(entry)
 
     @Signal(("modes", "mode_prefix")).add_wraps()
-    def mode_prefix(self, event):
-        if event.mode == 'v':
+    def mode_prefix(self, caller, setter, target, mode):
+        if mode.mode == 'v':
             # Voice, don't care
             return
 
         basicrfc = self.base.basic_rfc
-        if not self.casecmp(event.param, basicrfc.nick):
+        if not self.casecmp(mode.param, basicrfc.nick):
             # Not us, don't care
             return
 
         channeltrack = self.base.channel_track
-        channel = channeltrack.get_channel(event.target)
+        channel = channeltrack.get_channel(target)
         if not channel:
             # Not a channel or we don't know about it.
             return
 
-        if event.adding:
+        if mode.adding:
             check = ''
             for sync, value in channel.synced_list.items():
                 if not value:
                     check += sync
 
             if check:
-                self.send("MODE", [event.target, check])
+                self.send("MODE", [target, check])
 
     @Signal(("commands", Numerics.RPL_ENDOFBANLIST)).add_wraps()
-    def end_ban(self, event):
+    def end_ban(self, caller, line):
         self.set_synced(event, 'b')
 
     @Signal(("commands", Numerics.RPL_ENDOFEXCEPTLIST)).add_wraps()
-    def end_except(self, event):
+    def end_except(self, caller, line):
         self.set_synced(event, 'e')
 
     @Signal(("commands", Numerics.RPL_ENDOFINVEXLIST)).add_wraps()
-    def end_invex(self, event):
+    def end_invex(self, caller, line):
         self.set_synced(event, 'I')
 
     @Signal(("commands", Numerics.RPL_ENDOFQUIETLIST)).add_wraps()
-    def end_quiet(self, event):
+    def end_quiet(self, caller, line):
         self.set_synced(event, 'q')
 
     @Signal(("commands", Numerics.ERR_ENDOFSPAMFILTERLIST)).add_wraps()
-    def end_spamfilter(self, event):
+    def end_spamfilter(self, caller, line):
         self.set_synced(event, 'g')
 
     @Signal(("commands", Numerics.ERR_ENDOFEXEMPTCHANOPSLIST)).add_wraps()
-    def end_exemptchanops(self, event):
+    def end_exemptchanops(self, caller, line):
         self.set_synced(event, 'X')
 
     @Signal(("commands", Numerics.RPL_ENDOFREOPLIST)).add_wraps()
-    def end_reop(self, event):
+    def end_reop(self, caller, line):
         self.set_synced(event, 'R')
 
     @Signal(("commands", Numerics.RPL_ENDOFAUTOOPLIST)).add_wraps()
-    def end_autoop(self, event):
+    def end_autoop(self, caller, line):
         self.set_synced(event, 'w')
 
-    def set_synced(self, event, mode):
+    def set_synced(self, line, mode):
         channeltrack = self.base.channel_track
-        channel = channeltrack.get_channel(event.line.params[1])
+        channel = channeltrack.get_channel(line.params[1])
         if not channel:
             # Not a channel or we don't know about it.
             return

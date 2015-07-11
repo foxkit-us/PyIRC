@@ -85,7 +85,7 @@ class AutoJoin(BaseExtension):
             t += self.wait_interval
 
     @Signal(("hooks", "disconnected")).add_wraps()
-    def close(self, event):
+    def close(self, caller):
         for sched in self.sched:
             try:
                 self.unschedule(sched)

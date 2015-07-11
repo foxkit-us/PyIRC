@@ -26,15 +26,6 @@ from PyIRC.numerics import Numerics
 _logger = getLogger(__name__)
 
 
-class ChannelEvent(Event):
-
-    """Fired when a channel instance is created or destroyed."""
-
-    def __init__(self, event, channel):
-        super().__init__(event)
-        self.channel = channel
-
-
 class Channel:
 
     """A channel entity."""
@@ -111,10 +102,6 @@ class ChannelTrack(BaseExtension):
 
     """
 
-    hook_classes = {
-        "channel": ChannelEvent,
-    }
-
     requires = ["BaseTrack", "BasicRFC", "ISupport"]
 
     def __init__(self, *args, **kwargs):
@@ -181,12 +168,12 @@ class ChannelTrack(BaseExtension):
         del self.channels[name]
 
     @Signal(("hooks", "case_change")).add_wraps()
-    def case_change(self, event):
+    def case_change(self, caller):
         self.channels = self.channels.convert(self.case)
         self.mode_timers = self.mode_timers.convert(self.case)
 
     @Signal(("hooks", "disconnected")).add_wraps()
-    def close(self, event):
+    def close(self, caller):
         self.channels.clear()
         for timer in self.mode_timers.values():
             try:
@@ -195,65 +182,65 @@ class ChannelTrack(BaseExtension):
                 pass
 
     @Signal(("modes", "mode_prefix")).add_wraps()
-    def prefix(self, event):
+    def prefix(self, caller, setter, target, mode):
         # Parse into hostmask in case of usernames-in-host
-        channel = self.get_channel(event.target)
+        channel = self.get_channel(target)
         if not channel:
             _logger.warning("Got a PREFIX event for an unknown channel: %s",
-                            event.target)
+                            target)
             return
 
-        hostmask = Hostmask.parse(event.param)
-        if event.adding:
-            channel.users[hostmask.nick].add(event.mode)
+        hostmask = Hostmask.parse(mode.param)
+        if mode.adding:
+            channel.users[hostmask.nick].add(mode.mode)
         else:
-            channel.users[hostmask.nick].discard(event.mode)
+            channel.users[hostmask.nick].discard(mode.mode)
 
     @Signal(("modes", "mode_key")).add_wraps()
     @Signal(("modes", "mode_param")).add_wraps()
     @Signal(("modes", "mode_normal")).add_wraps()
-    def modes(self, event):
-        channel = self.get_channel(event.target)
+    def modes(self, caller, setter, target, mode):
+        channel = self.get_channel(target)
         if not channel:
             return
 
-        if event.adding:
-            channel.modes[event.mode] = event.param
+        if mode.adding:
+            channel.modes[mode.mode] = mode.param
         else:
-            channel.modes.pop(event.mode, None)
+            channel.modes.pop(mode.mode, None)
 
     @Signal(("scope", "user_join")).add_wraps()
-    def join(self, event):
+    def join(self, caller, scope):
         # JOIN event
         basicrfc = self.base.basic_rfc
-        if self.casecmp(event.target.nick, basicrfc.nick):
+        if self.casecmp(scope.target.nick, basicrfc.nick):
             # We're joining
-            self.add_channel(event.scope)
+            self.add_channel(scope.scope)
 
-        self.burst(event)
+        self.burst(scope)
 
     @Signal(("scope", "user_burst")).add_wraps()
-    def burst(self, event):
+    def burst(self, caller, scope):
         # NAMES event
-        channel = self.get_channel(event.scope)
+        channel = self.get_channel(scope.scope)
         if not channel:
             return
 
-        user = event.target.nick
+        user = scope.target.nick
 
         if user not in channel.users:
             channel.users[user] = set()
 
-        modes = {m[0] for m in event.modes} if event.modes else set()
+        modes = {m[0] for m in scope.modes} if scope.modes else set()
         channel.users[user] = modes
 
     @Signal(("scope", "user_part")).add_wraps()
     @Signal(("scope", "user_kick")).add_wraps()
-    def part(self, event):
-        channel = self.get_channel(event.scope)
+    def part(self, caller, scope):
+        channel = self.get_channel(scope.scope)
         assert channel
 
-        user = event.target.nick
+        user = scope.target.nick
 
         basicrfc = self.base.basic_rfc
         if self.casecmp(user, basicrfc.nick):
@@ -272,58 +259,58 @@ class ChannelTrack(BaseExtension):
         del channel.users[user]
 
     @Signal(("scope", "user_quit")).add_wraps()
-    def quit(self, event):
-        user = event.target.nick
+    def quit(self, caller, line):
+        user = scope.target.nick
 
         for channel in self.channels.values():
             channel.users.pop(user, None)
 
     @Signal(("commands", Numerics.RPL_TOPIC)).add_wraps()
     @Signal(("commands", "TOPIC")).add_wraps()
-    def topic(self, event):
-        if event.line.command.lower() == "topic":
-            channel = self.get_channel(event.line.params[0])
+    def topic(self, caller, line):
+        if line.command.lower() == "topic":
+            channel = self.get_channel(line.params[0])
 
             # TODO server/local time deltas for more accurate timestamps
-            channel.topicwho = event.line.hostmask
+            channel.topicwho = line.hostmask
             channel.topictime = int(time())
         else:
-            channel = self.get_channel(event.line.params[1])
+            channel = self.get_channel(line.params[1])
 
-        channel.topic = event.line.params[-1]
+        channel.topic = line.params[-1]
 
     @Signal(("commands", Numerics.RPL_NOTOPIC)).add_wraps()
-    def no_topic(self, event):
-        channel = self.get_channel(event.line.params[1])
+    def no_topic(self, caller, line):
+        channel = self.get_channel(line.params[1])
         if not channel:
             return
 
         channel.topic = ''
 
     @Signal(("commands", Numerics.RPL_TOPICWHOTIME)).add_wraps()
-    def topic_who_time(self, event):
-        channel = self.get_channel(event.line.params[1])
+    def topic_who_time(self, caller, line):
+        channel = self.get_channel(line.params[1])
         if not channel:
             return
 
-        channel.topicwho = Hostmask.parse(event.line.params[2])
-        channel.topictime = int(event.line.params[3])
+        channel.topicwho = Hostmask.parse(line.params[2])
+        channel.topictime = int(line.params[3])
 
     @Signal(("commands", Numerics.RPL_CHANNELURL)).add_wraps()
-    def url(self, event):
-        channel = self.get_channel(event.line.params[1])
+    def url(self, caller, line):
+        channel = self.get_channel(line.params[1])
         if not channel:
             return
 
-        channel.url = event.line.params[-1]
+        channel.url = line.params[-1]
 
     @Signal(("commands", Numerics.RPL_CREATIONTIME)).add_wraps()
-    def timestamp(self, event):
-        channel = self.get_channel(event.line.params[1])
+    def timestamp(self, caller, line):
+        channel = self.get_channel(line.params[1])
         if not channel:
             return
 
-        channel.timestamp = int(event.line.params[-1])
+        channel.timestamp = int(line.params[-1])
 
         # Cancel
         timer = self.mode_timers.pop(channel.name, None)
@@ -334,19 +321,19 @@ class ChannelTrack(BaseExtension):
                 pass
 
     @Signal(("commands", Numerics.RPL_ENDOFNAMES)).add_wraps()
-    def names_end(self, event):
-        channel = self.get_channel(event.line.params[1])
+    def names_end(self, caller, line):
+        channel = self.get_channel(line.params[1])
         if not channel:
             return
 
         timer = self.schedule(5, partial(self.send, "MODE",
-                                         [event.line.params[1]]))
+                                         [line.params[1]]))
         self.mode_timers[channel.name] = timer
 
     @Signal(("commands", "NICK")).add_wraps()
-    def nick(self, event):
-        oldnick = event.line.hostmask.nick
-        newnick = event.line.params[-1]
+    def nick(self, caller, line):
+        oldnick = line.hostmask.nick
+        newnick = line.params[-1]
 
         # Change the nick in all channels
         for channel in self.channels.values():

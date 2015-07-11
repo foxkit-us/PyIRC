@@ -19,8 +19,6 @@ from logging import getLogger
 from PyIRC.casemapping import IRCString
 from PyIRC.line import Line
 from PyIRC.extension import ExtensionManager
-from PyIRC.hook import build_hook_table
-from PyIRC.event import EventManager, EventState
 
 
 _logger = getLogger(__name__)
@@ -101,11 +99,6 @@ class IRCBase(metaclass=ABCMeta):
         if not extensions:
             raise ValueError("Need at least one extension")
         self.extensions = ExtensionManager(self, kwargs, events, extensions)
-        self.extensions.create_db()
-
-        # Create hooks
-        build_hook_table(self)
-        events.register_callbacks_from_inst_all(self)
 
     def case_change(self):
         """Change server casemapping semantics.
@@ -161,18 +154,17 @@ class IRCBase(metaclass=ABCMeta):
         return self.extensions.get_extension(extension)
 
     def call_event(self, hclass, event, *args, **kwargs):
-        """A convenience method for
-        :py:meth:`~PyIRC.event.EventManager.call_event`.
+        """Call an (hclass, event) signal.
+
+        If no args are passed in, and the signal is in a deferred state, the
+        arguments from the last call_event will be used.
 
         """
-        return self.events.call_event(hclass, event, *args, **kwargs)
+        signal = Signal((hclass, event))
+        if not signal.slots:
+            return []
 
-    def call_event_inst(self, hclass, event, inst):
-        """A convenience method for
-        :py:meth:`~PyIRC.event.EventManager.call_event_inst`.
-
-        """
-        return self.events.call_event_inst(hclass, event, inst)
+        return signal.call(*args, **kwargs)
 
     def connect(self):
         """Do the connection handshake."""
@@ -207,8 +199,8 @@ class IRCBase(metaclass=ABCMeta):
 
         """
         line = Line(command=command, params=params)
-        event = self.events.call_event("commands_out", command, line)
-        if event and event.status == EventState.cancelled:
+        self.events.call_event("commands_out", command, line)
+        if line.cancelled:
             return None
 
         return line

@@ -183,7 +183,7 @@ class Line:
 
     """
 
-    __slots__ = ('tags', 'hostmask', 'command', 'params', 'linestr')
+    __slots__ = ('tags', 'hostmask', 'command', 'params', 'linestr', 'cancelled')
 
     IN = True
     OUT = False
@@ -197,6 +197,7 @@ class Line:
         self.command = command
         self.params = params if params is not None else list()
         self.linestr = line
+        self.cancelled = False
 
         if isinstance(self.tags, str):
             self.tags = Tags.parse(self.tags)

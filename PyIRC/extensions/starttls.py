@@ -71,8 +71,7 @@ class StartTLS(BaseExtension):
         cap_negotiate = self.base.cap_negotiate
         signal = Signal(("cap_perform", "ack"))
         if signal.last_status == signal.STATUS_DEFER:
-            # FIXME need a resume call!
-            signal.call(self)
+            self.call_event("cap_perform", "ack")
 
     @Signal(("commands", Numerics.ERR_STARTTLS)).add_wraps()
     def abort(self, caller, line):
@@ -81,5 +80,4 @@ class StartTLS(BaseExtension):
         cap_negotiate = self.base.cap_negotiate
         signal = Signal(("cap_perform", "ack"))
         if signal.last_status == signal.STATUS_DEFER:
-            # FIXME need a resume call!
-            signal.call(self)
+            self.call_event("cap_perform", "ack")

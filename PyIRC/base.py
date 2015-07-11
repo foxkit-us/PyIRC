@@ -89,9 +89,6 @@ class IRCBase(metaclass=ABCMeta):
 
         self.kwargs = kwargs
 
-        # Event state
-        events = self.events = EventManager()
-
         # Basic IRC state
         self.connected = False
         self.registered = False
@@ -124,7 +121,7 @@ class IRCBase(metaclass=ABCMeta):
             return
 
         self.case = case
-        self.events.call_event("hooks", "case_change")
+        self.call_event("hooks", "case_change")
 
     def casefold(self, string):
         """Fold a nick according to server case folding rules.
@@ -170,11 +167,11 @@ class IRCBase(metaclass=ABCMeta):
 
     def connect(self):
         """Do the connection handshake."""
-        return self.events.call_event("hooks", "connected")
+        return self.call_event("hooks", "connected")
 
     def close(self):
         """Do the connection teardown."""
-        return self.events.call_event("hooks", "disconnected")
+        return self.call_event("hooks", "disconnected")
 
     def recv(self, line):
         """Receive a line.
@@ -185,7 +182,7 @@ class IRCBase(metaclass=ABCMeta):
         """
         command = line.command.lower()
 
-        self.events.call_event("commands", command, line)
+        self.call_event("commands", command, line)
 
     @abstractmethod
     def send(self, command, params):
@@ -201,7 +198,7 @@ class IRCBase(metaclass=ABCMeta):
 
         """
         line = Line(command=command, params=params)
-        self.events.call_event("commands_out", command, line)
+        self.call_event("commands_out", command, line)
         if line.cancelled:
             return None
 

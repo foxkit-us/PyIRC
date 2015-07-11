@@ -6,7 +6,10 @@
 
 from collections import OrderedDict, deque
 from functools import lru_cache
+from inspect import getmembers
 from logging import getLogger
+
+from taillight.slot import Slot
 
 from PyIRC.extensions import ExtensionsDatabase
 
@@ -29,9 +32,6 @@ class BaseExtension:
     requires = []
     """Required extensions (must be a name)"""
 
-    hook_classes = {}
-    """A Mapping of hclass to an :py:class:`~PyIRC.event.Event` subclass"""
-
     def __init__(self, base, **kwargs):
         """Initalise the BaseExtension instance.
 
@@ -40,10 +40,9 @@ class BaseExtension:
 
         """
         self.base = base
-        build_hook_table(self)
 
     def __getattr__(self, attr):
-        if attr.endswith('_hooks') or attr.startswith('_'):
+        if attr.startswith('_'):
             # Private or internal state!
             raise AttributeError
 
@@ -52,7 +51,7 @@ class BaseExtension:
 
 class ExtensionManager:
 
-    """Manage extensions to PyIRC's library, and register their hooks."""
+    """Manage extensions to PyIRC's library."""
 
     def __init__(self, base, kwargs, extensions=(), database=None):
         """Initialise the extensions manager.
@@ -149,6 +148,8 @@ class ExtensionManager:
         """
         return self.db.get(extension)
 
+    _inspect_pred = lambda f: isinstance(f, Slot)
+
     def remove_extension(self, extension):
         """Remove a given extension by name.
 
@@ -169,7 +170,9 @@ class ExtensionManager:
 
             extension_inst = self.db.pop(name)
 
-            # FIXME TODO - iterate all members and purge Slots.
+            # Prune the slots
+            for s in getmembers(extension_inst, self._inspect_pred):
+                s.delete(s)
 
         result = len(extensions) > len(self.extensions)
         if result:

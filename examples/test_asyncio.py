@@ -8,8 +8,7 @@ import signal
 from random import choice
 from logging import basicConfig
 
-from taillight.signal import Signal
-
+from PyIRC.base import event
 from PyIRC.io.asyncio import IRCProtocol
 from PyIRC.extensions import bot_recommended
 
@@ -34,7 +33,7 @@ class TestProtocol(IRCProtocol):
         "I don't do it in channels, sorry...",
     )
 
-    @Signal(("commands", "PRIVMSG")).add_wraps()
+    @event("commands", "PRIVMSG")
     def respond(self, event):
         line = event.line
         params = line.params

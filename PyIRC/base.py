@@ -108,7 +108,7 @@ class IRCBase(metaclass=ABCMeta):
         # Extension manager system
         if not extensions:
             raise ValueError("Need at least one extension")
-        self.extensions = ExtensionManager(self, kwargs, events, extensions)
+        self.extensions = ExtensionManager(self, kwargs, extensions)
 
     def case_change(self):
         """Change server casemapping semantics.

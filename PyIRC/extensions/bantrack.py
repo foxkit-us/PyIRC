@@ -47,7 +47,7 @@ class BanTrack(BaseExtension):
 
     requires = ["ISupport", "ChannelTrack", "BasicRFC"]
 
-    @Signal(("commands", "JOIN")).add_wraps(priority=1000)
+    @Signal(("channel", "channel_create")).add_wraps()
     def join(self, caller, line):
         params = line.params
         _logger.debug("Creating ban modes for channel %s",

@@ -51,6 +51,7 @@ class StartTLS(BaseExtension):
 
     @Signal(("cap_perform", "ack")).add_wraps(priority=-1000)
     def starttls(self, caller, caps):
+        # This must come before anything else in the chain
         if self.ssl:
             # Unnecessary
             return

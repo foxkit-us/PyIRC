@@ -16,7 +16,7 @@ be issued as quickly as possible.
 
 from logging import getLogger
 
-from taillight.signal import Signal, SignalDefer
+from taillight.signal import SignalDefer
 
 from PyIRC.extension import BaseExtension
 from PyIRC.numerics import Numerics

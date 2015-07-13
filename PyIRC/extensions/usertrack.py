@@ -18,7 +18,6 @@ from random import randint
 from functools import partial
 from logging import getLogger
 
-from taillight.signal import Signal
 
 from PyIRC.base import event
 from PyIRC.auxparse import (prefix_parse, who_flag_parse, status_prefix_parse,

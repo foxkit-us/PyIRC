@@ -17,7 +17,6 @@ from collections import namedtuple
 from logging import getLogger
 from time import time
 
-from taillight.signal import Signal
 
 from PyIRC.base import event
 from PyIRC.auxparse import mode_parse, prefix_parse, status_prefix_parse
@@ -34,6 +33,7 @@ Mode = namedtuple("Mode", "mode param adding timestamp")
 
 
 class Scope:
+
     """A scope object passed to receivers of scope events.
 
     :param target:
@@ -138,7 +138,8 @@ class BaseTrack(BaseExtension):
 
             modes = [(m, hostmask, True, None) for m in modes]
 
-            scope = Scope(hostmask, channel, False, cause=line.hostmask, modes=modes)
+            scope = Scope(
+                hostmask, channel, False, cause=line.hostmask, modes=modes)
             self.call_event("scope", "user_burst", scope)
 
     @event("commands", "PART")

@@ -17,7 +17,6 @@ from copy import deepcopy
 from functools import lru_cache
 from logging import getLogger
 
-from taillight.signal import Signal
 
 from PyIRC.base import event
 from PyIRC.auxparse import isupport_parse

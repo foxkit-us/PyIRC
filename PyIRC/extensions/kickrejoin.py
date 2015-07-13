@@ -19,7 +19,6 @@ from functools import partial
 from logging import getLogger
 
 # PyIRC uses taillight.Signal everywhere for events.
-from taillight.signal import Signal
 
 from PyIRC.base import event
 # * All extensions inherit from BaseExtension.

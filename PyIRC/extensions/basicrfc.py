@@ -9,8 +9,6 @@
 
 from logging import getLogger
 
-from taillight.signal import Signal
-
 
 from PyIRC.base import event
 from PyIRC.numerics import Numerics
@@ -41,6 +39,7 @@ class BasicRFC(BaseExtension):
         changes our nick.
 
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

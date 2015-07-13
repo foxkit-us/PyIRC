@@ -15,7 +15,7 @@ http://ircv3.atheme.org/specification/capability-negotiation-3.1
 from functools import partial
 from logging import getLogger
 
-from taillight.signal import Signal, SignalStop
+from taillight import SignalStop
 
 from PyIRC.extension import BaseExtension
 from PyIRC.numerics import Numerics

@@ -17,7 +17,7 @@ servers, but only PLAIN is supported by this module at the moment.
 from logging import getLogger
 from base64 import b64encode
 
-from taillight.signal import Signal, SignalStop, SignalDefer
+from taillight.signal import SignalDefer
 
 from PyIRC.extension import BaseExtension
 from PyIRC.numerics import Numerics

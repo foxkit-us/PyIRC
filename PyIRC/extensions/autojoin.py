@@ -11,11 +11,11 @@
 from collections.abc import Mapping
 from functools import partial
 
-from taillight.signal import Signal
 
 from PyIRC.base import event
 from PyIRC.extension import BaseExtension
 from PyIRC.numerics import Numerics
+
 
 class AutoJoin(BaseExtension):
 

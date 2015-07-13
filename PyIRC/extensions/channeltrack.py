@@ -15,7 +15,6 @@ from time import time
 from functools import partial
 from logging import getLogger
 
-from taillight.signal import Signal
 
 from PyIRC.base import event
 from PyIRC.casemapping import IRCDict, IRCDefaultDict

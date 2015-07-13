@@ -12,7 +12,6 @@ try:
 except ImportError:
     from time import time
 
-from taillight.signal import Signal
 
 from PyIRC.base import event
 from random import randint, choice

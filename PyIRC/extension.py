@@ -26,9 +26,6 @@ class BaseExtension:
 
     """
 
-    priority = PRIORITY_DONTCARE
-    """The priority of this extension, lower is higher (like Unix)"""
-
     requires = []
     """Required extensions (must be a name)"""
 

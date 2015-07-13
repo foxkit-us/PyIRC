@@ -57,8 +57,6 @@ class IRCBase(metaclass=ABCMeta):
 
     """
 
-    priority = 10000
-
     def __init__(self, serverport, username, nick, gecos, extensions,
                  **kwargs):
         """Initialise the IRC base.

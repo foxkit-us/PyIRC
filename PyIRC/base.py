@@ -39,16 +39,18 @@ class Event:
         self.cancelled = cancelled
 
 
-def event(hclass, event, priority=Signal.PRIORITY_NORMAL, listener=ANY):
+def event(hclass, ev, priority=Signal.PRIORITY_NORMAL, listener=ANY):
     """A wrapper that creates a :py:class:`~taillight.signal.Signal` for the
     given hclass and event.
     
     This function is a decorator.
     
     """
-    s = Signal((hclass, event))
+    s = Signal((hclass, ev))
     def wrapper(function):
         return s.add(function, priority, listener)
+
+    return wrapper
 
 
 class IRCBase(metaclass=ABCMeta):

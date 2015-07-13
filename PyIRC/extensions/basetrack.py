@@ -101,7 +101,7 @@ class BaseTrack(BaseExtension):
 
         self.sent_protoctl = False
 
-    @Signal(("commands", "JOIN")).add_wraps(priority=-1000)
+    @Signal(("commands", "JOIN")).add_wraps()
     def join(self, caller, line):
         params = line.params
 
@@ -119,7 +119,7 @@ class BaseTrack(BaseExtension):
         scope = Scope(hostmask, channel, False, gecos=gecos, account=account)
         self.call_event("scope", "user_join", scope)
 
-    @Signal(("commands", Numerics.RPL_NAMREPLY)).add_wraps(priority=-1000)
+    @Signal(("commands", Numerics.RPL_NAMREPLY)).add_wraps()
     def names(self, caller, line):
         params = line.params
 
@@ -140,7 +140,7 @@ class BaseTrack(BaseExtension):
             scope = Scope(hostmask, channel, False, cause=line.hostmask, modes=modes)
             self.call_event("scope", "user_burst", scope)
 
-    @Signal(("commands", "PART")).add_wraps(priority=-1000)
+    @Signal(("commands", "PART")).add_wraps()
     def part(self, caller, line):
         params = line.params
 
@@ -151,7 +151,7 @@ class BaseTrack(BaseExtension):
                       cause=line.hostmask)
         self.call_event("scope", "user_part", scope)
 
-    @Signal(("commands", "KICK")).add_wraps(priority=-1000)
+    @Signal(("commands", "KICK")).add_wraps()
     def kick(self, caller, line):
         params = line.params
 
@@ -163,7 +163,7 @@ class BaseTrack(BaseExtension):
                       cause=line.hostmask)
         self.call_event("scope", "user_kick", scope)
 
-    @Signal(("commands", "QUIT")).add_wraps(priority=-1000)
+    @Signal(("commands", "QUIT")).add_wraps()
     def quit(self, caller, line):
         params = line.params
 

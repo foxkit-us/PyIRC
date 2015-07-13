@@ -44,9 +44,6 @@ class IRCBase(metaclass=ABCMeta):
     """The base IRC class meant to be used as a base for more concrete
     implementations.
 
-    :ivar events:
-        Our :py:class:`~PyIRC.event.EventManager` instance.
-
     :ivar extensions:
         Our :py:class:`~PyIRC.extension.ExtensionManager` instance.
 

@@ -48,6 +48,11 @@ def event(hclass, ev, priority=Signal.PRIORITY_NORMAL, listener=ANY):
     """
     s = Signal((hclass, ev))
     def wrapper(function):
+        if not hasattr(function, "signal"):
+            function.signal = []
+
+        function.signal.append(s)
+
         return s.add(function, priority, listener)
 
     return wrapper

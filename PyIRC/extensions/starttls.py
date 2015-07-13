@@ -45,11 +45,11 @@ class StartTLS(BaseExtension):
                 "tls": [],
             }
 
-    @Signal(("hooks", "disconnected")).add_wraps()
+    @event("hooks", "disconnected")
     def close(self, caller):
         self.tls_event = None
 
-    @Signal(("cap_perform", "ack")).add_wraps(priority=-1000)
+    @event("cap_perform", "ack", priority=-1000)
     def starttls(self, caller, caps):
         # This must come before anything else in the chain
         if self.ssl:
@@ -64,7 +64,7 @@ class StartTLS(BaseExtension):
             self.send("STARTTLS", None)
             raise SignalDefer()
 
-    @Signal(("commands", Numerics.RPL_STARTTLS)).add_wraps()
+    @event("commands", Numerics.RPL_STARTTLS)
     def wrap(self, caller, line):
         _logger.info("Performing STARTTLS initiation...")
         self.wrap_ssl()
@@ -74,7 +74,7 @@ class StartTLS(BaseExtension):
         if signal.last_status == signal.STATUS_DEFER:
             self.call_event("cap_perform", "ack")
 
-    @Signal(("commands", Numerics.ERR_STARTTLS)).add_wraps()
+    @event("commands", Numerics.ERR_STARTTLS)
     def abort(self, caller, line):
         _logger.critical("STARTTLS initiation failed, connection not secure")
 

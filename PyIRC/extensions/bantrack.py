@@ -18,6 +18,7 @@ from logging import getLogger
 
 from taillight.signal import Signal
 
+from PyIRC.base import event
 from PyIRC.extension import BaseExtension
 from PyIRC.numerics import Numerics
 
@@ -47,7 +48,7 @@ class BanTrack(BaseExtension):
 
     requires = ["ISupport", "ChannelTrack", "BasicRFC"]
 
-    @Signal(("channel", "channel_create")).add_wraps()
+    @event("channel", "channel_create")
     def join(self, caller, line):
         params = line.params
         _logger.debug("Creating ban modes for channel %s",
@@ -66,7 +67,7 @@ class BanTrack(BaseExtension):
 
         self.send("MODE", [channel.name, modes])
 
-    @Signal(("modes", "mode_list")).add_wraps()
+    @event("modes", "mode_list")
     def mode_list(self, caller, setter, target, mode):
         if mode.param is None:
             return
@@ -99,7 +100,7 @@ class BanTrack(BaseExtension):
         _logger.debug("Adding entry: %r", entry)
         modes.append(entry)
 
-    @Signal(("modes", "mode_prefix")).add_wraps()
+    @event("modes", "mode_prefix")
     def mode_prefix(self, caller, setter, target, mode):
         if mode.mode == 'v':
             # Voice, don't care
@@ -125,35 +126,35 @@ class BanTrack(BaseExtension):
             if check:
                 self.send("MODE", [target, check])
 
-    @Signal(("commands", Numerics.RPL_ENDOFBANLIST)).add_wraps()
+    @event("commands", Numerics.RPL_ENDOFBANLIST)
     def end_ban(self, caller, line):
         self.set_synced(line, 'b')
 
-    @Signal(("commands", Numerics.RPL_ENDOFEXCEPTLIST)).add_wraps()
+    @event("commands", Numerics.RPL_ENDOFEXCEPTLIST)
     def end_except(self, caller, line):
         self.set_synced(line, 'e')
 
-    @Signal(("commands", Numerics.RPL_ENDOFINVEXLIST)).add_wraps()
+    @event("commands", Numerics.RPL_ENDOFINVEXLIST)
     def end_invex(self, caller, line):
         self.set_synced(line, 'I')
 
-    @Signal(("commands", Numerics.RPL_ENDOFQUIETLIST)).add_wraps()
+    @event("commands", Numerics.RPL_ENDOFQUIETLIST)
     def end_quiet(self, caller, line):
         self.set_synced(line, 'q')
 
-    @Signal(("commands", Numerics.ERR_ENDOFSPAMFILTERLIST)).add_wraps()
+    @event("commands", Numerics.ERR_ENDOFSPAMFILTERLIST)
     def end_spamfilter(self, caller, line):
         self.set_synced(line, 'g')
 
-    @Signal(("commands", Numerics.ERR_ENDOFEXEMPTCHANOPSLIST)).add_wraps()
+    @event("commands", Numerics.ERR_ENDOFEXEMPTCHANOPSLIST)
     def end_exemptchanops(self, caller, line):
         self.set_synced(line, 'X')
 
-    @Signal(("commands", Numerics.RPL_ENDOFREOPLIST)).add_wraps()
+    @event("commands", Numerics.RPL_ENDOFREOPLIST)
     def end_reop(self, caller, line):
         self.set_synced(line, 'R')
 
-    @Signal(("commands", Numerics.RPL_ENDOFAUTOOPLIST)).add_wraps()
+    @event("commands", Numerics.RPL_ENDOFAUTOOPLIST)
     def end_autoop(self, caller, line):
         self.set_synced(line, 'w')
 

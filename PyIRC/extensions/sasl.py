@@ -68,11 +68,11 @@ class SASLBase(BaseExtension):
             _logger.debug("Registering new-style SASL capability")
             return {"sasl" : [m.method for m in SASLBase.__subclasses__()]}
 
-    @Signal(("hooks", "disconnected")).add_wraps()
+    @event("hooks", "disconnected")
     def close(self, caller):
         self.mechanisms.clear()
 
-    @Signal(("cap_perform", "ack")).add_wraps(priority=100)
+    @event("cap_perform", "ack", priority=100)
     def auth(self, caller, caps):
         # Lower priority to ensure STARTTLS comes before
         if "sasl" not in caps:
@@ -93,7 +93,7 @@ class SASLBase(BaseExtension):
         # Defer end of CAP
         raise SignalDefer()
 
-    @Signal(("commands", Numerics.RPL_SASLSUCCESS)).add_wraps()
+    @event("commands", Numerics.RPL_SASLSUCCESS)
     def success(self, caller, line):
         _logger.info("SASL authentication succeeded as %s", self.username)
 
@@ -110,9 +110,9 @@ class SASLBase(BaseExtension):
         if signal.last_status == signal.STATUS_DEFER:
             self.call_event("cap_perform", "ack")
 
-    @Signal(("commands", Numerics.ERR_SASLFAIL)).add_wraps()
-    @Signal(("commands", Numerics.ERR_SASLTOOLONG)).add_wraps()
-    @Signal(("commands", Numerics.ERR_SASLABORTED)).add_wraps()
+    @event("commands", Numerics.ERR_SASLFAIL)
+    @event("commands", Numerics.ERR_SASLTOOLONG)
+    @event("commands", Numerics.ERR_SASLABORTED)
     def fail(self, caller, line):
         _logger.info("SASL authentication failed as %s", self.username)
 
@@ -121,11 +121,11 @@ class SASLBase(BaseExtension):
         if signal.last_status == signal.STATUS_DEFER:
             self.call_event("cap_perform", "ack")
 
-    @Signal(("commands", Numerics.ERR_SASLALREADY)).add_wraps()
+    @event("commands", Numerics.ERR_SASLALREADY)
     def already(self, caller, line):
         _logger.critical("Tried to log in twice, this shouldn't happen!")
 
-    @Signal(("commands", Numerics.RPL_SASLMECHS)).add_wraps()
+    @event("commands", Numerics.RPL_SASLMECHS)
     def get_mechanisms(self, caller, line):
         self.mechanisms = set(line.params[1].lower().split(','))
         _logger.info("Supported SASL mechanisms: %r", self.mechanisms)
@@ -142,7 +142,7 @@ class SASLPlain(SASLBase):
 
     method = "PLAIN"
 
-    @Signal(("commands", "AUTHENTICATE")).add_wraps(priority=250)
+    @event("commands", "AUTHENTICATE", priority=250)
     def authenticate(self, caller, line):
         """Implement the plaintext authentication method."""
         # Priority is arbitrary atm, but should be the least preferred auth

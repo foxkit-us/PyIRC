@@ -19,6 +19,7 @@ from time import time
 
 from taillight.signal import Signal
 
+from PyIRC.base import event
 from PyIRC.auxparse import mode_parse, prefix_parse, status_prefix_parse
 from PyIRC.extension import BaseExtension
 from PyIRC.line import Hostmask
@@ -101,7 +102,7 @@ class BaseTrack(BaseExtension):
 
         self.sent_protoctl = False
 
-    @Signal(("commands", "JOIN")).add_wraps()
+    @event("commands", "JOIN")
     def join(self, caller, line):
         params = line.params
 
@@ -119,7 +120,7 @@ class BaseTrack(BaseExtension):
         scope = Scope(hostmask, channel, False, gecos=gecos, account=account)
         self.call_event("scope", "user_join", scope)
 
-    @Signal(("commands", Numerics.RPL_NAMREPLY)).add_wraps()
+    @event("commands", Numerics.RPL_NAMREPLY)
     def names(self, caller, line):
         params = line.params
 
@@ -140,7 +141,7 @@ class BaseTrack(BaseExtension):
             scope = Scope(hostmask, channel, False, cause=line.hostmask, modes=modes)
             self.call_event("scope", "user_burst", scope)
 
-    @Signal(("commands", "PART")).add_wraps()
+    @event("commands", "PART")
     def part(self, caller, line):
         params = line.params
 
@@ -151,7 +152,7 @@ class BaseTrack(BaseExtension):
                       cause=line.hostmask)
         self.call_event("scope", "user_part", scope)
 
-    @Signal(("commands", "KICK")).add_wraps()
+    @event("commands", "KICK")
     def kick(self, caller, line):
         params = line.params
 
@@ -163,7 +164,7 @@ class BaseTrack(BaseExtension):
                       cause=line.hostmask)
         self.call_event("scope", "user_kick", scope)
 
-    @Signal(("commands", "QUIT")).add_wraps()
+    @event("commands", "QUIT")
     def quit(self, caller, line):
         params = line.params
 
@@ -174,8 +175,8 @@ class BaseTrack(BaseExtension):
                       cause=line.hostmask)
         self.call_event("scope", "user_quit", scope)
 
-    @Signal(("commands", Numerics.RPL_CHANNELMODEIS)).add_wraps()
-    @Signal(("commands", "MODE")).add_wraps()
+    @event("commands", Numerics.RPL_CHANNELMODEIS)
+    @event("commands", "MODE")
     def mode(self, caller, line):
         # Offer an easy to use interface for mode
         isupport = self.base.isupport
@@ -211,8 +212,8 @@ class BaseTrack(BaseExtension):
             mode = Mode(mode, param, adding, None)
             self.call_event("modes", mode_call, line.hostmask, target, mode)
 
-    @Signal(("commands", Numerics.RPL_ENDOFMOTD)).add_wraps()
-    @Signal(("commands", Numerics.ERR_NOMOTD)).add_wraps()
+    @event("commands", Numerics.RPL_ENDOFMOTD)
+    @event("commands", Numerics.ERR_NOMOTD)
     def send_protoctl(self, caller, line):
         # Send the PROTOCTL NAMESX/UHNAMES stuff if we have to
         if self.sent_protoctl:
@@ -232,19 +233,19 @@ class BaseTrack(BaseExtension):
 
         self.sent_protoctl = True
 
-    @Signal(("commands", Numerics.RPL_BANLIST)).add_wraps()
+    @event("commands", Numerics.RPL_BANLIST)
     def ban_list(self, caller, line):
         return self.handle_list(line, 'b')
 
-    @Signal(("commands", Numerics.RPL_EXCEPTLIST)).add_wraps()
+    @event("commands", Numerics.RPL_EXCEPTLIST)
     def except_list(self, caller, line):
         return self.handle_list(line, 'e')
 
-    @Signal(("commands", Numerics.RPL_INVITELIST)).add_wraps()
+    @event("commands", Numerics.RPL_INVITELIST)
     def invite_list(self, caller, line):
         return self.handle_list(line, 'I')
 
-    @Signal(("commands", Numerics.RPL_QUIETLIST)).add_wraps()
+    @event("commands", Numerics.RPL_QUIETLIST)
     def quiet_list(self, caller, line):
         isupport = self.base.isupport
         if 'q' in isupport.get("PREFIX"):
@@ -257,19 +258,19 @@ class BaseTrack(BaseExtension):
 
         return self.handle_list(line, 'q')
 
-    @Signal(("commands", Numerics.RPL_SPAMFILTERLIST)).add_wraps()
+    @event("commands", Numerics.RPL_SPAMFILTERLIST)
     def spamfilter_list(self, caller, line):
         return self.handle_list(line, 'g')
 
-    @Signal(("commands", Numerics.RPL_EXEMPTCHANOPSLIST)).add_wraps()
+    @event("commands", Numerics.RPL_EXEMPTCHANOPSLIST)
     def exemptchanops_list(self, caller, line):
         return self.handle_list(line, 'X')
 
-    @Signal(("commands", Numerics.RPL_AUTOOPLIST)).add_wraps()
+    @event("commands", Numerics.RPL_AUTOOPLIST)
     def autoop_list(self, caller, line):
         return self.handle_list(line, 'w')
 
-    @Signal(("commands", Numerics.RPL_REOPLIST)).add_wraps()
+    @event("commands", Numerics.RPL_REOPLIST)
     def reop_list(self, caller, line):
         return self.handle_list(line, 'R')
 

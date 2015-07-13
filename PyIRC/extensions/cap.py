@@ -103,7 +103,7 @@ class CapNegotiate(BaseExtension):
         else:
             return cap
 
-    @Signal(("hooks", "connected")).add_wraps(priority=-1000)
+    @event("hooks", "connected", priority=-1000)
     def send_cap(self, caller):
         # This must come first!!! Even before USER/NICK!
         if not self.negotiating:
@@ -120,7 +120,7 @@ class CapNegotiate(BaseExtension):
         # Ensure no other connected events get fired
         raise SignalStop
 
-    @Signal(("hooks", "disconnected")).add_wraps()
+    @event("hooks", "disconnected")
     def close(self, caller):
         if self.timer is not None:
             try:
@@ -132,7 +132,7 @@ class CapNegotiate(BaseExtension):
         self.remote.clear()
         self.local.clear()
 
-    @Signal(("commands", "CAP")).add_wraps()
+    @event("commands", "CAP")
     def dispatch(self, caller, line):
         """Dispatch the CAP command."""
 
@@ -146,8 +146,8 @@ class CapNegotiate(BaseExtension):
         cap_command = line.params[1].lower()
         self.call_event("commands_cap", cap_command, line)
 
-    @Signal(("commands_cap", "new")).add_wraps()
-    @Signal(("commands_cap", "ls")).add_wraps()
+    @event("commands_cap", "new")
+    @event("commands_cap", "ls")
     def get_remote(self, caller, line):
         remote = self.extract_caps(line)
         self.remote.update(remote)
@@ -181,12 +181,12 @@ class CapNegotiate(BaseExtension):
                 _logger.debug("No CAPs to request!")
                 self.end(event)
 
-    @Signal(("commands_cap", "list")).add_wraps()
+    @event("commands_cap", "list")
     def get_local(self, caller, line):
         self.local = caps = self.extract_caps(line)
         _logger.debug("CAPs active: %s", caps)
 
-    @Signal(("commands_cap", "ack")).add_wraps(priority=-1000)
+    @event("commands_cap", "ack", priority=-1000)
     def ack(self, caller, line):
         # XXX - I forgot why this was low priority but I'm keeping it like
         # this until I can get a better look
@@ -208,12 +208,12 @@ class CapNegotiate(BaseExtension):
 
         self.call_event("cap_perform", "ack", line, caps)
 
-    @Signal(("commands_cap", "nak")).add_wraps()
+    @event("commands_cap", "nak")
     def nak(self, caller, line):
         _logger.warn("Rejected CAPs: %s", line.params[-1].lower())
 
-    @Signal(("commands_cap", "end")).add_wraps()
-    @Signal(("commands", Numerics.RPL_HELLO)).add_wraps()
+    @event("commands_cap", "end")
+    @event("commands", Numerics.RPL_HELLO)
     def end(self, caller, line):
         _logger.debug("Ending CAP negotiation")
 

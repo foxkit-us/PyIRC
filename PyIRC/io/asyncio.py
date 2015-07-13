@@ -120,9 +120,6 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
 
         """
         signal = Signal((hclass, event))
-        if not signal.slots:
-            return []
-
         event = Event(signal.name, self)
         loop = asyncio.get_event_loop()
         ret = loop.run_until_complete(signal.call_async(event, *args, **kwargs))

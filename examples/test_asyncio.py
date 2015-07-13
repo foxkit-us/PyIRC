@@ -8,12 +8,15 @@ import signal
 from random import choice
 from logging import basicConfig
 
+from taillight.signal import Signal
+
 from PyIRC.io.asyncio import IRCProtocol
-from PyIRC.hook import hook
 from PyIRC.extensions import bot_recommended
 
 
 class TestProtocol(IRCProtocol):
+    """Some furry bollocks test class."""
+
     yifflines = (
         "rrf~",
         "oh yes~",
@@ -31,7 +34,7 @@ class TestProtocol(IRCProtocol):
         "I don't do it in channels, sorry...",
     )
 
-    @hook("commands", "PRIVMSG")
+    @Signal(("commands", "PRIVMSG")).add_wraps()
     def respond(self, event):
         line = event.line
         params = line.params

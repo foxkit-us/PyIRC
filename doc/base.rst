@@ -23,11 +23,6 @@ casemapping
 -----------
 
 .. automodule:: PyIRC.casemapping
-
-event
------
-
-.. automodule:: PyIRC.event
    :members:
 
 extension
@@ -41,14 +36,6 @@ formatting
 
 .. automodule:: PyIRC.formatting
    :members:
-
-hook
-----
-
-.. automodule:: PyIRC.hook
-   :members:
-
-   .. :py:decorator: hook(hclass, hook, priority=None)
 
 line
 ----

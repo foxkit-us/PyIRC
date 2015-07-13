@@ -5,9 +5,10 @@ from IPython.terminal.embed import InteractiveShellEmbed
 from logging import basicConfig
 import sys
 
+from taillight.signal import Signal
+
 from PyIRC.io.socket import IRCSocket
 from PyIRC.extensions import bot_recommended
-from PyIRC.hook import hook
 
 
 basicConfig(level="DEBUG")
@@ -33,7 +34,7 @@ pyshell = InteractiveShellEmbed(
 
 class IPythonExampleBot(IRCSocket):
 
-    @hook("commands", "PRIVMSG")
+    @Signal(("commands", "PRIVMSG")).add_wraps()
     def on_msg(self, event):
         msg = event.line.params[-1]
         if msg == '>>> shell':

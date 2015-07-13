@@ -17,6 +17,7 @@ from abc import ABCMeta, abstractmethod
 from logging import getLogger
 
 from taillight.signal import Signal
+from taillight import ANY
 
 from PyIRC.casemapping import IRCString
 from PyIRC.line import Line
@@ -32,7 +33,8 @@ class Event:
     :ivar cancelled:
         The present event is "soft cancelled". Other events may undo this.
     """
-    def __init__(self, caller, cancelled=False):
+    def __init__(self, eventpair, caller, cancelled=False):
+        self.eventpair = eventpair
         self.caller = caller
         self.cancelled = cancelled
 
@@ -176,7 +178,7 @@ class IRCBase(metaclass=ABCMeta):
         if not signal.slots:
             return []
 
-        event = Event(self)
+        event = Event(signal.name, self)
         return (event, signal.call(event, *args, **kwargs))
 
     def connect(self):

@@ -18,6 +18,7 @@ from logging import getLogger
 
 from taillight.signal import SignalDefer
 
+from PyIRC.signal import event
 from PyIRC.extension import BaseExtension
 from PyIRC.numerics import Numerics
 
@@ -45,11 +46,11 @@ class StartTLS(BaseExtension):
                 "tls": [],
             }
 
-    @signal_event("hooks", "disconnected")
+    @event("hooks", "disconnected")
     def close(self, caller):
         self.tls_event = None
 
-    @signal_event("cap_perform", "ack", priority=-1000)
+    @event("cap_perform", "ack", priority=-1000)
     def starttls(self, caller, caps):
         # This must come before anything else in the chain
         if self.ssl:
@@ -64,7 +65,7 @@ class StartTLS(BaseExtension):
             self.send("STARTTLS", None)
             raise SignalDefer()
 
-    @signal_event("commands", Numerics.RPL_STARTTLS)
+    @event("commands", Numerics.RPL_STARTTLS)
     def wrap(self, caller, line):
         _logger.info("Performing STARTTLS initiation...")
         self.wrap_ssl()
@@ -74,7 +75,7 @@ class StartTLS(BaseExtension):
         if signal.last_status == signal.STATUS_DEFER:
             self.call_event("cap_perform", "ack")
 
-    @signal_event("commands", Numerics.ERR_STARTTLS)
+    @event("commands", Numerics.ERR_STARTTLS)
     def abort(self, caller, line):
         _logger.critical("STARTTLS initiation failed, connection not secure")
 

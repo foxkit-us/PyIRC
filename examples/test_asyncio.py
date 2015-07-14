@@ -8,7 +8,7 @@ import signal
 from random import choice
 from logging import basicConfig
 
-from PyIRC.base import event
+from PyIRC.signal import event
 from PyIRC.io.asyncio import IRCProtocol
 from PyIRC.extensions import bot_recommended
 

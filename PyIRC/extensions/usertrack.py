@@ -19,6 +19,7 @@ from functools import partial
 from logging import getLogger
 
 
+from PyIRC.signal import event
 from PyIRC.auxparse import (prefix_parse, who_flag_parse, status_prefix_parse,
                             userhost_parse)
 from PyIRC.casemapping import IRCDict, IRCDefaultDict, IRCSet
@@ -283,7 +284,7 @@ class UserTrack(BaseExtension):
         if hostmask.host:
             user.host = hostmask.host
 
-    @signal_event("hooks", "case_change")
+    @event("hooks", "case_change")
     def case_change(self, caller):
         case = self.case
 
@@ -295,7 +296,7 @@ class UserTrack(BaseExtension):
 
         self.auth_cb = self.auth_cb.convert(case)
 
-    @signal_event("hooks", "disconnected")
+    @event("hooks", "disconnected")
     def close(self, caller):
         timers = chain(self.u_expire_timers.values(),
                        self.who_timers.values())
@@ -308,7 +309,7 @@ class UserTrack(BaseExtension):
         self.users.clear()
         self.whox_send.clear()
 
-    @signal_event("modes", "mode_prefix")
+    @event("modes", "mode_prefix")
     def prefix(self, caller, setter, target, mode):
         # Parse into hostmask in case of usernames-in-host
         hostmask = Hostmask.parse(mode.param)
@@ -324,7 +325,7 @@ class UserTrack(BaseExtension):
         else:
             channel.discard(mode.mode)
 
-    @signal_event("scope", "user_burst")
+    @event("scope", "user_burst")
     def burst(self, caller, scope):
         target = scope.target
         channel = scope.scope
@@ -344,7 +345,7 @@ class UserTrack(BaseExtension):
         # Add the channel
         user.channels[channel] = modes
 
-    @signal_event("scope", "user_join")
+    @event("scope", "user_join")
     def join(self, caller, scope):
         self.burst(caller, scope)
 
@@ -365,8 +366,8 @@ class UserTrack(BaseExtension):
             sched = self.schedule(2, partial(self.send, "WHO", params))
             self.who_timers[channel] = sched
 
-    @signal_event("scope", "user_part")
-    @signal_event("scope", "user_kick")
+    @event("scope", "user_part")
+    @event("scope", "user_kick")
     def part(self, caller, line):
         target = scope.target
         channel = scope.scope
@@ -407,17 +408,17 @@ class UserTrack(BaseExtension):
             # TODO - possible MONITOR support?
             self.remove_user(target.nick)
 
-    @signal_event("scope", "user_quit")
+    @event("scope", "user_quit")
     def quit(self, caller, scope):
         # User's gone
         self.remove_user(scope.target)
 
-    @signal_event("commands", Numerics.RPL_WELCOME)
+    @event("commands", Numerics.RPL_WELCOME)
     def welcome(self, caller, line):
         # Obtain our own host
         self.send("USERHOST", [line.params[0]])
 
-    @signal_event("commands", Numerics.RPL_USERHOST)
+    @event("commands", Numerics.RPL_USERHOST)
     def userhost(self, caller, line):
         params = line.params
         if not (len(params) > 1 and params[1]):
@@ -447,7 +448,7 @@ class UserTrack(BaseExtension):
             else:
                 user.host = hostmask.host
 
-    @signal_event("commands", Numerics.RPL_HOSTHIDDEN)
+    @event("commands", Numerics.RPL_HOSTHIDDEN)
     def host_hidden(self, caller, line):
         params = line.params
 
@@ -456,7 +457,7 @@ class UserTrack(BaseExtension):
 
         user.host = params[1]
 
-    @signal_event("commands", "ACCOUNT")
+    @event("commands", "ACCOUNT")
     def account(self, caller, line):
         self.update_username_host(line)
 
@@ -474,7 +475,7 @@ class UserTrack(BaseExtension):
 
             del self.auth_cb[user.nick]
 
-    @signal_event("commands", "AWAY")
+    @event("commands", "AWAY")
     def away(self, caller, line):
         self.update_username_host(line)
 
@@ -483,7 +484,7 @@ class UserTrack(BaseExtension):
 
         user.away = bool(line.params)
 
-    @signal_event("commands", "CHGHOST")
+    @event("commands", "CHGHOST")
     def chghost(self, caller, line):
         # NB - we don't know if a user is cloaking or uncloaking, or changing
         # cloak, so do NOT update user's cloak.
@@ -495,7 +496,7 @@ class UserTrack(BaseExtension):
         user.username = line.params[0]
         user.host = line.params[1]
 
-    @signal_event("commands", "NICK")
+    @event("commands", "NICK")
     def nick(self, caller, line):
         self.update_username_host(line)
 
@@ -509,7 +510,7 @@ class UserTrack(BaseExtension):
 
         del self.users[oldnick]
 
-    @signal_event("commands", Numerics.ERR_NOSUCHNICK)
+    @event("commands", Numerics.ERR_NOSUCHNICK)
     def notfound(self, caller, line):
         nick = line.params[1]
         if nick in self.auth_cb:
@@ -521,8 +522,8 @@ class UserTrack(BaseExtension):
 
         self.remove_user(nick)
 
-    @signal_event("commands", "PRIVMSG")
-    @signal_event("commands", "NOTICE")
+    @event("commands", "PRIVMSG")
+    @event("commands", "NOTICE")
     def message(self, caller, line):
         if line.params[0] == '*':
             # We are not registered, do nothing.
@@ -553,7 +554,7 @@ class UserTrack(BaseExtension):
 
             self.timeout_user(hostmask.nick)
 
-    @signal_event("commands", Numerics.RPL_ENDOFWHO)
+    @event("commands", Numerics.RPL_ENDOFWHO)
     def who_end(self, caller, line):
         if not self.whox_send:
             return
@@ -562,7 +563,7 @@ class UserTrack(BaseExtension):
         del self.who_timers[channel]
         del self.whox_send[0]
 
-    @signal_event("commands", Numerics.RPL_ENDOFWHOIS)
+    @event("commands", Numerics.RPL_ENDOFWHOIS)
     def whois_end(self, caller, line):
         nick = line.params[1]
 
@@ -580,7 +581,7 @@ class UserTrack(BaseExtension):
 
             del self.auth_cb[nick]
 
-    @signal_event("commands", Numerics.RPL_WHOISUSER)
+    @event("commands", Numerics.RPL_WHOISUSER)
     def whois_user(self, caller, line):
         nick = line.params[1]
         username = line.params[2]
@@ -596,7 +597,7 @@ class UserTrack(BaseExtension):
         user.host = host
         user.gecos = gecos
 
-    @signal_event("commands", Numerics.RPL_WHOISCHANNELS)
+    @event("commands", Numerics.RPL_WHOISCHANNELS)
     def whois_channels(self, caller, line):
         user = self.get_user(line.params[1])
         if not user:
@@ -610,7 +611,7 @@ class UserTrack(BaseExtension):
             mode, channel = status_prefix_parse(channel, prefix)
             user.channels[channel] = mode
 
-    @signal_event("commands", Numerics.RPL_WHOISHOST)
+    @event("commands", Numerics.RPL_WHOISHOST)
     def whois_host(self, caller, line):
         user = self.get_user(line.params[1])
         if not user:
@@ -623,7 +624,7 @@ class UserTrack(BaseExtension):
         user.ip = ip
         user.realhost = realhost
 
-    @signal_event("commands", Numerics.RPL_WHOISIDLE)
+    @event("commands", Numerics.RPL_WHOISIDLE)
     def whois_idle(self, caller, line):
         user = self.get_user(line.params[1])
         if not user:
@@ -631,7 +632,7 @@ class UserTrack(BaseExtension):
 
         user.signon = int(line.params[3])
 
-    @signal_event("commands", Numerics.RPL_WHOISOPERATOR)
+    @event("commands", Numerics.RPL_WHOISOPERATOR)
     def whois_operator(self, caller, line):
         user = self.get_user(line.params[1])
         if not user:
@@ -639,7 +640,7 @@ class UserTrack(BaseExtension):
 
         user.operator = True
 
-    @signal_event("commands", Numerics.RPL_WHOISSECURE)
+    @event("commands", Numerics.RPL_WHOISSECURE)
     def whois_secure(self, caller, line):
         user = self.get_user(line.params[1])
         if not user:
@@ -647,7 +648,7 @@ class UserTrack(BaseExtension):
 
         user.secure = True
 
-    @signal_event("commands", Numerics.RPL_WHOISSERVER)
+    @event("commands", Numerics.RPL_WHOISSERVER)
     def whois_server(self, caller, line):
         user = self.get_user(line.params[1])
         if not user:
@@ -656,7 +657,7 @@ class UserTrack(BaseExtension):
         user.server = line.params[2]
         user.server_desc = line.params[3]
 
-    @signal_event("commands", Numerics.RPL_WHOISLOGGEDIN)
+    @event("commands", Numerics.RPL_WHOISLOGGEDIN)
     def whois_account(self, caller, line):
         user = self.get_user(line.params[1])
         if not user:
@@ -672,7 +673,7 @@ class UserTrack(BaseExtension):
 
             del self.auth_cb[nick]
 
-    @signal_event("commands", Numerics.RPL_WHOREPLY)
+    @event("commands", Numerics.RPL_WHOREPLY)
     def who(self, caller, line):
         if len(line.params) < 8:
             # Some bizarre RFC breaking server
@@ -729,7 +730,7 @@ class UserTrack(BaseExtension):
         user.away = away
         user.operator = operator
 
-    @signal_event("commands", Numerics.RPL_WHOSPCRPL)
+    @event("commands", Numerics.RPL_WHOSPCRPL)
     def whox(self, caller, line):
         if len(line.params) != 12:
             # Not from us!

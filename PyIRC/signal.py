@@ -5,9 +5,37 @@
 
 
 from collections import defaultdict
+from inspect import getmembers
 
 from taillight.signal import Signal
 from taillight import ANY
+
+
+def event(name, priority=Signal.PRIORITY_NORMAL, listener=ANY):
+    """Tag a function as an event for later binding.
+
+    This function is a decorator.
+
+    :param name:
+        Name of the signal.
+
+    :param priority:
+        Priority of the signal
+
+    :param listener:
+        Listener of the signal.
+
+    """
+
+    def wrapped(function):
+        if not hasattr(function, '_signal'):
+            function._signal = list()
+
+        function._signal.append((name, priority, listener))
+
+        return function
+
+    return wrapped
 
 
 class SignalBase:
@@ -23,8 +51,9 @@ class SignalBase:
 
     """
 
-    signal_wrapped = defaultdict(list)
-    "A list of event-wrapped functions"
+    @staticmethod
+    def _signal_pred(member):
+        return hasattr(member, "_signal")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -34,22 +63,11 @@ class SignalBase:
             self.signals = defaultdict(Signal)
 
         self.signal_slots = []
-        for function, param in self.signal_wrapped.items():
-            signal = self.signals[name]
+        for function in getmembers(self, self._signal_pred):
+            param = function._signal
+            signal = self.signals[param[0]]
             self.signal_slots.append(signal.add(*param))
 
     def __contains__(self, name):
         return name in self.signals
 
-    @classmethod
-    def signal_event(cls, name, priority=Signal.PRIORITY_NORMAL,
-                     listener=ANY):
-        """The decorator to use for class members and signals."""
-
-        def wrapped(function):
-            l = cls.signal_wrapped[function]
-            l.append((name, priority, listener))
-            
-            return function
-
-        return wrapped

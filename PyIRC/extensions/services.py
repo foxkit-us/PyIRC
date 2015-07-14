@@ -11,6 +11,7 @@
 from logging import getLogger
 
 
+from PyIRC.signal import event
 from PyIRC.extension import BaseExtension
 
 
@@ -81,8 +82,8 @@ class ServicesLogin(BaseExtension):
 
         self.authenticated = False
 
-    @signal_event("commands", "NOTICE")
-    @signal_event("commands", "PRIVMSG")
+    @event("commands", "NOTICE")
+    @event("commands", "PRIVMSG")
     def authenticate(self, caller, line):
         if self.password is None:
             return

@@ -5,7 +5,7 @@ from IPython.terminal.embed import InteractiveShellEmbed
 from logging import basicConfig
 import sys
 
-from PyIRC.base import event
+from PyIRC.signal import event
 from PyIRC.io.socket import IRCSocket
 from PyIRC.extensions import bot_recommended
 

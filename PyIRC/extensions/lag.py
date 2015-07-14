@@ -13,7 +13,6 @@ except ImportError:
     from time import time
 
 
-from PyIRC.base import event
 from random import randint, choice
 from string import ascii_letters as letters, digits
 from logging import getLogger
@@ -75,7 +74,7 @@ class LagCheck(BaseExtension):
         self.send("PING", [s])
         self.timer = self.schedule(self.lagcheck, self.ping)
 
-    @event("hooks", "close")
+    @signal_event("hooks", "close")
     def close(self, caller):
         self.last = None
         self.lag = None
@@ -86,13 +85,13 @@ class LagCheck(BaseExtension):
             except ValueError:
                 pass
 
-    @event("commands", Numerics.RPL_WELCOME)
+    @signal_event("commands", Numerics.RPL_WELCOME)
     def start(self, caller, line):
         """Begin sending PING requests as soon as possible."""
 
         self.ping()
 
-    @event("commands", "PONG")
+    @signal_event("commands", "PONG")
     def pong(self, caller, line):
         """Use PONG reply to check lag."""
 

@@ -10,7 +10,6 @@
 from logging import getLogger
 
 
-from PyIRC.base import event
 from PyIRC.numerics import Numerics
 from PyIRC.extension import BaseExtension
 
@@ -49,7 +48,7 @@ class BasicRFC(BaseExtension):
         self.nick = self.base.nick
         self.registered = False
 
-    @event("hooks", "connected")
+    @signal_event("hooks", "connected")
     def handshake(self, caller):
         if not self.registered:
             if self.server_password:
@@ -59,21 +58,21 @@ class BasicRFC(BaseExtension):
             self.send("USER", [self.username, "*", "*",
                                self.gecos])
 
-    @event("hooks", "disconnected")
+    @signal_event("hooks", "disconnected")
     def disconnected(self, caller):
         self.connected = False
         self.registered = False
 
-    @event("commands", Numerics.RPL_HELLO)
-    @event("commands", "NOTICE")
+    @signal_event("commands", Numerics.RPL_HELLO)
+    @signal_event("commands", "NOTICE")
     def connected(self, caller, line):
         self.connected = True
 
-    @event("commands", "PING")
+    @signal_event("commands", "PING")
     def pong(self, caller, line):
         self.send("PONG", line.params)
 
-    @event("commands", "NICK")
+    @signal_event("commands", "NICK")
     def nick(self, caller, line):
         if line.hostmask.nick != self.nick:
             return
@@ -82,6 +81,6 @@ class BasicRFC(BaseExtension):
         self.prev_nick = self.nick
         self.nick = line.params[0]
 
-    @event("commands", Numerics.RPL_WELCOME)
+    @signal_event("commands", Numerics.RPL_WELCOME)
     def welcome(self, caller, line):
         self.registered = True

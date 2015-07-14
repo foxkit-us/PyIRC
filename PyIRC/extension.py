@@ -6,18 +6,16 @@
 
 from collections import OrderedDict, deque
 from functools import lru_cache
-from inspect import getmembers
 from logging import getLogger
 
-from taillight.slot import Slot
-
+from PyIRC.signal import SignalBase
 from PyIRC.extensions import ExtensionsDatabase
 
 
 _logger = getLogger(__name__)
 
 
-class BaseExtension:
+class BaseExtension(SignalBase):
 
     """The base class for extensions.
 
@@ -145,8 +143,6 @@ class ExtensionManager:
         """
         return self.db.get(extension)
 
-    _inspect_pred = lambda f: isinstance(f, Slot)
-
     def remove_extension(self, extension):
         """Remove a given extension by name.
 
@@ -168,8 +164,8 @@ class ExtensionManager:
             extension_inst = self.db.pop(name)
 
             # Prune the slots
-            for s in getmembers(extension_inst, self._inspect_pred):
-                s.delete(s)
+            for s in extension_inst.signal_slots:
+                s.signal.delete(s)
 
         result = len(extensions) > len(self.extensions)
         if result:

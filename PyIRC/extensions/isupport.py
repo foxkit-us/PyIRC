@@ -18,7 +18,6 @@ from functools import lru_cache
 from logging import getLogger
 
 
-from PyIRC.base import event
 from PyIRC.auxparse import isupport_parse
 from PyIRC.extension import BaseExtension
 from PyIRC.numerics import Numerics
@@ -88,11 +87,11 @@ class ISupport(BaseExtension):
         value = self.supported[string]
         return (True if value is None else value)
 
-    @event("hooks", "disconnected")
+    @signal_event("hooks", "disconnected")
     def close(self, caller):
         self.supported.clear()
 
-    @event("commands", Numerics.RPL_ISUPPORT)
+    @signal_event("commands", Numerics.RPL_ISUPPORT)
     def isupport(self, caller, line):
         """Handle ISUPPORT event."""
         # To differentiate between really old ircd servers

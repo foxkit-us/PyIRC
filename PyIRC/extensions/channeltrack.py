@@ -16,7 +16,6 @@ from functools import partial
 from logging import getLogger
 
 
-from PyIRC.base import event
 from PyIRC.casemapping import IRCDict, IRCDefaultDict
 from PyIRC.extension import BaseExtension
 from PyIRC.line import Hostmask
@@ -167,12 +166,12 @@ class ChannelTrack(BaseExtension):
 
         del self.channels[name]
 
-    @event("hooks", "case_change")
+    @signal_event("hooks", "case_change")
     def case_change(self, caller):
         self.channels = self.channels.convert(self.case)
         self.mode_timers = self.mode_timers.convert(self.case)
 
-    @event("hooks", "disconnected")
+    @signal_event("hooks", "disconnected")
     def close(self, caller):
         self.channels.clear()
         for timer in self.mode_timers.values():
@@ -181,7 +180,7 @@ class ChannelTrack(BaseExtension):
             except ValueError:
                 pass
 
-    @event("modes", "mode_prefix")
+    @signal_event("modes", "mode_prefix")
     def prefix(self, caller, setter, target, mode):
         # Parse into hostmask in case of usernames-in-host
         channel = self.get_channel(target)
@@ -196,9 +195,9 @@ class ChannelTrack(BaseExtension):
         else:
             channel.users[hostmask.nick].discard(mode.mode)
 
-    @event("modes", "mode_key")
-    @event("modes", "mode_param")
-    @event("modes", "mode_normal")
+    @signal_event("modes", "mode_key")
+    @signal_event("modes", "mode_param")
+    @signal_event("modes", "mode_normal")
     def modes(self, caller, setter, target, mode):
         channel = self.get_channel(target)
         if not channel:
@@ -209,7 +208,7 @@ class ChannelTrack(BaseExtension):
         else:
             channel.modes.pop(mode.mode, None)
 
-    @event("scope", "user_join")
+    @signal_event("scope", "user_join")
     def join(self, caller, scope):
         # JOIN event
         basicrfc = self.base.basic_rfc
@@ -219,7 +218,7 @@ class ChannelTrack(BaseExtension):
 
         self.burst(caller, scope)
 
-    @event("scope", "user_burst")
+    @signal_event("scope", "user_burst")
     def burst(self, caller, scope):
         # NAMES event
         channel = self.get_channel(scope.scope)
@@ -234,8 +233,8 @@ class ChannelTrack(BaseExtension):
         modes = {m[0] for m in scope.modes} if scope.modes else set()
         channel.users[user] = modes
 
-    @event("scope", "user_part")
-    @event("scope", "user_kick")
+    @signal_event("scope", "user_part")
+    @signal_event("scope", "user_kick")
     def part(self, caller, scope):
         channel = self.get_channel(scope.scope)
         assert channel
@@ -258,15 +257,15 @@ class ChannelTrack(BaseExtension):
 
         del channel.users[user]
 
-    @event("scope", "user_quit")
+    @signal_event("scope", "user_quit")
     def quit(self, caller, line):
         user = scope.target.nick
 
         for channel in self.channels.values():
             channel.users.pop(user, None)
 
-    @event("commands", Numerics.RPL_TOPIC)
-    @event("commands", "TOPIC")
+    @signal_event("commands", Numerics.RPL_TOPIC)
+    @signal_event("commands", "TOPIC")
     def topic(self, caller, line):
         if line.command.lower() == "topic":
             channel = self.get_channel(line.params[0])
@@ -279,7 +278,7 @@ class ChannelTrack(BaseExtension):
 
         channel.topic = line.params[-1]
 
-    @event("commands", Numerics.RPL_NOTOPIC)
+    @signal_event("commands", Numerics.RPL_NOTOPIC)
     def no_topic(self, caller, line):
         channel = self.get_channel(line.params[1])
         if not channel:
@@ -287,7 +286,7 @@ class ChannelTrack(BaseExtension):
 
         channel.topic = ''
 
-    @event("commands", Numerics.RPL_TOPICWHOTIME)
+    @signal_event("commands", Numerics.RPL_TOPICWHOTIME)
     def topic_who_time(self, caller, line):
         channel = self.get_channel(line.params[1])
         if not channel:
@@ -296,7 +295,7 @@ class ChannelTrack(BaseExtension):
         channel.topicwho = Hostmask.parse(line.params[2])
         channel.topictime = int(line.params[3])
 
-    @event("commands", Numerics.RPL_CHANNELURL)
+    @signal_event("commands", Numerics.RPL_CHANNELURL)
     def url(self, caller, line):
         channel = self.get_channel(line.params[1])
         if not channel:
@@ -304,7 +303,7 @@ class ChannelTrack(BaseExtension):
 
         channel.url = line.params[-1]
 
-    @event("commands", Numerics.RPL_CREATIONTIME)
+    @signal_event("commands", Numerics.RPL_CREATIONTIME)
     def timestamp(self, caller, line):
         channel = self.get_channel(line.params[1])
         if not channel:
@@ -320,7 +319,7 @@ class ChannelTrack(BaseExtension):
             except ValueError:
                 pass
 
-    @event("commands", Numerics.RPL_ENDOFNAMES)
+    @signal_event("commands", Numerics.RPL_ENDOFNAMES)
     def names_end(self, caller, line):
         channel = self.get_channel(line.params[1])
         if not channel:
@@ -330,7 +329,7 @@ class ChannelTrack(BaseExtension):
                                          [line.params[1]]))
         self.mode_timers[channel.name] = timer
 
-    @event("commands", "NICK")
+    @signal_event("commands", "NICK")
     def nick(self, caller, line):
         oldnick = line.hostmask.nick
         newnick = line.params[-1]

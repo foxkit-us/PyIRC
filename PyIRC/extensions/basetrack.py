@@ -18,7 +18,6 @@ from logging import getLogger
 from time import time
 
 
-from PyIRC.base import event
 from PyIRC.auxparse import mode_parse, prefix_parse, status_prefix_parse
 from PyIRC.extension import BaseExtension
 from PyIRC.line import Hostmask
@@ -102,7 +101,7 @@ class BaseTrack(BaseExtension):
 
         self.sent_protoctl = False
 
-    @event("commands", "JOIN")
+    @signal_event("commands", "JOIN")
     def join(self, caller, line):
         params = line.params
 
@@ -120,7 +119,7 @@ class BaseTrack(BaseExtension):
         scope = Scope(hostmask, channel, False, gecos=gecos, account=account)
         self.call_event("scope", "user_join", scope)
 
-    @event("commands", Numerics.RPL_NAMREPLY)
+    @signal_event("commands", Numerics.RPL_NAMREPLY)
     def names(self, caller, line):
         params = line.params
 
@@ -142,7 +141,7 @@ class BaseTrack(BaseExtension):
                 hostmask, channel, False, cause=line.hostmask, modes=modes)
             self.call_event("scope", "user_burst", scope)
 
-    @event("commands", "PART")
+    @signal_event("commands", "PART")
     def part(self, caller, line):
         params = line.params
 
@@ -153,7 +152,7 @@ class BaseTrack(BaseExtension):
                       cause=line.hostmask)
         self.call_event("scope", "user_part", scope)
 
-    @event("commands", "KICK")
+    @signal_event("commands", "KICK")
     def kick(self, caller, line):
         params = line.params
 
@@ -165,7 +164,7 @@ class BaseTrack(BaseExtension):
                       cause=line.hostmask)
         self.call_event("scope", "user_kick", scope)
 
-    @event("commands", "QUIT")
+    @signal_event("commands", "QUIT")
     def quit(self, caller, line):
         params = line.params
 
@@ -176,8 +175,8 @@ class BaseTrack(BaseExtension):
                       cause=line.hostmask)
         self.call_event("scope", "user_quit", scope)
 
-    @event("commands", Numerics.RPL_CHANNELMODEIS)
-    @event("commands", "MODE")
+    @signal_event("commands", Numerics.RPL_CHANNELMODEIS)
+    @signal_event("commands", "MODE")
     def mode(self, caller, line):
         # Offer an easy to use interface for mode
         isupport = self.base.isupport
@@ -213,8 +212,8 @@ class BaseTrack(BaseExtension):
             mode = Mode(mode, param, adding, None)
             self.call_event("modes", mode_call, line.hostmask, target, mode)
 
-    @event("commands", Numerics.RPL_ENDOFMOTD)
-    @event("commands", Numerics.ERR_NOMOTD)
+    @signal_event("commands", Numerics.RPL_ENDOFMOTD)
+    @signal_event("commands", Numerics.ERR_NOMOTD)
     def send_protoctl(self, caller, line):
         # Send the PROTOCTL NAMESX/UHNAMES stuff if we have to
         if self.sent_protoctl:
@@ -234,19 +233,19 @@ class BaseTrack(BaseExtension):
 
         self.sent_protoctl = True
 
-    @event("commands", Numerics.RPL_BANLIST)
+    @signal_event("commands", Numerics.RPL_BANLIST)
     def ban_list(self, caller, line):
         return self.handle_list(line, 'b')
 
-    @event("commands", Numerics.RPL_EXCEPTLIST)
+    @signal_event("commands", Numerics.RPL_EXCEPTLIST)
     def except_list(self, caller, line):
         return self.handle_list(line, 'e')
 
-    @event("commands", Numerics.RPL_INVITELIST)
+    @signal_event("commands", Numerics.RPL_INVITELIST)
     def invite_list(self, caller, line):
         return self.handle_list(line, 'I')
 
-    @event("commands", Numerics.RPL_QUIETLIST)
+    @signal_event("commands", Numerics.RPL_QUIETLIST)
     def quiet_list(self, caller, line):
         isupport = self.base.isupport
         if 'q' in isupport.get("PREFIX"):
@@ -259,19 +258,19 @@ class BaseTrack(BaseExtension):
 
         return self.handle_list(line, 'q')
 
-    @event("commands", Numerics.RPL_SPAMFILTERLIST)
+    @signal_event("commands", Numerics.RPL_SPAMFILTERLIST)
     def spamfilter_list(self, caller, line):
         return self.handle_list(line, 'g')
 
-    @event("commands", Numerics.RPL_EXEMPTCHANOPSLIST)
+    @signal_event("commands", Numerics.RPL_EXEMPTCHANOPSLIST)
     def exemptchanops_list(self, caller, line):
         return self.handle_list(line, 'X')
 
-    @event("commands", Numerics.RPL_AUTOOPLIST)
+    @signal_event("commands", Numerics.RPL_AUTOOPLIST)
     def autoop_list(self, caller, line):
         return self.handle_list(line, 'w')
 
-    @event("commands", Numerics.RPL_REOPLIST)
+    @signal_event("commands", Numerics.RPL_REOPLIST)
     def reop_list(self, caller, line):
         return self.handle_list(line, 'R')
 

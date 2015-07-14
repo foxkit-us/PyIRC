@@ -19,6 +19,7 @@ from logging import getLogger
 from taillight.signal import Signal
 from taillight import ANY
 
+from PyIRC.signal import SignalBase
 from PyIRC.casemapping import IRCString
 from PyIRC.line import Line
 from PyIRC.extension import ExtensionManager
@@ -39,21 +40,7 @@ class Event:
         self.cancelled = cancelled
 
 
-def event(hclass, ev, priority=Signal.PRIORITY_NORMAL, listener=ANY):
-    """A wrapper that creates a :py:class:`~taillight.signal.Signal` for the
-    given hclass and event.
-    
-    This function is a decorator.
-    
-    """
-    s = Signal((hclass, ev))
-    def wrapper(function):
-        return s.add(function, priority, listener)
-
-    return wrapper
-
-
-class IRCBase(metaclass=ABCMeta):
+class IRCBase(SignalBase, metaclass=ABCMeta):
 
     """The base IRC class meant to be used as a base for more concrete
     implementations.
@@ -102,6 +89,8 @@ class IRCBase(metaclass=ABCMeta):
             as-is to all extensions.
 
         """
+        super().__init__()
+
         self.server, self.port = serverport
         self.username = username
         self.nick = nick

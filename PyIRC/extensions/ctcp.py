@@ -10,7 +10,6 @@
 from logging import getLogger
 
 
-from PyIRC.base import event
 from PyIRC.extension import BaseExtension
 from PyIRC.auxparse import CTCPMessage
 from PyIRC.util.version import versionstr
@@ -56,7 +55,7 @@ class CTCP(BaseExtension):
 
         self.send(line.command, line.params)
 
-    @event("commands", "PRIVMSG")
+    @signal_event("commands", "PRIVMSG")
     def ctcp_in(self, caller, ctcp, line):
         """Check message for CTCP (incoming) and dispatch if necessary."""
         ctcp = CTCPMessage.parse(line)
@@ -66,7 +65,7 @@ class CTCP(BaseExtension):
         command = ctcp.command
         self.call_event("commands_ctcp", command, ctcp, line)
 
-    @event("commands", "NOTICE")
+    @signal_event("commands", "NOTICE")
     def nctcp_in(self, caller, line):
         """Check message for NCTCP (incoming) and dispatch if necessary."""
         ctcp = CTCPMessage.parse(line)
@@ -76,12 +75,12 @@ class CTCP(BaseExtension):
         command = ctcp.command
         self.call_event("commands_ctcp", command, ctcp, line)
 
-    @event("commands_ctcp", "ping")
+    @signal_event("commands_ctcp", "ping")
     def c_ping(self, caller, ctcp, line):
         """Respond to CTCP ping."""
         self.nctcp(ctcp.target, "PING", ctcp.param)
 
-    @event("commands_ctcp", "version")
+    @signal_event("commands_ctcp", "version")
     def c_version(self, caller, ctcp, line):
         """Respond to CTCP version."""
         self.nctcp(ctcp.target, "VERSION", self.version)

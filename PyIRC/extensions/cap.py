@@ -17,7 +17,6 @@ from logging import getLogger
 
 from taillight.signal import SignalStop
 
-from PyIRC.base import event
 from PyIRC.extension import BaseExtension
 from PyIRC.numerics import Numerics
 
@@ -104,7 +103,7 @@ class CapNegotiate(BaseExtension):
         else:
             return cap
 
-    @event("hooks", "connected", priority=-1000)
+    @signal_event("hooks", "connected", priority=-1000)
     def send_cap(self, caller):
         # This must come first!!! Even before USER/NICK!
         if not self.negotiating:
@@ -121,7 +120,7 @@ class CapNegotiate(BaseExtension):
         # Ensure no other connected events get fired
         raise SignalStop
 
-    @event("hooks", "disconnected")
+    @signal_event("hooks", "disconnected")
     def close(self, caller):
         if self.timer is not None:
             try:
@@ -133,7 +132,7 @@ class CapNegotiate(BaseExtension):
         self.remote.clear()
         self.local.clear()
 
-    @event("commands", "CAP")
+    @signal_event("commands", "CAP")
     def dispatch(self, caller, line):
         """Dispatch the CAP command."""
 
@@ -147,8 +146,8 @@ class CapNegotiate(BaseExtension):
         cap_command = line.params[1].lower()
         self.call_event("commands_cap", cap_command, line)
 
-    @event("commands_cap", "new")
-    @event("commands_cap", "ls")
+    @signal_event("commands_cap", "new")
+    @signal_event("commands_cap", "ls")
     def get_remote(self, caller, line):
         remote = self.extract_caps(line)
         self.remote.update(remote)
@@ -182,12 +181,12 @@ class CapNegotiate(BaseExtension):
                 _logger.debug("No CAPs to request!")
                 self.end(event)
 
-    @event("commands_cap", "list")
+    @signal_event("commands_cap", "list")
     def get_local(self, caller, line):
         self.local = caps = self.extract_caps(line)
         _logger.debug("CAPs active: %s", caps)
 
-    @event("commands_cap", "ack", priority=-1000)
+    @signal_event("commands_cap", "ack", priority=-1000)
     def ack(self, caller, line):
         # XXX - I forgot why this was low priority but I'm keeping it like
         # this until I can get a better look
@@ -209,12 +208,12 @@ class CapNegotiate(BaseExtension):
 
         self.call_event("cap_perform", "ack", line, caps)
 
-    @event("commands_cap", "nak")
+    @signal_event("commands_cap", "nak")
     def nak(self, caller, line):
         _logger.warn("Rejected CAPs: %s", line.params[-1].lower())
 
-    @event("commands_cap", "end")
-    @event("commands", Numerics.RPL_HELLO)
+    @signal_event("commands_cap", "end")
+    @signal_event("commands", Numerics.RPL_HELLO)
     def end(self, caller, line):
         _logger.debug("Ending CAP negotiation")
 

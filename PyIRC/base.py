@@ -175,10 +175,11 @@ class IRCBase(SignalBase, metaclass=ABCMeta):
 
         """
         signal = Signal((hclass, event))
-        if not signal.slots:
-            return []
-
         event = Event(signal.name, self)
+
+        if not signal.slots:
+            return (event, [])
+
         return (event, signal.call(event, *args, **kwargs))
 
     def connect(self):

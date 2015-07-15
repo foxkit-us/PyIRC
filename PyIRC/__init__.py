@@ -3,6 +3,5 @@
 # for licensing information.
 
 
-__all__ = ["auxparse", "base", "casemapping", "event", "extension",
-           "extensions", "formatting", "hook", "io", "line", "numerics",
-           "util"]
+__all__ = ["auxparse", "base", "casemapping", "extension", "extensions",
+           "formatting", "io", "line", "numerics", "signal", "util"]

@@ -51,7 +51,7 @@ class StartTLS(BaseExtension):
         self.tls_event = None
 
     @event("cap_perform", "ack", priority=-1000)
-    def starttls(self, caller, caps):
+    def starttls(self, caller, line, caps):
         # This must come before anything else in the chain
         if self.ssl:
             # Unnecessary

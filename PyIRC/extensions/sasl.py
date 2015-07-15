@@ -74,7 +74,7 @@ class SASLBase(BaseExtension):
         self.mechanisms.clear()
 
     @event("cap_perform", "ack", priority=100)
-    def auth(self, caller, caps):
+    def auth(self, caller, line, caps):
         # Lower priority to ensure STARTTLS comes before
         if "sasl" not in caps:
             return

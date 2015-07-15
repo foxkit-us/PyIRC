@@ -4,10 +4,9 @@
 # for licensing information.
 
 
-from collections import defaultdict
 from inspect import getmembers
 
-from taillight.signal import Signal
+from taillight.signal import UnsharedSignal
 from taillight import ANY
 
 try:
@@ -52,6 +51,12 @@ def event(hclass, event, priority=Signal.PRIORITY_NORMAL, listener=ANY):
     return wrapped
 
 
+class SignalDict(dict):
+    def __missing__(self, key):
+        value = self[key] = UnsharedSignal(key)
+        return value
+
+
 class SignalBase:
     """A helper class for scanning signals.
     
@@ -72,7 +77,7 @@ class SignalBase:
     def __init__(self):
         if not hasattr(self, "signals"):
             # This could be redirecting to another class
-            self.signals = defaultdict(Signal)
+            self.signals = SignalDict()
 
         self.signal_slots = []
         for (name, function) in getmembers(self, self._signal_pred):

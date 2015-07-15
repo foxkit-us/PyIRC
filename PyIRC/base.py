@@ -197,7 +197,7 @@ class IRCBase(SignalBase, metaclass=ABCMeta):
             A :class:`~PyIRC.line.Line` instance to recieve from the wire.
 
         """
-        command = line.command.lower()
+        command = line.command
 
         self.call_event("commands", command, line)
 

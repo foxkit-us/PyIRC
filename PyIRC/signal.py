@@ -10,6 +10,11 @@ from inspect import getmembers
 from taillight.signal import Signal
 from taillight import ANY
 
+try:
+    from enum import Enum
+except ImportError:
+    from PyIRC.util.enum import Enum
+
 
 def event(hclass, event, priority=Signal.PRIORITY_NORMAL, listener=ANY):
     """Tag a function as an event for later binding.
@@ -29,6 +34,10 @@ def event(hclass, event, priority=Signal.PRIORITY_NORMAL, listener=ANY):
         Listener of the signal.
 
     """
+
+    if hasattr(numerics, Enum):
+        # FIXME - workaround!
+        event = event.value
 
     name = (hclass, event)
 

@@ -106,7 +106,7 @@ class SASLBase(BaseExtension):
             services_login.authenticated = True
 
         cap_negotiate = self.base.cap_negotiate
-        self.resume_event("cap_peform", "ack")
+        self.resume_event("cap_perform", "ack")
 
     @event("commands", Numerics.ERR_SASLFAIL)
     @event("commands", Numerics.ERR_SASLTOOLONG)
@@ -115,7 +115,7 @@ class SASLBase(BaseExtension):
         _logger.info("SASL authentication failed as %s", self.username)
 
         cap_negotiate = self.base.cap_negotiate
-        self.resume_event("cap_peform", "ack")
+        self.resume_event("cap_perform", "ack")
 
     @event("commands", Numerics.ERR_SASLALREADY)
     def already(self, caller, line):

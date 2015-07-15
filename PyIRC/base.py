@@ -174,8 +174,10 @@ class IRCBase(SignalBase, metaclass=ABCMeta):
             This does not preserve the Event instance for deferred calls.
 
         """
-        signal = self.get_signal((hclass, event))
-        event = Event(signal.name, self)
+
+        signal_name = (hclass, event)
+        signal = self.get_signal(signal_name)
+        event = Event(signal_name, self)
 
         if not signal.slots:
             return (event, [])

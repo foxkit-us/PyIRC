@@ -48,12 +48,9 @@ class BanTrack(BaseExtension):
     requires = ["ISupport", "ChannelTrack", "BasicRFC"]
 
     @event("channel", "channel_create")
-    def join(self, caller, line):
-        params = line.params
+    def join(self, caller, channel):
         _logger.debug("Creating ban modes for channel %s",
-                      params[0])
-        channeltrack = self.base.channel_track
-        channel = channeltrack.get_channel(params[0])
+                      channel.name)
 
         channel.synced_list = dict()
 

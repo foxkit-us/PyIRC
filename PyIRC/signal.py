@@ -35,7 +35,7 @@ def event(hclass, event, priority=Signal.PRIORITY_NORMAL, listener=ANY):
 
     """
 
-    if hasattr(numerics, Enum):
+    if isinstance(event, Enum):
         # FIXME - workaround!
         event = event.value
 

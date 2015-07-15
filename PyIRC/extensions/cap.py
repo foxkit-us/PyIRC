@@ -77,6 +77,10 @@ class CapNegotiate(BaseExtension):
         # Timer for CAP disarm
         self.timer = None
 
+        # If we get an ACK whilst we are processing a previous one, it gets
+        # stored here.
+        self.ack_chains = list()
+
     @staticmethod
     def extract_caps(line):
         """Extract caps from a line."""
@@ -200,14 +204,27 @@ class CapNegotiate(BaseExtension):
                 caps.pop(cap, None)  # Just in case
                 continue
             elif cap.startswith(('=', '~')):
-                # Compatibility stuff
+                # Compatibility stuff, disregard
                 cap = cap[1:]
 
             assert cap in self.supported
             _logger.debug("Acknowledged CAP: %s", cap)
             caps[cap] = self.local[cap] = params
 
-        self.call_event("cap_perform", "ack", line, caps)
+        signal = self.signals.get_signal(("cap_perform", "ack"))
+        if signal.last_status == signal.SIGNAL_DEFERRED:
+            # We are still processing a previous chain
+            self.ack_chains.append((line, caps))
+        else:
+            self.call_event("cap_perform", "ack", line, caps)
+
+    @event("cap_perform", "ack", priority=10000)
+    def end_ack(self, caller, line, caps):
+        # This ACK chain has ended, go on to the next.
+        if self.ack_chains:
+            self.call_event("cap_perform", "ack", *self.ack_chains.pop(0))
+        else:
+            self.end(None, None)
 
     @event("commands_cap", "nak")
     def nak(self, caller, line):

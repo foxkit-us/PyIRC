@@ -69,6 +69,7 @@ class Scope:
 
     def __init__(self, target, scope=None, leaving=None, reason=None,
                  gecos=None, account=None, modes=[], cause=None):
+        self.target = target
         self.scope = scope
         self.leaving = leaving
         self.reason = reason

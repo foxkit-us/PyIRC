@@ -15,7 +15,7 @@ from PyIRC.extensions import ExtensionsDatabase
 _logger = getLogger(__name__)
 
 
-class BaseExtension(SignalBase):
+class BaseExtension:
 
     """The base class for extensions.
 
@@ -34,10 +34,7 @@ class BaseExtension(SignalBase):
             Base class for this method
 
         """
-        # This attribute MUST be set first (see __getattr__ hack below)
         self.base = base
-
-        super().__init__()
 
     def __getattr__(self, attr):
         if attr.startswith('_'):
@@ -118,6 +115,9 @@ class ExtensionManager:
             # Register extension
             self.db[extension_name] = extension_inst
 
+            # Bind the signals
+            self.base.signals.bind(extension_inst)
+
     def add_extension(self, extension):
         """Add an extension by class.
 
@@ -167,9 +167,7 @@ class ExtensionManager:
 
             extension_inst = self.db.pop(name)
 
-            # Prune the slots
-            for s in extension_inst.signal_slots:
-                s.signal.delete(s)
+            self.base.signals.unbind(extension_inst)
 
         result = len(extensions) > len(self.extensions)
         if result:

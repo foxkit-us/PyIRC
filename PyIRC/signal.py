@@ -4,6 +4,7 @@
 # for licensing information.
 
 
+from collections import defaultdict
 from inspect import getmembers
 from logging import getLogger
 
@@ -62,7 +63,7 @@ class SignalDict(dict):
         return value
 
 
-class SignalBase:
+class SignalStorage:
     """A helper class for scanning signals.
     
     Since bound methods belong to the class instances and not the class itself,
@@ -80,16 +81,19 @@ class SignalBase:
         return hasattr(member, "_signal")
 
     def __init__(self):
-        if not hasattr(self, "signals"):
-            # This could be redirecting to another class, hence the check.
-            _logger.debug("%r: creating new signal dict", self.__class__)
-            self.signals = SignalDict()
+        self.signals = SignalDict()
+        self.signal_slots = defaultdict(list)
 
-        self.signal_slots = []
-        for (name, function) in getmembers(self, self._signal_pred):
+    def bind(self, inst):
+        slots = self.signal_slots[id(inst)]
+        for (name, function) in getmembers(inst, self._signal_pred):
             for param in function._signal:
                 signal = self.get_signal(param[0])
-                self.signal_slots.append(signal.add(function, *param[1:]))
+                slots.append(signal.add(function, *param[1:]))
+
+    def unbind(self, inst):
+        for slot in self.signal_slots[id(inst)]:
+            slot.signal.delete(slot)
 
     def get_signal(self, name):
         return self.signals[name]

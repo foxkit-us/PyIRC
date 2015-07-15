@@ -16,7 +16,7 @@ binds everything together.
 from abc import ABCMeta, abstractmethod
 from logging import getLogger
 
-from PyIRC.signal import SignalBase
+from PyIRC.signal import SignalStorage
 from PyIRC.casemapping import IRCString
 from PyIRC.line import Line
 from PyIRC.extension import ExtensionManager
@@ -37,7 +37,7 @@ class Event:
         self.cancelled = cancelled
 
 
-class IRCBase(SignalBase, metaclass=ABCMeta):
+class IRCBase(metaclass=ABCMeta):
 
     """The base IRC class meant to be used as a base for more concrete
     implementations.
@@ -102,10 +102,15 @@ class IRCBase(SignalBase, metaclass=ABCMeta):
         self.registered = False
         self.case = IRCString.RFC1459
 
+        self.signals = SignalStorage()
+
         # Extension manager system
         if not extensions:
             raise ValueError("Need at least one extension")
         self.extensions = ExtensionManager(self, kwargs, extensions)
+
+        # Do the signal storage binding for us now
+        self.signals.bind(self)
 
     def case_change(self):
         """Change server casemapping semantics.

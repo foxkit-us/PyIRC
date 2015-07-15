@@ -5,6 +5,7 @@
 
 
 from inspect import getmembers
+from logging import getLogger
 
 from taillight.signal import UnsharedSignal
 from taillight import ANY
@@ -13,6 +14,9 @@ try:
     from enum import Enum
 except ImportError:
     from PyIRC.util.enum import Enum
+
+
+_logger = getLogger(__name__)
 
 
 def event(hclass, event, priority=Signal.PRIORITY_NORMAL, listener=ANY):
@@ -76,7 +80,8 @@ class SignalBase:
 
     def __init__(self):
         if not hasattr(self, "signals"):
-            # This could be redirecting to another class
+            # This could be redirecting to another class, hence the check.
+            _logger.debug("%r: creating new signal dict", self.__class__)
             self.signals = SignalDict()
 
         self.signal_slots = []

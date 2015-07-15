@@ -34,6 +34,8 @@ class BaseExtension(SignalBase):
             Base class for this method
 
         """
+        super().__init__(self, base, **kwargs)
+
         self.base = base
 
     def __getattr__(self, attr):
@@ -79,6 +81,7 @@ class ExtensionManager:
                            for e in extensions]
 
         self.db = OrderedDict()
+        self.create_db()
 
     def create_db(self):
         """Build the extensions database."""

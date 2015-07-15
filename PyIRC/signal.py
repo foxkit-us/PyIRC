@@ -11,7 +11,7 @@ from taillight.signal import Signal
 from taillight import ANY
 
 
-def event(name, priority=Signal.PRIORITY_NORMAL, listener=ANY):
+def event(hclass, event, priority=Signal.PRIORITY_NORMAL, listener=ANY):
     """Tag a function as an event for later binding.
 
     This function is a decorator.
@@ -26,7 +26,7 @@ def event(name, priority=Signal.PRIORITY_NORMAL, listener=ANY):
         Listener of the signal.
 
     """
-
+    name = (hclass, event)
     def wrapped(function):
         if not hasattr(function, '_signal'):
             function._signal = list()
@@ -56,17 +56,18 @@ class SignalBase:
         return hasattr(member, "_signal")
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        #super().__init__(*args, **kwargs)
 
-        if not hasattr(self, "signals"):
+        if not hasattr(self, "_signals"):
             # This could be redirecting to another class
-            self.signals = defaultdict(Signal)
+            self._signals = dict()
 
         self.signal_slots = []
-        for function in getmembers(self, self._signal_pred):
+        for (name, function) in getmembers(self, self._signal_pred):
             param = function._signal
-            signal = self.signals[param[0]]
-            self.signal_slots.append(signal.add(*param))
+            signal = self._signals.get(param[0], Signal(param[0]))
+            self.signal_slots.append(signal.add(function, *param))
+            print("signal: {}".format(repr(signal)))
 
     def __contains__(self, name):
         return name in self.signals

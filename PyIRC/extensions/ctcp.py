@@ -57,7 +57,7 @@ class CTCP(BaseExtension):
         self.send(line.command, line.params)
 
     @event("commands", "PRIVMSG")
-    def ctcp_in(self, caller, ctcp, line):
+    def ctcp_in(self, caller, line):
         """Check message for CTCP (incoming) and dispatch if necessary."""
         ctcp = CTCPMessage.parse(line)
         if not ctcp:

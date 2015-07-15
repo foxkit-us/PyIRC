@@ -8,7 +8,6 @@ from collections import OrderedDict, deque
 from functools import lru_cache
 from logging import getLogger
 
-from PyIRC.signal import SignalBase
 from PyIRC.extensions import ExtensionsDatabase
 
 

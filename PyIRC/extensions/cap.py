@@ -212,7 +212,7 @@ class CapNegotiate(BaseExtension):
             caps[cap] = self.local[cap] = params
 
         signal = self.signals.get_signal(("cap_perform", "ack"))
-        if signal.last_status == signal.SIGNAL_DEFERRED:
+        if signal.last_status == signal.STATUS_DEFER:
             # We are still processing a previous chain
             self.ack_chains.append((line, caps))
         else:

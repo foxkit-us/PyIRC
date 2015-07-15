@@ -181,7 +181,7 @@ class IRCBase(metaclass=ABCMeta):
         """
 
         signal_name = (hclass, event)
-        signal = self.get_signal(signal_name)
+        signal = self.signals.get_signal(signal_name)
         event = Event(signal_name, self)
 
         if not signal.slots:
@@ -201,7 +201,7 @@ class IRCBase(metaclass=ABCMeta):
             tuple, if the event is deferred; else it returns None.
 
         """
-        signal = self.get_signal((hclass, event))
+        signal = self.signals.get_signal((hclass, event))
 
         if signal.last_status != signal.STATUS_DEFER:
             return

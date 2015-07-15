@@ -16,9 +16,6 @@ binds everything together.
 from abc import ABCMeta, abstractmethod
 from logging import getLogger
 
-from taillight.signal import Signal
-from taillight import ANY
-
 from PyIRC.signal import SignalBase
 from PyIRC.casemapping import IRCString
 from PyIRC.line import Line
@@ -173,16 +170,36 @@ class IRCBase(SignalBase, metaclass=ABCMeta):
             An (:py:class:`~PyIRC.base.Event`, return values from events)
             tuple.
 
-        """
+        .. warning::
+            This does not preserve the Event instance for deferred calls.
 
-        name = (hclass, event)
-        signal = self.signals[name]
-        event = Event(name, self)
+        """
+        signal = self.get_signal((hclass, event))
+        event = Event(signal.name, self)
 
         if not signal.slots:
             return (event, [])
 
         return (event, signal.call(event, *args, **kwargs))
+
+    def resume_event(self, hclass, event):
+        """Resume a deferred event.
+
+        This is a small wrapper around
+        :py:meth:`~PyIRC.base.IRCBase.call_event`, but checks that the signal
+        is deferred.
+        
+        :returns:
+            An (:py:class:`~PyIRC.base.Event`, return values from events)
+            tuple, if the event is deferred; else it returns None.
+
+        """
+        signal = self.get_signal((hclass, event))
+
+        if signal.last_status != signal.STATUS_DEFER:
+            return
+
+        return self.call_event(hclass, event) 
 
     def connect(self):
         """Do the connection handshake."""

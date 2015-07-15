@@ -71,15 +71,11 @@ class StartTLS(BaseExtension):
         self.wrap_ssl()
 
         cap_negotiate = self.base.cap_negotiate
-        signal = Signal(("cap_perform", "ack"))
-        if signal.last_status == signal.STATUS_DEFER:
-            self.call_event("cap_perform", "ack")
+        self.resume_event("cap_perform", "ack")
 
     @event("commands", Numerics.ERR_STARTTLS)
     def abort(self, caller, line):
         _logger.critical("STARTTLS initiation failed, connection not secure")
 
         cap_negotiate = self.base.cap_negotiate
-        signal = Signal(("cap_perform", "ack"))
-        if signal.last_status == signal.STATUS_DEFER:
-            self.call_event("cap_perform", "ack")
+        self.resume_event("cap_perform", "ack")

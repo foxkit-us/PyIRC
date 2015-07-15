@@ -106,10 +106,7 @@ class SASLBase(BaseExtension):
             services_login.authenticated = True
 
         cap_negotiate = self.base.cap_negotiate
-
-        signal = Signal(("cap_perform", "ack"))
-        if signal.last_status == signal.STATUS_DEFER:
-            self.call_event("cap_perform", "ack")
+        self.resume_event("cap_peform", "ack")
 
     @event("commands", Numerics.ERR_SASLFAIL)
     @event("commands", Numerics.ERR_SASLTOOLONG)
@@ -118,9 +115,7 @@ class SASLBase(BaseExtension):
         _logger.info("SASL authentication failed as %s", self.username)
 
         cap_negotiate = self.base.cap_negotiate
-        signal = Signal(("cap_perform", "ack"))
-        if signal.last_status == signal.STATUS_DEFER:
-            self.call_event("cap_perform", "ack")
+        self.resume_event("cap_peform", "ack")
 
     @event("commands", Numerics.ERR_SASLALREADY)
     def already(self, caller, line):

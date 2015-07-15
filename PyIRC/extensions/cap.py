@@ -114,7 +114,7 @@ class CapNegotiate(BaseExtension):
 
         self.send("CAP", ["LS", self.version])
 
-        self.timer = self.schedule(15, partial(self.end, event))
+        self.timer = self.schedule(15, partial(self.end, None, None))
 
         self.negotiating = True
 

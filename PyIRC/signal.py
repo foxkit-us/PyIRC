@@ -55,9 +55,7 @@ class SignalBase:
     def _signal_pred(member):
         return hasattr(member, "_signal")
 
-    def __init__(self, *args, **kwargs):
-        #super().__init__(*args, **kwargs)
-
+    def __init__(self):
         if not hasattr(self, "_signals"):
             # This could be redirecting to another class
             self._signals = dict()

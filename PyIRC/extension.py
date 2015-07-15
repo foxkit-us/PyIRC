@@ -34,8 +34,7 @@ class BaseExtension(SignalBase):
             Base class for this method
 
         """
-        super().__init__(self, base, **kwargs)
-
+        super().__init__()
         self.base = base
 
     def __getattr__(self, attr):

@@ -16,8 +16,11 @@ def event(hclass, event, priority=Signal.PRIORITY_NORMAL, listener=ANY):
 
     This function is a decorator.
 
-    :param name:
-        Name of the signal.
+    :param hclass:
+        Name of the event class.
+
+    :param event:
+        Name of the event.
 
     :param priority:
         Priority of the signal
@@ -26,7 +29,9 @@ def event(hclass, event, priority=Signal.PRIORITY_NORMAL, listener=ANY):
         Listener of the signal.
 
     """
+
     name = (hclass, event)
+
     def wrapped(function):
         if not hasattr(function, '_signal'):
             function._signal = list()
@@ -62,10 +67,10 @@ class SignalBase:
 
         self.signal_slots = []
         for (name, function) in getmembers(self, self._signal_pred):
-            param = function._signal
-            signal = self._signals.get(param[0], Signal(param[0]))
-            self.signal_slots.append(signal.add(function, *param))
-            print("signal: {}".format(repr(signal)))
+            for param in function._signal:
+                signal_name = param[0]
+                signal = self._signals.get(signal_name, Signal(signal_name))
+                self.signal_slots.append(signal.add(function, *param[1:]))
 
     def __contains__(self, name):
         return name in self.signals

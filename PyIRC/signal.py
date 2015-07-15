@@ -70,15 +70,15 @@ class SignalBase:
         return hasattr(member, "_signal")
 
     def __init__(self):
-        if not hasattr(self, "_signals"):
+        if not hasattr(self, "signals"):
             # This could be redirecting to another class
-            self._signals = dict()
+            self.signals = defaultdict(Signal)
 
         self.signal_slots = []
         for (name, function) in getmembers(self, self._signal_pred):
             for param in function._signal:
                 signal_name = param[0]
-                signal = self._signals.get(signal_name, Signal(signal_name))
+                signal = self.signals[signal_name]
                 self.signal_slots.append(signal.add(function, *param[1:]))
 
     def __contains__(self, name):

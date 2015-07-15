@@ -174,8 +174,10 @@ class IRCBase(SignalBase, metaclass=ABCMeta):
             tuple.
 
         """
-        signal = Signal((hclass, event))
-        event = Event(signal.name, self)
+
+        name = (hclass, event)
+        signal = self.signals[name]
+        event = Event(name, self)
 
         if not signal.slots:
             return (event, [])

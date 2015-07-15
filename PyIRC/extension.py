@@ -34,8 +34,10 @@ class BaseExtension(SignalBase):
             Base class for this method
 
         """
-        super().__init__()
+        # This attribute MUST be set first (see __getattr__ hack below)
         self.base = base
+
+        super().__init__()
 
     def __getattr__(self, attr):
         if attr.startswith('_'):

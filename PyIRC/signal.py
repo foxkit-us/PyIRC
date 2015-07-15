@@ -77,10 +77,11 @@ class SignalBase:
         self.signal_slots = []
         for (name, function) in getmembers(self, self._signal_pred):
             for param in function._signal:
-                signal_name = param[0]
-                signal = self.signals[signal_name]
+                signal = self.get_signal(param[0])
                 self.signal_slots.append(signal.add(function, *param[1:]))
+
+    def get_signal(self, name):
+        return self.signals[name]
 
     def __contains__(self, name):
         return name in self.signals
-

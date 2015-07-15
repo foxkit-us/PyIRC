@@ -19,7 +19,8 @@ except ImportError:
 _logger = getLogger(__name__)
 
 
-def event(hclass, event, priority=Signal.PRIORITY_NORMAL, listener=ANY):
+def event(hclass, event, priority=UnsharedSignal.PRIORITY_NORMAL,
+          listener=ANY):
     """Tag a function as an event for later binding.
 
     This function is a decorator.

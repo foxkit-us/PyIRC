@@ -184,30 +184,32 @@ the same functionality in base.
 
 Note all extensions are optional, and you are free to implement your own.
 
-Hooks
-^^^^^
+Signals
+^^^^^^^
 
-Hooks are used in PyIRC to allow runtime behaviour of the program to be
-modified. IRC is a very stateful protocol, with numerous non-standard
-extensions, often incompatible with one another. Others also require a very
-strict ordering of events.
+IRC is a very stateful protocol, with a myriad of non-standard extensions that
+require a very complex chain of events to be implemented in an exacting order.
+For example, STARTTLS must be executed after the capability is reported by the
+server, but before we tell the server our username, nickname, and password (to
+avoid information leaks). However, the CAP extension needed for this may not be
+available at all!
 
-Hooks are organised into broad classes, which define a specific Event subclass
-as the event instance they pass to the hooks. Parameters to the hooks are
-passed via this subclass. The Event subclass will always have at least the
-status and cancelled_func members. When the event is set to cancelled by the
-callee, the event caller will set cancelled_func to the last function to run.
-Other data can be passed in via this instance as well.
+To facilitate this mess, PyIRC uses the concept of signals and slots as
+implemented by taillight_. The signals are fired as ``(hookclass, event)``,
+and are unique per connection. The hook class describes the broad class of
+event that is occurring (command, commands_ctcp, etc). It is a sort of
+virtual namespace for the event that is being fired, to avoid conflicts.
 
-Nothing limits a callback to one event class or hook. This is why event
-instances are passed as the sole parameter - one callback can handle any type
-of event.
+Naturally, these signals can be called, suspended, and resumed. This is used
+to implement the complex state machine required for modern IRC. The semantics
+for this are essentially those as used in taillight, except for one exception:
+always call :py:meth:`~PyIRC.base.IRCBase.call_event` and
+:py:meth:`~PyIRC.base.IRCBase.call_resume`, since asyncio and normal sockets
+differ in how these are implemented (don't worry, the I/O system handles the
+difference for you).
 
-Hooks are created in extensions using the @hook decorator and a metaclass in
-BaseExtensions known as HookGenerator. This builds hook tables that are later
-scanned to add events that can be called later.
-
-Hooks can be removed or added at any time to modify runtime functionality.
+Individual slots and even entire signals, of course, can be removed. See also
+:py:class:`~PyIRC.signal.SignalBase` and its methods.
 
 Base
 ^^^^
@@ -284,3 +286,4 @@ Yes, it's that easy. No fuss, no muss.
 
 .. _WHOX: http://faerion.sourceforge.net/doc/irc/whox.var
 
+.. _taillight: http://github.com/Elizafox/taillight

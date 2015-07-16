@@ -259,7 +259,7 @@ class ChannelTrack(BaseExtension):
         del channel.users[user]
 
     @event("scope", "user_quit")
-    def quit(self, caller, line):
+    def quit(self, caller, scope):
         user = scope.target.nick
 
         for channel in self.channels.values():

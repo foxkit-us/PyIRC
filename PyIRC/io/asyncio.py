@@ -57,7 +57,7 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
         # Sadly we are not compatible with StartTLS because of a deficiency in
         # Python 3.4/3.5. See https://bugs.python.org/issue23749
         # Once it's fixed, it's okay to remove this whole __init__ function.
-        if self.extensions.remove_extension("StartTLS"):
+        if self.unload_extension("StartTLS"):
             _logger.critical("Removing StartTLS extension due to asyncio " \
                              "limitations")
 

@@ -5,30 +5,33 @@
 # for licensing information.
 
 
-"""Automatic SSL negotiation
+"""Automatic SSL negotiation.
 
-It's a little like the ESMTP STARTTLS command, but the server does not forget
-all of the client state after it is issued. Therefore, it should be issued as
-quickly as possible.
+It's a little like the ESMTP STARTTLS command, but the server does not
+forget all of the client state after it is issued. Therefore, it should
+be issued as quickly as possible.
+
 """
 
 
 from logging import getLogger
 
+from taillight.signal import SignalDefer
+
+from PyIRC.signal import event
 from PyIRC.extension import BaseExtension
-from PyIRC.hook import hook, PRIORITY_FIRST
-from PyIRC.event import EventState
 from PyIRC.numerics import Numerics
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class StartTLS(BaseExtension):
 
-    """ Support for the STARTTLS extension.
+    """Support for the STARTTLS extension.
 
     Not all I/O backends support this, notably :py:class:`~PyIRC.io.asyncio`.
+
     """
 
     requires = ["CapNegotiate"]
@@ -43,12 +46,13 @@ class StartTLS(BaseExtension):
                 "tls": [],
             }
 
-    @hook("hooks", "disconnected")
-    def close(self, event):
+    @event("hooks", "disconnected")
+    def close(self, caller):
         self.tls_event = None
 
-    @hook("cap_perform", "ack", PRIORITY_FIRST)
-    def starttls(self, event):
+    @event("cap_perform", "ack", priority=-1000)
+    def starttls(self, caller, line, caps):
+        # This must come before anything else in the chain
         if self.ssl:
             # Unnecessary
             return
@@ -56,22 +60,22 @@ class StartTLS(BaseExtension):
         if self.tls_event:
             return
 
-        if "tls" in event.caps:
+        if "tls" in caps:
             self.tls_event = event
             self.send("STARTTLS", None)
-            event.status = EventState.pause
+            raise SignalDefer()
 
-    @hook("commands", Numerics.RPL_STARTTLS)
-    def wrap(self, event):
-        logger.info("Performing STARTTLS initiation...")
+    @event("commands", Numerics.RPL_STARTTLS)
+    def wrap(self, caller, line):
+        _logger.info("Performing STARTTLS initiation...")
         self.wrap_ssl()
 
         cap_negotiate = self.base.cap_negotiate
-        cap_negotiate.cont(self.tls_event)
+        self.resume_event("cap_perform", "ack")
 
-    @hook("commands", Numerics.ERR_STARTTLS)
-    def abort(self, event):
-        logger.critical("STARTTLS initiation failed, connection not secure")
+    @event("commands", Numerics.ERR_STARTTLS)
+    def abort(self, caller, line):
+        _logger.critical("STARTTLS initiation failed, connection not secure")
 
         cap_negotiate = self.base.cap_negotiate
-        cap_negotiate.cont(self.tls_event)
+        self.resume_event("cap_perform", "ack")

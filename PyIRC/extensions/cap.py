@@ -15,31 +15,19 @@ http://ircv3.atheme.org/specification/capability-negotiation-3.1
 from functools import partial
 from logging import getLogger
 
+from taillight.signal import SignalStop
+
+from PyIRC.signal import event
 from PyIRC.extension import BaseExtension
-from PyIRC.hook import hook, PRIORITY_FIRST
-from PyIRC.event import EventState, LineEvent
 from PyIRC.numerics import Numerics
 
 
-logger = getLogger(__name__)
-
-
-class CAPEvent(LineEvent):
-
-    """A CAP ACK/NEW event"""
-
-    def __init__(self, event, line, caps):
-        super().__init__(event, line)
-        self.caps = caps
-
-    @staticmethod
-    def key(k):
-        return k.lower()
+_logger = getLogger(__name__)
 
 
 class CapNegotiate(BaseExtension):
 
-    """ Basic CAP negotiation
+    """Basic CAP negotiation.
 
     IRCv3.2 negotiation is attempted, but earlier specifications will be used
     in a backwards compatible manner.
@@ -61,18 +49,13 @@ class CapNegotiate(BaseExtension):
 
     :ivar negotiating:
         Whether or not CAP negotiation is in progress.
+
     """
 
-    priority = PRIORITY_FIRST
     requires = ["BasicRFC"]
 
     """ Presently supported maximum CAP version. """
     version = "302"
-
-    hook_classes = {
-        "commands_cap": LineEvent,
-        "cap_perform": CAPEvent,
-    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -94,12 +77,13 @@ class CapNegotiate(BaseExtension):
         # Timer for CAP disarm
         self.timer = None
 
-        # pending ACK's to finish
-        self.ack_chains = set()
+        # If we get an ACK whilst we are processing a previous one, it gets
+        # stored here.
+        self.ack_chains = list()
 
     @staticmethod
     def extract_caps(line):
-        """ Extract caps from a line """
+        """Extract caps from a line."""
 
         caps = line.params[-1].split()
         caps = (CapNegotiate.parse_cap(cap) for cap in caps)
@@ -107,7 +91,7 @@ class CapNegotiate(BaseExtension):
 
     @staticmethod
     def parse_cap(string):
-        """ Parse a capability string """
+        """Parse a capability string."""
 
         cap, sep, param = string.partition('=')
         if not sep:
@@ -117,31 +101,32 @@ class CapNegotiate(BaseExtension):
 
     @staticmethod
     def create_str(cap, params):
-        """ Create a capability string """
+        """Create a capability string."""
 
         if params:
             return "{}={}".format(cap, ','.join(params))
         else:
             return cap
 
-    @hook("hooks", "connected")
-    def send_cap(self, event):
+    @event("hooks", "connected", priority=-1000)
+    def send_cap(self, caller):
+        # This must come first!!! Even before USER/NICK!
         if not self.negotiating:
             return
 
-        logger.debug("Requesting CAP list")
+        _logger.debug("Requesting CAP list")
 
         self.send("CAP", ["LS", self.version])
 
-        self.timer = self.schedule(15, partial(self.end, event))
+        self.timer = self.schedule(15, partial(self.end, None, None))
 
         self.negotiating = True
 
         # Ensure no other connected events get fired
-        event.status = EventState.cancel
+        raise SignalStop
 
-    @hook("hooks", "disconnected")
-    def close(self, event):
+    @event("hooks", "disconnected")
+    def close(self, caller):
         if self.timer is not None:
             try:
                 self.unschedule(self.timer)
@@ -152,9 +137,9 @@ class CapNegotiate(BaseExtension):
         self.remote.clear()
         self.local.clear()
 
-    @hook("commands", "CAP")
-    def dispatch(self, event):
-        """ Dispatch the CAP command """
+    @event("commands", "CAP")
+    def dispatch(self, caller, line):
+        """Dispatch the CAP command."""
 
         if self.timer is not None:
             try:
@@ -163,13 +148,13 @@ class CapNegotiate(BaseExtension):
                 pass
             self.timer = None
 
-        cap_command = event.line.params[1].lower()
-        self.call_event("commands_cap", cap_command, event.line)
+        cap_command = line.params[1].lower()
+        self.call_event("commands_cap", cap_command, line)
 
-    @hook("commands_cap", "new")
-    @hook("commands_cap", "ls")
-    def get_remote(self, event):
-        remote = self.extract_caps(event.line)
+    @event("commands_cap", "new")
+    @event("commands_cap", "ls")
+    def get_remote(self, caller, line):
+        remote = self.extract_caps(line)
         self.remote.update(remote)
 
         extensions = self.extensions
@@ -194,48 +179,61 @@ class CapNegotiate(BaseExtension):
 
             if supported:
                 caps = ' '.join(supported)
-                logger.debug("Requesting caps: %s", caps)
+                _logger.debug("Requesting caps: %s", caps)
                 self.send("CAP", ["REQ", caps])
             else:
                 # Negotiaton ends, no caps
-                logger.debug("No CAPs to request!")
+                _logger.debug("No CAPs to request!")
                 self.end(event)
 
-    @hook("commands_cap", "list")
-    def get_local(self, event):
-        self.local = caps = extract_caps(event.line)
-        logger.debug("CAPs active: %s", caps)
+    @event("commands_cap", "list")
+    def get_local(self, caller, line):
+        self.local = caps = self.extract_caps(line)
+        _logger.debug("CAPs active: %s", caps)
 
-    @hook("commands_cap", "ack")
-    def ack(self, event):
+    @event("commands_cap", "ack", priority=-1000)
+    def ack(self, caller, line):
+        # XXX - I forgot why this was low priority but I'm keeping it like
+        # this until I can get a better look
         caps = dict()
-        for cap, params in self.extract_caps(event.line).items():
+        for cap, params in self.extract_caps(line).items():
             if cap.startswith('-'):
                 cap = cap[1:]
-                logger.debug("CAP removed: %s", cap)
+                _logger.debug("CAP removed: %s", cap)
                 self.local.pop(cap, None)
                 caps.pop(cap, None)  # Just in case
                 continue
             elif cap.startswith(('=', '~')):
-                # Compatibility stuff
+                # Compatibility stuff, disregard
                 cap = cap[1:]
 
             assert cap in self.supported
-            logger.debug("Acknowledged CAP: %s", cap)
+            _logger.debug("Acknowledged CAP: %s", cap)
             caps[cap] = self.local[cap] = params
 
-        event = self.call_event("cap_perform", "ack", event.line, caps)
-        if event.status != EventState.ok:
-            self.ack_chains.add(event)
+        signal = self.signals.get_signal(("cap_perform", "ack"))
+        if signal.last_status == signal.STATUS_DEFER:
+            # We are still processing a previous chain
+            self.ack_chains.append((line, caps))
+        else:
+            self.call_event("cap_perform", "ack", line, caps)
 
-    @hook("commands_cap", "nak")
-    def nak(self, event):
-        logger.warn("Rejected CAPs: %s", event.line.params[-1].lower())
+    @event("cap_perform", "ack", priority=10000)
+    def end_ack(self, caller, line, caps):
+        # This ACK chain has ended, go on to the next.
+        if self.ack_chains:
+            self.call_event("cap_perform", "ack", *self.ack_chains.pop(0))
+        else:
+            self.end(None, None)
 
-    @hook("commands_cap", "end")
-    @hook("commands", Numerics.RPL_HELLO)
-    def end(self, event):
-        logger.debug("Ending CAP negotiation")
+    @event("commands_cap", "nak")
+    def nak(self, caller, line):
+        _logger.warn("Rejected CAPs: %s", line.params[-1].lower())
+
+    @event("commands_cap", "end")
+    @event("commands", Numerics.RPL_HELLO)
+    def end(self, caller, line):
+        _logger.debug("Ending CAP negotiation")
 
         if self.timer is not None:
             try:
@@ -252,7 +250,7 @@ class CapNegotiate(BaseExtension):
         self.call_event("hooks", "connected")
 
     def register(self, cap, params=list(), replace=False):
-        """Register that we support a specific CAP
+        """Register that we support a specific CAP.
 
         :param cap:
             The capability to register support for
@@ -262,6 +260,7 @@ class CapNegotiate(BaseExtension):
 
         :param replace:
             Replace existing CAP report, if present
+
         """
         if replace or cap not in self.supported:
             self.supported[cap] = params
@@ -273,16 +272,6 @@ class CapNegotiate(BaseExtension):
 
         :param cap:
             Capability to remove
+
         """
         self.supported.pop(cap, None)
-
-    def cont(self, event):
-        """Continue negotiation of caps"""
-        # Reset event status
-        event.status = EventState.ok
-        self.call_event_inst("cap_perform", "ack", event)
-        if event.status == EventState.ok:
-            self.ack_chains.discard(event)
-            if not self.ack_chains and self.negotiating:
-                # No more chains.
-                self.end(event)

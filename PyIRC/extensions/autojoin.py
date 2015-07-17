@@ -5,26 +5,30 @@
 # for licensing information.
 
 
-""" Join channels on connection automatically """
+"""Join channels on connection automatically."""
 
 
 from collections.abc import Mapping
 from functools import partial
 
+
+from PyIRC.signal import event
 from PyIRC.extension import BaseExtension
-from PyIRC.hook import hook
-from PyIRC.event import EventState
 from PyIRC.numerics import Numerics
 
 
 class AutoJoin(BaseExtension):
 
-    """ This extension will autojoin the channels you specify, without flooding
-    off the network.  The initial delay to first join and delay between each
-    successive channel is customisable. """
+    """This extension will autojoin the channels you specify, without flooding
+    off the network.
+
+    The initial delay to first join and delay between each successive
+    channel is customisable.
+
+    """
 
     def __init__(self, *args, **kwargs):
-        """ Initialise the AutoJoin extension.
+        """Initialise the AutoJoin extension.
 
         :key join:
             A Mapping (dictionary type) or Iterable of channels to join.
@@ -40,6 +44,7 @@ class AutoJoin(BaseExtension):
         :key autojoin_wait_interval:
             How much time, in seconds, to wait between each join.
             The default is 0.25 seconds.
+
         """
         super().__init__(*args, **kwargs)
 
@@ -63,8 +68,8 @@ class AutoJoin(BaseExtension):
         self.send("JOIN", params)
         self.sched.pop(0)
 
-    @hook("commands", Numerics.RPL_WELCOME)
-    def autojoin(self, event):
+    @event("commands", Numerics.RPL_WELCOME)
+    def autojoin(self, caller, line):
         # Should be sufficient for end of MOTD and such
         t = self.wait_start
 
@@ -79,8 +84,8 @@ class AutoJoin(BaseExtension):
 
             t += self.wait_interval
 
-    @hook("hooks", "disconnected")
-    def close(self, event):
+    @event("hooks", "disconnected")
+    def close(self, caller):
         for sched in self.sched:
             try:
                 self.unschedule(sched)

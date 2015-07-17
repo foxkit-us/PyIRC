@@ -9,7 +9,9 @@
 
 These are the actual things that make PyIRC do things. They implement various
 commands and allow new features to be easily added to the library in a
-backwards-compatible way."""
+backwards-compatible way.
+
+"""
 
 
 from collections import UserDict
@@ -22,6 +24,7 @@ __all__ = ["autojoin", "bantrack", "basetrack", "basicapi", "basicrfc", "cap",
 
 
 class ExtensionsDatabase(UserDict):
+
     """A helper to late-bind extensions to avoid unnecessary imports and
     bloat"""
 
@@ -45,14 +48,14 @@ class ExtensionsDatabase(UserDict):
     }
 
     def lookup_module(self, extension):
-        """Lookup a module for import"""
+        """Lookup a module for import."""
         module = self._default_ext_mods[extension]
         return import_module("PyIRC.extensions." + module)
 
     def __missing__(self, item):
         try:
             module = self.lookup_module(item)
-        except KeyError:
+        except KeyError as e:
             error = "No such module in the database: {}".format(item)
             raise KeyError(error) from e
 
@@ -72,4 +75,3 @@ ircv3_recommended = base_recommended + ["CapNegotiate", "SASLPlain",
 bot_recommended = ircv3_recommended + ["BanTrack", "ChannelTrack", "LagCheck",
                                        "ServicesLogin", "UserTrack"]
 """Recommended extensions for bots"""
-

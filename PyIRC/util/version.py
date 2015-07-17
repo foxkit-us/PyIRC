@@ -4,7 +4,7 @@
 # for licensing information.
 
 
-"""PyIRC version information"""
+"""PyIRC version information."""
 
 
 try:

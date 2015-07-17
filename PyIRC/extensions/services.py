@@ -5,21 +5,22 @@
 # for licensing information.
 
 
-""" Utilities for interacting with IRC services """
+"""Utilities for interacting with IRC services."""
 
 
 from logging import getLogger
 
+
+from PyIRC.signal import event
 from PyIRC.extension import BaseExtension
-from PyIRC.hook import hook
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class ServicesLogin(BaseExtension):
 
-    """ Support services login.
+    """Support services login.
 
     Use of this module is discouraged. Use the SASL module if at all
     possible. It is not possible to know if our authentication was
@@ -34,10 +35,11 @@ class ServicesLogin(BaseExtension):
 
     This extension adds ``base.services_login` as itself as an alias for
     ``get_extension("ServicesLogin").``.
+
     """
 
     def __init__(self, *args, **kwargs):
-        """ Initalise the ServicesLogin extension.
+        """Initalise the ServicesLogin extension.
 
         :key services_username:
             The username to use for authentication.
@@ -58,6 +60,7 @@ class ServicesLogin(BaseExtension):
             Command to use to authenticate. Defaults to PRIVMSG, but
             NS/NICKSERV are recommended for networks that support it for some
             improved security.
+
         """
         super().__init__(*args, **kwargs)
 
@@ -79,17 +82,17 @@ class ServicesLogin(BaseExtension):
 
         self.authenticated = False
 
-    @hook("commands", "NOTICE")
-    @hook("commands", "PRIVMSG")
-    def authenticate(self, event):
+    @event("commands", "NOTICE")
+    @event("commands", "PRIVMSG")
+    def authenticate(self, caller, line):
         if self.password is None:
             return
 
         if self.authenticated or not self.registered:
             return
 
-        logger.debug("Authenticating to services bot %s with username %s",
-                     self.services_bot, self.username)
+        _logger.debug("Authenticating to services bot %s with username %s",
+                      self.services_bot, self.username)
 
         if self.services_command.lower() in ("PRIVMSG", "NOTICE"):
             self.send(self.services_command, [self.services_bot,

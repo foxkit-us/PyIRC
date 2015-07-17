@@ -20,14 +20,14 @@ format. Until that day comes, this needs to be here.
 from collections import namedtuple
 from functools import lru_cache
 from logging import getLogger
-from re import compile, escape
+from re import compile
 from string import ascii_letters, digits
 from types import SimpleNamespace
 
 from PyIRC.line import Line, Hostmask
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 prefix_match = compile(r"\(([A-Za-z0-9]+)\)(.+)")
@@ -67,11 +67,12 @@ def banmask_parse(string, supported_extban):
     if not hostmask:
         return ret
 
-    ret.nick, ret.user, ret.host = hostmask.nick, hostmask.user, hostmask.host
+    ret.nick, ret.user, ret.host = (hostmask.nick, hostmask.username,
+                                    hostmask.host)
     return ret
 
 
-ParsedPrefix = namedtuple("ParsedPrefix", "mode_to_prefix prefix_to_mode") 
+ParsedPrefix = namedtuple("ParsedPrefix", "mode_to_prefix prefix_to_mode")
 
 
 @lru_cache(maxsize=16)
@@ -117,7 +118,7 @@ def prefix_parse(prefix):
 
 
 def mode_parse(modes, params, modegroups, prefix):
-    """ Parse IRC mode strings
+    """Parse IRC mode strings.
 
     A generator that yields (modechar, param, adding).  param may be `None`.
     `adding` will either be `True` or `False`, depending on what is happening
@@ -150,6 +151,7 @@ def mode_parse(modes, params, modegroups, prefix):
     >>> prefixmodes = prefix_parse(prefixmodes)
     >>> f(mode_parse("+ov-v", ("a", "b", "c"), modegroups, prefixmodes))
     [('o', 'a', True), ('v', 'b', True), ('v', 'c', False)]
+
     """
     if isinstance(prefix, ParsedPrefix):
         prefix = prefix.mode_to_prefix
@@ -184,7 +186,7 @@ def mode_parse(modes, params, modegroups, prefix):
 
 
 def status_prefix_parse(string, prefix):
-    """ Parse a string containing status sigils.
+    """Parse a string containing status sigils.
 
     :param string:
         Nick or channel containing leading sigils.
@@ -205,6 +207,7 @@ def status_prefix_parse(string, prefix):
     >>> modes, channel = status_prefix_parse("@+#", "(ov)@+")
     >>> sorted(modes), channel
     (['o', 'v'], '#')
+
     """
     if isinstance(prefix, ParsedPrefix):
         prefix = prefix.prefix_to_mode
@@ -222,7 +225,7 @@ def status_prefix_parse(string, prefix):
 
 @lru_cache(maxsize=32)
 def who_flag_parse(flags):
-    """ Parse WHO flags.
+    """Parse WHO flags.
 
     :param flags:
         Flags to parse.
@@ -238,6 +241,7 @@ def who_flag_parse(flags):
 
         :modes:
             A set of the user's present modes (prefixes).
+
     """
     ret = SimpleNamespace(operator=False, away=False, modes=set())
     ret.operator = False
@@ -252,7 +256,7 @@ def who_flag_parse(flags):
         elif char not in numletters:
             ret.modes.add(char)
         else:
-            logger.debug("No known way to handle WHO flag %s", char)
+            _logger.debug("No known way to handle WHO flag %s", char)
 
     return ret
 
@@ -273,6 +277,7 @@ def userhost_parse(mask):
 
         :away:
             Whether or not the user is away.
+
     """
     if not mask:
         raise ValueError("Need a mask to parse")
@@ -298,7 +303,7 @@ def userhost_parse(mask):
         username = None
 
     ret.hostmask = Hostmask(nick=nick, username=username, host=host)
-    
+
     return ret
 
 
@@ -328,7 +333,7 @@ def isupport_parse(params):
         key, _, value = param.partition('=')
 
         if not value:
-            logger.debug("ISUPPORT [k]: %s", key)
+            _logger.debug("ISUPPORT [k]: %s", key)
             supported[key] = True
             continue
 
@@ -362,7 +367,7 @@ def isupport_parse(params):
         else:
             supported[key] = True
 
-        logger.debug("ISUPPORT [k:v]: %s:%r", key, supported[key])
+        _logger.debug("ISUPPORT [k:v]: %s:%r", key, supported[key])
 
     return supported
 
@@ -400,6 +405,7 @@ class CTCPMessage:
 
         :param param:
             The param(s) of the CTCP message, with no parsing attempted.
+
         """
         self.msgtype = msgtype
         self.command = command

@@ -17,7 +17,7 @@ This also serves as a useful example.
 import socket
 import ssl
 
-from time import sleep
+#from time import sleep
 from sched import scheduler
 from logging import getLogger
 
@@ -25,7 +25,7 @@ from PyIRC.base import IRCBase
 from PyIRC.line import Line
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class IRCSocket(IRCBase):
@@ -50,6 +50,7 @@ class IRCSocket(IRCBase):
     :key family:
         The family to use for the socket (default AF_INET, IPv4). Set to
         socket.AF_INET6 for IPv6 usage.
+
     """
 
     def connect(self):
@@ -100,20 +101,22 @@ class IRCSocket(IRCBase):
 
         for line in lines:
             line = Line.parse(line.decode('utf-8', 'ignore'))
-            logger.debug("IN: %s", str(line).rstrip())
+            _logger.debug("IN: %s", str(line).rstrip())
             super().recv(line)
 
     def loop(self):
         """Simple loop for bots.
 
-        Does not return, but raises exception when the connection is closed.
+        Does not return, but raises exception when the connection is
+        closed.
+
         """
         self.connect()
 
         while True:
             try:
                 self.recv()
-            except OSError as e:
+            except OSError:
                 # Connection closed
                 self.close()
                 raise
@@ -127,7 +130,7 @@ class IRCSocket(IRCBase):
         if self.socket.send(bytes(line)) == 0:
             raise OSError("Connection reset by peer")
 
-        logger.debug("OUT: %s", str(line).rstrip())
+        _logger.debug("OUT: %s", str(line).rstrip())
 
     def schedule(self, time, callback):
         return self.scheduler.enter(time, 0, callback)

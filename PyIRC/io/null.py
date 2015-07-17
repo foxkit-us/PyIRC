@@ -3,24 +3,28 @@
 # for licensing information.
 
 
-""" A null backend, used for testing purposes.  No connections are made. """
+"""A null backend, used for testing purposes.
+
+No connections are made.
+
+"""
 
 
 from logging import getLogger
 from queue import Empty, Queue
 from sched import scheduler
-from time import sleep
+#from time import sleep
 
 from PyIRC.base import IRCBase
 from PyIRC.line import Line
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class NullSocket(IRCBase):
 
-    """ The fake socket implementation of the IRC protocol. """
+    """The fake socket implementation of the IRC protocol."""
 
     def connect(self):
         self.scheduler = scheduler()
@@ -37,24 +41,24 @@ class NullSocket(IRCBase):
             raise OSError('Connection reset by test.')
 
         line = self.recvq.get()
-        logger.debug("IN: %s", str(line).rstrip())
+        _logger.debug("IN: %s", str(line).rstrip())
         super().recv(line)
 
         return
 
     def inject_line(self, line):
-        """ Inject a Line into the recvq for the client. """
+        """Inject a Line into the recvq for the client."""
         assert isinstance(Line, line)
         self.recvq.put(line)
 
     def loop(self):
-        """ Simple loop, unchanged from IRCSocket. """
+        """Simple loop, unchanged from IRCSocket."""
         self.connect()
 
         while True:
             try:
                 self.recv()
-            except OSError as e:
+            except OSError:
                 # Connection closed
                 self.close()
                 raise
@@ -68,20 +72,25 @@ class NullSocket(IRCBase):
             raise OSError("Connection reset by peer")
 
         self.sendq.put(line)
-        logger.debug("OUT: %s", str(line).rstrip())
+        _logger.debug("OUT: %s", str(line).rstrip())
 
     def draw_line(self):
-        """ Draw the earliest Line in the sendq from the client.
+        """Draw the earliest Line in the sendq from the client.
 
-        Returns None if there are no lines currently in the sendq. """
+        Returns None if there are no lines currently in the sendq.
+
+        """
         try:
             return self.sendq.get()
         except Empty:
             return None
 
     def reset_connection(self):
-        """ Emulate a server forcibly disconnecting the client.  Maybe useful
-        for ERROR or QUIT. """
+        """Emulate a server forcibly disconnecting the client.
+
+        Maybe useful for ERROR or QUIT.
+
+        """
         self.disconnect_on_next = True
 
     def schedule(self, time, callback):
@@ -91,7 +100,11 @@ class NullSocket(IRCBase):
         self.scheduler.cancel(sched)
 
     def wrap_ssl(self):
-        """ Mock wrapping SSL.  Not sure if this is even useful. """
+        """Mock wrapping SSL.
+
+        Not sure if this is even useful.
+
+        """
         if self.ssl:
             # Wrapped already
             return False

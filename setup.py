@@ -11,7 +11,7 @@ long_description = (
 )
 
 setup(name="PyIRC",
-      version="3.0a2",
+      version="3.0a3",
       description="A Python IRC library",
       long_description=long_description,
       keywords="IRC chat development",
@@ -19,6 +19,7 @@ setup(name="PyIRC",
       author_email="elizabeth@interlinked.me",
       url="https://elizafox.github.io/PyIRC",
       packages=["PyIRC", "PyIRC.extensions", "PyIRC.util", "PyIRC.io"],
+      install_requires=["taillight >= 0.2b3"],
       classifiers=[
           "Development Status :: 3 - Alpha",
           "Intended Audience :: Developers",

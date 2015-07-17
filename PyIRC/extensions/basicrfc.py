@@ -4,22 +4,23 @@
 # for licensing information.
 
 
-""" Bare minimum IRC RFC standards support """
+"""Bare minimum IRC RFC standards support."""
 
 
 from logging import getLogger
 
+
+from PyIRC.signal import event
 from PyIRC.numerics import Numerics
 from PyIRC.extension import BaseExtension
-from PyIRC.hook import hook, PRIORITY_LAST
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class BasicRFC(BaseExtension):
 
-    """ Basic RFC1459 support.
+    """Basic RFC1459 support.
 
     This is basically just a module that ensures your bot doesn't time out and
     can track its own nick. Nobody is making you use this implementation, but
@@ -36,8 +37,8 @@ class BasicRFC(BaseExtension):
         will be stored here. Useful in case of services collisions that change
         our nick, SANICK/FORCENICK operator abuse, or another extension
         changes our nick.
+
     """
-    priority = PRIORITY_LAST
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -46,40 +47,41 @@ class BasicRFC(BaseExtension):
 
         self.prev_nick = None
         self.nick = self.base.nick
+        self.registered = False
 
-    @hook("hooks", "connected")
-    def handshake(self, event):
+    @event("hooks", "connected")
+    def handshake(self, caller):
         if not self.registered:
             if self.server_password:
                 self.send("PASS", [self.server_password])
 
             self.send("NICK", [self.nick])
             self.send("USER", [self.username, "*", "*",
-                                    self.gecos])
+                               self.gecos])
 
-    @hook("hooks", "disconnected")
-    def disconnected(self, event):
+    @event("hooks", "disconnected")
+    def disconnected(self, caller):
         self.connected = False
         self.registered = False
 
-    @hook("commands", Numerics.RPL_HELLO)
-    @hook("commands", "NOTICE")
-    def connected(self, event):
+    @event("commands", Numerics.RPL_HELLO)
+    @event("commands", "NOTICE")
+    def connected(self, caller, line):
         self.connected = True
 
-    @hook("commands", "PING")
-    def pong(self, event):
-        self.send("PONG", event.line.params)
+    @event("commands", "PING")
+    def pong(self, caller, line):
+        self.send("PONG", line.params)
 
-    @hook("commands", "NICK")
-    def nick(self, event):
-        if event.line.hostmask.nick != self.nick:
+    @event("commands", "NICK")
+    def nick(self, caller, line):
+        if line.hostmask.nick != self.nick:
             return
 
         # Set nick
         self.prev_nick = self.nick
-        self.nick = event.line.params[0]
+        self.nick = line.params[0]
 
-    @hook("commands", Numerics.RPL_WELCOME)
-    def welcome(self, event):
+    @event("commands", Numerics.RPL_WELCOME)
+    def welcome(self, caller, line):
         self.registered = True

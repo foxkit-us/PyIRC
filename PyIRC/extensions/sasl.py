@@ -5,39 +5,40 @@
 # for licensing information.
 
 
-"""Identification to services
+"""Identification to services.
 
 SASL is a mechanism used by IRCv3 to authenticate clients to services in a
 standard and user-friendly way. A variety of mechanisms are supported by most
 servers, but only PLAIN is supported by this module at the moment.
+
 """
 
 
 from logging import getLogger
-from base64 import b64encode, b64decode
+from base64 import b64encode
 
+from taillight.signal import SignalStop, SignalDefer
+
+from PyIRC.signal import event
 from PyIRC.extension import BaseExtension
-from PyIRC.hook import hook, PRIORITY_FIRST
-from PyIRC.event import EventState
 from PyIRC.numerics import Numerics
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class SASLBase(BaseExtension):
 
-    """ Base SASL support. Does nothing on its own.
+    """Base SASL support. Does nothing on its own.
 
     :ivar mechanisms:
         Mechanisms supported by the server
 
     :ivar authenticated:
         Whether or not we are authenticated to services
+
     """
 
-    # We should come after things like STARTTLS
-    priority = PRIORITY_FIRST + 5
     requires = ["CapNegotiate"]
 
     method = None
@@ -50,7 +51,6 @@ class SASLBase(BaseExtension):
         self.username = kwargs.get("sasl_username")
         self.password = kwargs.get("sasl_password")
 
-        self.cap_event = None
         self.authenticated = False
 
     @property
@@ -62,21 +62,21 @@ class SASLBase(BaseExtension):
             return None
         elif not cap_negotiate.remote["sasl"]:
             # 3.1 style SASL
-            logger.debug("Registering old-style SASL capability")
+            _logger.debug("Registering old-style SASL capability")
             return {"sasl" : []}
         else:
             # 3.2 style SASL
-            logger.debug("Registering new-style SASL capability")
+            _logger.debug("Registering new-style SASL capability")
             return {"sasl" : [m.method for m in SASLBase.__subclasses__()]}
 
-    @hook("hooks", "disconnected")
-    def close(self, event):
+    @event("hooks", "disconnected")
+    def close(self, caller):
         self.mechanisms.clear()
-        self.cap_event = None
 
-    @hook("cap_perform", "ack")
-    def auth(self, event):
-        if self.cap_event or "sasl" not in event.caps:
+    @event("cap_perform", "ack", priority=100)
+    def auth(self, caller, line, caps):
+        # Lower priority to ensure STARTTLS comes before
+        if "sasl" not in caps:
             return
         elif self.method is None:
             raise NotImplementedError("Need an authentication method!")
@@ -92,17 +92,11 @@ class SASLBase(BaseExtension):
         self.send("AUTHENTICATE", [self.method])
 
         # Defer end of CAP
-        self.cap_event = event
-        event.status = EventState.pause
+        raise SignalDefer()
 
-    @hook("commands_cap", "end")
-    def end_cap(self, event):
-        # A quick n' dirty hack used to rearm cap_event
-        self.cap_event = None
-
-    @hook("commands", Numerics.RPL_SASLSUCCESS)
-    def success(self, event):
-        logger.info("SASL authentication succeeded as %s", self.username)
+    @event("commands", Numerics.RPL_SASLSUCCESS)
+    def success(self, caller, line):
+        _logger.info("SASL authentication succeeded as %s", self.username)
 
         self.authenticated = True
 
@@ -112,48 +106,46 @@ class SASLBase(BaseExtension):
             services_login.authenticated = True
 
         cap_negotiate = self.base.cap_negotiate
-        cap_negotiate.cont(self.cap_event)
+        self.resume_event("cap_perform", "ack")
 
-    @hook("commands", Numerics.ERR_SASLFAIL)
-    @hook("commands", Numerics.ERR_SASLTOOLONG)
-    @hook("commands", Numerics.ERR_SASLABORTED)
-    def fail(self, event):
-        logger.info("SASL authentication failed as %s", self.username)
+    @event("commands", Numerics.ERR_SASLFAIL)
+    @event("commands", Numerics.ERR_SASLTOOLONG)
+    @event("commands", Numerics.ERR_SASLABORTED)
+    def fail(self, caller, line):
+        _logger.info("SASL authentication failed as %s", self.username)
 
         cap_negotiate = self.base.cap_negotiate
-        cap_negotiate.cont(self.cap_event)
+        self.resume_event("cap_perform", "ack")
 
-    @hook("commands", Numerics.ERR_SASLALREADY)
-    def already(self, event):
-        logger.critical("Tried to log in twice, this shouldn't happen!")
+    @event("commands", Numerics.ERR_SASLALREADY)
+    def already(self, caller, line):
+        _logger.critical("Tried to log in twice, this shouldn't happen!")
 
-        if self.cap_event and self.cap_event.pause_state:
-            # Paused, keep going
-            self.fail(event)
-
-    @hook("commands", Numerics.RPL_SASLMECHS)
-    def get_mechanisms(self, event):
-        self.mechanisms = set(event.line.params[1].lower().split(','))
-        logger.info("Supported SASL mechanisms: %r", self.mechanisms)
+    @event("commands", Numerics.RPL_SASLMECHS)
+    def get_mechanisms(self, caller, line):
+        self.mechanisms = set(line.params[1].lower().split(','))
+        _logger.info("Supported SASL mechanisms: %r", self.mechanisms)
 
 
 class SASLPlain(SASLBase):
 
-    """ PLAIN authentication. No security or encryption is performed on the
-    string sent to the server, but still suitable for use over TLS. """
+    """PLAIN authentication.
 
-    # Least preferred auth method
-    priority = PRIORITY_FIRST + 10
+    No security or encryption is performed on the string sent to the
+    server, but still suitable for use over TLS.
+
+    """
 
     method = "PLAIN"
 
-    @hook("commands", "AUTHENTICATE")
-    def authenticate(self, event):
-        """ Implement the plaintext authentication method """
+    @event("commands", "AUTHENTICATE", priority=250)
+    def authenticate(self, caller, line):
+        """Implement the plaintext authentication method."""
+        # Priority is arbitrary atm, but should be the least preferred auth
+        # method if more are implemented
+        _logger.info("Logging in with PLAIN method as %s", self.username)
 
-        logger.info("Logging in with PLAIN method as %s", self.username)
-
-        if event.line.params[-1] != '+':
+        if line.params[-1] != '+':
             return
 
         # Generate the string for sending
@@ -168,4 +160,4 @@ class SASLPlain(SASLBase):
             self.send("AUTHENTICATE", [l])
 
         # Stop other auth methods.
-        event.status = EventState.cancel
+        raise SignalStop

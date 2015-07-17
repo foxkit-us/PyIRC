@@ -17,15 +17,16 @@ from logging import getLogger
 from PyIRC.extension import BaseExtension
 
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 class BasicAPI(BaseExtension):
 
     """Basic API functions, designed to make things easier to use.
-    
+
     This extension adds ``base.basicapi`` as itself as an alias for
     ``get_extension("basicapi").``.
+
     """
 
     requires = ["ISupport"]
@@ -51,6 +52,7 @@ class BasicAPI(BaseExtension):
 
         .. warning::
             Use notice judiciously, as many users find them irritating!
+
         """
         if hasattr(target, "name"):
             # channel
@@ -71,6 +73,7 @@ class BasicAPI(BaseExtension):
 
         :returns:
             Target to reply to
+
         """
         isupport = self.base.isupport
 
@@ -107,6 +110,7 @@ class BasicAPI(BaseExtension):
         :param topic:
             Topic to set in channel. Will unset the topic if set to None or
             the empty string.
+
         """
         if hasattr(channel, "name"):
             channel = channel.name
@@ -117,7 +121,7 @@ class BasicAPI(BaseExtension):
         self.send("TOPIC", [channel, topic])
 
     def mode_params(self, add, mode, target, *args):
-        """Set modes on a channel with a given target list.
+        r"""Set modes on a channel with a given target list.
 
         This is suitable for mass bans/unbans, special status modes, and more.
 
@@ -136,6 +140,7 @@ class BasicAPI(BaseExtension):
         :param \*args:
             Targets or params for modes. Can be either
             :py:class:`~PyIRC.extensions.usertrack.User` instances or strings.
+
         """
         if not args:
             raise ValueError("args are needed for this function")
@@ -172,12 +177,12 @@ class BasicAPI(BaseExtension):
         flag = '+' if add else '-'
         for group in groups:
             modes = flag + (mode * len(group))
-            params = [channel, flag + (mode * len(group))]
+            params = [target, flag + (mode * len(group))]
             params.extend(group)
             self.send("MODE", params)
 
     def op(self, channel, *args):
-        """Op a user (or users) on a given channel.
+        r"""Op a user (or users) on a given channel.
 
         :param channel:
             Channel to op the user or users in. This can be a
@@ -187,6 +192,7 @@ class BasicAPI(BaseExtension):
         :param \*args:
             Users to op. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or strings.
+
         """
         if not args:
             raise ValueError("args are needed for this function")
@@ -194,7 +200,7 @@ class BasicAPI(BaseExtension):
         self.mode_params(True, 'o', channel, *args)
 
     def deop(self, channel, *args):
-        """Deop a user (or users) on a given channel.
+        r"""Deop a user (or users) on a given channel.
 
         :param channel:
             Channel to deopop the user or users in. This can be a
@@ -204,6 +210,7 @@ class BasicAPI(BaseExtension):
         :param \*args:
             Users to deop. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or strings.
+
         """
         if not args:
             raise ValueError("args are needed for this function")
@@ -211,7 +218,7 @@ class BasicAPI(BaseExtension):
         self.mode_params(False, 'o', channel, *args)
 
     def voice(self, channel, *args):
-        """Voice a user (or users) on a given channel.
+        r"""Voice a user (or users) on a given channel.
 
         :param channel:
             Channel to voice the user or users in. This can be a
@@ -221,6 +228,7 @@ class BasicAPI(BaseExtension):
         :param \*args:
             Users to voice. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or strings.
+
         """
         if not args:
             raise ValueError("args are needed for this function")
@@ -228,7 +236,7 @@ class BasicAPI(BaseExtension):
         self.mode_params(True, 'v', channel, *args)
 
     def devoice(self, channel, *args):
-        """Devoice a user (or users) on a given channel.
+        r"""Devoice a user (or users) on a given channel.
 
         :param channel:
             Channel to devoice the user or users in. This can be a
@@ -238,6 +246,7 @@ class BasicAPI(BaseExtension):
         :param \*args:
             Users to devoice. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or strings.
+
         """
         if not args:
             raise ValueError("args are needed for this function")
@@ -245,7 +254,7 @@ class BasicAPI(BaseExtension):
         self.mode_params(False, 'v', channel, *args)
 
     def halfop(self, channel, *args):
-        """Halfop a user (or users) on a given channel.
+        r"""Halfop a user (or users) on a given channel.
 
         This may not be supported by your IRC server. Notably, FreeNode,
         EfNet, and IRCNet do not support this.
@@ -258,6 +267,7 @@ class BasicAPI(BaseExtension):
         :param \*args:
             Users to halfop. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or strings.
+
         """
         if not args:
             raise ValueError("args are needed for this function")
@@ -265,7 +275,7 @@ class BasicAPI(BaseExtension):
         self.mode_params(True, 'h', channel, *args)
 
     def dehalfop(self, channel, *args):
-        """Dehalfop a user (or users) on a given channel.
+        r"""Dehalfop a user (or users) on a given channel.
 
         This may not be supported by your IRC server. Notably, FreeNode,
         EfNet, and IRCNet do not support this.
@@ -278,6 +288,7 @@ class BasicAPI(BaseExtension):
         :param \*args:
             Users to dehalfop. Can be
             :py:class:`~PyIRC.extensions.usertrack.User` instances or strings.
+
         """
         if not args:
             raise ValueError("args are needed for this function")
@@ -293,6 +304,7 @@ class BasicAPI(BaseExtension):
             bans. The fallback is ``*!*@host``. This may not be suitable for
             all uses. It is recommended more advanced users use strings
             instead of User instances.
+
         """
         if not args:
             raise ValueError("args are needed for this function")
@@ -324,7 +336,7 @@ class BasicAPI(BaseExtension):
         return params
 
     def ban(self, channel, *args):
-        """Ban a user (or users) on a given channel.
+        r"""Ban a user (or users) on a given channel.
 
         :param channel:
             Channel to ban the user or users in. This can be a
@@ -337,11 +349,12 @@ class BasicAPI(BaseExtension):
 
         .. note::
             All items are passed through :meth:`process_bantargs`.
+
         """
         self.mode_params(True, 'b', channel, *self.process_bantargs(*args))
 
     def unban(self, channel, *args):
-        """Unban a user (or users) on a given channel.
+        r"""Unban a user (or users) on a given channel.
 
         Note at present this is not reliable if User instances are passed in.
         This is an unfortunate side effect of the way IRC works (ban masks may
@@ -359,11 +372,12 @@ class BasicAPI(BaseExtension):
 
         .. note::
             All items are passed through :meth:`process_bantargs`.
+
         """
         self.mode_params(False, 'b', channel, *self.process_bantargs(*args))
 
     def banexempt(self, channel, *args):
-        """Exempt a user (or users) from being banned on a given channel.
+        r"""Exempt a user (or users) from being banned on a given channel.
 
         Most (but not all) servers support this. IRCNet notably does not.
 
@@ -378,6 +392,7 @@ class BasicAPI(BaseExtension):
 
         .. note::
             All items are passed through :meth:`process_bantargs`.
+
         """
         isupport = self.base.isupport
         if isupport and not (isupport.get("EXCEPTS") or 'e' in
@@ -387,7 +402,7 @@ class BasicAPI(BaseExtension):
         self.mode_params(True, 'e', channel, *self.process_bantargs(*args))
 
     def unbanexempt(self, channel, *args):
-        """Un-exempt a user (or users) from being banned on a given channel.
+        r"""Un-exempt a user (or users) from being banned on a given channel.
 
         Most (but not all) servers support this. IRCNet notably does not.
 
@@ -416,7 +431,7 @@ class BasicAPI(BaseExtension):
         self.mode_params(False, 'e', channel, *self.process_bantargs(*args))
 
     def inviteexempt(self, channel, *args):
-        """Invite exempt a user (or users) on a given channel.
+        r"""Invite exempt a user (or users) on a given channel.
 
         Most (but not all) servers support this. IRCNet notably does not.
 
@@ -431,6 +446,7 @@ class BasicAPI(BaseExtension):
 
         .. note::
             All items are passed through :meth:`process_bantargs`.
+
         """
         isupport = self.base.isupport
         if isupport and not (isupport.get("EXCEPTS") or 'I' in
@@ -440,7 +456,7 @@ class BasicAPI(BaseExtension):
         self.mode_params(True, 'I', channel, *self.process_bantargs(*args))
 
     def uninviteexempt(self, channel, *args):
-        """Un-invite exempt a user (or users) on a given channel.
+        r"""Un-invite exempt a user (or users) on a given channel.
 
         Most (but not all) servers support this. IRCNet notably does not.
 
@@ -469,7 +485,7 @@ class BasicAPI(BaseExtension):
         self.mode_params(False, 'I', channel, *self.process_bantargs(*args))
 
     def quiet(self, channel, *args):
-        """Quiet a user (or users) on a given channel.
+        r"""Quiet a user (or users) on a given channel.
 
         Many servers do not support this. This supports the charybdis-derived
         variant. This means it will work on Charybdis and ircd-seven networks
@@ -491,6 +507,7 @@ class BasicAPI(BaseExtension):
 
         .. note::
             All items are passed through :meth:`process_bantargs`.
+
         """
         isupport = self.base.isupport
         if not isupport:
@@ -506,7 +523,7 @@ class BasicAPI(BaseExtension):
         self.mode_params(True, 'q', channel, *self.process_bantargs(*args))
 
     def unquiet(self, channel, *args):
-        """Unquiet a user (or users) on a given channel.
+        r"""Unquiet a user (or users) on a given channel.
 
         Many servers do not support this. This supports the charybdis-derived
         variant. This means it will work on Charybdis and ircd-seven networks
@@ -534,6 +551,7 @@ class BasicAPI(BaseExtension):
 
         .. note::
             All items are passed through :meth:`process_bantargs`.
+
         """
         isupport = self.base.isupport
         if not isupport:
@@ -549,13 +567,14 @@ class BasicAPI(BaseExtension):
         self.mode_params(False, 'q', channel, *self.process_bantargs(*args))
 
     def join(self, channel, key=None):
-        """Attempt to join a channel.
+        r"""Attempt to join a channel.
 
         :param channel:
             Name of the Channel to join.
-        
+
         :param key:
             Channel key to use, if needed.
+
         """
         params = [channel]
         if key is not None:
@@ -573,6 +592,7 @@ class BasicAPI(BaseExtension):
 
         :param reason:
             Freeform reason to leave the channel.
+
         """
         if hasattr(channel, "name"):
             channel = channel.name
@@ -584,7 +604,7 @@ class BasicAPI(BaseExtension):
         self.send("PART", params)
 
     def kick(self, channel, user, reason=None):
-        """Kick a user from a channel.
+        r"""Kick a user from a channel.
 
         ..note:: This command usually requires channel operator privileges.
 
@@ -600,13 +620,14 @@ class BasicAPI(BaseExtension):
 
         :param reason:
             Freeform reason to kick the user.
+
         """
         if hasattr(channel, "name"):
             channel = channel.name
 
         if hasattr(user, "nick"):
             user = user.nick
-        
+
         params = [channel, user]
 
         if reason is not None:

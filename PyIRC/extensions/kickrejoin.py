@@ -4,10 +4,12 @@
 # for licensing information.
 
 
-""" Rejoin automatically after being kicked from a channel.
+"""Rejoin automatically after being kicked from a channel.
 
-This extension is also meant to serve as an example for extension authors.  It
-is heavily documented and designed to be very easy to follow.
+This extension is also meant to serve as an example for extension
+authors.  It is heavily documented and designed to be very easy to
+follow.
+
 """
 
 
@@ -16,21 +18,21 @@ from functools import partial
 # PyIRC uses the standard Python logging framework.
 from logging import getLogger
 
+# PyIRC uses taillight.Signal everywhere for events.
+
+from PyIRC.signal import event
 # * All extensions inherit from BaseExtension.
 # * hook is the decorator for event handlers.
-# * PRIORITY_LAST is a helpful constant for extensions that don't need immediate
-#   procesing/filtering of messages.
 from PyIRC.extension import BaseExtension
-from PyIRC.hook import hook, PRIORITY_LAST
 
 
-# Initialise our logger.
-logger = getLogger(__name__)
+# Initialise our _logger.
+_logger = getLogger(__name__)
 
 
 class KickRejoin(BaseExtension):
 
-    """ Rejoin a channel automatically after being kicked or removed. """
+    """Rejoin a channel automatically after being kicked or removed."""
 
     requires = ["BasicRFC", "ISupport"]
     """ Describes what extensions are required to use this extension.  We use
@@ -39,7 +41,7 @@ class KickRejoin(BaseExtension):
     """
 
     def __init__(self, *args, **kwargs):
-        """ Initialise the KickRejoin extension.
+        """Initialise the KickRejoin extension.
 
         :key rejoin_delay:
             Seconds to delay until the channel is rejoined.  This defaults to 5,
@@ -50,6 +52,7 @@ class KickRejoin(BaseExtension):
             most servers propogate REMOVE as KICK to clients so it won't always
             work (the sole exception in testing this extension was Freenode).
             Defaults to True, because REMOVE is silly anyway.
+
         """
         # When overriding __init__, ALWAYS call the superclass! This sets up
         # the hook tables correctly and future-proofs you from other
@@ -70,11 +73,13 @@ class KickRejoin(BaseExtension):
             # This is used to ensure we know our part was voluntary
             self.parts = set()
 
-    @hook("commands_out", "PART")
-    def on_part_out(self, event):
-        """ Command handler for PART's that are outgoing
+    @event("commands_out", "PART")
+    def on_part_out(self, caller, line):
+        """Command handler for PART's that are outgoing.
 
-        This is used to ensure we know when we PART a channel, it's voluntary.
+        This is used to ensure we know when we PART a channel, it's
+        voluntary.
+
         """
         if not self.rejoin_on_remove:
             # No bookkeeping
@@ -90,7 +95,7 @@ class KickRejoin(BaseExtension):
         chantypes = isupport.get("CHANTYPES")
 
         # Parts are sent out as a comma-separated list
-        for channel in event.line.params[0].split(","):
+        for channel in line.params[0].split(","):
             if not channel.startswith(*chantypes):
                 # Not a valid channel... we COULD cancel but that might break
                 # some expectations of clients... so let's not :).
@@ -100,22 +105,21 @@ class KickRejoin(BaseExtension):
             # Nicks and channels are case-insensitive, so always casemap them
             # for comparisons.
             channel = self.casefold(channel)
+            self.parts.add(channel)
 
-            self.parts.add(casefold)
+    @event("commands", "KICK")
+    @event("commands", "PART")
+    def on_kick(self, caller, line):
+        """Command handler for KICK and PART.
 
-    @hook("commands", "KICK")
-    @hook("commands", "PART")
-    def on_kick(self, event):
-        """ Command handler for KICK and PART.
+        This method receives a line as its parameter, and will use it to
+        determine if we were the ones kick/removed, and what action to take.
 
-        This method receives a LineEvent object as its parameter, and will use
-        it to determine if we were the ones kick/removed, and what action to
-        take.
         """
         # Retrieve the BasicRFC extension handle.
         basicrfc = self.base.basic_rfc
 
-        params = event.line.params
+        params = line.params
 
         # What channel were we kicked from?
         channel = self.casefold(params[0])
@@ -124,7 +128,7 @@ class KickRejoin(BaseExtension):
         if self.casefold(params[1]) != self.casefold(basicrfc.nick):
             return  # It isn't us, so we don't care.
 
-        if event.line.command == 'PART':
+        if line.command == 'PART':
             # Do not rejoin if we are being 'nice'
             if not self.rejoin_on_remove:
                 return
@@ -150,18 +154,20 @@ class KickRejoin(BaseExtension):
         self.scheduled[channel] = future
 
     def join(self, channel):
-        """ Join the specified channel and remove the channel from the pending
-        rejoin list. """
+        """Join the specified channel and remove the channel from the pending
+        rejoin list."""
         self.send("JOIN", [channel])
         self.parts.discard(channel)
         del self.scheduled[channel]
 
-    @hook("hooks", "disconnected")
-    def on_disconnected(self, event):
-        """ Disconnection event handler.
+    @event("hooks", "disconnected")
+    def on_disconnected(self, caller):
+        """Disconnection event handler.
 
-        We must ensure that any pending rejoins are unscheduled, so that we
-        don't do something silly like sending JOIN to a closed socket.
+        We must ensure that any pending rejoins are unscheduled, so that
+        we don't do something silly like sending JOIN to a closed
+        socket.
+
         """
 
         for future in self.scheduled.values():

@@ -75,7 +75,7 @@ class LagCheck(BaseExtension):
         self.send("PING", [s])
         self.timer = self.schedule(self.lagcheck, self.ping)
 
-    @event("hooks", "close")
+    @event("link", "disconnected")
     def close(self, caller):
         self.last = None
         self.lag = None

@@ -172,7 +172,7 @@ class ChannelTrack(BaseExtension):
         self.channels = self.channels.convert(self.case)
         self.mode_timers = self.mode_timers.convert(self.case)
 
-    @event("hooks", "disconnected")
+    @event("link", "disconnected")
     def close(self, caller):
         self.channels.clear()
         for timer in self.mode_timers.values():

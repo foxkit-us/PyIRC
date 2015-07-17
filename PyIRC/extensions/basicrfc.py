@@ -49,7 +49,7 @@ class BasicRFC(BaseExtension):
         self.nick = self.base.nick
         self.registered = False
 
-    @event("hooks", "connected")
+    @event("link", "connected")
     def handshake(self, caller):
         if not self.registered:
             if self.server_password:
@@ -59,7 +59,7 @@ class BasicRFC(BaseExtension):
             self.send("USER", [self.username, "*", "*",
                                self.gecos])
 
-    @event("hooks", "disconnected")
+    @event("link", "disconnected")
     def disconnected(self, caller):
         self.connected = False
         self.registered = False

@@ -16,7 +16,7 @@ backwards-compatible way.
 
 from importlib import import_module
 
-from PyIRC.extension import BaseExtension
+from PyIRC.extensions import BaseExtension
 from PyIRC.util.classutil import get_all_subclasses
 
 
@@ -46,23 +46,23 @@ _builtin_extension_modules = {
 
 def get_extension(name, prefer_builtin=True):
     """Get the class of a builtin extension by string.
-    
+
     :returns:
         The extension class if found, else None.
-        
+
     """
 
     # Attempt autodiscovery first
     extensions = [c for c in get_all_subclasses(BaseExtension) if
                   c.__name__ == name]
-    
+
     if not extensions:
         # None found, try an import from the builtins.
         try:
             module_name = _builtin_extension_modules[name]
         except KeyError:
             return None
-        
+
         # The below shouldn't fail, ever.
         module = import_module("PyIRC.extensions.%s" % module_name)
         return getattr(module, name)
@@ -80,7 +80,36 @@ def get_extension(name, prefer_builtin=True):
                 extension_pref = extension
 
         return extension_pref
-        
+
+
+class BaseExtension:
+
+    """The base class for extensions.
+
+    Any unknown attributes in this class are redirected to the ``base``
+    attribute.
+
+    """
+
+    requires = []
+    """Required extensions (must be a name)"""
+
+    def __init__(self, base, **kwargs):
+        """Initalise the BaseExtension instance.
+
+        :param base:
+            Base class for this method
+
+        """
+        self.base = base
+
+    def __getattr__(self, attr):
+        if attr.startswith('_'):
+            # Private or internal state!
+            raise AttributeError
+
+        return getattr(self.base, attr)
+
 
 base_recommended = ["AutoJoin", "BasicAPI", "BasicRFC", "CTCP", "ISupport"]
 """Basic recommended extensions that are compatible with most servers"""

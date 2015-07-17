@@ -23,7 +23,7 @@ from PyIRC.signal import event
 from PyIRC.auxparse import (prefix_parse, who_flag_parse, status_prefix_parse,
                             userhost_parse)
 from PyIRC.casemapping import IRCDict, IRCDefaultDict, IRCSet
-from PyIRC.extension import BaseExtension
+from PyIRC.extensions import BaseExtension
 from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
 

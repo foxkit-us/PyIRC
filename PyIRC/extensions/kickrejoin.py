@@ -23,7 +23,7 @@ from logging import getLogger
 from PyIRC.signal import event
 # * All extensions inherit from BaseExtension.
 # * hook is the decorator for event handlers.
-from PyIRC.extension import BaseExtension
+from PyIRC.extensions import BaseExtension
 
 
 # Initialise our _logger.

@@ -14,7 +14,7 @@ basic channel access control.
 
 from logging import getLogger
 
-from PyIRC.extension import BaseExtension
+from PyIRC.extensions import BaseExtension
 
 
 _logger = getLogger(__name__)

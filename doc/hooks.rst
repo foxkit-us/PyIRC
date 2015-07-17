@@ -104,10 +104,18 @@ hooks
 Arguments: ``caller``
 
 
-The catch-all for many default events, particularly connection events.
+The catch-all for many default events.
 
 .. warning::
    This will be renamed/broken up at some point in the future.
+
+link
+^^^^
+
+Arguments: ``caller``
+
+
+The class for link events (connection and disconnection).
 
 modes
 ^^^^^
@@ -178,14 +186,17 @@ Use this to dynamically allow for injection of caps, although it's recommended
 you simply make your ``caps`` variable a property instead, dynamically
 controlled by current state.
 
-events
-^^^^^^
+hooks
+^^^^^
 
 case_change
 """""""""""
 The event called when the casemapping changes on the server.  Normally only
 called once, when RPL_ISUPPORT (numeric 005) is received, but may be called at
 any time.
+
+link
+^^^^
 
 connected
 """""""""

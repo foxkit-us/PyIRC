@@ -19,7 +19,7 @@ from logging import getLogger
 from PyIRC.signal import SignalStorage
 from PyIRC.casemapping import IRCString
 from PyIRC.line import Line
-from PyIRC.extension import ExtensionManager
+from PyIRC.extension import get_extension
 
 
 _logger = getLogger(__name__)
@@ -41,9 +41,6 @@ class IRCBase(metaclass=ABCMeta):
 
     """The base IRC class meant to be used as a base for more concrete
     implementations.
-
-    :ivar extensions:
-        Our :py:class:`~PyIRC.extension.ExtensionManager` instance.
 
     :ivar connected:
         If True, we have connected to the server successfully.
@@ -107,10 +104,65 @@ class IRCBase(metaclass=ABCMeta):
         # Extension manager system
         if not extensions:
             raise ValueError("Need at least one extension")
-        self.extensions = ExtensionManager(self, kwargs, extensions)
+
+        self.extensions = {}
+        for extension in extensions:
+            self.load_extension(extension)
 
         # Do the signal storage binding for us now
         self.signals.bind(self)
+
+    def load_extension(self, extension):
+        """Load a single extension.
+
+        :param extension:
+            The extension to load, either a string, or a
+            :py:class:`~PyIRC.extension.ExtensionBase` instance. If extension
+            is a string, the extension is looked up in the list of presently
+            known extensions, favouring built-in PyIRC functions by default.
+        """
+        if isinstance(extension, str):
+            # Get the extension from a string
+            extname = extension
+            extension = get_extension(extension)
+            if extension is None:
+                raise ValueError("Extension not found: {}".format(extname))
+        else:
+            extname = extension.__name__
+
+        if extname in self.extensions:
+            return
+
+        requires = getattr(exension, "requires", ())
+        for require in requires:
+            self.load_extension(require)
+
+        extension = self.extensions[extname] = extension(**self.kwargs)
+        self.signals.bind(extension)
+
+    def unload_extension(self, extension):
+        """Unload an extension.
+
+        :param extension:
+            The extension to unload, either a string, or a
+            :py:class:`~PyIRC.extension.ExtensionBase` instance.
+
+        .. warning::
+            Reverse dependencies are not yet checked! Be careful when
+            unloading extensions. Also, since state is not saved in the
+            default modules, this should never be reused for reloading.
+
+        """
+        if isinstance(extension, str):
+            extname = extension
+        else:
+            extname = extension.__name__
+
+        extension = self.extensions.pop(extname, None)
+        if extname is None:
+            raise ValueError("Extension not found: {}".format(extname))
+
+        self.signals.unbind(extension)
 
     def case_change(self):
         """Change server casemapping semantics.
@@ -159,11 +211,13 @@ class IRCBase(metaclass=ABCMeta):
         return self.casefold(string) == self.casefold(other)
 
     def get_extension(self, extension):
-        """A convenience method for
-        :py:meth:`~PyIRC.extension.ExtensionManager.get_extension`.
+        """Get the instance of a given extension.
+
+        :returns:
+            The extension requested.
 
         """
-        return self.extensions.get_extension(extension)
+        return self.extensions[extension]
 
     def call_event(self, hclass, event, *args, **kwargs):
         """Call an (hclass, event) signal.
@@ -195,7 +249,7 @@ class IRCBase(metaclass=ABCMeta):
         This is a small wrapper around
         :py:meth:`~PyIRC.base.IRCBase.call_event`, but checks that the signal
         is deferred.
-        
+
         :returns:
             An (:py:class:`~PyIRC.base.Event`, return values from events)
             tuple, if the event is deferred; else it returns None.
@@ -206,7 +260,7 @@ class IRCBase(metaclass=ABCMeta):
         if signal.last_status != signal.STATUS_DEFER:
             return
 
-        return self.call_event(hclass, event) 
+        return self.call_event(hclass, event)
 
     def connect(self):
         """Do the connection handshake."""

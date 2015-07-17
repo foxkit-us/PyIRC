@@ -14,8 +14,10 @@ backwards-compatible way.
 """
 
 
-from collections import UserDict
 from importlib import import_module
+
+from PyIRC.extension import BaseExtension
+from PyIRC.util.classutil import get_all_subclasses
 
 
 __all__ = ["autojoin", "bantrack", "basetrack", "basicapi", "basicrfc", "cap",
@@ -23,45 +25,62 @@ __all__ = ["autojoin", "bantrack", "basetrack", "basicapi", "basicrfc", "cap",
            "services", "starttls", "usertrack"]
 
 
-class ExtensionsDatabase(UserDict):
+_builtin_extension_modules = {
+    "AutoJoin": "autojoin",
+    "BanTrack": "bantrack",
+    "BaseTrack": "basetrack",
+    "BasicAPI": "basicapi",
+    "BasicRFC": "basicrfc",
+    "CapNegotiate": "cap",
+    "ChannelTrack": "channeltrack",
+    "CTCP": "ctcp",
+    "ISupport": "isupport",
+    "KickRejoin": "kickrejoin",
+    "LagCheck": "lag",
+    "SASLPlain": "sasl",
+    "ServicesLogin": "services",
+    "StartTLS": "starttls",
+    "UserTrack": "usertrack",
+}
 
-    """A helper to late-bind extensions to avoid unnecessary imports and
-    bloat"""
 
-    # Default extensions and their requisite default modules
-    _default_ext_mods = {
-        "AutoJoin": "autojoin",
-        "BanTrack": "bantrack",
-        "BaseTrack": "basetrack",
-        "BasicAPI": "basicapi",
-        "BasicRFC": "basicrfc",
-        "CapNegotiate": "cap",
-        "ChannelTrack": "channeltrack",
-        "CTCP": "ctcp",
-        "ISupport": "isupport",
-        "KickRejoin": "kickrejoin",
-        "LagCheck": "lag",
-        "SASLPlain": "sasl",
-        "ServicesLogin": "services",
-        "StartTLS": "starttls",
-        "UserTrack": "usertrack",
-    }
+def get_extension(name, prefer_builtin=True):
+    """Get the class of a builtin extension by string.
+    
+    :returns:
+        The extension class if found, else None.
+        
+    """
 
-    def lookup_module(self, extension):
-        """Lookup a module for import."""
-        module = self._default_ext_mods[extension]
-        return import_module("PyIRC.extensions." + module)
-
-    def __missing__(self, item):
+    # Attempt autodiscovery first
+    extensions = [c for c in get_all_subclasses(BaseExtension) if
+                  c.__name__ == name]
+    
+    if not extensions:
+        # None found, try an import from the builtins.
         try:
-            module = self.lookup_module(item)
-        except KeyError as e:
-            error = "No such module in the database: {}".format(item)
-            raise KeyError(error) from e
+            module_name = _builtin_extension_modules[name]
+        except KeyError:
+            return None
+        
+        # The below shouldn't fail, ever.
+        module = import_module("PyIRC.extensions.%s" % module_name)
+        return getattr(module, name)
+    elif len(extensions) == 1:
+        # We got only one. :p
+        return extensions[0]
+    else:
+        extension_pref = None
+        for extension in reversed(extensions):
+            qualname = extension.__qualname__
 
-        self.data[item] = getattr(module, item)
-        return self.data[item]
+            if (extension_pref is None or prefer_builtin is
+                    qualname.startswith("PyIRC.extensions.")):
+                # If we prefer builtins, use them
+                extension_pref = extension
 
+        return extension_pref
+        
 
 base_recommended = ["AutoJoin", "BasicAPI", "BasicRFC", "CTCP", "ISupport"]
 """Basic recommended extensions that are compatible with most servers"""

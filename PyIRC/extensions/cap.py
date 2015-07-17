@@ -108,7 +108,7 @@ class CapNegotiate(BaseExtension):
         else:
             return cap
 
-    @event("hooks", "connected", priority=-1000)
+    @event("link", "connected", priority=-1000)
     def send_cap(self, caller):
         # This must come first!!! Even before USER/NICK!
         if not self.negotiating:
@@ -125,7 +125,7 @@ class CapNegotiate(BaseExtension):
         # Ensure no other connected events get fired
         raise SignalStop
 
-    @event("hooks", "disconnected")
+    @event("link", "disconnected")
     def close(self, caller):
         if self.timer is not None:
             try:
@@ -247,7 +247,7 @@ class CapNegotiate(BaseExtension):
         self.negotiating = False
 
         # Call the hooks to resume connection
-        self.call_event("hooks", "connected")
+        self.call_event("link", "connected")
 
     def register(self, cap, params=list(), replace=False):
         """Register that we support a specific CAP.

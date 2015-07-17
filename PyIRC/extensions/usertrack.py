@@ -296,7 +296,7 @@ class UserTrack(BaseExtension):
 
         self.auth_cb = self.auth_cb.convert(case)
 
-    @event("hooks", "disconnected")
+    @event("link", "disconnected")
     def close(self, caller):
         timers = chain(self.u_expire_timers.values(),
                        self.who_timers.values())

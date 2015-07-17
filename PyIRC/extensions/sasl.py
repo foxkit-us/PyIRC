@@ -69,7 +69,7 @@ class SASLBase(BaseExtension):
             _logger.debug("Registering new-style SASL capability")
             return {"sasl" : [m.method for m in SASLBase.__subclasses__()]}
 
-    @event("hooks", "disconnected")
+    @event("link", "disconnected")
     def close(self, caller):
         self.mechanisms.clear()
 

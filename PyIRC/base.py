@@ -210,11 +210,11 @@ class IRCBase(metaclass=ABCMeta):
 
     def connect(self):
         """Do the connection handshake."""
-        return self.call_event("hooks", "connected")
+        return self.call_event("link", "connected")
 
     def close(self):
         """Do the connection teardown."""
-        return self.call_event("hooks", "disconnected")
+        return self.call_event("link", "disconnected")
 
     def recv(self, line):
         """Receive a line.

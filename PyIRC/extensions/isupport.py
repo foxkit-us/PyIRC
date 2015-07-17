@@ -88,7 +88,7 @@ class ISupport(BaseExtension):
         value = self.supported[string]
         return (True if value is None else value)
 
-    @event("hooks", "disconnected")
+    @event("link", "disconnected")
     def close(self, caller):
         self.supported.clear()
 

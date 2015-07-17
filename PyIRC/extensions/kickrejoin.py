@@ -160,7 +160,7 @@ class KickRejoin(BaseExtension):
         self.parts.discard(channel)
         del self.scheduled[channel]
 
-    @event("hooks", "disconnected")
+    @event("link", "disconnected")
     def on_disconnected(self, caller):
         """Disconnection event handler.
 

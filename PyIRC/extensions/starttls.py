@@ -46,7 +46,7 @@ class StartTLS(BaseExtension):
                 "tls": [],
             }
 
-    @event("hooks", "disconnected")
+    @event("link", "disconnected")
     def close(self, caller):
         self.tls_event = None
 

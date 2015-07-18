@@ -11,6 +11,11 @@ These are the actual things that make PyIRC do things. They implement various
 commands and allow new features to be easily added to the library in a
 backwards-compatible way.
 
+The top-level module contains the :py:class:`~PyIRC.extensions.BaseExtension`
+class (the parent of all extensions), various constants containing recommended
+extensions for specific purposes, and internal machinery related to the event
+subsystem.
+
 """
 
 

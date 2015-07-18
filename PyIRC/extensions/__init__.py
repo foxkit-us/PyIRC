@@ -76,7 +76,8 @@ def get_extension(name, prefer_builtin=True):
 
             if (extension_pref is None or prefer_builtin is
                     qualname.startswith("PyIRC.extensions.")):
-                # If we prefer builtins, use them
+                # prefer_builtins controls the behaviour of this condition.
+                # Yes, it's actually correct.
                 extension_pref = extension
 
         return extension_pref

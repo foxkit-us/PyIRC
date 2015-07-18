@@ -18,7 +18,7 @@ from logging import getLogger
 
 from PyIRC.signal import event
 from PyIRC.casemapping import IRCDict, IRCDefaultDict
-from PyIRC.extension import BaseExtension
+from PyIRC.extensions import BaseExtension
 from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
 

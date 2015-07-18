@@ -18,7 +18,7 @@ from logging import getLogger
 from taillight.signal import SignalStop
 
 from PyIRC.signal import event
-from PyIRC.extension import BaseExtension
+from PyIRC.extensions import BaseExtension
 from PyIRC.numerics import Numerics
 
 

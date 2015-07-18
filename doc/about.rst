@@ -169,20 +169,19 @@ Extensions are passed in to the base IRC class as a list of uninstantiated
 classes, which are then built into an extensions database for later lookup
 and retrieval.
 
-Extensions all inherit from the BaseExtension class, which provides various
-convenience functions to the base or other parts of base. It also has a
-metaclass that builds hook tables for you; more on this in a bit.
+Extensions all inherit from the :py:class:`~PyIRC.extension.BaseExtension`
+class, which redirects all methods not known about it to the base class (to
+ensure extensions and the base look the same if code is copied between the two).
 
-In your extension, you can set a default priority value; it can be any number,
-and works like Unix priorities; lower runs first (think of it like a list
-ordering). The default priority value can be overridden by any hooks, if they
-so choose. Many extensions to IRC require such functionality.
+Extensions can set requirements; the requirements list can either use strings,
+or other :py:class:`~PyIRC.extension.BaseExtension` instances. If they are
+strings, then they are looked up by known ``BaseExtension`` subclasses first
+(and all their derivative subclasses). If none are found, an attempt is made
+to look up a builtin extension. If this fails, the library punts.
 
-Extensions can also set requirements; the requirements list uses a list of
-strings, to ensure that users can add their own extensions that reimplement
-the same functionality in base.
-
-Note all extensions are optional, and you are free to implement your own.
+.. note::
+  All extensions are optional by design, and you are free to implement your
+  own.
 
 Signals
 ^^^^^^^

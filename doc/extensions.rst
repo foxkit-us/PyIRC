@@ -8,6 +8,12 @@ that may overlap or conflict, whilst ensuring everything cooperates.
 .. toctree::
    :maxdepth: 2
 
+:mod:`~PyIRC.extensions` --- Extension utilities
+------------------------------------------------
+.. automodule:: PyIRC.extensions
+   :special-members:
+   :members
+
 :mod:`~PyIRC.extensions.autojoin` --- Automatically join channels on connection
 -------------------------------------------------------------------------------
 .. automodule:: PyIRC.extensions.autojoin

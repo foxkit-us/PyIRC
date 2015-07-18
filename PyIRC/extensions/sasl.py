@@ -20,7 +20,7 @@ from base64 import b64encode
 from taillight.signal import SignalStop, SignalDefer
 
 from PyIRC.signal import event
-from PyIRC.extension import BaseExtension
+from PyIRC.extensions import BaseExtension
 from PyIRC.numerics import Numerics
 
 

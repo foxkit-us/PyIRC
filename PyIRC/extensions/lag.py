@@ -18,7 +18,7 @@ from random import randint, choice
 from string import ascii_letters as letters, digits
 from logging import getLogger
 
-from PyIRC.extension import BaseExtension
+from PyIRC.extensions import BaseExtension
 from PyIRC.numerics import Numerics
 
 

@@ -7,18 +7,7 @@
 """Utilities for class metaprogramming and related purposes."""
 
 
-def private_mangle(cls, name):
-    """Generate a private name based on the given name.
-
-    :param cls:
-        Class (instance or not) to use for the mangling
-    :param name:
-        Name to mangle.
-
-    """
-    if not name.startswith('__'):
-        return name
-
-    cls_name = getattr(cls, '__name__', cls.__class__.__name__)
-    name_mangle = '_{}__'.format(cls_name)
-    return name.replace('__', name_mangle, 1)
+def get_all_subclasses(cls):
+    for subclass in cls.__subclasses__():
+        yield subclass
+        yield from get_all_subclasses(subclass)

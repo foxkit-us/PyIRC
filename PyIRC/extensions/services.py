@@ -12,7 +12,7 @@ from logging import getLogger
 
 
 from PyIRC.signal import event
-from PyIRC.extension import BaseExtension
+from PyIRC.extensions import BaseExtension
 
 
 _logger = getLogger(__name__)

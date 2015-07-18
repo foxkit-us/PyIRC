@@ -20,7 +20,7 @@ from time import time
 
 from PyIRC.signal import event
 from PyIRC.auxparse import mode_parse, prefix_parse, status_prefix_parse
-from PyIRC.extension import BaseExtension
+from PyIRC.extensions import BaseExtension
 from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
 

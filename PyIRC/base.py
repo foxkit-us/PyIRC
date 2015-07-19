@@ -186,7 +186,7 @@ class IRCBase(metaclass=ABCMeta):
             return
 
         self.case = case
-        self.call_event("hooks", "case_change")
+        self.call_event("protocol", "case_change")
 
     def casefold(self, string):
         """Fold a nick according to server case folding rules.

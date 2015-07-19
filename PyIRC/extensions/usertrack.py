@@ -284,7 +284,7 @@ class UserTrack(BaseExtension):
         if hostmask.host:
             user.host = hostmask.host
 
-    @event("hooks", "case_change")
+    @event("protocol", "case_change")
     def case_change(self, caller):
         case = self.case
 

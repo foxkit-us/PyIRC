@@ -163,11 +163,11 @@ class ChannelTrack(BaseExtension):
         if not channel:
             return
 
-        self.call_event("channel", "channel_delete", self.channels[name])
+        self.call_event("channel", "channel_delete", channel)
 
         del self.channels[name]
 
-    @event("hooks", "case_change")
+    @event("protocol", "case_change")
     def case_change(self, caller):
         self.channels = self.channels.convert(self.case)
         self.mode_timers = self.mode_timers.convert(self.case)

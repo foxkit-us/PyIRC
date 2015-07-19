@@ -98,16 +98,13 @@ registered by default.
 .. note::
    These events requires the :py:class:`PyIRC.extensions.CTCP` extension.
 
-hooks
-^^^^^
+protocol
+^^^^^^^^
 
 Arguments: ``caller``
 
-
-The catch-all for many default events.
-
-.. warning::
-   This will be renamed/broken up at some point in the future.
+The class for protocol events, such as the casemapping being changed (which
+happens on connection).
 
 link
 ^^^^
@@ -186,8 +183,8 @@ Use this to dynamically allow for injection of caps, although it's recommended
 you simply make your ``caps`` variable a property instead, dynamically
 controlled by current state.
 
-hooks
-^^^^^
+protocol
+^^^^^^^^
 
 case_change
 """""""""""

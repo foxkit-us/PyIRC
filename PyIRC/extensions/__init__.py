@@ -21,7 +21,6 @@ subsystem.
 
 from importlib import import_module
 
-from PyIRC.extensions import BaseExtension
 from PyIRC.util.classutil import get_all_subclasses
 
 

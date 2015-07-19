@@ -19,7 +19,7 @@ from logging import getLogger
 from PyIRC.signal import SignalStorage
 from PyIRC.casemapping import IRCString
 from PyIRC.line import Line
-from PyIRC.extension import get_extension
+from PyIRC.extensions import get_extension
 
 
 _logger = getLogger(__name__)
@@ -133,11 +133,12 @@ class IRCBase(metaclass=ABCMeta):
         if extname in self.extensions:
             return
 
-        requires = getattr(exension, "requires", ())
+        requires = getattr(extension, "requires", ())
         for require in requires:
             self.load_extension(require)
 
-        extension = self.extensions[extname] = extension(**self.kwargs)
+        extension = self.extensions[extname] = extension(base=self,
+                                                         **self.kwargs)
         self.signals.bind(extension)
 
     def unload_extension(self, extension):

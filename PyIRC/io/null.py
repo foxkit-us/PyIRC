@@ -48,7 +48,7 @@ class NullSocket(IRCBase):
 
     def inject_line(self, line):
         """Inject a Line into the recvq for the client."""
-        assert isinstance(Line, line)
+        assert isinstance(line, Line)
         self.recvq.put(line)
 
     def loop(self):

@@ -368,7 +368,7 @@ class UserTrack(BaseExtension):
 
     @event("scope", "user_part")
     @event("scope", "user_kick")
-    def part(self, _, line):
+    def part(self, _, scope):
         target = scope.target
         channel = scope.scope
 

@@ -49,9 +49,14 @@ class SASLBase(BaseExtension):
 
         self.mechanisms = set()
         self.username = kwargs.get("sasl_username")
-        self.password = kwargs.get("sasl_password")
+        self.password = kwargs.get("sasl_password", None)
 
         self.authenticated = False
+
+    @property
+    def can_authenticate(self):
+        """Whether or not we can authenticate with this method."""
+        return False
 
     @property
     def caps(self):
@@ -81,6 +86,9 @@ class SASLBase(BaseExtension):
             return
         elif self.method is None:
             raise NotImplementedError("Need an authentication method!")
+
+        if not self.can_authenticate:
+            return
 
         self.authenticated = False
 
@@ -126,6 +134,48 @@ class SASLBase(BaseExtension):
         _logger.info("Supported SASL mechanisms: %r", self.mechanisms)
 
 
+class SASLExternal(SASLBase):
+
+    """EXTERNAL authentication, usually CERTFP.
+
+    .. warning::
+        This is not recommended on servers that use SHA-1 as their certificate
+        hashing mechanism (almost all), as SHA-1 is considered weak, and it is
+        possible an adversary could collide your certificate in theory.
+
+    """
+
+    method = "EXTERNAL"
+
+    @property
+    def can_authenticate(self):
+        """Whether or not we can authenticate with this method."""
+        return self.ssl and self.password is None
+
+    @event("commands", "AUTHENTICATE", priority=300)
+    def authenticate(self, _, line):
+        """Implement the EXTERNAL (certfp) authentication method."""
+        # This is the least preferred auth method of them all, but will be
+        # used if SSL is enabled and there is no password.
+        _logger.info("Logging in with EXTERNAL method as %s", self.username)
+
+        if line.params[-1] != '+':
+            return
+
+        # Generate the string for sending
+        sendstr = "{0}\0{0}\0".format(self.username)
+        sendstr = b64encode(sendstr.encode("utf-8", "replace"))
+
+        # b64encode returns bytes, but our parser expects a str *sigh*
+        sendstr = sendstr.decode("utf-8")
+
+        # This should never exceed 400 bytes, so this is fine.
+        self.send("AUTHENTICATE", [sendstr])
+
+        # Stop other auth methods.
+        raise SignalStop
+
+
 class SASLPlain(SASLBase):
 
     """PLAIN authentication.
@@ -137,11 +187,20 @@ class SASLPlain(SASLBase):
 
     method = "PLAIN"
 
+    @property
+    def can_authenticate(self):
+        """Whether or not we can authenticate with this method."""
+        return self.username and self.password
+
     @event("commands", "AUTHENTICATE", priority=250)
     def authenticate(self, _, line):
         """Implement the plaintext authentication method."""
-        # Priority is arbitrary atm, but should be the least preferred auth
-        # method if more are implemented
+        # Priority is arbitrary atm, but should be the second least preferred
+        # auth method if more are implemented
+        if self.password is None:
+            # No password, try to fall back.
+            return
+
         _logger.info("Logging in with PLAIN method as %s", self.username)
 
         if line.params[-1] != '+':

@@ -10,7 +10,7 @@ No connections are made.
 """
 
 
-from logging import getLogger, DEBUG
+from logging import getLogger
 from queue import Empty, Queue
 from sched import scheduler
 

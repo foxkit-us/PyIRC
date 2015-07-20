@@ -216,7 +216,6 @@ class UserTrack(BaseExtension):
             user = User(self.case, nick, **kwargs)
             self.users[nick] = user
 
-        basicrfc = self.base.basic_rfc
         self.call_event("user", "user_create", user)
 
         return user

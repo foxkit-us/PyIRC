@@ -70,12 +70,10 @@ class StartTLS(BaseExtension):
         _logger.info("Performing STARTTLS initiation...")
         self.wrap_ssl()
 
-        cap_negotiate = self.base.cap_negotiate
         self.resume_event("cap_perform", "ack")
 
     @event("commands", Numerics.ERR_STARTTLS)
     def abort(self, _, line):
         _logger.critical("STARTTLS initiation failed, connection not secure")
 
-        cap_negotiate = self.base.cap_negotiate
         self.resume_event("cap_perform", "ack")

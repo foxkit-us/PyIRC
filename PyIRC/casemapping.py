@@ -291,9 +291,11 @@ class IRCSet(MutableSet):
 
     """An IRC set class, with caseless members."""
 
-    def __init__(self, case, iterable=set()):
+    def __init__(self, case, iterable=None):
         self.case = case
         self.store = set()
+        if iterable is None:
+            iterable = set()
         for item in iterable:
             self.add(item)
 

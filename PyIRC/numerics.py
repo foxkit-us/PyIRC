@@ -4276,12 +4276,6 @@ class Numerics(Enum):
     - ircd-ratbox
     """
 
-    ERR_LAST_ERR_MSG_BAHAMUT = "504"
-    """
-     This numeric can be found in:
-    - Bahamut
-    """
-
     ERR_USERNOTONSERV = "504"
     """
      This numeric can be found in:
@@ -5269,24 +5263,9 @@ class Numerics(Enum):
     - Inspircd
     """
 
-    ERR_LAST_ERR_MSG = "999"
-    """
-     This numeric can be found in:
-    - Charybdis
-    - ircd-hybrid
-    - ircd-seven
-    - plexus
-    - ircd-ratbox
-    """
-
     ERR_NUMERICERR = "999"
     """
      This numeric can be found in:
     - UnrealIRCD
-    """
-
-    ERR_NUMERIC_ERR = "999"
-    """
-     This numeric can be found in:
-    - Bahamut
+    - Bahamut (called ERR_NUMERIC_ERR)
     """

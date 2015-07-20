@@ -1,5 +1,7 @@
 # Below was taken from Python 3.4.3
 # It is a shim for Python 3.3
+# We have no control over the style of stdlib ;)
+# pylint: skip-file
 
 
 import sys

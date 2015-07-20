@@ -3252,23 +3252,18 @@ class Numerics(Enum):
     ERR_ERRONEOUSNICKNAME = "432"
     """
      This numeric can be found in:
-    - IRCNet ircd
-    """
-
-    ERR_ERRONEUSNICKNAME = "432"
-    """
-     This numeric can be found in:
-    - Bahamut
-    - Charybdis
-    - ircd-hybrid
-    - ircd-seven
-    - ircu
-    - plexus
-    - ircd-ratbox
-    - RFC1459
-    - RFC2812
-    - snircd
-    - UnrealIRCD
+    - IRCNet ircd (spelled correctly)
+    - Bahamut (named ERR_ERRONEUSNICKNAME)
+    - Charybdis (named ERR_ERRONEUSNICKNAME)
+    - ircd-hybrid (named ERR_ERRONEUSNICKNAME)
+    - ircd-seven (named ERR_ERRONEUSNICKNAME)
+    - ircu (named ERR_ERRONEUSNICKNAME)
+    - plexus (named ERR_ERRONEUSNICKNAME)
+    - ircd-ratbox (named ERR_ERRONEUSNICKNAME)
+    - RFC1459 (named ERR_ERRONEUSNICKNAME)
+    - RFC2812 (named ERR_ERRONEUSNICKNAME)
+    - snircd (named ERR_ERRONEUSNICKNAME)
+    - UnrealIRCD (named ERR_ERRONEUSNICKNAME)
     """
 
     ERR_NICKNAMEINUSE = "433"

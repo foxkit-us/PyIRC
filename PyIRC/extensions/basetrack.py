@@ -32,18 +32,6 @@ Mode = namedtuple("Mode", "mode param adding timestamp")
 """A mode being added or removed"""
 
 
-mode_chars = {Numerics.RPL_BANLIST.value: 'b',
-              Numerics.RPL_EXCEPTLIST.value: 'e',
-              Numerics.RPL_INVITELIST.value: 'I',
-              Numerics.RPL_QUIETLIST.value: 'q',  # apparently dirty hax?
-              Numerics.RPL_SPAMFILTERLIST.value: 'g',
-              Numerics.RPL_EXEMPTCHANOPSLIST.value: 'X',
-              Numerics.RPL_AUTOOPLIST.value: 'w',
-              Numerics.RPL_REOPLIST.value: 'R',
-             }
-"""List numeric to mode char mapping."""
-
-
 class Scope:
 
     """A scope object passed to receivers of scope events.
@@ -105,6 +93,17 @@ class BaseTrack(BaseExtension):
         "multi-prefix": [],
         "userhost-in-names": [],
     }
+
+    mode_chars = {Numerics.RPL_BANLIST.value: 'b',
+                  Numerics.RPL_EXCEPTLIST.value: 'e',
+                  Numerics.RPL_INVITELIST.value: 'I',
+                  Numerics.RPL_QUIETLIST.value: 'q',  # apparently dirty hax?
+                  Numerics.RPL_SPAMFILTERLIST.value: 'g',
+                  Numerics.RPL_EXEMPTCHANOPSLIST.value: 'X',
+                  Numerics.RPL_AUTOOPLIST.value: 'w',
+                  Numerics.RPL_REOPLIST.value: 'R',
+                 }
+    """List numeric to mode char mapping."""
 
     requires = ["ISupport"]
 
@@ -273,7 +272,7 @@ class BaseTrack(BaseExtension):
     @event("commands", Numerics.RPL_AUTOOPLIST)
     @event("commands", Numerics.RPL_REOPLIST)
     def handle_list(self, caller, line):
-        modechar = mode_chars[caller.eventpair[1]]
+        modechar = self.mode_chars[caller.eventpair[1]]
         params = line.params
 
         try:

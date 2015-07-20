@@ -115,6 +115,17 @@ class BaseExtension:
 
         return getattr(self.base, attr)
 
+    def __setattr__(self, attr, value):
+        if attr == 'base':
+            return super().__setattr__(attr, value)
+
+        try:
+            getattr(self.base, attr)
+        except AttributeError:
+            return super().__setattr__(attr, value)
+        else:
+            return setattr(self.base, attr, value)
+
 
 base_recommended = ["AutoJoin", "BasicAPI", "BasicRFC", "CTCP", "ISupport"]
 """Basic recommended extensions that are compatible with most servers"""

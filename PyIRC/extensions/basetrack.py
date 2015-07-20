@@ -105,6 +105,7 @@ class BaseTrack(BaseExtension):
 
     @event("commands", "JOIN")
     def join(self, _, line):
+        """Fire a (scope, user_join) event for users joining channels."""
         params = line.params
 
         hostmask = line.hostmask
@@ -123,6 +124,7 @@ class BaseTrack(BaseExtension):
 
     @event("commands", Numerics.RPL_NAMREPLY)
     def names(self, _, line):
+        """Handle bursting of new users from NAMES."""
         params = line.params
 
         channel = params[2]
@@ -145,6 +147,7 @@ class BaseTrack(BaseExtension):
 
     @event("commands", "PART")
     def part(self, _, line):
+        """Fire a (scope, user_part) event for users leaving channels."""
         params = line.params
 
         channel = params[0]
@@ -156,6 +159,7 @@ class BaseTrack(BaseExtension):
 
     @event("commands", "KICK")
     def kick(self, _, line):
+        """Fire a (scope, user_kick) event for users being kicked."""
         params = line.params
 
         channel = params[0]
@@ -168,6 +172,7 @@ class BaseTrack(BaseExtension):
 
     @event("commands", "QUIT")
     def quit(self, _, line):
+        """Fire a (scope, user_quit) event for users leaving IRC."""
         params = line.params
 
         reason = params[0] if params else None
@@ -180,7 +185,7 @@ class BaseTrack(BaseExtension):
     @event("commands", Numerics.RPL_CHANNELMODEIS)
     @event("commands", "MODE")
     def mode(self, _, line):
-        # Offer an easy to use interface for mode
+        """Offer an easy to use interface for mode"""
         isupport = self.base.isupport
         modegroups = isupport.get("CHANMODES")
         prefix = prefix_parse(isupport.get("PREFIX"))
@@ -217,7 +222,7 @@ class BaseTrack(BaseExtension):
     @event("commands", Numerics.RPL_ENDOFMOTD)
     @event("commands", Numerics.ERR_NOMOTD)
     def send_protoctl(self, _, line):
-        # Send the PROTOCTL NAMESX/UHNAMES stuff if we have to
+        """Send the PROTOCTL NAMESX/UHNAMES stuff if we have to"""
         if self.sent_protoctl:
             return
 

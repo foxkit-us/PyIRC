@@ -24,9 +24,9 @@ from importlib import import_module
 from PyIRC.util.classutil import get_all_subclasses
 
 
-__all__ = ["autojoin", "bantrack", "basetrack", "basicapi", "basicrfc", "cap",
-           "channeltrack", "ctcp", "isupport", "kickrejoin", "lag", "sasl",
-           "services", "starttls", "usertrack"]
+__all__ = ["altnick", "autojoin", "bantrack", "basetrack", "basicapi",
+           "basicrfc", "cap", "channeltrack", "ctcp", "isupport", "kickrejoin",
+           "lag", "sasl", "services", "starttls", "usertrack"]
 
 
 _builtin_extension_modules = {
@@ -41,10 +41,12 @@ _builtin_extension_modules = {
     "ISupport": "isupport",
     "KickRejoin": "kickrejoin",
     "LagCheck": "lag",
+    "NumberSubstitueAlt": "altnick",
     "SASLPlain": "sasl",
     "ServicesLogin": "services",
     "StartTLS": "starttls",
     "UserTrack": "usertrack",
+    "UnderscoreAlt": "altnick",
 }
 
 
@@ -127,7 +129,8 @@ class BaseExtension:
             return setattr(self.base, attr, value)
 
 
-base_recommended = ["AutoJoin", "BasicAPI", "BasicRFC", "CTCP", "ISupport"]
+base_recommended = ["AutoJoin", "BasicAPI", "BasicRFC", "CTCP", "ISupport",
+                    "UnderscoreAlt"]
 """Basic recommended extensions that are compatible with most servers"""
 
 

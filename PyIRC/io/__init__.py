@@ -3,4 +3,11 @@
 # for licensing information.
 
 
+"""I/O backends for PyIRC.
+
+This module contains the I/O backends for PyIRC. The backends inherit from
+:py:class:`~PyIRC.base.IRCBase` to pump messages in and out of the library, and
+perform scheduling functions.
+"""
+
 __all__ = ["asyncio", "socket"]

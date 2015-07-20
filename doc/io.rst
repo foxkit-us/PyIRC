@@ -1,9 +1,8 @@
 IO backends
 ===========
 
-This module contains the I/O backends for PyIRC. The backends inherit from
-``IRCBase`` to pump messages in and out of the library, and perform scheduling
-functions.
+.. automodule:: PyIRC.io
+   :members:
 
 .. toctree::
    :maxdepth: 2

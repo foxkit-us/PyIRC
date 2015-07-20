@@ -49,7 +49,7 @@ class Tags:
         tags = dict()
 
         for tag in raw.split(';'):
-            key, s, value = tag.partition('=')
+            key, _, value = tag.partition('=')
             if value == '':
                 value = None
             tags[key] = value
@@ -113,7 +113,7 @@ class Hostmask:
 
         host_sep = raw.find('@')
         if host_sep == -1:
-            if(raw.find('.') != -1):
+            if raw.find('.') != -1:
                 return cls(host=raw, mask=raw)
             else:
                 return cls(nick=raw, mask=raw)

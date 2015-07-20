@@ -69,7 +69,7 @@ class BanTrack(BaseExtension):
             return
 
         channeltrack = self.base.channel_track
-        channel = channeltrack.get_channel(mode.target)
+        channel = channeltrack.get_channel(target)
         if not channel:
             # Not a channel or we don't know about it.
             return

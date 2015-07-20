@@ -316,10 +316,11 @@ class IRCSet(MutableSet):
         self.store.discard(item)
 
     def convert(self, case):
+        """Convert all members of this set to the specified case."""
         new = IRCSet(case)
         for item in self:
             if isinstance(item, str):
-                item = IRCString(self.case, item)
+                item = IRCString(case, item)
             elif hasattr(item, 'convert'):
                 item = item.convert(case)
 

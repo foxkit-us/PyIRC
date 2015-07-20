@@ -158,7 +158,7 @@ class CapNegotiate(BaseExtension):
         self.remote.update(remote)
 
         extensions = self.extensions
-        for extension in extensions.db.values():
+        for extension in extensions.values():
             # Scan the extensions for caps
             caps = getattr(extension, "caps", None)
             if not caps:

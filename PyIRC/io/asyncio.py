@@ -101,7 +101,7 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
                 raise
 
     def connection_closed(self, exc):
-        _logger.info("Connection lost: %s", str(e))
+        _logger.info("Connection lost: %s", str(exc))
         super().close()
 
     def send(self, command, params):

@@ -16,7 +16,7 @@ from PyIRC.auxparse import CTCPMessage
 from PyIRC.util.version import versionstr
 
 
-_logger = getLogger(__name__)
+_logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 
 class CTCP(BaseExtension):

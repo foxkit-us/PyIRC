@@ -17,7 +17,7 @@ from logging import getLogger
 from PyIRC.extensions import BaseExtension
 
 
-_logger = getLogger(__name__)
+_logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 
 class BasicAPI(BaseExtension):

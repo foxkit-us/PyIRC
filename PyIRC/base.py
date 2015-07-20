@@ -22,7 +22,7 @@ from PyIRC.line import Line
 from PyIRC.extensions import get_extension
 
 
-_logger = getLogger(__name__)
+_logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 
 class Event:

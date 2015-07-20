@@ -15,7 +15,7 @@ from functools import reduce
 from logging import getLogger
 
 
-_logger = getLogger(__name__)
+_logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 
 class Tags:

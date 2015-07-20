@@ -18,7 +18,7 @@ from PyIRC.base import IRCBase
 from PyIRC.line import Line
 
 
-_logger = getLogger(__name__)
+_logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 
 class NullSocket(IRCBase):

@@ -24,7 +24,7 @@ from PyIRC.extensions import BaseExtension
 from PyIRC.numerics import Numerics
 
 
-_logger = getLogger(__name__)
+_logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 
 class ISupport(BaseExtension):

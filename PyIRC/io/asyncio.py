@@ -26,7 +26,7 @@ from PyIRC.base import IRCBase, Event
 from PyIRC.line import Line
 
 
-_logger = getLogger(__name__)
+_logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 
 class IRCProtocol(IRCBase, asyncio.Protocol):

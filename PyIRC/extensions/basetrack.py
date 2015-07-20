@@ -24,7 +24,7 @@ from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
 
 
-_logger = getLogger(__name__)
+_logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 
 Mode = namedtuple("Mode", "mode param adding timestamp")

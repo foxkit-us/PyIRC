@@ -28,7 +28,7 @@ import re
 from PyIRC.line import Line, Hostmask
 
 
-_logger = getLogger(__name__)
+_logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 
 prefix_match = re.compile(r"\(([A-Za-z0-9]+)\)(.+)")

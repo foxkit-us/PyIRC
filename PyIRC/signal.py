@@ -20,7 +20,7 @@ except ImportError:
     from PyIRC.util.enum import Enum
 
 
-_logger = getLogger(__name__)
+_logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 
 def event(hclass, event_name, priority=UnsharedSignal.PRIORITY_NORMAL,

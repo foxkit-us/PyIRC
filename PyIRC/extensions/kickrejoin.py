@@ -27,7 +27,7 @@ from PyIRC.extensions import BaseExtension
 
 
 # Initialise our _logger.
-_logger = getLogger(__name__)
+_logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 
 class KickRejoin(BaseExtension):

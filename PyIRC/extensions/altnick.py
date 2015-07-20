@@ -21,7 +21,7 @@ from PyIRC.numerics import Numerics
 from PyIRC.extensions import BaseExtension
 
 
-_logger = getLogger(__name__)
+_logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 
 class UnderscoreAlt(BaseExtension):

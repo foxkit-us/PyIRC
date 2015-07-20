@@ -134,7 +134,7 @@ class KickRejoin(BaseExtension):
                 return
             elif channel in self.parts:
                 # We left on our own :P
-                self.parts.delete(channel)
+                self.parts.discard(channel)
                 return
 
         if self.rejoin_on_remove:

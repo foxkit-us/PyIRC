@@ -67,7 +67,8 @@ class SASLBase(BaseExtension):
         else:
             # 3.2 style SASL
             _logger.debug("Registering new-style SASL capability")
-            return {"sasl" : [m.method for m in SASLBase.__subclasses__()]}
+            subclasses = SASLBase.__subclasses__()  # pylint: disable=no-member
+            return {"sasl" : [m.method for m in subclasses]}
 
     @event("link", "disconnected")
     def close(self, _):

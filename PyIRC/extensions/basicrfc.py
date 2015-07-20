@@ -50,7 +50,7 @@ class BasicRFC(BaseExtension):
         self.registered = False
 
     @event("link", "connected")
-    def handshake(self, caller):
+    def handshake(self, _):
         if not self.registered:
             if self.server_password:
                 self.send("PASS", [self.server_password])
@@ -60,21 +60,21 @@ class BasicRFC(BaseExtension):
                                self.gecos])
 
     @event("link", "disconnected")
-    def disconnected(self, caller):
+    def disconnected(self, _):
         self.connected = False
         self.registered = False
 
     @event("commands", Numerics.RPL_HELLO)
     @event("commands", "NOTICE")
-    def connected(self, caller, line):
+    def connected(self, _, line):
         self.connected = True
 
     @event("commands", "PING")
-    def pong(self, caller, line):
+    def pong(self, _, line):
         self.send("PONG", line.params)
 
     @event("commands", "NICK")
-    def nick(self, caller, line):
+    def nick(self, _, line):
         if line.hostmask.nick != self.nick:
             return
 
@@ -83,5 +83,5 @@ class BasicRFC(BaseExtension):
         self.nick = line.params[0]
 
     @event("commands", Numerics.RPL_WELCOME)
-    def welcome(self, caller, line):
+    def welcome(self, _, line):
         self.registered = True

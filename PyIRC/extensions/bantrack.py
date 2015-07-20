@@ -48,7 +48,7 @@ class BanTrack(BaseExtension):
     requires = ["ISupport", "ChannelTrack", "BasicRFC"]
 
     @event("channel", "channel_create")
-    def join(self, caller, channel):
+    def join(self, _, channel):
         _logger.debug("Creating ban modes for channel %s",
                       channel.name)
 
@@ -64,7 +64,7 @@ class BanTrack(BaseExtension):
         self.send("MODE", [channel.name, modes])
 
     @event("modes", "mode_list")
-    def mode_list(self, caller, setter, target, mode):
+    def mode_list(self, _, setter, target, mode):
         if mode.param is None:
             return
 
@@ -97,7 +97,7 @@ class BanTrack(BaseExtension):
         modes.append(entry)
 
     @event("modes", "mode_prefix")
-    def mode_prefix(self, caller, setter, target, mode):
+    def mode_prefix(self, _, setter, target, mode):
         if mode.mode == 'v':
             # Voice, don't care
             return
@@ -123,35 +123,35 @@ class BanTrack(BaseExtension):
                 self.send("MODE", [target, check])
 
     @event("commands", Numerics.RPL_ENDOFBANLIST)
-    def end_ban(self, caller, line):
+    def end_ban(self, _, line):
         self.set_synced(line, 'b')
 
     @event("commands", Numerics.RPL_ENDOFEXCEPTLIST)
-    def end_except(self, caller, line):
+    def end_except(self, _, line):
         self.set_synced(line, 'e')
 
     @event("commands", Numerics.RPL_ENDOFINVEXLIST)
-    def end_invex(self, caller, line):
+    def end_invex(self, _, line):
         self.set_synced(line, 'I')
 
     @event("commands", Numerics.RPL_ENDOFQUIETLIST)
-    def end_quiet(self, caller, line):
+    def end_quiet(self, _, line):
         self.set_synced(line, 'q')
 
     @event("commands", Numerics.ERR_ENDOFSPAMFILTERLIST)
-    def end_spamfilter(self, caller, line):
+    def end_spamfilter(self, _, line):
         self.set_synced(line, 'g')
 
     @event("commands", Numerics.ERR_ENDOFEXEMPTCHANOPSLIST)
-    def end_exemptchanops(self, caller, line):
+    def end_exemptchanops(self, _, line):
         self.set_synced(line, 'X')
 
     @event("commands", Numerics.RPL_ENDOFREOPLIST)
-    def end_reop(self, caller, line):
+    def end_reop(self, _, line):
         self.set_synced(line, 'R')
 
     @event("commands", Numerics.RPL_ENDOFAUTOOPLIST)
-    def end_autoop(self, caller, line):
+    def end_autoop(self, _, line):
         self.set_synced(line, 'w')
 
     def set_synced(self, line, mode):

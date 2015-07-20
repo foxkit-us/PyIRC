@@ -109,7 +109,7 @@ class CapNegotiate(BaseExtension):
             return cap
 
     @event("link", "connected", priority=-1000)
-    def send_cap(self, caller):
+    def send_cap(self, _):
         # This must come first!!! Even before USER/NICK!
         if not self.negotiating:
             return
@@ -126,7 +126,7 @@ class CapNegotiate(BaseExtension):
         raise SignalStop
 
     @event("link", "disconnected")
-    def close(self, caller):
+    def close(self, _):
         if self.timer is not None:
             try:
                 self.unschedule(self.timer)
@@ -138,7 +138,7 @@ class CapNegotiate(BaseExtension):
         self.local.clear()
 
     @event("commands", "CAP")
-    def dispatch(self, caller, line):
+    def dispatch(self, _, line):
         """Dispatch the CAP command."""
 
         if self.timer is not None:
@@ -153,7 +153,7 @@ class CapNegotiate(BaseExtension):
 
     @event("commands_cap", "new")
     @event("commands_cap", "ls")
-    def get_remote(self, caller, line):
+    def get_remote(self, _, line):
         remote = self.extract_caps(line)
         self.remote.update(remote)
 
@@ -187,12 +187,12 @@ class CapNegotiate(BaseExtension):
                 self.end(event)
 
     @event("commands_cap", "list")
-    def get_local(self, caller, line):
+    def get_local(self, _, line):
         self.local = caps = self.extract_caps(line)
         _logger.debug("CAPs active: %s", caps)
 
     @event("commands_cap", "ack", priority=-1000)
-    def ack(self, caller, line):
+    def ack(self, _, line):
         # XXX - I forgot why this was low priority but I'm keeping it like
         # this until I can get a better look
         caps = dict()
@@ -219,7 +219,7 @@ class CapNegotiate(BaseExtension):
             self.call_event("cap_perform", "ack", line, caps)
 
     @event("cap_perform", "ack", priority=10000)
-    def end_ack(self, caller, line, caps):
+    def end_ack(self, _, line, caps):
         # This ACK chain has ended, go on to the next.
         if self.ack_chains:
             self.call_event("cap_perform", "ack", *self.ack_chains.pop(0))
@@ -227,12 +227,12 @@ class CapNegotiate(BaseExtension):
             self.end(None, None)
 
     @event("commands_cap", "nak")
-    def nak(self, caller, line):
+    def nak(self, _, line):
         _logger.warn("Rejected CAPs: %s", line.params[-1].lower())
 
     @event("commands_cap", "end")
     @event("commands", Numerics.RPL_HELLO)
-    def end(self, caller, line):
+    def end(self, _, line):
         _logger.debug("Ending CAP negotiation")
 
         if self.timer is not None:

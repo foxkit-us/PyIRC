@@ -57,7 +57,7 @@ class CTCP(BaseExtension):
         self.send(line.command, line.params)
 
     @event("commands", "PRIVMSG")
-    def ctcp_in(self, caller, line):
+    def ctcp_in(self, _, line):
         """Check message for CTCP (incoming) and dispatch if necessary."""
         ctcp = CTCPMessage.parse(line)
         if not ctcp:
@@ -67,7 +67,7 @@ class CTCP(BaseExtension):
         self.call_event("commands_ctcp", command, ctcp, line)
 
     @event("commands", "NOTICE")
-    def nctcp_in(self, caller, line):
+    def nctcp_in(self, _, line):
         """Check message for NCTCP (incoming) and dispatch if necessary."""
         ctcp = CTCPMessage.parse(line)
         if not ctcp:
@@ -77,11 +77,11 @@ class CTCP(BaseExtension):
         self.call_event("commands_ctcp", command, ctcp, line)
 
     @event("commands_ctcp", "ping")
-    def c_ping(self, caller, ctcp, line):
+    def c_ping(self, _, ctcp, line):
         """Respond to CTCP ping."""
         self.nctcp(ctcp.target, "PING", ctcp.param)
 
     @event("commands_ctcp", "version")
-    def c_version(self, caller, ctcp, line):
+    def c_version(self, _, ctcp, line):
         """Respond to CTCP version."""
         self.nctcp(ctcp.target, "VERSION", self.version)

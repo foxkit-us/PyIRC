@@ -70,11 +70,11 @@ class SASLBase(BaseExtension):
             return {"sasl" : [m.method for m in SASLBase.__subclasses__()]}
 
     @event("link", "disconnected")
-    def close(self, caller):
+    def close(self, _):
         self.mechanisms.clear()
 
     @event("cap_perform", "ack", priority=100)
-    def auth(self, caller, line, caps):
+    def auth(self, _, line, caps):
         # Lower priority to ensure STARTTLS comes before
         if "sasl" not in caps:
             return
@@ -95,7 +95,7 @@ class SASLBase(BaseExtension):
         raise SignalDefer()
 
     @event("commands", Numerics.RPL_SASLSUCCESS)
-    def success(self, caller, line):
+    def success(self, _, line):
         _logger.info("SASL authentication succeeded as %s", self.username)
 
         self.authenticated = True
@@ -111,18 +111,18 @@ class SASLBase(BaseExtension):
     @event("commands", Numerics.ERR_SASLFAIL)
     @event("commands", Numerics.ERR_SASLTOOLONG)
     @event("commands", Numerics.ERR_SASLABORTED)
-    def fail(self, caller, line):
+    def fail(self, _, line):
         _logger.info("SASL authentication failed as %s", self.username)
 
         cap_negotiate = self.base.cap_negotiate
         self.resume_event("cap_perform", "ack")
 
     @event("commands", Numerics.ERR_SASLALREADY)
-    def already(self, caller, line):
+    def already(self, _, line):
         _logger.critical("Tried to log in twice, this shouldn't happen!")
 
     @event("commands", Numerics.RPL_SASLMECHS)
-    def get_mechanisms(self, caller, line):
+    def get_mechanisms(self, _, line):
         self.mechanisms = set(line.params[1].lower().split(','))
         _logger.info("Supported SASL mechanisms: %r", self.mechanisms)
 
@@ -139,7 +139,7 @@ class SASLPlain(SASLBase):
     method = "PLAIN"
 
     @event("commands", "AUTHENTICATE", priority=250)
-    def authenticate(self, caller, line):
+    def authenticate(self, _, line):
         """Implement the plaintext authentication method."""
         # Priority is arbitrary atm, but should be the least preferred auth
         # method if more are implemented

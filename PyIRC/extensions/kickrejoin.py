@@ -74,7 +74,7 @@ class KickRejoin(BaseExtension):
             self.parts = set()
 
     @event("commands_out", "PART")
-    def on_part_out(self, caller, line):
+    def on_part_out(self, _, line):
         """Command handler for PART's that are outgoing.
 
         This is used to ensure we know when we PART a channel, it's
@@ -109,7 +109,7 @@ class KickRejoin(BaseExtension):
 
     @event("commands", "KICK")
     @event("commands", "PART")
-    def on_kick(self, caller, line):
+    def on_kick(self, _, line):
         """Command handler for KICK and PART.
 
         This method receives a line as its parameter, and will use it to
@@ -161,7 +161,7 @@ class KickRejoin(BaseExtension):
         del self.scheduled[channel]
 
     @event("link", "disconnected")
-    def on_disconnected(self, caller):
+    def on_disconnected(self, _):
         """Disconnection event handler.
 
         We must ensure that any pending rejoins are unscheduled, so that

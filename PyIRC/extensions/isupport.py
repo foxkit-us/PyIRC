@@ -89,11 +89,11 @@ class ISupport(BaseExtension):
         return (True if value is None else value)
 
     @event("link", "disconnected")
-    def close(self, caller):
+    def close(self, _):
         self.supported.clear()
 
     @event("commands", Numerics.RPL_ISUPPORT)
-    def isupport(self, caller, line):
+    def isupport(self, _, line):
         """Handle ISUPPORT event."""
         # To differentiate between really old ircd servers
         # (RPL_BOUNCE=005 on those)

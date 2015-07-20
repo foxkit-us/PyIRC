@@ -84,7 +84,7 @@ class ServicesLogin(BaseExtension):
 
     @event("commands", "NOTICE")
     @event("commands", "PRIVMSG")
-    def authenticate(self, caller, line):
+    def authenticate(self, _, line):
         if self.password is None:
             return
 

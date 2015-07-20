@@ -76,7 +76,7 @@ class LagCheck(BaseExtension):
         self.timer = self.schedule(self.lagcheck, self.ping)
 
     @event("link", "disconnected")
-    def close(self, caller):
+    def close(self, _):
         self.last = None
         self.lag = None
 
@@ -87,13 +87,13 @@ class LagCheck(BaseExtension):
                 pass
 
     @event("commands", Numerics.RPL_WELCOME)
-    def start(self, caller, line):
+    def start(self, _, _):
         """Begin sending PING requests as soon as possible."""
 
         self.ping()
 
     @event("commands", "PONG")
-    def pong(self, caller, line):
+    def pong(self, _, line):
         """Use PONG reply to check lag."""
 
         if self.last is None:

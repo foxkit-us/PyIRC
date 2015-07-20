@@ -168,12 +168,12 @@ class ChannelTrack(BaseExtension):
         del self.channels[name]
 
     @event("protocol", "case_change")
-    def case_change(self, caller):
+    def case_change(self, _):
         self.channels = self.channels.convert(self.case)
         self.mode_timers = self.mode_timers.convert(self.case)
 
     @event("link", "disconnected")
-    def close(self, caller):
+    def close(self, _):
         self.channels.clear()
         for timer in self.mode_timers.values():
             try:
@@ -182,7 +182,7 @@ class ChannelTrack(BaseExtension):
                 pass
 
     @event("modes", "mode_prefix")
-    def prefix(self, caller, setter, target, mode):
+    def prefix(self, _, setter, target, mode):
         # Parse into hostmask in case of usernames-in-host
         channel = self.get_channel(target)
         if not channel:
@@ -199,7 +199,7 @@ class ChannelTrack(BaseExtension):
     @event("modes", "mode_key")
     @event("modes", "mode_param")
     @event("modes", "mode_normal")
-    def modes(self, caller, setter, target, mode):
+    def modes(self, _, setter, target, mode):
         channel = self.get_channel(target)
         if not channel:
             return
@@ -220,7 +220,7 @@ class ChannelTrack(BaseExtension):
         self.burst(caller, scope)
 
     @event("scope", "user_burst")
-    def burst(self, caller, scope):
+    def burst(self, _, scope):
         # NAMES event
         channel = self.get_channel(scope.scope)
         if not channel:
@@ -236,7 +236,7 @@ class ChannelTrack(BaseExtension):
 
     @event("scope", "user_part")
     @event("scope", "user_kick")
-    def part(self, caller, scope):
+    def part(self, _, scope):
         channel = self.get_channel(scope.scope)
         assert channel
 
@@ -259,7 +259,7 @@ class ChannelTrack(BaseExtension):
         del channel.users[user]
 
     @event("scope", "user_quit")
-    def quit(self, caller, scope):
+    def quit(self, _, scope):
         user = scope.target.nick
 
         for channel in self.channels.values():
@@ -267,7 +267,7 @@ class ChannelTrack(BaseExtension):
 
     @event("commands", Numerics.RPL_TOPIC)
     @event("commands", "TOPIC")
-    def topic(self, caller, line):
+    def topic(self, _, line):
         if line.command.lower() == "topic":
             channel = self.get_channel(line.params[0])
 
@@ -280,7 +280,7 @@ class ChannelTrack(BaseExtension):
         channel.topic = line.params[-1]
 
     @event("commands", Numerics.RPL_NOTOPIC)
-    def no_topic(self, caller, line):
+    def no_topic(self, _, line):
         channel = self.get_channel(line.params[1])
         if not channel:
             return
@@ -288,7 +288,7 @@ class ChannelTrack(BaseExtension):
         channel.topic = ''
 
     @event("commands", Numerics.RPL_TOPICWHOTIME)
-    def topic_who_time(self, caller, line):
+    def topic_who_time(self, _, line):
         channel = self.get_channel(line.params[1])
         if not channel:
             return
@@ -297,7 +297,7 @@ class ChannelTrack(BaseExtension):
         channel.topictime = int(line.params[3])
 
     @event("commands", Numerics.RPL_CHANNELURL)
-    def url(self, caller, line):
+    def url(self, _, line):
         channel = self.get_channel(line.params[1])
         if not channel:
             return
@@ -305,7 +305,7 @@ class ChannelTrack(BaseExtension):
         channel.url = line.params[-1]
 
     @event("commands", Numerics.RPL_CREATIONTIME)
-    def timestamp(self, caller, line):
+    def timestamp(self, _, line):
         channel = self.get_channel(line.params[1])
         if not channel:
             return
@@ -321,7 +321,7 @@ class ChannelTrack(BaseExtension):
                 pass
 
     @event("commands", Numerics.RPL_ENDOFNAMES)
-    def names_end(self, caller, line):
+    def names_end(self, _, line):
         channel = self.get_channel(line.params[1])
         if not channel:
             return
@@ -331,7 +331,7 @@ class ChannelTrack(BaseExtension):
         self.mode_timers[channel.name] = timer
 
     @event("commands", "NICK")
-    def nick(self, caller, line):
+    def nick(self, _, line):
         oldnick = line.hostmask.nick
         newnick = line.params[-1]
 

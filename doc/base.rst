@@ -25,12 +25,6 @@ casemapping
 .. automodule:: PyIRC.casemapping
    :members:
 
-extension
----------
-
-.. automodule:: PyIRC.extension
-   :members:
-
 formatting
 ----------
 

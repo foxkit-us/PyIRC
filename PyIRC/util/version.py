@@ -18,6 +18,7 @@ from collections import namedtuple
 
 
 def _gitversion():
+    """Determine the current git checkout, if any."""
     try:
         command = ["git", "log", "-1", "--pretty=format:%h"]
         return subprocess.check_output(command).decode()
@@ -45,6 +46,7 @@ Attributes:
 
 
 def _versionstr():
+    """Create the version string from the current parameters."""
     try:
         return pkg_resources.require("PyIRC")[0].version
     except Exception:

@@ -8,6 +8,7 @@
 
 
 def get_all_subclasses(cls):
+    """Generator for all subclasses for a given class."""
     for subclass in cls.__subclasses__():
         yield subclass
         yield from get_all_subclasses(subclass)

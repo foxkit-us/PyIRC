@@ -184,7 +184,7 @@ class CapNegotiate(BaseExtension):
             else:
                 # Negotiaton ends, no caps
                 _logger.debug("No CAPs to request!")
-                self.end(event)
+                self.end(event, line)
 
     @event("commands_cap", "list")
     def get_local(self, _, line):
@@ -249,7 +249,7 @@ class CapNegotiate(BaseExtension):
         # Call the hooks to resume connection
         self.call_event("link", "connected")
 
-    def register(self, cap, params=list(), replace=False):
+    def register(self, cap, params=None, replace=False):
         """Register that we support a specific CAP.
 
         :param cap:
@@ -262,6 +262,9 @@ class CapNegotiate(BaseExtension):
             Replace existing CAP report, if present
 
         """
+        if params is None:
+            params = []
+
         if replace or cap not in self.supported:
             self.supported[cap] = params
         else:

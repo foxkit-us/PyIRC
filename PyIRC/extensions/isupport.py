@@ -86,7 +86,7 @@ class ISupport(BaseExtension):
             return False
 
         value = self.supported[string]
-        return (True if value is None else value)
+        return True if value is None else value
 
     @event("link", "disconnected")
     def close(self, _):

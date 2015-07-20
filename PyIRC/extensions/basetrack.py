@@ -15,7 +15,6 @@ events for ingestion into the other tracking components.
 
 from collections import namedtuple
 from logging import getLogger
-from time import time
 
 
 from PyIRC.signal import event
@@ -68,14 +67,14 @@ class Scope:
                  "modes", "cause"]
 
     def __init__(self, target, scope=None, leaving=None, reason=None,
-                 gecos=None, account=None, modes=[], cause=None):
+                 gecos=None, account=None, modes=None, cause=None):
         self.target = target
         self.scope = scope
         self.leaving = leaving
         self.reason = reason
         self.gecos = gecos
         self.account = account
-        self.modes = modes
+        self.modes = [] if modes is None else modes
         self.cause = cause
 
 

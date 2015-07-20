@@ -71,8 +71,8 @@ class Channel:
         self.users = kwargs.get("users", IRCDefaultDict(case, set))
 
     def __repr__(self):
-        keys = ("modes", "topic", "topictime", "topicwho", "timestamp", "url",
-                "users")
+        keys = ("name", "modes", "topic", "topictime", "topicwho", "timestamp",
+                "url", "users")
 
         # key={0.key!r}
         rep = ["{0}={{0.{0}!r}}".format(k) for k in keys]

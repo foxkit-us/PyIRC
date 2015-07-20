@@ -20,9 +20,10 @@ format. Until that day comes, this needs to be here.
 from collections import namedtuple
 from functools import lru_cache
 from logging import getLogger
-from re import compile
 from string import ascii_letters, digits
 from types import SimpleNamespace
+
+import re
 
 from PyIRC.line import Line, Hostmask
 
@@ -30,14 +31,14 @@ from PyIRC.line import Line, Hostmask
 _logger = getLogger(__name__)
 
 
-prefix_match = compile(r"\(([A-Za-z0-9]+)\)(.+)")
+prefix_match = re.compile(r"\(([A-Za-z0-9]+)\)(.+)")
 numletters = ascii_letters + digits
 
 
 @lru_cache(maxsize=16)
 def _extban_compile(char, extbans):
     # TODO - inspircd chained extbans (BLEH)
-    return compile("{char}([{extbans}]):(.*)".format(**locals()))
+    return re.compile("{char}([{extbans}]):(.*)".format(**locals()))
 
 
 def extban_parse(string, supported_extban):

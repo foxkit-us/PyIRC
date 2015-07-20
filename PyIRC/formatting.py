@@ -20,7 +20,8 @@ except ImportError:
     from PyIRC.util.enum import Enum, IntEnum, unique
 
 from collections import namedtuple
-from re import compile
+
+import re
 
 
 class ColourRGB(namedtuple("ColourRGB", "red green blue")):
@@ -170,7 +171,7 @@ class Formatter:
     """
 
     # Used for matching colour codes
-    cmatch = compile('^([0-9]+)(?:,([0-9]+)?)?')
+    cmatch = re.compile('^([0-9]+)(?:,([0-9]+)?)?')
 
     def __init__(self):
         self.reset()

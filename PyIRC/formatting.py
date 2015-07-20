@@ -47,7 +47,7 @@ class ColourEscape(namedtuple("ColourEscape", "intense base")):
 
 
 @unique
-class Colour(IntEnum):
+class Colours(IntEnum):
 
     """A list of colour numbers from name to index.
 
@@ -76,7 +76,7 @@ class Colour(IntEnum):
 
 
 @unique
-class ColourRGB(Enum):
+class ColoursRGB(Enum):
 
     """Colours used on IRC, converted to RGB values.
 
@@ -105,7 +105,7 @@ class ColourRGB(Enum):
 
 
 @unique
-class ColourVT100(Enum):
+class ColoursVT100(Enum):
 
     """Colours used on IRC, approximated with VT100/ANSI escapes."""
 
@@ -201,6 +201,9 @@ class Formatter:
             String to reformat.
 
         """
+        # We have to do this because reset is not __init__
+        # (but they are still technically defined in __init__)
+        # pylint: disable=attribute-defined-outside-init
         ret = list()
         index = 0
         l = len(string)
@@ -314,10 +317,10 @@ class HTMLFormatter(Formatter):
 
         string = "<span style=\""
         if self.colour[0] != None:
-            value = ColourRGB[self.colour[0].name].value.html
+            value = ColoursRGB[self.colour[0].name].value.html
             string += 'color:{};'.format(value)
         if self.colour[1] != None:
-            value = ColourRGB[self.colour[1].name].value.html
+            value = ColoursRGB[self.colour[1].name].value.html
             string += 'background-color:{};'.format(value)
 
         string += "\">"
@@ -380,8 +383,8 @@ class VT100Formatter(Formatter):
                 # restore bold
                 ret.append(self.fmt_bold[1])
         else:
-            fg = ColourVT100[self.colour[0].name].value
-            bg = ColourVT100[self.colour[1].name].value
+            fg = ColoursVT100[self.colour[0].name].value
+            bg = ColoursVT100[self.colour[1].name].value
 
             if self.bold and not fg.intense:
                 # conflicts -_-

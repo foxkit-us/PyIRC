@@ -233,7 +233,7 @@ class Formatter:
                     continue
 
                 # Only 16 colours
-                self.colour = tuple(Colour(int(c) % 16) for c in
+                self.colour = tuple(Colours(int(c) % 16) for c in
                                     match.groups())
                 index += match.end()
 

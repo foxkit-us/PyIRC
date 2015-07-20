@@ -87,7 +87,7 @@ class LagCheck(BaseExtension):
                 pass
 
     @event("commands", Numerics.RPL_WELCOME)
-    def start(self, _, _):
+    def start(self, _, line):
         """Begin sending PING requests as soon as possible."""
 
         self.ping()

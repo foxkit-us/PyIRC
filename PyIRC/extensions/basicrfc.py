@@ -66,7 +66,7 @@ class BasicRFC(BaseExtension):
 
     @event("commands", Numerics.RPL_HELLO)
     @event("commands", "NOTICE")
-    def connected(self, _, line):
+    def on_connected(self, _, line):
         self.connected = True
 
     @event("commands", "PING")
@@ -74,7 +74,7 @@ class BasicRFC(BaseExtension):
         self.send("PONG", line.params)
 
     @event("commands", "NICK")
-    def nick(self, _, line):
+    def on_nick(self, _, line):
         if line.hostmask.nick != self.nick:
             return
 

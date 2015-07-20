@@ -3995,14 +3995,6 @@ class Numerics(Enum):
     - RFC2812
     """
 
-    ERR_BANNEDNICK = "485"
-    """
-     This numeric can be found in:
-    - Charybdis
-    - ircd-seven
-    - ircd-ratbox
-    """
-
     ERR_CHANBANREASON = "485"
     """
      This numeric can be found in:

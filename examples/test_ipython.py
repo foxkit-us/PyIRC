@@ -27,7 +27,7 @@ arguments = {
 }
 
 pyshell = InteractiveShellEmbed(
-    banner1='Starting a shell.  Remember to manually PONG or resume before you ping out!',
+    banner1='Starting a shell. Remember to PONG or resume before you ping out!',
     exit_msg='Returning to IRC message pump.')
 
 

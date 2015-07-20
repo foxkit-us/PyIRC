@@ -17,7 +17,6 @@ This also serves as a useful example.
 import socket
 import ssl
 
-#from time import sleep
 from sched import scheduler
 from logging import getLogger
 

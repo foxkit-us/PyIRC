@@ -74,9 +74,9 @@ class ISupport(BaseExtension):
         - PREFIX (value is of format "(modes)symbols for modes")
         - CASEMAPPING (ascii or rfc1459)
         - NICKLEN (value is a number, but stored as a string)
-        - CHANMODES (list of values enumerating modes into four distinct classes,
-          respectively: list modes, modes that send a parameter, modes that send a
-          parameter only when set, and parameterless modes)
+        - CHANMODES (list of values enumerating modes into four distinct
+          classes, respectively: list modes, modes that send a parameter, modes
+          that send a parameter only when set, and parameterless modes)
 
         :param string:
             ISUPPORT string to look up.

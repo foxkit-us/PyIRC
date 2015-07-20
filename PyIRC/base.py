@@ -312,7 +312,8 @@ class IRCBase(metaclass=ABCMeta):
         :param float time:
             Seconds into the future to perform the callback.
         :param callback:
-            Callback to perform. Use :meth:`functools.partial` to pass arguments.
+            Callback to perform. Use :meth:`functools.partial` to pass
+            arguments.
 
         """
         raise NotImplementedError()

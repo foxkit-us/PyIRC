@@ -10,10 +10,9 @@ No connections are made.
 """
 
 
-from logging import getLogger
+from logging import getLogger, DEBUG
 from queue import Empty, Queue
 from sched import scheduler
-#from time import sleep
 
 from PyIRC.base import IRCBase
 from PyIRC.line import Line
@@ -50,6 +49,7 @@ class NullSocket(IRCBase):
         """Inject a Line into the recvq for the client."""
         assert isinstance(line, Line)
         self.recvq.put(line)
+        self.recv()
 
     def loop(self):
         """Simple loop, unchanged from IRCSocket."""

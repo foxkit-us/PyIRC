@@ -69,7 +69,7 @@ class SignalDict(dict):
 
 class SignalStorage:
     """A helper class for scanning signals.
-    
+
     Since bound methods belong to the class instances and not the class itself,
     and signals would overlap if we simply added each bound method as a signal,
     we use this as a helper class.

@@ -32,6 +32,18 @@ Mode = namedtuple("Mode", "mode param adding timestamp")
 """A mode being added or removed"""
 
 
+mode_chars = {Numerics.RPL_BANLIST.value: 'b',
+              Numerics.RPL_EXCEPTLIST.value: 'e',
+              Numerics.RPL_INVITELIST.value: 'I',
+              Numerics.RPL_QUIETLIST.value: 'q',  # apparently dirty hax?
+              Numerics.RPL_SPAMFILTERLIST.value: 'g',
+              Numerics.RPL_EXEMPTCHANOPSLIST.value: 'X',
+              Numerics.RPL_AUTOOPLIST.value: 'w',
+              Numerics.RPL_REOPLIST.value: 'R',
+             }
+"""List numeric to mode char mapping."""
+
+
 class Scope:
 
     """A scope object passed to receivers of scope events.
@@ -240,20 +252,8 @@ class BaseTrack(BaseExtension):
 
         self.sent_protoctl = True
 
-    @event("commands", Numerics.RPL_BANLIST)
-    def ban_list(self, _, line):
-        return self.handle_list(line, 'b')
-
-    @event("commands", Numerics.RPL_EXCEPTLIST)
-    def except_list(self, _, line):
-        return self.handle_list(line, 'e')
-
-    @event("commands", Numerics.RPL_INVITELIST)
-    def invite_list(self, _, line):
-        return self.handle_list(line, 'I')
-
     @event("commands", Numerics.RPL_QUIETLIST)
-    def quiet_list(self, _, line):
+    def quiet_list(self, caller, line):
         isupport = self.base.isupport
         if 'q' in isupport.get("PREFIX"):
             _logger.critical("Got a quiet mode, but mode for quiet is " \
@@ -263,25 +263,17 @@ class BaseTrack(BaseExtension):
                              "version information")
             return
 
-        return self.handle_list(line, 'q')
+        return self.handle_list(caller, line)
 
+    @event("commands", Numerics.RPL_BANLIST)
+    @event("commands", Numerics.RPL_EXCEPTLIST)
+    @event("commands", Numerics.RPL_INVITELIST)
     @event("commands", Numerics.RPL_SPAMFILTERLIST)
-    def spamfilter_list(self, _, line):
-        return self.handle_list(line, 'g')
-
     @event("commands", Numerics.RPL_EXEMPTCHANOPSLIST)
-    def exemptchanops_list(self, _, line):
-        return self.handle_list(line, 'X')
-
     @event("commands", Numerics.RPL_AUTOOPLIST)
-    def autoop_list(self, _, line):
-        return self.handle_list(line, 'w')
-
     @event("commands", Numerics.RPL_REOPLIST)
-    def reop_list(self, _, line):
-        return self.handle_list(line, 'R')
-
-    def handle_list(self, line, mode):
+    def handle_list(self, caller, line):
+        modechar = mode_chars[caller.eventpair[1]]
         params = line.params
 
         try:
@@ -296,8 +288,8 @@ class BaseTrack(BaseExtension):
                 timestamp = None
         except Exception as e:
             _logger.warning("Bogus list mode received: %s (exception: %s)",
-                            mode, e)
+                            modechar, e)
             return
 
-        mode = Mode(mode, mask, True, timestamp)
+        mode = Mode(modechar, mask, True, timestamp)
         self.call_event("modes", "mode_list", setter, target, mode)

@@ -52,26 +52,31 @@ class IRCSocket(IRCBase):
 
     """
 
-    def connect(self):
-        family = self.kwargs.get("family", socket.AF_INET)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        family = kwargs.get("family", socket.AF_INET)
 
         self.socket = socket.socket(family=family)
-
-        if self.ssl:
-            self._socket = self.socket
-            if self.ssl is True:
-                self.socket = ssl.wrap_socket(self.socket)
-            else:
-                self.socket = self.ssl.wrap_socket(self.socket)
-
-        self.socket.settimeout(self.kwargs.get("socket_timeout", 10))
-        self.socket.connect((self.server, self.port))
 
         # Set up the scheduler now as it sends events
         self.scheduler = scheduler()
 
         # Data for the socket
         self.data = b''
+
+    def connect(self):
+        if self.ssl:
+            self._socket = self.socket
+            if self.ssl is True:
+                self.socket = ssl.wrap_socket(self.socket)
+            else:
+                # self.ssl is an externally-created SSLContext
+                # pylint: disable=no-member
+                self.socket = self.ssl.wrap_socket(self.socket)
+
+        self.socket.settimeout(self.kwargs.get("socket_timeout", 10))
+        self.socket.connect((self.server, self.port))
 
         super().connect()
 

@@ -25,15 +25,15 @@ class NullSocket(IRCBase):
 
     """The fake socket implementation of the IRC protocol."""
 
-    def connect(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
         self.scheduler = scheduler()
 
         self.recvq = Queue()
         self.sendq = Queue()
 
         self.disconnect_on_next = False
-
-        super().connect()
 
     def recv(self):
         if self.disconnect_on_next:

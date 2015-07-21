@@ -410,7 +410,7 @@ class UserTrack(BaseExtension):
     @event("scope", "user_quit")
     def quit(self, _, scope):
         # User's gone
-        self.remove_user(scope.target)
+        self.remove_user(scope.target.nick)
 
     @event("commands", Numerics.RPL_WELCOME)
     def welcome(self, _, line):

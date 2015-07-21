@@ -268,7 +268,8 @@ class VT100Formatter(Formatter):
     fmt_reverse = '7'
 
     # Special
-    fmt_resetcolour = ('39', '49')
+    fmt_resetforeground = 39
+    fmt_resetbackground = 49
 
     # ANSI SGR escape
     sgr = "\033[{}m"
@@ -280,7 +281,7 @@ class VT100Formatter(Formatter):
         ret = []
         if not (self.foreground and self.background):
             # restore background
-            ret.extend(self.fmt_resetcolour)
+            ret.extend((self.fmt_resetforeground, self.fmt_resetbackground))
             if self.bold:
                 # restore bold
                 ret.append(self.fmt_bold[1])
@@ -296,11 +297,19 @@ class VT100Formatter(Formatter):
                     ret.append(self.fmt_bold[1])
 
                 ret.append(str(fg.foreground))
+            else:
+                # Reset the foreground
+                ret.append(self.fmt_resetforeground)
+                if self.bold:
+                    # Restore bold
+                    ret.append(self.fmt_bold[1])
 
             if self.background is not None:
                 bg = ColoursVT100[self.background.name].value
 
                 ret.append(str(bg.background))
+            else:
+                ret.append(self.fmt_resetbackground)
 
         return self.sgr.format(';'.join(ret))
 

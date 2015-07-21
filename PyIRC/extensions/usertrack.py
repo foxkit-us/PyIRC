@@ -734,6 +734,12 @@ class UserTrack(BaseExtension):
         if len(line.params) != 12:
             # Not from us!
             return
+        
+        # Verify the server supports WHOX for real because Bahamut has its own
+        # Eldritch abomination we don't support (RWHO... you don't wanna know)
+        isupport = self.base.isupport
+        if not isupport.get("WHOX"):
+            return
 
         whoxid = line.params[1]
         channel = line.params[2]
@@ -757,7 +763,6 @@ class UserTrack(BaseExtension):
 
         if channel != '*':
             # Convert symbols to modes
-            isupport = self.base.isupport
             prefix = prefix_parse(isupport.get("PREFIX")).prefix_to_mode
 
             mode = set()

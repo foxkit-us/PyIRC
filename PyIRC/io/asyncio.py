@@ -119,7 +119,7 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
         arguments from the last call_event will be used.
 
         """
-        signal = self.get_signal((hclass, event))
+        signal = self.signals.get_signal((hclass, event))
         event = Event(signal.name, self)
         loop = asyncio.get_event_loop()
         ret = loop.run_until_complete(signal.call_async(event, *args, **kwargs))

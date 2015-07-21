@@ -174,7 +174,8 @@ class IRCBase(metaclass=ABCMeta):
         if not hasattr(self, "isupport"):
             case = "RFC1459"
         else:
-            case = self.isupport.get("CASEMAPPING").upper()
+            isupport = self.isupport  # pylint: disable=no-member
+            case = isupport.get("CASEMAPPING").upper()
 
         if case == "ASCII":
             case = IRCString.ASCII

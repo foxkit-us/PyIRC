@@ -51,8 +51,11 @@ class Formatter:
     :ivar bold:
         Set when text should be bold.
 
-    :ivar colour:
-        A (foreground, background) tuple; members not set are set to None.
+    :ivar foreground:
+        The present foreground colour. When unset, it is set to None.
+
+    :ivar background:
+        The present background colour. When unset, it is set to None.
 
     :ivar reverse:
         Set when colours are being reversed.
@@ -78,7 +81,8 @@ class Formatter:
 
         """
         self.bold = False
-        self.colour = (None, None)
+        self.foreground = None
+        self.background = None
         self.reverse = False
         self.italic = False
         self.underline = False
@@ -112,9 +116,9 @@ class Formatter:
                 ret.append(self.do_bold())
 
             elif char == FormattingCodes.colour.value:
-                if self.colour != (None, None):
+                if self.foreground or self.background:
                     # Strip colours (even before a change)
-                    self.colour = (None, None)
+                    self.foreground = self.background = None
                     ret.append(self.do_colour())
 
                 # Retrieve colour code
@@ -129,8 +133,10 @@ class Formatter:
                     continue
 
                 # Only 16 colours
-                self.colour = tuple(Colours(int(c) % 16) for c in
-                                    match.groups())
+                self.foreground = (Colours(int(c) % 16) if match.group(0) is
+                                   not None else None)
+                self.background = (Colours(int(c) % 16) if match.group(1) is
+                                   not None else None)
                 index += match.end()
 
                 ret.append(self.do_colour())
@@ -208,15 +214,15 @@ class HTMLFormatter(Formatter):
         return '<b>' if self.bold else '</b>'
 
     def do_colour(self):
-        if self.colour == (None, None):
+        if self.background or self.foreground:
             return "</span>"
 
         string = "<span style=\""
-        if self.colour[0] != None:
-            value = ColoursRGB[self.colour[0].name].value.html
+        if self.foreground is not None:
+            value = ColoursRGB[self.foreground.name].value.html
             string += 'color:{};'.format(value)
-        if self.colour[1] != None:
-            value = ColoursRGB[self.colour[1].name].value.html
+        if self.background is not None:
+            value = ColoursRGB[self.background.name].value.html
             string += 'background-color:{};'.format(value)
 
         string += "\">"
@@ -230,7 +236,7 @@ class HTMLFormatter(Formatter):
         ret = []
         if self.bold:
             ret.append("</b>")
-        if self.colour != (None, None):
+        if self.foreground or self.background:
             ret.append("</span>")
         if self.italic:
             ret.append("</i>")
@@ -272,15 +278,15 @@ class VT100Formatter(Formatter):
 
     def do_colour(self):
         ret = []
-        if self.colour == (None, None):
+        if not (self.foreground and self.background):
             # restore background
             ret.extend(self.fmt_resetcolour)
             if self.bold:
                 # restore bold
                 ret.append(self.fmt_bold[1])
         else:
-            fg = ColoursVT100[self.colour[0].name].value
-            bg = ColoursVT100[self.colour[1].name].value
+            fg = ColoursVT100[self.foreground.name].value
+            bg = ColoursVT100[self.background.name].value
 
             if self.bold and not fg.intense:
                 # conflicts -_-

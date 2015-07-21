@@ -130,7 +130,7 @@ class BanTrack(BaseExtension):
     def end_except(self, _, line):
         self.set_synced(line, 'e')
 
-    @event("commands", Numerics.RPL_ENDOFINVEXLIST)
+    @event("commands", Numerics.RPL_ENDOFINVITELIST)
     def end_invex(self, _, line):
         self.set_synced(line, 'I')
 

@@ -27,12 +27,16 @@ from PyIRC.numerics import Numerics
 _logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 
-class SASLBase(BaseExtension):
+class SASL(BaseExtension):
 
-    """Base SASL support. Does nothing on its own.
+    """The framework for SASL support. Authentication providers are needed to
+    actually provide the authentication.
+
+    :ivar mechanisms_server:
+        Mechanisms supported by the server
 
     :ivar mechanisms:
-        Mechanisms supported by the server
+        Mechanisms we support as a list, which is initalised at connect time.
 
     :ivar authenticated:
         Whether or not we are authenticated to services
@@ -45,21 +49,43 @@ class SASLBase(BaseExtension):
     """ Authentication method to use """
 
     def __init__(self, *args, **kwargs):
+        """Initalise the SASL extension.
+
+        :key sasl_mechanisms:
+            An iterable of authentication providers to use, as classes. By
+            default, PLAIN and EXTERNAL are used.
+
+        """
         super().__init__(*args, **kwargs)
 
-        self.mechanisms = set()
+        self.mechanisms_server = set()
+
         self.username = kwargs.get("sasl_username")
         self.password = kwargs.get("sasl_password", None)
 
         self.authenticated = False
 
-    @property
-    def can_authenticate(self):
-        """Whether or not we can authenticate with this method."""
-        return False
+        self.providers = kwargs.get("sasl_mechanisms",
+                                    [SASLPlain, SASLExternal])
+        self.mechanisms = []
+        self.attempt = 0
+
+    def _create_mechanisms(self):
+        self.attempt = 0
+        self.mechanisms = []
+        for c in self.providers:
+            provider = c(self)
+            if provider.can_authenticate:
+                self.mechanisms.append(provider)
+
+        if not self.mechanisms:
+            _logger.critical("No SASL auth methods are usable!")
 
     @property
     def caps(self):
+        if not self.mechanisms:
+            return None
+
         cap_negotiate = self.base.cap_negotiate
 
         if "sasl" not in cap_negotiate.remote:
@@ -72,69 +98,133 @@ class SASLBase(BaseExtension):
         else:
             # 3.2 style SASL
             _logger.debug("Registering new-style SASL capability")
-            subclasses = SASLBase.__subclasses__()  # pylint: disable=no-member
-            return {"sasl" : [m.method for m in subclasses]}
+            return {"sasl": [m.method for m in self.mechanisms]}
+
+    @event("link", "connected")
+    def connect(self, _):
+        self._create_mechanisms()
 
     @event("link", "disconnected")
     def close(self, _):
-        self.mechanisms.clear()
+        self.authenticated = False
+
+        self.mechanisms_server.clear()
+        self.mechanisms = []
+        self.attempt = 0
 
     @event("cap_perform", "ack", priority=100)
     def auth(self, _, line, caps):
         # Lower priority to ensure STARTTLS comes before
-        if "sasl" not in caps:
+        if "sasl" not in caps or not self.mechanisms:
             return
-        elif self.method is None:
-            raise NotImplementedError("Need an authentication method!")
-
-        if not self.can_authenticate:
-            return
-
-        self.authenticated = False
 
         cap_negotiate = self.base.cap_negotiate
         if cap_negotiate.remote["sasl"]:
             # 3.2 style
             params = cap_negotiate.remote["sasl"]
-            self.mechanisms = set(c.lower() for c in params)
+            self.mechanisms_server = set(c.lower() for c in params)
 
-        self.send("AUTHENTICATE", [self.method])
+            # Filter out methods we can't use
+            self.mechanisms = [m for m in mechanisms if m.method in params]
+            if not server.mechanisms:
+                _logger.critical("Server does not support any of our
+                                 authentication mechanisms!")
+                return
+
+        # Choose a method
+        self.send("AUTHENTICATE", [self.mechanisms[0].method])
 
         # Defer end of CAP
         raise SignalDefer()
 
     @event("commands", Numerics.RPL_SASLSUCCESS)
     def success(self, _, line):
-        _logger.info("SASL authentication succeeded as %s", self.username)
+        _logger.info("SASL auth succeeded as %s", self.username)
 
         self.authenticated = True
 
-        services_login = self.base.services_login
-        if services_login:
+        if self.base.services_login:
             # No need to authenticate
-            services_login.authenticated = True
+            self.base.services_login.authenticated = True
 
-        self.resume_event("cap_perform", "ack")
+        self.mechanisms = []
+        self.attempt = 0
+
+        # Resume CAP processing
+        return self.resume_event("cap_perform", "ack")
 
     @event("commands", Numerics.ERR_SASLFAIL)
-    @event("commands", Numerics.ERR_SASLTOOLONG)
     @event("commands", Numerics.ERR_SASLABORTED)
     def fail(self, _, line):
-        _logger.info("SASL authentication failed as %s", self.username)
+        _logger.warning("SASL auth method %s failed as %s",
+                        self.mechanisms[self.attempt].method, self.username)
 
-        self.resume_event("cap_perform", "ack")
+        if self.attempt + 1 >= len(self.mechanisms):
+            logger.critical("No SASL auth methods were successful.")
+            return self.resume_event("cap_perform", "ack")
+        else:
+            # We will try another mechanism
+            self.attempt += 1
+            mechanism = self.mechanisms[self.attempt]
+            self.send("AUTHENTICATE", [mechanism.method])
+
+    @event("commands", Numerics.ERR_SASLTOOLONG)
+    def fail_hard(self, _, line):
+        """This is called if SASL has a hard failure (possibly due to a bug in
+        the library)."""
+        _logger.warning("SASL auth method %s hard failed with numeric %d",
+                        self.mechanisms[self.attempt].method)
 
     @event("commands", Numerics.ERR_SASLALREADY)
     def already(self, _, line):
         _logger.critical("Tried to log in twice, this shouldn't happen!")
 
+        # Err on the side of caution...
+        return self.resume_event("cap_perform", "ack")
+
     @event("commands", Numerics.RPL_SASLMECHS)
     def get_mechanisms(self, _, line):
-        self.mechanisms = set(line.params[1].lower().split(','))
-        _logger.info("Supported SASL mechanisms: %r", self.mechanisms)
+        self.mechanisms_server = set(line.params[1].lower().split(','))
+        _logger.info("Supported SASL mechanisms: %r", self.mechanisms_server)
+
+    @event("commands", "AUTHENTICATE")
+    def authenticate(self, _, line):
+        if self.attempt >= len(self.mechanisms):
+            _logger.critical("Server requested to authenticate when we "
+                             "exhausted auth methods!")
+            self.send("AUTHENTICATE", ["+"])
+            return
+
+        sendstr = self.mechanisms[self.attempt].authenticate(line)
+        for t in (sendstr[i:i + 400] for i in range(0, len(sendstr), 400)):
+            # 400 is the max limit
+            self.send("AUTHENTICATE", [t])
+
+        if len(sendstr) % 400 == 0:
+            self.send("AUTHENTICATE", ["+"])
+
+class SASLAuthProviderBase:
+
+    """Base SASL authentication provider."""
+
+    method = None
+    """Authentication method to attempt to use."""
+
+    def __init__(self, extension):
+        self.extension = extension
+        self.base = extension.base
+
+    @property
+    def can_authenticate(self):
+        """Return whether or not we can authenticate."""
+        return False
+
+    def authenticate(self, line):
+        """Return the string to send via AUTHENTICATE."""
+        raise NotImplemented
 
 
-class SASLExternal(SASLBase):
+class SASLExternal(SASLAuthProviderBase:):
 
     """EXTERNAL authentication, usually CERTFP.
 
@@ -152,31 +242,25 @@ class SASLExternal(SASLBase):
         """Whether or not we can authenticate with this method."""
         return self.ssl and self.password is None
 
-    @event("commands", "AUTHENTICATE", priority=300)
     def authenticate(self, _, line):
         """Implement the EXTERNAL (certfp) authentication method."""
-        # This is the least preferred auth method of them all, but will be
-        # used if SSL is enabled and there is no password.
-        _logger.info("Logging in with EXTERNAL method as %s", self.username)
+        _logger.info("Logging in with EXTERNAL method as %s",
+                     self.extension.username)
 
         if line.params[-1] != '+':
             return
 
         # Generate the string for sending
-        sendstr = "{0}\0{0}\0".format(self.username)
+        sendstr = "{0}\0{0}\0".format(self.extension.username)
         sendstr = b64encode(sendstr.encode("utf-8", "replace"))
 
         # b64encode returns bytes, but our parser expects a str *sigh*
         sendstr = sendstr.decode("utf-8")
 
-        # This should never exceed 400 bytes, so this is fine.
-        self.send("AUTHENTICATE", [sendstr])
-
-        # Stop other auth methods.
-        raise SignalStop
+        return sendstr
 
 
-class SASLPlain(SASLBase):
+class SASLPlain(SASLAuthProviderBase):
 
     """PLAIN authentication.
 
@@ -190,32 +274,22 @@ class SASLPlain(SASLBase):
     @property
     def can_authenticate(self):
         """Whether or not we can authenticate with this method."""
-        return self.username and self.password
+        return self.extension.username and self.extension.password
 
-    @event("commands", "AUTHENTICATE", priority=250)
     def authenticate(self, _, line):
         """Implement the plaintext authentication method."""
-        # Priority is arbitrary atm, but should be the second least preferred
-        # auth method if more are implemented
-        if self.password is None:
-            # No password, try to fall back.
-            return
-
-        _logger.info("Logging in with PLAIN method as %s", self.username)
+        _logger.info("Logging in with PLAIN method as %s",
+                     self.extension.username)
 
         if line.params[-1] != '+':
             return
 
         # Generate the string for sending
-        sendstr = "{0}\0{0}\0{1}".format(self.username, self.password)
+        sendstr = "{0}\0{0}\0{1}".format(self.extension.username,
+                                         self.extension.password)
         sendstr = b64encode(sendstr.encode("utf-8", "replace"))
 
         # b64encode returns bytes, but our parser expects a str *sigh*
         sendstr = sendstr.decode("utf-8")
 
-        # Split into 400-sized chunks
-        for l in (sendstr[i:i + 400] for i in range(0, len(sendstr), 400)):
-            self.send("AUTHENTICATE", [l])
-
-        # Stop other auth methods.
-        raise SignalStop
+        return sendstr

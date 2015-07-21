@@ -141,13 +141,13 @@ class Hostmask:
         # XXX this assumes an ASCII scheme for comparisons. It should be
         # correct for most cases, though.
 
-        # Parse as a normal mask
-        mask = Hostmask.parse(mask.lower())
-
         if mask.startswith(('$', '#', '&', '!', '+')):
             # Special chars, at least the ones I know about
             raise ValueError("Possible extban detected, naive match "
                              "impossible")
+
+        # Parse as a normal mask
+        mask = Hostmask.parse(mask.lower())
 
         if mask.nick is not None:
             if self.nick is None:
@@ -157,12 +157,12 @@ class Hostmask:
             if not match.match(self.nick):
                 return False
         
-        if mask.user is not None:
-            if self.user is None:
+        if mask.username is not None:
+            if self.username is None:
                 return False
 
-            match = self._compile(mask.user)
-            if not match.match(self.user):
+            match = self._compile(mask.username)
+            if not match.match(self.username):
                 return False
 
         if mask.host is not None:

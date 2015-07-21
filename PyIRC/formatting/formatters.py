@@ -4,10 +4,9 @@
 # for licensing information.
 
 
-"""Formatting of IRC messages.
+"""IRC message formatting classes.
 
-This module contains IRC formatting-related data, and reformatting classes to
-deal with this formatting.
+This module contains reformatting classes to handle IRC formatting codes.
 
 Bold, italic, underline, reverse, and colours are handled.
 
@@ -15,117 +14,13 @@ Bold, italic, underline, reverse, and colours are handled.
 
 
 try:
-    from enum import Enum, IntEnum, unique
+    from enum import Enum, unique
 except ImportError:
-    from PyIRC.util.enum import Enum, IntEnum, unique
-
-from collections import namedtuple
+    from PyIRC.util.enum import Enum, unique
 
 import re
 
-
-class ColourRGB(namedtuple("ColourRGB", "red green blue")):
-
-    """A colour triplet (red, green, and blue)"""
-
-    @property
-    def html(self):
-        """Convert triplet to HTML format."""
-        return "#{:02X}{:02X}{:02X}".format(self.red, self.green, self.blue)
-
-
-class ColourEscape(namedtuple("ColourEscape", "intense base")):
-
-    """Defines a new ANSI/VT100-style colour escape sequence"""
-
-    @property
-    def foreground(self):
-        return self.base + 30
-
-    @property
-    def background(self):
-        return self.base + 40
-
-
-@unique
-class Colours(IntEnum):
-
-    """A list of colour numbers from name to index.
-
-    mIRC maintains a list of `colour indexes to names`_.
-
-    .. _colour indexes to names: http://www.mirc.com/colors.html
-
-    """
-
-    white = 0
-    black = 1
-    blue = 2
-    green = 3
-    light_red = 4
-    brown = 5
-    purple = 6
-    orange = 7
-    yellow = 8
-    light_green = 9
-    cyan = 10
-    light_cyan = 11
-    light_blue = 12
-    pink = 13
-    grey = 14
-    light_grey = 15
-
-
-@unique
-class ColoursRGB(Enum):
-
-    """Colours used on IRC, converted to RGB values.
-
-    mIRC maintains a list_ of colour codes to values.
-
-    .. _list: http://www.mirc.com/colors.html
-
-    """
-
-    white = ColourRGB(255, 255, 255)
-    black = ColourRGB(0, 0, 0)
-    blue = ColourRGB(0, 0, 127)
-    green = ColourRGB(0, 147, 0)
-    light_red = ColourRGB(255, 0, 0)
-    brown = ColourRGB(127, 0, 0)
-    purple = ColourRGB(156, 0, 156)
-    orange = ColourRGB(252, 127, 0)
-    yellow = ColourRGB(255, 255, 0)
-    light_green = ColourRGB(0, 252, 0)
-    cyan = ColourRGB(0, 147, 147)
-    light_cyan = ColourRGB(0, 255, 255)
-    light_blue = ColourRGB(0, 0, 252)
-    pink = ColourRGB(255, 0, 255)
-    grey = ColourRGB(127, 127, 127)
-    light_grey = ColourRGB(210, 210, 210)
-
-
-@unique
-class ColoursVT100(Enum):
-
-    """Colours used on IRC, approximated with VT100/ANSI escapes."""
-
-    white = ColourEscape(True, 7),
-    black = ColourEscape(False, 0),
-    blue = ColourEscape(False, 4),
-    green = ColourEscape(False, 2)
-    light_red = ColourEscape(True, 1)
-    brown = ColourEscape(False, 1)
-    purple = ColourEscape(False, 5)
-    orange = ColourEscape(False, 3)
-    yellow = ColourEscape(True, 3)
-    light_green = ColourEscape(True, 2)
-    cyan = ColourEscape(False, 6)
-    light_cyan = ColourEscape(True, 6)
-    light_blue = ColourEscape(True, 4)
-    pink = ColourEscape(True, 5)
-    grey = ColourEscape(True, 0)
-    light_grey = ColourEscape(False, 7)
+from PyIRC.formatting.colours import Colours, ColoursRGB, ColoursVT100
 
 
 @unique

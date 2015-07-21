@@ -300,7 +300,7 @@ class VT100Formatter(Formatter):
             if self.background is not None:
                 bg = ColoursVT100[self.background.name].value
 
-                ret.append(bg.background)
+                ret.append(str(bg.background))
 
         return self.sgr.format(';'.join(ret))
 

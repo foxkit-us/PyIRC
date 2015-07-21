@@ -240,7 +240,7 @@ class SASLExternal(SASLAuthProviderBase):
     @property
     def can_authenticate(self):
         """Whether or not we can authenticate with this method."""
-        return self.ssl and self.password is None
+        return self.base.ssl and self.extension.password is None
 
     def authenticate(self, _, line):
         """Implement the EXTERNAL (certfp) authentication method."""

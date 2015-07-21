@@ -161,7 +161,7 @@ class SASL(BaseExtension):
                         self.mechanisms[self.attempt].method, self.username)
 
         if self.attempt + 1 >= len(self.mechanisms):
-            logger.critical("No SASL auth methods were successful.")
+            _logger.critical("No SASL auth methods were successful.")
             return self.resume_event("cap_perform", "ack")
         else:
             # We will try another mechanism
@@ -174,7 +174,7 @@ class SASL(BaseExtension):
         """This is called if SASL has a hard failure (possibly due to a bug in
         the library)."""
         _logger.warning("SASL auth method %s hard failed with numeric %d",
-                        self.mechanisms[self.attempt].method)
+                        self.mechanisms[self.attempt].method, line.command)
 
     @event("commands", Numerics.ERR_SASLALREADY)
     def already(self, _, line):
@@ -218,11 +218,11 @@ class SASLAuthProviderBase:
     @property
     def can_authenticate(self):
         """Return whether or not we can authenticate."""
-        return False
+        raise NotImplementedError
 
     def authenticate(self, line):
         """Return the string to send via AUTHENTICATE."""
-        raise NotImplemented
+        raise NotImplementedError
 
 
 class SASLExternal(SASLAuthProviderBase):
@@ -243,7 +243,7 @@ class SASLExternal(SASLAuthProviderBase):
         """Whether or not we can authenticate with this method."""
         return self.base.ssl and self.extension.password is None
 
-    def authenticate(self, _, line):
+    def authenticate(self, line):
         """Implement the EXTERNAL (certfp) authentication method."""
         _logger.info("Logging in with EXTERNAL method as %s",
                      self.extension.username)
@@ -277,7 +277,7 @@ class SASLPlain(SASLAuthProviderBase):
         """Whether or not we can authenticate with this method."""
         return self.extension.username and self.extension.password
 
-    def authenticate(self, _, line):
+    def authenticate(self, line):
         """Implement the plaintext authentication method."""
         _logger.info("Logging in with PLAIN method as %s",
                      self.extension.username)

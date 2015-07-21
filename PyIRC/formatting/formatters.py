@@ -214,7 +214,7 @@ class HTMLFormatter(Formatter):
         return '<b>' if self.bold else '</b>'
 
     def do_colour(self):
-        if self.background or self.foreground:
+        if not (self.background or self.foreground):
             return "</span>"
 
         string = "<span style=\""
@@ -288,7 +288,7 @@ class VT100Formatter(Formatter):
         else:
             if self.foreground is not None:
                 fg = ColoursVT100[self.foreground.name].value
-            
+
                 if self.bold and not fg.intense:
                     # conflicts -_-
                     ret.append(self.fmt_bold[0])

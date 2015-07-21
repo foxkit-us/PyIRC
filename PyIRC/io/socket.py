@@ -57,7 +57,7 @@ class IRCSocket(IRCBase):
 
         family = kwargs.get("family", socket.AF_INET)
 
-        self.socket = socket.socket(family=family)
+        self._socket = self.socket = socket.socket(family=family)
 
         # Set up the scheduler now as it sends events
         self.scheduler = scheduler()
@@ -66,14 +66,13 @@ class IRCSocket(IRCBase):
         self.data = b''
 
     def connect(self):
-        if self.ssl:
-            self._socket = self.socket
-            if self.ssl is True:
-                self.socket = ssl.wrap_socket(self.socket)
-            else:
-                # self.ssl is an externally-created SSLContext
-                # pylint: disable=no-member
-                self.socket = self.ssl.wrap_socket(self.socket)
+        if self.ssl is True:
+            self.socket = ssl.wrap_socket(self.socket)
+        elif isinstance(self.ssl, ssl.SSLContext):
+            # pylint: disable=no-member
+            self.socket = self.ssl.wrap_socket(self.socket)
+        elif self.ssl is not (None, False):
+            raise TypeError("ssl must be an SSLContext, bool, or None")
 
         self.socket.settimeout(self.kwargs.get("socket_timeout", 10))
         self.socket.connect((self.server, self.port))
@@ -81,6 +80,7 @@ class IRCSocket(IRCBase):
         super().connect()
 
     def recv(self):
+        # pylint: disable=arguments-differ
         timeout = self.kwargs.get('recv_timeout', None)
 
         if not self.scheduler.empty():

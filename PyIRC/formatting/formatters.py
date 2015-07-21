@@ -268,8 +268,8 @@ class VT100Formatter(Formatter):
     fmt_reverse = '7'
 
     # Special
-    fmt_resetforeground = 39
-    fmt_resetbackground = 49
+    fmt_resetforeground = '39'
+    fmt_resetbackground = '49'
 
     # ANSI SGR escape
     sgr = "\033[{}m"

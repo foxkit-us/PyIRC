@@ -9,9 +9,10 @@
 
 
 import operator
+import re
 
 from itertools import takewhile
-from functools import reduce
+from functools import reduce, lru_cache
 from logging import getLogger
 
 
@@ -127,6 +128,52 @@ class Hostmask:
             return cls(nick=raw[:nick_sep],
                        username=raw[nick_sep + 1:host_sep],
                        host=raw[host_sep + 1:], mask=raw)
+
+    @staticmethod
+    @lru_cache(maxsize=128)
+    def _compile(string):
+        string = re.escape(string)
+        string = "^" + string.replace("\\*", ".*").replace("\\?", ".")  # XXX
+        return re.compile(string)
+
+    def match(self, mask):
+        """Check if a given mask matches this hostmask."""
+        # XXX this assumes an ASCII scheme for comparisons. It should be
+        # correct for most cases, though.
+
+        # Parse as a normal mask
+        mask = Hostmask.parse(mask.lower())
+
+        if mask.startswith(('$', '#', '&', '!', '+')):
+            # Special chars, at least the ones I know about
+            raise ValueError("Possible extban detected, naive match "
+                             "impossible")
+
+        if mask.nick is not None:
+            if self.nick is None:
+                return False
+
+            match = self._compile(mask.nick)
+            if not match.match(self.nick):
+                return False
+        
+        if mask.user is not None:
+            if self.user is None:
+                return False
+
+            match = self._compile(mask.user)
+            if not match.match(self.user):
+                return False
+
+        if mask.host is not None:
+            if self.host is None:
+                return False
+
+            match = self._compile(mask.host)
+            if not match.match(self.host):
+                return False
+
+        return True
 
     def __str__(self):
         if not self.maskstr:

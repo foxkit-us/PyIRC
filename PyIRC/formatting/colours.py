@@ -106,9 +106,9 @@ class ColoursVT100(Enum):
 
     """Colours used on IRC, approximated with VT100/ANSI escapes."""
 
-    white = ColourEscape(True, 7),
-    black = ColourEscape(False, 0),
-    blue = ColourEscape(False, 4),
+    white = ColourEscape(True, 7)
+    black = ColourEscape(False, 0)
+    blue = ColourEscape(False, 4)
     green = ColourEscape(False, 2)
     light_red = ColourEscape(True, 1)
     brown = ColourEscape(False, 1)

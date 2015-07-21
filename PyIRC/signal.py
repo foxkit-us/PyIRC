@@ -101,6 +101,10 @@ class SignalStorage:
         for slot in self.signal_slots[id(inst)]:
             slot.signal.delete(slot)
 
+    def get_bound(self, inst):
+        """Get all the slots for `inst`."""
+        return self.signal_slots[id(inst)]:
+
     def get_signal(self, name):
         """Retrieve the specified signal for this PyIRC instance."""
         return self.signals[name]

@@ -127,8 +127,8 @@ class SASL(BaseExtension):
             # Filter out methods we can't use
             self.mechanisms = [m for m in mechanisms if m.method in params]
             if not server.mechanisms:
-                _logger.critical("Server does not support any of our
-                                 authentication mechanisms!")
+                _logger.critical("Server does not support any of our "
+                                 "authentication mechanisms!")
                 return
 
         # Choose a method
@@ -224,7 +224,7 @@ class SASLAuthProviderBase:
         raise NotImplemented
 
 
-class SASLExternal(SASLAuthProviderBase:):
+class SASLExternal(SASLAuthProviderBase):
 
     """EXTERNAL authentication, usually CERTFP.
 

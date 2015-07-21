@@ -42,7 +42,7 @@ _builtin_extension_modules = {
     "KickRejoin": "kickrejoin",
     "LagCheck": "lag",
     "NumberSubstitueAlt": "altnick",
-    "SASLPlain": "sasl",
+    "SASL": "sasl",
     "ServicesLogin": "services",
     "StartTLS": "starttls",
     "UserTrack": "usertrack",
@@ -134,8 +134,7 @@ base_recommended = ["AutoJoin", "BasicAPI", "BasicRFC", "CTCP", "ISupport",
 """Basic recommended extensions that are compatible with most servers"""
 
 
-ircv3_recommended = base_recommended + ["CapNegotiate", "SASLPlain",
-                                        "StartTLS"]
+ircv3_recommended = base_recommended + ["CapNegotiate", "SASL", "StartTLS"]
 """Recommended extensions for use with IRCv3 compliant servers """
 
 

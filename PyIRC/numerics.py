@@ -4019,12 +4019,7 @@ class Numerics(Enum):
     """
      This numeric can be found in:
     - RFC2812
-    """
-
-    ERR_UNIQOPRIVSNEEDED = "485"
-    """
-     This numeric can be found in:
-    - IRCNet ircd
+    - IRCNet ircd (misspelled as ERR_UNIQOPRIVSNEEDED)
     """
 
     ERR_ACCOUNTONLY = "486"
@@ -4391,12 +4386,6 @@ class Numerics(Enum):
     - snircd
     """
 
-    ERR_CANTJOINOPERSONLY = "520"
-    """
-     This numeric can be found in:
-    - Inspircd
-    """
-
     ERR_MASKTOOWIDE = "520"
     """
      This numeric can be found in:
@@ -4408,6 +4397,7 @@ class Numerics(Enum):
     """
      This numeric can be found in:
     - UnrealIRCD
+    - Inspircd (as ERR_CANTJOINOPERSONLY)
     """
 
     ERR_LISTSYNTAX = "521"

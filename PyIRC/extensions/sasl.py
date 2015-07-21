@@ -173,7 +173,7 @@ class SASL(BaseExtension):
     def fail_hard(self, _, line):
         """This is called if SASL has a hard failure (possibly due to a bug in
         the library)."""
-        _logger.warning("SASL auth method %s hard failed with numeric %d",
+        _logger.warning("SASL auth method %s hard failed with numeric %s",
                         self.mechanisms[self.attempt].method, line.command)
 
     @event("commands", Numerics.ERR_SASLALREADY)

@@ -2,11 +2,12 @@
 
 from logging import basicConfig
 
+from PyIRC.formatting.pprint import PrettyPrintedIRCMixin
 from PyIRC.io.socket import IRCSocket
 from PyIRC.extensions import bot_recommended
 
 
-basicConfig(level="DEBUG")
+basicConfig(level="ERROR")
 
 arguments = {
     'serverport': ('irc.interlinked.me', 9999),
@@ -17,8 +18,10 @@ arguments = {
     'extensions': bot_recommended,
     'sasl_username': 'Testbot',
     'sasl_password': 'loldongs123',
-    'join': ['#PyIRC'],
+    'join': ['#test'],
 }
 
-i = IRCSocket(**arguments)
+class Socket(IRCSocket, PrettyPrintedIRCMixin): pass
+
+i = Socket(**arguments)
 i.loop()

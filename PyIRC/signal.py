@@ -103,7 +103,7 @@ class SignalStorage:
 
     def get_bound(self, inst):
         """Get all the slots for `inst`."""
-        return self.signal_slots[id(inst)]:
+        return self.signal_slots[id(inst)]
 
     def get_signal(self, name):
         """Retrieve the specified signal for this PyIRC instance."""

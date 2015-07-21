@@ -133,10 +133,10 @@ class Formatter:
                     continue
 
                 # Only 16 colours
-                self.foreground = (Colours(int(c) % 16) if match.group(0) is
-                                   not None else None)
-                self.background = (Colours(int(c) % 16) if match.group(1) is
-                                   not None else None)
+                self.foreground = (Colours(int(match.group(1)) % 16)
+                                   if match.group(1) is not None else None)
+                self.background = (Colours(int(match.group(2)) % 16)
+                                   if match.group(2) is not None else None)
                 index += match.end()
 
                 ret.append(self.do_colour())

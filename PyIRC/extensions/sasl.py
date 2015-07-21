@@ -17,7 +17,7 @@ servers, but only PLAIN is supported by this module at the moment.
 from logging import getLogger
 from base64 import b64encode
 
-from taillight.signal import SignalStop, SignalDefer
+from taillight.signal import SignalDefer
 
 from PyIRC.signal import event
 from PyIRC.extensions import BaseExtension
@@ -125,8 +125,9 @@ class SASL(BaseExtension):
             self.mechanisms_server = set(c.lower() for c in params)
 
             # Filter out methods we can't use
-            self.mechanisms = [m for m in mechanisms if m.method in params]
-            if not server.mechanisms:
+            self.mechanisms = [m for m in self.mechanisms if m.method in
+                               params]
+            if not self.mechanisms:
                 _logger.critical("Server does not support any of our "
                                  "authentication mechanisms!")
                 return

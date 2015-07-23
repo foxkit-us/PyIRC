@@ -48,9 +48,8 @@ Attributes:
 def _versionstr():
     """Create the version string from the current parameters."""
     try:
-        # pylint: disable=not-callable
         req = pkg_resources.require("PyIRC")  # pylint: disable=not-callable
-        return req.require("PyIRC")[0].version
+        return req[0].version
     except pkg_resources.DistributionNotFound:
         return "{major}.{minor}-{status[0]}[{gitversion}]".format(**globals())
 

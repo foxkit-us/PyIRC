@@ -53,6 +53,7 @@ class IRCEventlet(IRCBase):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # pylint: disable=no-member
 
         family = kwargs.get("family", socket.AF_INET)
 
@@ -62,10 +63,10 @@ class IRCEventlet(IRCBase):
         self.data = b''
 
     def connect(self):
+        # pylint: disable=no-member
         if self.ssl is True:
             self.socket = ssl.wrap_socket(self.socket)
         elif isinstance(self.ssl, ssl.SSLContext):
-            # pylint: disable=no-member
             self.socket = self.ssl.wrap_socket(self.socket)
         elif self.ssl is not (None, False):
             raise TypeError("ssl must be an SSLContext, bool, or None")
@@ -76,7 +77,7 @@ class IRCEventlet(IRCBase):
         super().connect()
 
     def recv(self):
-        # pylint: disable=arguments-differ
+        # pylint: disable=arguments-differ,no-member
         timeout = self.kwargs.get('recv_timeout', None)
         self.socket.settimeout(timeout)
         try:

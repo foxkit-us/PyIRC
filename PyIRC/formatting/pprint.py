@@ -24,6 +24,7 @@ from PyIRC.signal import event
 
 class PrettyPrintedIRCMixin(IRCBase):
     """Pretty print lines sent and received."""
+    # pylint: disable=abstract-method
 
     def _printf(self, msg):
         """Print formatted messages.

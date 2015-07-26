@@ -21,7 +21,9 @@ arguments = {
     'join': ['#test'],
 }
 
-class PrettyEventlet(IRCEventlet, PrettyPrintedIRCMixin): pass
+
+class PrettyEventlet(IRCEventlet, PrettyPrintedIRCMixin):
+    pass
 
 i = PrettyEventlet(**arguments)
 i.loop()

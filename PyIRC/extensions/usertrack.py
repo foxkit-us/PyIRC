@@ -758,7 +758,7 @@ class UserTrack(BaseExtension):
         if len(line.params) != 12:
             # Not from us!
             return
-        
+
         # Verify the server supports WHOX for real because Bahamut has its own
         # Eldritch abomination we don't support (RWHO... you don't wanna know)
         isupport = self.base.isupport

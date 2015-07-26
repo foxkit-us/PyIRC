@@ -156,7 +156,7 @@ class Hostmask:
             match = self._compile(mask.nick)
             if not match.match(self.nick):
                 return False
-        
+
         if mask.username is not None:
             if self.username is None:
                 return False

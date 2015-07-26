@@ -222,7 +222,7 @@ class PrettyPrintedIRCMixin(IRCBase):
                         # we don't care about the actual NAMES reply...
                         # we will use ENDOFNAMES if ChannelTrack is loaded.
                         '353',
-                       }
+                        }
 
     def recv(self, line):
         if line.command not in self.handled | self.ignored:

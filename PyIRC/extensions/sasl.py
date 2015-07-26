@@ -204,6 +204,7 @@ class SASL(BaseExtension):
         if len(sendstr) % 400 == 0:
             self.send("AUTHENTICATE", ["+"])
 
+
 class SASLAuthProviderBase:
 
     """Base SASL authentication provider."""

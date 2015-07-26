@@ -21,7 +21,9 @@ arguments = {
     'join': ['#test'],
 }
 
-class Socket(IRCSocket, PrettyPrintedIRCMixin): pass
+
+class Socket(IRCSocket, PrettyPrintedIRCMixin):
+    pass
 
 i = Socket(**arguments)
 i.loop()

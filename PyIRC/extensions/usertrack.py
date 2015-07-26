@@ -310,6 +310,8 @@ class UserTrack(BaseExtension):
 
     @event("modes", "mode_prefix")
     def prefix(self, _, setter, target, mode):
+        """Update the channel mode of a user."""
+        # pylint: disable=unused-argument
         # Parse into hostmask in case of usernames-in-host
         hostmask = Hostmask.parse(mode.param)
 
@@ -326,6 +328,7 @@ class UserTrack(BaseExtension):
 
     @event("scope", "user_burst")
     def burst(self, _, scope):
+        """Create or update users from a join burst."""
         target = scope.target
         channel = scope.scope
         modes = {m[0] for m in scope.modes} if scope.modes else set()
@@ -346,6 +349,7 @@ class UserTrack(BaseExtension):
 
     @event("scope", "user_join")
     def join(self, caller, scope):
+        """Handle a user join.  Schedule a WHO(X) for them."""
         self.burst(caller, scope)
 
         target = scope.target
@@ -368,6 +372,8 @@ class UserTrack(BaseExtension):
     @event("scope", "user_part")
     @event("scope", "user_kick")
     def part(self, _, scope):
+        """Handle a user leaving, possibly removing them if we no longer share
+        any channels with them."""
         target = scope.target
         channel = scope.scope
 
@@ -409,16 +415,19 @@ class UserTrack(BaseExtension):
 
     @event("scope", "user_quit")
     def quit(self, _, scope):
+        """Remove a user from tracking since they have quit."""
         # User's gone
         self.remove_user(scope.target.nick)
 
     @event("commands", Numerics.RPL_WELCOME)
     def welcome(self, _, line):
+        """Retrieve our current host on-connect."""
         # Obtain our own host
         self.send("USERHOST", [line.params[0]])
 
     @event("commands", Numerics.RPL_USERHOST)
     def userhost(self, _, line):
+        """Update a user's host - possibly our own."""
         params = line.params
         if not (len(params) > 1 and params[1]):
             return
@@ -449,6 +458,7 @@ class UserTrack(BaseExtension):
 
     @event("commands", Numerics.RPL_HOSTHIDDEN)
     def host_hidden(self, _, line):
+        """Update our own host."""
         params = line.params
 
         user = self.get_user(params[0])
@@ -458,6 +468,7 @@ class UserTrack(BaseExtension):
 
     @event("commands", "ACCOUNT")
     def account(self, _, line):
+        """Update a user's account information."""
         self.update_username_host(line)
 
         account = line.params[0]
@@ -476,6 +487,7 @@ class UserTrack(BaseExtension):
 
     @event("commands", "AWAY")
     def away(self, _, line):
+        """Update a user's away flag."""
         self.update_username_host(line)
 
         user = self.get_user(line.hostmask.nick)
@@ -497,6 +509,7 @@ class UserTrack(BaseExtension):
 
     @event("commands", "NICK")
     def nick(self, _, line):
+        """Update a user's nickname."""
         self.update_username_host(line)
 
         oldnick = line.hostmask.nick
@@ -511,6 +524,7 @@ class UserTrack(BaseExtension):
 
     @event("commands", Numerics.ERR_NOSUCHNICK)
     def notfound(self, _, line):
+        """Remove a non-existent user."""
         nick = line.params[1]
         if nick in self.auth_cb:
             # User doesn't exist, call back
@@ -564,6 +578,7 @@ class UserTrack(BaseExtension):
 
     @event("commands", Numerics.RPL_ENDOFWHOIS)
     def whois_end(self, _, line):
+        """Finish updating a user's information."""
         nick = line.params[1]
 
         self.whois_send.discard(nick)
@@ -582,6 +597,7 @@ class UserTrack(BaseExtension):
 
     @event("commands", Numerics.RPL_WHOISUSER)
     def whois_user(self, _, line):
+        """Update a user's identity information."""
         nick = line.params[1]
         username = line.params[2]
         host = line.params[3]
@@ -598,6 +614,7 @@ class UserTrack(BaseExtension):
 
     @event("commands", Numerics.RPL_WHOISCHANNELS)
     def whois_channels(self, _, line):
+        """Update a user's channel set."""
         user = self.get_user(line.params[1])
         if not user:
             return
@@ -612,6 +629,7 @@ class UserTrack(BaseExtension):
 
     @event("commands", Numerics.RPL_WHOISHOST)
     def whois_host(self, _, line):
+        """Update a user's IP and/or host."""
         user = self.get_user(line.params[1])
         if not user:
             return
@@ -633,6 +651,7 @@ class UserTrack(BaseExtension):
 
     @event("commands", Numerics.RPL_WHOISOPERATOR)
     def whois_operator(self, _, line):
+        """Update a user's operator flag."""
         user = self.get_user(line.params[1])
         if not user:
             return
@@ -641,6 +660,7 @@ class UserTrack(BaseExtension):
 
     @event("commands", Numerics.RPL_WHOISSECURE)
     def whois_secure(self, _, line):
+        """Update a user's SSL flag."""
         user = self.get_user(line.params[1])
         if not user:
             return
@@ -649,6 +669,7 @@ class UserTrack(BaseExtension):
 
     @event("commands", Numerics.RPL_WHOISSERVER)
     def whois_server(self, _, line):
+        """Update a user's currently connected server name."""
         user = self.get_user(line.params[1])
         if not user:
             return
@@ -658,6 +679,7 @@ class UserTrack(BaseExtension):
 
     @event("commands", Numerics.RPL_WHOISLOGGEDIN)
     def whois_account(self, _, line):
+        """Update a user's account, possibly firing auth callbacks."""
         user = self.get_user(line.params[1])
         if not user:
             return
@@ -674,6 +696,7 @@ class UserTrack(BaseExtension):
 
     @event("commands", Numerics.RPL_WHOREPLY)
     def who(self, _, line):
+        """Process a WHO response, updating the corresponding user object."""
         if len(line.params) < 8:
             # Some bizarre RFC breaking server
             _logger.warn("Malformed WHO from server")
@@ -731,6 +754,7 @@ class UserTrack(BaseExtension):
 
     @event("commands", Numerics.RPL_WHOSPCRPL)
     def whox(self, _, line):
+        """Process a WHOX response, updating the corresponding user object."""
         if len(line.params) != 12:
             # Not from us!
             return

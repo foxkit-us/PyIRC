@@ -100,8 +100,7 @@ class BaseTrack(BaseExtension):
                   Numerics.RPL_SPAMFILTERLIST.value: 'g',
                   Numerics.RPL_EXEMPTCHANOPSLIST.value: 'X',
                   Numerics.RPL_AUTOOPLIST.value: 'w',
-                  Numerics.RPL_REOPLIST.value: 'R',
-                  }
+                  Numerics.RPL_REOPLIST.value: 'R'}
     """List numeric to mode char mapping."""
 
     requires = ["ISupport"]

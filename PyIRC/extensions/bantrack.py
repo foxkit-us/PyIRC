@@ -47,8 +47,18 @@ class BanTrack(BaseExtension):
 
     requires = ["ISupport", "ChannelTrack", "BasicRFC"]
 
+    mode_chars = {Numerics.RPL_ENDOFBANLIST.value: 'b',
+                  Numerics.RPL_ENDOFEXCEPTLIST.value: 'e',
+                  Numerics.RPL_ENDOFINVITELIST.value: 'I',
+                  Numerics.RPL_ENDOFQUIETLIST.value: 'q',
+                  Numerics.ERR_ENDOFSPAMFILTERLIST.value: 'g',
+                  Numerics.ERR_ENDOFEXEMPTCHANOPSLIST.value: 'X',
+                  Numerics.RPL_ENDOFREOPLIST.value: 'R',
+                  Numerics.RPL_ENDOFAUTOOPLIST.value: 'w'}
+
     @event("channel", "channel_create")
     def join(self, _, channel):
+        """Initialise tracking for a new channel."""
         _logger.debug("Creating ban modes for channel %s",
                       channel.name)
 
@@ -65,6 +75,7 @@ class BanTrack(BaseExtension):
 
     @event("modes", "mode_list")
     def mode_list(self, _, setter, target, mode):
+        """Update a ban (or other list mode) entry."""
         if mode.param is None:
             return
 
@@ -123,38 +134,17 @@ class BanTrack(BaseExtension):
                 self.send("MODE", [target, check])
 
     @event("commands", Numerics.RPL_ENDOFBANLIST)
-    def end_ban(self, _, line):
-        self.set_synced(line, 'b')
-
     @event("commands", Numerics.RPL_ENDOFEXCEPTLIST)
-    def end_except(self, _, line):
-        self.set_synced(line, 'e')
-
     @event("commands", Numerics.RPL_ENDOFINVITELIST)
-    def end_invex(self, _, line):
-        self.set_synced(line, 'I')
-
     @event("commands", Numerics.RPL_ENDOFQUIETLIST)
-    def end_quiet(self, _, line):
-        self.set_synced(line, 'q')
-
     @event("commands", Numerics.ERR_ENDOFSPAMFILTERLIST)
-    def end_spamfilter(self, _, line):
-        self.set_synced(line, 'g')
-
     @event("commands", Numerics.ERR_ENDOFEXEMPTCHANOPSLIST)
-    def end_exemptchanops(self, _, line):
-        self.set_synced(line, 'X')
-
     @event("commands", Numerics.RPL_ENDOFREOPLIST)
-    def end_reop(self, _, line):
-        self.set_synced(line, 'R')
-
     @event("commands", Numerics.RPL_ENDOFAUTOOPLIST)
-    def end_autoop(self, _, line):
-        self.set_synced(line, 'w')
+    def set_synced(self, caller, line):
+        """Mark a list mode as synchronised."""
+        mode = self.mode_chars[caller.eventpair[1]]
 
-    def set_synced(self, line, mode):
         channeltrack = self.base.channel_track
         channel = channeltrack.get_channel(line.params[1])
         if not channel:

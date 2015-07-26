@@ -42,6 +42,7 @@ class UnderscoreAlt(BaseExtension):
     @event("commands", Numerics.ERR_ERRONEOUSNICKNAME, priority=-1000)
     @event("commands", Numerics.ERR_NONICKNAMEGIVEN, priority=-1000)
     def change_nick(self, _, line):
+        """Try to complete registration with a long _."""
         if self.registered:
             # Don't care!
             raise SignalStop()
@@ -100,6 +101,7 @@ class NumberSubstitueAlt(BaseExtension):
     @event("commands", Numerics.ERR_ERRONEOUSNICKNAME, priority=-1000)
     @event("commands", Numerics.ERR_NONICKNAMEGIVEN, priority=-1000)
     def change_nick(self, _, line):
+        """Try to complete registration by being a 1337 h4x0r."""
         if self.registered:
             # Don't care!
             raise SignalStop()

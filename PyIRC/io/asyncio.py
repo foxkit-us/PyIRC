@@ -101,6 +101,7 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
                 raise
 
     def connection_closed(self, exc):
+        """Handle an abrupt disconnection."""
         _logger.info("Connection lost: %s", str(exc))
         super().close()
 

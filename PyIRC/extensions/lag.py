@@ -77,6 +77,7 @@ class LagCheck(BaseExtension):
 
     @event("link", "disconnected")
     def close(self, _):
+        """Reset state since we are disconnected."""
         self.last = None
         self.lag = None
 

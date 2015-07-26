@@ -110,6 +110,7 @@ class CapNegotiate(BaseExtension):
 
     @event("link", "connected", priority=-1000)
     def send_cap(self, _):
+        """Initiate CAP negotation."""
         # This must come first!!! Even before USER/NICK!
         if not self.negotiating:
             return
@@ -127,6 +128,7 @@ class CapNegotiate(BaseExtension):
 
     @event("link", "disconnected")
     def close(self, _):
+        """Reset CAP state since we are disconnected."""
         if self.timer is not None:
             try:
                 self.unschedule(self.timer)
@@ -154,6 +156,7 @@ class CapNegotiate(BaseExtension):
     @event("commands_cap", "new")
     @event("commands_cap", "ls")
     def get_remote(self, _, line):
+        """Retrieve the remote CAPs."""
         remote = self.extract_caps(line)
         self.remote.update(remote)
 
@@ -188,11 +191,13 @@ class CapNegotiate(BaseExtension):
 
     @event("commands_cap", "list")
     def get_local(self, _, line):
+        """Retrieve our CAPs."""
         self.local = caps = self.extract_caps(line)
         _logger.debug("CAPs active: %s", caps)
 
     @event("commands_cap", "ack", priority=-1000)
     def ack(self, _, line):
+        """Perform CAP acknowledgement."""
         # XXX - I forgot why this was low priority but I'm keeping it like
         # this until I can get a better look
         caps = dict()
@@ -220,6 +225,8 @@ class CapNegotiate(BaseExtension):
 
     @event("cap_perform", "ack", priority=10000)
     def end_ack(self, _, line, caps):
+        """Either dispatch the next ACK, or finish."""
+        # pylint: disable=unused-argument
         # This ACK chain has ended, go on to the next.
         if self.ack_chains:
             self.call_event("cap_perform", "ack", *self.ack_chains.pop(0))
@@ -228,11 +235,14 @@ class CapNegotiate(BaseExtension):
 
     @event("commands_cap", "nak")
     def nak(self, _, line):
+        """Log CAP rejection."""
         _logger.warn("Rejected CAPs: %s", line.params[-1].lower())
 
     @event("commands_cap", "end")
     @event("commands", Numerics.RPL_HELLO)
     def end(self, _, line):
+        """Complete CAP negotiation."""
+        # pylint: disable=unused-argument
         _logger.debug("Ending CAP negotiation")
 
         if self.timer is not None:

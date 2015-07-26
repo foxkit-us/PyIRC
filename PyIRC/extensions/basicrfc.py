@@ -51,6 +51,7 @@ class BasicRFC(BaseExtension):
 
     @event("link", "connected")
     def handshake(self, _):
+        """Register with the server."""
         if not self.registered:
             if self.server_password:
                 self.send("PASS", [self.server_password])
@@ -61,20 +62,25 @@ class BasicRFC(BaseExtension):
 
     @event("link", "disconnected")
     def disconnected(self, _):
+        """Reset our state since we are disconnected now."""
         self.connected = False
         self.registered = False
 
     @event("commands", Numerics.RPL_HELLO)
     @event("commands", "NOTICE")
     def on_connected(self, _, line):
+        """Notate that we are successfully connected now."""
+        # pylint: disable=unused-argument
         self.connected = True
 
     @event("commands", "PING")
     def pong(self, _, line):
+        """Respond to server PING."""
         self.send("PONG", line.params)
 
     @event("commands", "NICK")
     def on_nick(self, _, line):
+        """Possibly update our nick, if we're the ones changing."""
         if line.hostmask.nick != self.nick:
             return
 
@@ -84,4 +90,6 @@ class BasicRFC(BaseExtension):
 
     @event("commands", Numerics.RPL_WELCOME)
     def welcome(self, _, line):
+        """Notate that we are successfully registered now."""
+        # pylint: disable=unused-argument
         self.registered = True

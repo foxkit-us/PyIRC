@@ -90,6 +90,7 @@ class ISupport(BaseExtension):
 
     @event("link", "disconnected")
     def close(self, _):
+        """Reset ISUPPORT state since we are disconnected."""
         self.supported.clear()
 
     @event("commands", Numerics.RPL_ISUPPORT)

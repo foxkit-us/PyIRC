@@ -200,6 +200,7 @@ class ChannelTrack(BaseExtension):
     @event("modes", "mode_param")
     @event("modes", "mode_normal")
     def modes(self, _, setter, target, mode):
+        """Update a channel's modes."""
         channel = self.get_channel(target)
         if not channel:
             return
@@ -211,6 +212,7 @@ class ChannelTrack(BaseExtension):
 
     @event("scope", "user_join")
     def join(self, caller, scope):
+        """Handle a user (possibly us) joining a channel."""
         # JOIN event
         basicrfc = self.base.basic_rfc
         if self.casecmp(scope.target.nick, basicrfc.nick):
@@ -221,6 +223,7 @@ class ChannelTrack(BaseExtension):
 
     @event("scope", "user_burst")
     def burst(self, _, scope):
+        """Add the users being bursted to the channel."""
         # NAMES event
         channel = self.get_channel(scope.scope)
         if not channel:
@@ -237,6 +240,7 @@ class ChannelTrack(BaseExtension):
     @event("scope", "user_part")
     @event("scope", "user_kick")
     def part(self, _, scope):
+        """Remove a user from a channel."""
         channel = self.get_channel(scope.scope)
         assert channel
 
@@ -260,6 +264,7 @@ class ChannelTrack(BaseExtension):
 
     @event("scope", "user_quit")
     def quit(self, _, scope):
+        """Remove a user from all the channels which they were joined."""
         user = scope.target.nick
 
         for channel in self.channels.values():
@@ -268,6 +273,7 @@ class ChannelTrack(BaseExtension):
     @event("commands", Numerics.RPL_TOPIC)
     @event("commands", "TOPIC")
     def topic(self, _, line):
+        """Update a channel's topic."""
         if line.command.lower() == "topic":
             channel = self.get_channel(line.params[0])
 
@@ -281,6 +287,7 @@ class ChannelTrack(BaseExtension):
 
     @event("commands", Numerics.RPL_NOTOPIC)
     def no_topic(self, _, line):
+        """Update the fact that a channel has no topic."""
         channel = self.get_channel(line.params[1])
         if not channel:
             return
@@ -289,6 +296,7 @@ class ChannelTrack(BaseExtension):
 
     @event("commands", Numerics.RPL_TOPICWHOTIME)
     def topic_who_time(self, _, line):
+        """Update the channel's topic metadata."""
         channel = self.get_channel(line.params[1])
         if not channel:
             return
@@ -298,6 +306,7 @@ class ChannelTrack(BaseExtension):
 
     @event("commands", Numerics.RPL_CHANNELURL)
     def url(self, _, line):
+        """Update the channel's URL."""
         channel = self.get_channel(line.params[1])
         if not channel:
             return
@@ -306,6 +315,7 @@ class ChannelTrack(BaseExtension):
 
     @event("commands", Numerics.RPL_CREATIONTIME)
     def timestamp(self, _, line):
+        """Update the channel's creation time."""
         channel = self.get_channel(line.params[1])
         if not channel:
             return
@@ -322,6 +332,7 @@ class ChannelTrack(BaseExtension):
 
     @event("commands", Numerics.RPL_ENDOFNAMES)
     def names_end(self, _, line):
+        """Schedule a MODE timer since we are finished bursting this channel."""
         channel = self.get_channel(line.params[1])
         if not channel:
             return
@@ -332,6 +343,7 @@ class ChannelTrack(BaseExtension):
 
     @event("commands", "NICK")
     def nick(self, _, line):
+        """Rename a user in all channels."""
         oldnick = line.hostmask.nick
         newnick = line.params[-1]
 

@@ -71,10 +71,11 @@ class SASL(BaseExtension):
         self.attempt = 0
 
     def _create_mechanisms(self):
+        """Initialise the mechanisms list."""
         self.attempt = 0
         self.mechanisms = []
-        for c in self.providers:
-            provider = c(self)
+        for mech in self.providers:
+            provider = mech(self)
             if provider.can_authenticate:
                 self.mechanisms.append(provider)
 
@@ -83,6 +84,13 @@ class SASL(BaseExtension):
 
     @property
     def caps(self):
+        """Return the SASL cap negotiation.
+
+        :returns:
+            Either "sasl" or a list of mechanisms, depending on what CAP version
+            the server is using.
+        """
+
         if not self.mechanisms:
             return None
 
@@ -102,10 +110,12 @@ class SASL(BaseExtension):
 
     @event("link", "connected")
     def connect(self, _):
+        """Initialise our state."""
         self._create_mechanisms()
 
     @event("link", "disconnected")
     def close(self, _):
+        """Clean up all our state since we are disconnected now."""
         self.authenticated = False
 
         self.mechanisms_server.clear()
@@ -114,6 +124,7 @@ class SASL(BaseExtension):
 
     @event("cap_perform", "ack", priority=100)
     def auth(self, _, line, caps):
+        """Initiate authentication to the server."""
         # Lower priority to ensure STARTTLS comes before
         if "sasl" not in caps or not self.mechanisms:
             return
@@ -140,6 +151,8 @@ class SASL(BaseExtension):
 
     @event("commands", Numerics.RPL_SASLSUCCESS)
     def success(self, _, line):
+        """Set up state and resume the CAP event; we're authenticated!"""
+        # pylint: disable=unused-argument
         _logger.info("SASL auth succeeded as %s", self.username)
 
         self.authenticated = True
@@ -157,6 +170,8 @@ class SASL(BaseExtension):
     @event("commands", Numerics.ERR_SASLFAIL)
     @event("commands", Numerics.ERR_SASLABORTED)
     def fail(self, _, line):
+        """Try to use the next mechanism since this one failed, or give up."""
+        # pylint: disable=unused-argument
         _logger.warning("SASL auth method %s failed as %s",
                         self.mechanisms[self.attempt].method, self.username)
 
@@ -178,6 +193,7 @@ class SASL(BaseExtension):
 
     @event("commands", Numerics.ERR_SASLALREADY)
     def already(self, _, line):
+        # pylint: disable=unused-argument
         _logger.critical("Tried to log in twice, this shouldn't happen!")
 
         # Err on the side of caution...
@@ -185,11 +201,13 @@ class SASL(BaseExtension):
 
     @event("commands", Numerics.RPL_SASLMECHS)
     def get_mechanisms(self, _, line):
+        """Retrieve the SASL mechanisms supported by the server."""
         self.mechanisms_server = set(line.params[1].lower().split(','))
         _logger.info("Supported SASL mechanisms: %r", self.mechanisms_server)
 
     @event("commands", "AUTHENTICATE")
     def authenticate(self, _, line):
+        """Try to authenticate with the server."""
         if self.attempt >= len(self.mechanisms):
             _logger.critical("Server requested to authenticate when we "
                              "exhausted auth methods!")

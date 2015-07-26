@@ -85,6 +85,7 @@ class ServicesLogin(BaseExtension):
     @event("commands", "NOTICE")
     @event("commands", "PRIVMSG")
     def authenticate(self, _, line):
+        """Try to authenticate to services."""
         if self.password is None:
             return
 

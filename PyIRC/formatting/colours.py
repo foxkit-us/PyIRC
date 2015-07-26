@@ -36,10 +36,12 @@ class ColourEscape(namedtuple("ColourEscape", "intense base")):
 
     @property
     def foreground(self):
+        """The ANSI constant for the foreground variant of this colour."""
         return self.base + 30
 
     @property
     def background(self):
+        """The ANSI constant for the background variant of this colour."""
         return self.base + 40
 
 

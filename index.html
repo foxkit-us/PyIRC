@@ -6,7 +6,7 @@
     <title>PyIRC by Elizafox</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -45,13 +45,24 @@ but also the advanced user who knows exactly what they're doing.</p>
 years, this library has been designed with standards compliance in mind. This
 library aims to follow <a href="http://tools.ietf.org/html/rfc1459.html">RFC1459</a>,
 <a href="http://tools.ietf.org/html/rfc2812.html">RFC2812</a>, and
-<a href="http://ircv3.org">IRCv3</a>. RFC1459 and RFC2812 compliance is basically finished
-(the different USER syntax in RFC2812 is not well-supported by anything, and
-so is ignored), as well as IRCv3.0 support. IRCv3.1 and 3.2 support should be
-fairly complete - if you notice any gaps, please file a bug. </p>
+<a href="http://ircv3.org">IRCv3</a></p>
 
-<p>Note the IRCv3.2 support has not been extensively tested due to the lack of
-conforming implementations.</p>
+<p>The following standards should be fully implemented:</p>
+
+<ul>
+<li>RFC1459 (though not all commands are handled because they are beyond the
+scope of the library)</li>
+<li>RFC2812 (the different USER syntax is not well-supported, and is not used)</li>
+<li>IRCv3.0</li>
+<li>IRCv3.1</li>
+</ul>
+
+<p>The following standards are not fully implemented:</p>
+
+<ul>
+<li>IRCv3.2 (tags and some capabilities should work, but most capabilities are
+not presently implemented; there are also few implementations right now).</li>
+</ul>
 
 <p>The library presently supports the following using an extensions system,
 meaning all of these are optional:</p>

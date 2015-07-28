@@ -108,11 +108,6 @@ class SASL(BaseExtension):
             _logger.debug("Registering new-style SASL capability")
             return {"sasl": [m.method for m in self.mechanisms]}
 
-    @event("link", "connected")
-    def connect(self, _):
-        """Initialise our state."""
-        self._create_mechanisms()
-
     @event("link", "disconnected")
     def close(self, _):
         """Clean up all our state since we are disconnected now."""
@@ -128,6 +123,9 @@ class SASL(BaseExtension):
         # Lower priority to ensure STARTTLS comes before
         if "sasl" not in caps or not self.mechanisms:
             return
+        
+        if not self.mechanisms:
+            self._create_mechanisms()
 
         cap_negotiate = self.base.cap_negotiate
         if cap_negotiate.remote["sasl"]:

@@ -140,6 +140,7 @@ class PrettyPrintedIRCMixin(IRCBase):
     @event("commands", Numerics.RPL_ENDOFMOTD)
     def motd_end(self, _, line):
         """Handle end of MOTD"""
+        # pylint: disable=unused-argument
         self._printf("End of MOTD")
 
     @event("commands", Numerics.RPL_MYINFO)

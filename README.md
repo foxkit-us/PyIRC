@@ -37,7 +37,7 @@ meaning all of these are optional:
 - Ability to hook connect, disconnect, and a variety of other higher-level
   events
 
-See the [TODO](http://github.com/Elizafox/PyIRC/blob/master/TODO.md) for the
+See the [TODO](http://github.com/foxkit-us/PyIRC/blob/master/TODO.md) for the
 list of planned features.
 
 ## Design
@@ -65,7 +65,7 @@ complete.
 
 ## Bugs
 Probably many! Tell us about them - see the support section or just file an
-issue on the [bug tracker :)](http://github.com/Elizacat/PyIRC/issues).
+issue on the [bug tracker :)](http://github.com/foxkit-us/PyIRC/issues).
 
 ## Support
 We can be reached easily at irc.interlinked.me #PyIRC for general questions.

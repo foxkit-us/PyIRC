@@ -40,7 +40,7 @@
 ## Enhanced SASL
 - [ ] ECDSA-NIST256P-CHALLENGE
 - [ ] DH-AES (maybe)
-- [ ] EXTERNAL (SSL machinery is there)
+- [x] EXTERNAL (SSL machinery is there)
 
 ## CTCP
 - [x] Hooks for CTCP/NCTCP events
@@ -54,8 +54,9 @@
       data, etc).
 - [x] Outgoing command hooks
 - [x] Automatic dependency loading
-- [ ] Unit tests (some)
+- [x] Unit tests (some)
 - [x] asyncio support
+- [x] eventlet support
 - [ ] gevent support (Py3 only, sorry!)
-- [ ] Allow addition of extensions without deleting every instance
+- [x] Allow addition of extensions without deleting every instance
 - [ ] Clean way to reload extensions

@@ -92,6 +92,9 @@ class SASL(BaseExtension):
         """
 
         if not self.mechanisms:
+            self._create_mechanisms()
+
+        if not self.mechanisms:
             return None
 
         cap_negotiate = self.base.cap_negotiate
@@ -123,9 +126,6 @@ class SASL(BaseExtension):
         # Lower priority to ensure STARTTLS comes before
         if "sasl" not in caps or not self.mechanisms:
             return
-        
-        if not self.mechanisms:
-            self._create_mechanisms()
 
         cap_negotiate = self.base.cap_negotiate
         if cap_negotiate.remote["sasl"]:

@@ -11,13 +11,18 @@ Written by people who have been involved in IRC daemon coding for over 7
 years, this library has been designed with standards compliance in mind. This
 library aims to follow [RFC1459](http://tools.ietf.org/html/rfc1459.html),
 [RFC2812](http://tools.ietf.org/html/rfc2812.html), and
-[IRCv3](http://ircv3.org). RFC1459 and RFC2812 compliance is basically finished
-(the different USER syntax in RFC2812 is not well-supported by anything, and
-so is ignored), as well as IRCv3.0 support. IRCv3.1 and 3.2 support should be
-fairly complete - if you notice any gaps, please file a bug. 
+[IRCv3](http://ircv3.org)
 
-Note the IRCv3.2 support has not been extensively tested due to the lack of
-conforming implementations.
+The following standards should be fully implemented:
+* RFC1459 (though not all commands are handled because they are beyond the
+  scope of the library)
+* RFC2812 (the different USER syntax is not well-supported, and is not used)
+* IRCv3.0
+* IRCv3.1
+
+The following standards are not fully implemented:
+* IRCv3.2 (tags and some capabilities should work, but most capabilities are
+  not presently implemented; there are also few implementations right now).
 
 The library presently supports the following using an extensions system,
 meaning all of these are optional:

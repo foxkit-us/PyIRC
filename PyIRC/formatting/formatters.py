@@ -283,8 +283,11 @@ class VT100Formatter(Formatter):
             # restore background
             ret.extend((self.fmt_resetforeground, self.fmt_resetbackground))
             if self.bold:
-                # restore bold
+                # restore bold if needed
                 ret.append(self.fmt_bold[1])
+            else:
+                # reset bold if needed
+                ret.append(self.fmt_bold[0])
         else:
             if self.foreground is not None:
                 fg = ColoursVT100[self.foreground.name].value
@@ -325,3 +328,38 @@ class VT100Formatter(Formatter):
 
     def do_underline(self):
         return self.sgr.format(self.fmt_underline[self.underline])
+
+
+class XTermFormatter(VT100Formatter):
+    
+    """Like the :py:class:`~PyIRC.formatting.formatters.VT100Formatter`, but
+    for XTerm."""
+
+    format_bg = ('38', '5')
+    format_fg = ('48', '5')
+
+    def do_colour(self):
+        ret = []
+        if not (self.foreground and self.background):
+            # Restore background like VT100, sans bold fixing
+            ret.extend((self.fmt_resetforeground, self.fmt_resetbackground))
+        else:
+            if self.foreground is not None:
+                ret.extend(self.format_fg)
+                ret.append(self.foreground.red)
+                ret.append(self.foreground.green)
+                ret.append(self.foreground.blue)
+            else:
+                # Reset foreground just in case
+                ret.append(self.fmt_resetforeground)
+            
+            if self.background is not None:
+                ret.extend(self.format_bg)
+                ret.append(self.background.red)
+                ret.append(self.background.green)
+                ret.append(self.background.blue)
+            else:
+                # Reset background just in case
+                ret.append(self.fmt_resetbackground)
+
+        return self.sgr.format(';'.join(ret))

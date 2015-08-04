@@ -9,7 +9,7 @@
 This module contains a mixin,
 :py:class:`~PyIRC.formatting.pprint.PrettyPrintedIRC`, that integrates with I/O
 backends to display messages flowing in and out in a way pleasing to the eye on
-most VT100-compatible terminals.
+most ANSI-compatible terminals.
 
 """
 
@@ -17,7 +17,7 @@ from datetime import datetime
 import os
 
 from PyIRC.base import IRCBase
-from PyIRC.formatting.formatters import VT100Formatter, XTermFormatter
+from PyIRC.formatting.formatters import ANSIFormatter, XTermFormatter
 from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
 from PyIRC.signal import event
@@ -202,7 +202,7 @@ class PrettyPrintedIRCMixin(IRCBase):
         if 'xterm' in os.environ.get('TERM', 'vt100').lower():
             self._pp_formatter = XTermFormatter()
         else:
-            self._pp_formatter = VT100Formatter()
+            self._pp_formatter = ANSIFormatter()
         self._pp_in_str = self._pp_formatter.format("\x036,1-->\x0f ")
         self._pp_out_str = self._pp_formatter.format("\x036,1<--\x0f ")
 

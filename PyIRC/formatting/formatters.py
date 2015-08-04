@@ -346,18 +346,20 @@ class XTermFormatter(VT100Formatter):
         else:
             if self.foreground is not None:
                 ret.extend(self.format_fg)
-                ret.append(self.foreground.red)
-                ret.append(self.foreground.green)
-                ret.append(self.foreground.blue)
+                colour = ColoursRGB[self.foreground.name].value
+                ret.append(str(colour.red))
+                ret.append(str(colour.green))
+                ret.append(str(colour.blue))
             else:
                 # Reset foreground just in case
                 ret.append(self.fmt_resetforeground)
             
             if self.background is not None:
                 ret.extend(self.format_bg)
-                ret.append(self.background.red)
-                ret.append(self.background.green)
-                ret.append(self.background.blue)
+                colour = ColoursRGB[self.background.name].value
+                ret.append(str(colour.red))
+                ret.append(str(colour.green))
+                ret.append(str(colour.blue))
             else:
                 # Reset background just in case
                 ret.append(self.fmt_resetbackground)

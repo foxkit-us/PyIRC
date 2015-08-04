@@ -20,7 +20,8 @@ except ImportError:
 
 import re
 
-from PyIRC.formatting.colours import Colours, ColoursRGB, ColoursVT100
+from PyIRC.formatting.colours import (Colours, ColoursRGB, ColoursANSI,
+                                      ColoursXTerm256)
 
 
 @unique
@@ -256,9 +257,15 @@ class HTMLFormatter(Formatter):
         return "<u>" if self.underline else "</u>"
 
 
-class VT100Formatter(Formatter):
+class ANSIFormatter(Formatter):
 
-    """A VT100 IRC formatting class, suitable for Unix-style terminals"""
+    """An ANSI IRC formatting class, useful as a generic terminal class.
+
+    This is mostly for a portable, lowest-common-denominator formatter. You
+    will probably want a better formatter than this.
+
+    8 colours are supported; some colours are emulated with bold.
+    """
 
     # (end, begin) pairs where applicable
     fmt_normal = '0'
@@ -290,7 +297,7 @@ class VT100Formatter(Formatter):
                 ret.append(self.fmt_bold[0])
         else:
             if self.foreground is not None:
-                fg = ColoursVT100[self.foreground.name].value
+                fg = ColoursANSI[self.foreground.name].value
 
                 if self.bold and not fg.intense:
                     # conflicts -_-
@@ -308,7 +315,7 @@ class VT100Formatter(Formatter):
                     ret.append(self.fmt_bold[1])
 
             if self.background is not None:
-                bg = ColoursVT100[self.background.name].value
+                bg = ColoursANSI[self.background.name].value
 
                 ret.append(str(bg.background))
             else:
@@ -330,10 +337,79 @@ class VT100Formatter(Formatter):
         return self.sgr.format(self.fmt_underline[self.underline])
 
 
-class XTermFormatter(VT100Formatter):
-    
-    """Like the :py:class:`~PyIRC.formatting.formatters.VT100Formatter`, but
-    for XTerm."""
+VT100Formatter = ANSIFormatter
+"""Deprecated alias."""
+
+
+class XTerm16ColourFormatter(ANSIFormatter):
+
+    """Like the :py:class:`~PyIRC.formatting.formatters.ANSIFormatter`, but
+    for XTerm. Most other terminals support this, excluding Windows."""
+
+    def do_colour(self):
+        ret = []
+        if not (self.foreground and self.background):
+            # Restore background like ANSI, sans bold fixing
+            ret.extend((self.fmt_resetforeground, self.fmt_resetbackground))
+        else:
+            if self.foreground is not None:
+                fg = ColoursANSI[self.foreground.name].value
+                ret.append(str(fg.foreground_16))
+            else:
+                # Reset foreground just in case
+                ret.append(self.fmt_resetforeground)
+
+            if self.background is not None:
+                bg = ColoursANSI[self.background.name].value
+                ret.append(str(fg.background_16))
+            else:
+                # Reset background just in case
+                ret.append(self.fmt_resetbackground)
+
+        return self.sgr.format(';'.join(ret))
+
+
+class XTerm256ColourFormatter(ANSIFormatter):
+
+    """Like the :py:class:`~PyIRC.formatting.formatters.ANSIFormatter`, but
+    for XTerm. Numerous other terminals support this."""
+
+    format_bg = ('38', '5')
+    format_fg = ('48', '5')
+
+    def do_colour(self):
+        ret = []
+        if not (self.foreground and self.background):
+            # Restore background like ANSI, sans bold fixing
+            ret.extend((self.fmt_resetforeground, self.fmt_resetbackground))
+        else:
+            if self.foreground is not None:
+                ret.extend(self.format_fg)
+                colour = ColoursXTerm256[self.foreground.name].value
+                ret.append(str(colour))
+            else:
+                # Reset foreground just in case
+                ret.append(self.fmt_resetforeground)
+
+            if self.background is not None:
+                ret.extend(self.format_bg)
+                colour = ColoursXTerm256[self.background.name].value
+                ret.append(str(colour))
+            else:
+                # Reset background just in case
+                ret.append(self.fmt_resetbackground)
+
+        return self.sgr.format(';'.join(ret))
+
+
+class XTermTrueColourFormatter(ANSIFormatter):
+
+    """Like the :py:class:`~PyIRC.formatting.formatters.ANSIFormatter`, but
+    for XTerm.
+
+    This features true-colour fidelity in many terminals (in XTerm, it will
+    use the nearest colour). This gives the best results.
+    """
 
     format_bg = ('48', '2')
     format_fg = ('38', '2')
@@ -341,7 +417,7 @@ class XTermFormatter(VT100Formatter):
     def do_colour(self):
         ret = []
         if not (self.foreground and self.background):
-            # Restore background like VT100, sans bold fixing
+            # Restore background like ANSI, sans bold fixing
             ret.extend((self.fmt_resetforeground, self.fmt_resetbackground))
         else:
             if self.foreground is not None:
@@ -353,7 +429,7 @@ class XTermFormatter(VT100Formatter):
             else:
                 # Reset foreground just in case
                 ret.append(self.fmt_resetforeground)
-            
+
             if self.background is not None:
                 ret.extend(self.format_bg)
                 colour = ColoursRGB[self.background.name].value

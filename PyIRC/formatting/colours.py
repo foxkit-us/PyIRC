@@ -44,6 +44,18 @@ class ColourEscape(namedtuple("ColourEscape", "intense base")):
         """The ANSI constant for the background variant of this colour."""
         return self.base + 40
 
+    @property
+    def foreground_16(self):
+        """The XTerm constant for the foreground variant of this colour in
+        16-colour mode."""
+        return self.foreground + (60 * self.intense)
+
+    @property
+    def background_16(self):
+        """The XTerm constant for the background variant of this colour in
+        16-colour mode."""
+        return self.background + (60 * self.intense)
+
 
 @unique
 class Colours(IntEnum):
@@ -104,7 +116,7 @@ class ColoursRGB(Enum):
 
 
 @unique
-class ColoursVT100(Enum):
+class ColoursANSI(Enum):
 
     """Colours used on IRC, approximated with VT100/ANSI escapes."""
 
@@ -124,3 +136,50 @@ class ColoursVT100(Enum):
     pink = ColourEscape(True, 5)
     grey = ColourEscape(True, 0)
     light_grey = ColourEscape(False, 7)
+
+
+@unique
+class ColoursVT100(Enum):
+
+    """Colours used on IRC, approximated with the XTerm 8-colour/VT100
+    palette."""
+
+    white = 15
+    black = 0
+    blue = 4
+    green = 10
+    light_red = 9
+    brown = 1
+    purple = 5
+    orange = 3
+    yellow = 11
+    light_green = 10
+    cyan = 6
+    light_cyan = 14
+    light_blue = 12
+    pink = 13
+    grey = 8
+    light_grey = 7
+
+
+@unique
+class ColoursXTerm256(Enum):
+
+    """Colours used on IRC, approximated with the XTerm 256-colour palette."""
+
+    white = 15
+    black = 0
+    blue = 4
+    green = 28
+    light_red = 9
+    brown = 1
+    purple = 127
+    orange = 208
+    yellow = 11
+    light_green = 10
+    cyan = 30
+    light_cyan = 14
+    light_blue = 12
+    pink = 13
+    grey = 8
+    light_grey = 252

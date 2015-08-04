@@ -48,6 +48,8 @@ class BasicRFC(BaseExtension):
         self.prev_nick = None
         self.nick = self.base.nick
         self.registered = False
+        
+        self.server_version = (None, [])
 
     @event("link", "connected")
     def handshake(self, _):
@@ -65,6 +67,10 @@ class BasicRFC(BaseExtension):
         """Reset our state since we are disconnected now."""
         self.connected = False
         self.registered = False
+
+        self.nick = self.base.nick
+        self.prev_nick = None
+        self.server_version = (None, [])
 
     @event("commands", Numerics.RPL_HELLO)
     @event("commands", "NOTICE")
@@ -93,3 +99,9 @@ class BasicRFC(BaseExtension):
         """Notate that we are successfully registered now."""
         # pylint: disable=unused-argument
         self.registered = True
+        self.send("VERSION", [])
+
+    @event("commands", Numerics.RPL_VERSION)
+    def version(self, _, line):
+        """Process the server version information."""
+        self.server_version = (line.params[1], line.params[2:])

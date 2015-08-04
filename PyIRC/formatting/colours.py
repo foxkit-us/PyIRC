@@ -139,30 +139,6 @@ class ColoursANSI(Enum):
 
 
 @unique
-class ColoursVT100(Enum):
-
-    """Colours used on IRC, approximated with the XTerm 8-colour/VT100
-    palette."""
-
-    white = 15
-    black = 0
-    blue = 4
-    green = 10
-    light_red = 9
-    brown = 1
-    purple = 5
-    orange = 3
-    yellow = 11
-    light_green = 10
-    cyan = 6
-    light_cyan = 14
-    light_blue = 12
-    pink = 13
-    grey = 8
-    light_grey = 7
-
-
-@unique
 class ColoursXTerm256(Enum):
 
     """Colours used on IRC, approximated with the XTerm 256-colour palette."""

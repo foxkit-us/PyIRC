@@ -98,7 +98,7 @@ class ChannelTrack(BaseExtension):
         the values are Channel instances.
 
     For more elaborate user tracking, see
-    :py:module::`~PyIRC.extensions.usertrack`.
+    :py:module:`~PyIRC.extensions.usertrack`.
 
     """
 

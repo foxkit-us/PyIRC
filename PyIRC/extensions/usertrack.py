@@ -40,7 +40,7 @@ class User:
         the values are their status modes on the channel.
 
     For more elaborate channel tracking, see
-    :py:module::`~PyIRC.extensions.channeltrack`.
+    :py:module:`~PyIRC.extensions.channeltrack`.
 
     """
 

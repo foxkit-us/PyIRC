@@ -18,6 +18,14 @@ try:
 except ImportError:
     from PyIRC.util.enum import Enum, unique
 
+import os
+import sys
+
+try:
+    import curses
+except ImportError:
+    curses = None
+
 import re
 
 from PyIRC.formatting.colours import (Colours, ColoursRGB, ColoursANSI,
@@ -441,3 +449,27 @@ class XTermTrueColourFormatter(ANSIFormatter):
                 ret.append(self.fmt_resetbackground)
 
         return self.sgr.format(';'.join(ret))
+
+
+def select_formatter():
+    if curses is not None:
+        curses.setupterm()
+
+        colors = curses.tigetnum("colors")
+        if colors >= 256:
+            t = os.environ.get("TRUECOLOR", os.environ.get("TRUECOLOUR"),
+                               False)
+            if t:
+                return XTermTrueColourFormatter
+
+            return XTerm256ColourFormatter
+        elif colours >= 16:
+            return XTerm16ColourFormatter
+
+        # Better than nothing...
+        return ANSIFormatter
+    else:
+        if sys.platform.startswith("win32"):
+            return ANSIFormatter
+
+        return NullFormatter

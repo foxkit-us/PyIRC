@@ -53,12 +53,12 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
             the mask or user to ban.
 
         :param duration:
-            How long the ban should last in seconds.
+            How long the ban should last in seconds, or ``None`` for permanent.
 
         :param reason:
             The reason for the ban.
 
-        ..note::
+        ..warning::
             This may have varying semantics based on IRC daemon. For example,
             on ircd-hybrid derivatives, this will be emulated as a global
             k:line, not as a g:line (which means something else entirely and
@@ -78,7 +78,8 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
         "k:line".
 
         :param server:
-            The name of the server to apply the ban to.
+            The name of the server to apply the ban to. ``None`` sets it to
+            the current server.
 
         :param user:
             A :py:class:`~PyIRC.extensions.usertrack.User` instance, a
@@ -86,7 +87,7 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
             the mask or user to ban.
 
         :param duration:
-            How long the ban should last in seconds.
+            How long the ban should last in seconds, or ``None`` for permanent.
 
         :param reason:
             The reason for the ban.
@@ -102,7 +103,7 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
             A string containing the IP or CIDR to ban.
 
         :param duration:
-            How long the ban should last in seconds.
+            How long the ban should last in seconds, or ``None`` for permanent.
 
         :param reason:
             The reason for the ban.
@@ -121,13 +122,14 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
         as a "z:line" or (in hybrid derivatives) as a "d:line".
         
         :param server:
-            The name of the server to apply the ban to.
+            The name of the server to apply the ban to. ``None`` sets it to
+            the current server.
 
         :param ip:
             A string containing the IP or CIDR to ban.
 
         :param duration:
-            How long the ban should last in seconds.
+            How long the ban should last in seconds, or ``None`` for permanent.
 
         :param reason:
             The reason for the ban.
@@ -143,13 +145,13 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def global_nickchan_ban(self, string, duration, reason):
         """Ban a nick on the IRC network. This is often referred to as a
-        "q:line" or (in hybrid derivatives) as a "resv".
+        "Q:line", "q:line", or (in hybrid derivatives) as a "resv".
 
         :param string:
             Nickname or channel to ban as a string.
 
         :param duration:
-            How long the ban should last in seconds.
+            How long the ban should last in seconds, or ``None`` for permanent.
 
         :param reason:
             The reason for the ban.
@@ -165,20 +167,24 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def server_nickchan_ban(self, server, string, duration, reason):
         """Ban a nick on an IRC server. This is often referred to as a
-        "q:line" or (in hybrid derivatives) as a "resv".
+        "Q:line", "q:line", or (in hybrid derivatives) as a "resv".
 
         :param server:
-            The name of the server to apply the ban to.
+            The name of the server to apply the ban to. ``None`` sets it to
+            the current server.
 
         :param string:
             Nickname or channel to ban as a string.
 
         :param duration:
-            How long the ban should last in seconds.
+            How long the ban should last in seconds, or ``None`` for permanent.
 
         :param reason:
             The reason for the ban.
         
+        ..warning::
+            This is not supported on InspIRCd, as all q:lines are global.
+
         ..note::
             This command requires IRC operator privileges, and may require
             additional privileges such as privsets or ACL's. Such documentation
@@ -191,18 +197,19 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
         """Ban a gecos on the IRC network. This is often referred to as an
         "sgline", "n:line", or (in hybrid derivatives) as an "x:line".
 
-        Not all servers support this. UnrealIRCd, notably, only supports
-        permanent GECOS bans.
-
         :param string:
             GECOS to ban as a string.
 
         :param duration:
-            How long the ban should last in seconds.
+            How long the ban should last in seconds, or ``None`` for permanent.
 
         :param reason:
             The reason for the ban.
         
+        ..warning::
+            Not all servers support this. UnrealIRCd, notably, only supports
+            permanent GECOS bans.
+
         ..note::
             This command requires IRC operator privileges, and may require
             additional privileges such as privsets or ACL's. Such documentation
@@ -214,22 +221,24 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
     def server_gecos_ban(self, server, string, duration, reason):
         """Ban a GECOS on an IRC server. This is often referred to as an
         "sgline", "n:line", or (in hybrid derivatives) as an "x:line".
-        
-        Not all servers support this. UnrealIRCd, notably, only supports
-        permanent GECOS bans.
-
+ 
         :param server:
-            The name of the server to apply the ban to.
+            The name of the server to apply the ban to. ``None`` sets it to
+            the current server.
 
         :param string:
             Nickname or channel to ban as a string.
 
         :param duration:
-            How long the ban should last in seconds.
+            How long the ban should last in seconds, or ``None`` for permanent.
 
         :param reason:
             The reason for the ban.
-        
+
+        ..warning::
+            Not all servers support this. UnrealIRCd, notably, only supports
+            permanent GECOS bans.
+
         ..note::
             This command requires IRC operator privileges, and may require
             additional privileges such as privsets or ACL's. Such documentation
@@ -294,7 +303,7 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def stats_global_nickchan_ban(self):
         """Get a list of all global nick/channel bans (often referred to as
-        "q:lines" or "resvs").
+        "Q:lines" or "resvs").
 
         ..note::
             This may not be implemented on some servers, restricted, or even
@@ -303,10 +312,9 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
         """
         raise NotImplementedError
 
-    @abc.abstractmethod
     def stats_server_nickchan_ban(self, server):
         """Get a list of all server nick/channel bans (often referred to as 
-        "q:lines" or "resvs").
+        "Q:lines", "q:lines" or "resvs").
 
         :param server:
             Server to get the list of bans on.

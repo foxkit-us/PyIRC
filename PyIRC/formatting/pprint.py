@@ -14,9 +14,10 @@ most VT100-compatible terminals.
 """
 
 from datetime import datetime
+import os
 
 from PyIRC.base import IRCBase
-from PyIRC.formatting.formatters import VT100Formatter
+from PyIRC.formatting.formatters import VT100Formatter, XTermFormatter
 from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
 from PyIRC.signal import event
@@ -198,7 +199,10 @@ class PrettyPrintedIRCMixin(IRCBase):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._pp_formatter = VT100Formatter()
+        if 'xterm' in os.environ.get('TERM', 'vt100').lower():
+            self._pp_formatter = XTermFormatter()
+        else:
+            self._pp_formatter = VT100Formatter()
         self._pp_in_str = self._pp_formatter.format("\x036,1-->\x0f ")
         self._pp_out_str = self._pp_formatter.format("\x036,1<--\x0f ")
 

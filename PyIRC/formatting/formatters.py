@@ -335,8 +335,8 @@ class XTermFormatter(VT100Formatter):
     """Like the :py:class:`~PyIRC.formatting.formatters.VT100Formatter`, but
     for XTerm."""
 
-    format_bg = ('38', '5')
-    format_fg = ('48', '5')
+    format_bg = ('38', '2')
+    format_fg = ('48', '2')
 
     def do_colour(self):
         ret = []

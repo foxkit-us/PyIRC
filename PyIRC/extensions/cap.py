@@ -81,6 +81,9 @@ class CapNegotiate(BaseExtension):
         # stored here.
         self.ack_chains = list()
 
+        # Temporary storage used for handling multiline CAP LIST replies
+        self.list_replies = dict()
+
     @staticmethod
     def extract_caps(line):
         """Extract caps from a line."""
@@ -150,13 +153,19 @@ class CapNegotiate(BaseExtension):
                 pass
             self.timer = None
 
+        list_end = True
+        # Handle IRCv3.2 multiline CAP replies
+        if line.params[2] == "*":
+            list_end = False
+
         cap_command = line.params[1].lower()
-        self.call_event("commands_cap", cap_command, line)
+        self.call_event("commands_cap", cap_command, (line, list_end)
 
     @event("commands_cap", "new")
     @event("commands_cap", "ls")
-    def get_remote(self, _, line):
+    def get_remote(self, _, data):
         """Retrieve the remote CAPs."""
+        (line, list_end) = data
         remote = self.extract_caps(line)
         self.remote.update(remote)
 
@@ -184,22 +193,34 @@ class CapNegotiate(BaseExtension):
                 caps = ' '.join(supported)
                 _logger.debug("Requesting caps: %s", caps)
                 self.send("CAP", ["REQ", caps])
-            else:
+            else if list_end:
                 # Negotiaton ends, no caps
                 _logger.debug("No CAPs to request!")
                 self.end(event, line)
 
     @event("commands_cap", "list")
-    def get_local(self, _, line):
+    def get_local(self, _, data):
         """Retrieve our CAPs."""
-        self.local = caps = self.extract_caps(line)
-        _logger.debug("CAPs active: %s", caps)
+        (line, list_end) = data
+
+        self.list_replies.update(self.extract_caps(line))
+        if not list_end:
+            return # Wait for the server to send the final CAP LIST reply line
+                   # before updating caps
+
+        self.local = self.list_replies
+        _logger.debug("CAPs active: %s", self.list_replies)
+        # Clear the list provided by CAP LIST; the next CAP LIST reply
+        # will be from a different CAP LIST query.
+        self.list_replies = dict()
+
 
     @event("commands_cap", "ack", priority=-1000)
-    def ack(self, _, line):
+    def ack(self, _, data):
         """Perform CAP acknowledgement."""
         # XXX - I forgot why this was low priority but I'm keeping it like
         # this until I can get a better look
+        line = data[0]
         caps = dict()
         for cap, params in self.extract_caps(line).items():
             if cap.startswith('-'):
@@ -234,11 +255,15 @@ class CapNegotiate(BaseExtension):
             self.end(None, None)
 
     @event("commands_cap", "nak")
-    def nak(self, _, line):
+    def nak(self, _, data):
         """Log CAP rejection."""
+        line = data[0]
         _logger.warn("Rejected CAPs: %s", line.params[-1].lower())
 
     @event("commands_cap", "end")
+    def _end_cap(self, _, data):
+        self.end(_, data[0])
+
     @event("commands", Numerics.RPL_HELLO)
     def end(self, _, line):
         """Complete CAP negotiation."""

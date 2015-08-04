@@ -452,14 +452,34 @@ class XTermTrueColourFormatter(ANSIFormatter):
 
 
 def select_formatter():
+    """Heuristically choose the best formatter. It may not be correct in all
+    cases; this is for simple applications such as a bot.
+
+    If Curses is found, it will check if stdout is a terminal. If it isn't,
+    :py:class:`~PyIRC.formatting.formatters.NullFormatter` is chosen. If it
+    is, the number of colours the terminal supports is probed, which
+    determines which formatter will be used.
+
+    If the platform is Windows, the
+    :py:class:`~PyIRC.formatting.formatters.ANSIFormatter` will be chosen.
+
+    If your environment supports ≥ 256 colours, set the environmental
+    variable ``TRUECOLOUR`` or ``TRUECOLOR`` to any value but 0 to try
+    full-colour support using the 
+    :py:class:`~PyIRC.formatting.formatters.XTermTrueColourFormatter``.
+    """
     if curses is not None:
+        if hasattr(os, "isatty") and not os.isatty(sys.stdout.fileno()):
+            # Probably best not to dump formatting into logs
+            return NullFormatter
+
         curses.setupterm()
 
         colors = curses.tigetnum("colors")
         if colors >= 256:
             t = os.environ.get("TRUECOLOR", os.environ.get("TRUECOLOUR"),
                                False)
-            if t:
+            if t and t != '0':
                 return XTermTrueColourFormatter
 
             return XTerm256ColourFormatter
@@ -470,6 +490,7 @@ def select_formatter():
         return ANSIFormatter
     else:
         if sys.platform.startswith("win32"):
+            # XXX differentiate stdout from a file
             return ANSIFormatter
 
         return NullFormatter

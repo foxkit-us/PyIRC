@@ -1,10 +1,10 @@
 from collections import namedtuple
 
 
-__all__ = ["base"]
+__all__ = ["base", "hybridfamily"]
 
 
-Extban = namedtuple("Extban", "ban target")
+Extban = namedtuple("Extban", "negative ban target")
 """A parsed extban."""
 
 

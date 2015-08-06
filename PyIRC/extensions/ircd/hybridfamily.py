@@ -459,7 +459,7 @@ class CharybdisServer(RatboxServer):
         if not ban in bans:
             logger.warning("Unknown extban received: %s", string[1])
 
-        return Extban(negative, ban, target)
+        return [Extban(negative, ban, target)]
 
     def stats_server_ban(self, server):
         """Get a list of all server bans (often referred to as "k:lines").

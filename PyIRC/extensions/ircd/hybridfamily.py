@@ -410,7 +410,7 @@ class HybridServer(BaseServer):
             self.send("STATS", ["u"])
 
 
-class RatboxServer(BaseServer):
+class RatboxServer(HybridServer):
 
     """The ircd-ratbox provider."""
 

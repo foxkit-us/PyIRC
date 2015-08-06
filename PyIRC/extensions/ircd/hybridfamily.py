@@ -461,6 +461,23 @@ class CharybdisServer(RatboxServer):
 
         return Extban(negative, ban, target)
 
+    def stats_server_ban(self, server):
+        """Get a list of all server bans (often referred to as "k:lines").
+
+        :param server:
+            Server to get the list of bans on.
+
+        ..note::
+            This may not be implemented on some servers, restricted, or even
+            filtered. Unless you are an operator, take the information that is
+            returned with a grain of salt.
+        """
+        # Global
+        self.send("STATS", ["g"])
+
+        # k:lines, temp and permanent
+        self.send("STATS", ["K", server])
+        self.send("STATS", ["K", server])
 
 class IrcdSevenServer(CharybdisServer):
 

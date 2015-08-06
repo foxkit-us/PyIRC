@@ -159,7 +159,7 @@ class CapNegotiate(BaseExtension):
             list_end = False
 
         cap_command = line.params[1].lower()
-        self.call_event("commands_cap", cap_command, (line, list_end)
+        self.call_event("commands_cap", cap_command, (line, list_end))
 
     @event("commands_cap", "new")
     @event("commands_cap", "ls")
@@ -193,7 +193,7 @@ class CapNegotiate(BaseExtension):
                 caps = ' '.join(supported)
                 _logger.debug("Requesting caps: %s", caps)
                 self.send("CAP", ["REQ", caps])
-            else if list_end:
+            elif list_end:
                 # Negotiaton ends, no caps
                 _logger.debug("No CAPs to request!")
                 self.end(event, line)

@@ -12,7 +12,7 @@ that may overlap or conflict, whilst ensuring everything cooperates.
 ------------------------------------------------
 .. automodule:: PyIRC.extensions
    :special-members:
-   :members
+   :members:
 
 :mod:`~PyIRC.extensions.autojoin` --- Automatically join channels on connection
 -------------------------------------------------------------------------------

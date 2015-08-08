@@ -11,7 +11,7 @@ with PyIRC.
 ----------------------------------------------------------------
 .. automodule:: PyIRC.extensions.ircd
    :special-members:
-   :members
+   :members:
 
 :mod:`~PyIRC.extensions.ircd.base` --- Base IRC daemon-specific extension API
 -----------------------------------------------------------------------------

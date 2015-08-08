@@ -40,10 +40,9 @@ class IRCDaemonExtension(BaseExtension):
         super().__init__(*args, **kwargs)
 
         self.extension_name = None
-        self.server = None
 
     @event("commands", Numerics.RPL_VERSION, priority=1000)
-    def probe(self, _, _):
+    def probe(self, _, line):
         for subclass in get_all_subclasses(base.BaseServer):
             if subclass.provides(self.base):
                 self.load_extension(subclass)

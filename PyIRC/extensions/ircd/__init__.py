@@ -15,7 +15,7 @@ from PyIRC.signal import event
 from PyIRC.util.classutil import get_all_subclasses
 
 
-__all__ = ["base", "hybridfamily"]
+__all__ = ["base", "hybridfamily", "inspircd"]
 
 
 Extban = namedtuple("Extban", "negative ban target")
@@ -28,7 +28,7 @@ BanEntry = namedtuple("BanEntry", "mask setter duration reason")
 
 # FIXME this sucks, importing them all here so the subclasses of BaseServer
 # are visible
-from PyIRC.extensions.ircd import base, hybridfamily
+from PyIRC.extensions.ircd import base, hybridfamily, inspircd
 
 
 class IRCDaemonExtension(BaseExtension):

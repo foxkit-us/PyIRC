@@ -8,6 +8,7 @@ PyIRC 3 documentation
    base
    extensions
    io
+   ircd
    util
    hooks
    examples

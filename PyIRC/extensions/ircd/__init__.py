@@ -22,8 +22,33 @@ Extban = namedtuple("Extban", "negative ban target")
 """A parsed extban."""
 
 
-BanEntry = namedtuple("BanEntry", "mask setter duration reason")
-"""A result from a ban lookup"""
+BanEntry = namedtuple("BanEntry", "mask settermask setter setdate duration "
+                      "reason oreason")
+"""A result from a ban lookup.
+
+:attr mask:
+    The mask the ban applies to.
+
+:attr settermask:
+    Mask of the user who set the ban (``None`` if not known).
+
+:attr setter:
+    Nickname or server of the person who set the ban (used in Hybrid
+    derivatives).
+
+:attr setdate:
+    A ``datetime`` object representing the date and time the ban was set.
+
+:attr duration:
+    The duration of the ban, ``None`` for permanent.
+
+:attr reason:
+    Reason for the ban. May be ``None``, in which case, there is no reason.
+
+:attr oreason:
+    The operator private reason for the ban. May be ``None``. Not all IRC
+    daemons support this.
+"""
 
 
 # FIXME this sucks, importing them all here so the subclasses of BaseServer

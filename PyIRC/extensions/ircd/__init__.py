@@ -34,7 +34,8 @@ BanEntry = namedtuple("BanEntry", "mask settermask setter setdate duration "
 
 :attr setter:
     Nickname or server of the person who set the ban (used in Hybrid
-    derivatives).
+    derivatives). Will be set to the originating server on Hybrid, or the
+    operator who set the ban locally.
 
 :attr setdate:
     A ``datetime`` object representing the date and time the ban was set.
@@ -49,6 +50,28 @@ BanEntry = namedtuple("BanEntry", "mask settermask setter setdate duration "
     The operator private reason for the ban. May be ``None``. Not all IRC
     daemons support this.
 """
+
+
+OperEntry = namedtuple("OperEntry", "flag privs hostmask idle")
+"""A result from an operator lookup.
+
+:attr flag:
+    The operator flag for the user (usually A for admin, O for normal
+    operator).
+
+:attr privs:
+    Privileges the operator has been granted, a server-specific field.
+
+:attr hostmask:
+    Hostmask of the operator, including the nick.
+
+:attr idle:
+    Time the operator has been idle, ``None`` if not given.
+"""
+
+
+Uptime = namedtuple("Uptime", "days hours minutes seconds")
+"""Server uptime. Fields are obvious."""
 
 
 # FIXME this sucks, importing them all here so the subclasses of BaseServer

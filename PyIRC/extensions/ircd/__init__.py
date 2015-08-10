@@ -40,7 +40,7 @@ BanEntry = namedtuple("BanEntry", "mask settermask setter setdate duration "
     A ``datetime`` object representing the date and time the ban was set.
 
 :attr duration:
-    The duration of the ban, ``None`` for permanent.
+    The duration of the ban in seconds, ``None`` for permanent.
 
 :attr reason:
     Reason for the ban. May be ``None``, in which case, there is no reason.

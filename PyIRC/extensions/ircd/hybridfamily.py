@@ -18,7 +18,7 @@ from logging import getLogger
 from PyIRC.line import Hostmask
 from PyIRC.signal import event
 from PyIRC.numerics import Numerics
-from PyIRC.extensions.ircd.base import BaseServer, BanEntry, OperEntry, uptime
+from PyIRC.extensions.ircd.base import BaseServer, BanEntry, OperEntry, Uptime
 
 _logger = getLogger(__name__)
 

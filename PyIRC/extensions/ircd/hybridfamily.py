@@ -10,14 +10,85 @@ This includes Charybdis and ircd-ratbox
 """
 
 import abc
+import re
 
+from datetime import datetime
 from logging import getLogger
 
+from PyIRC.line import Hostmask
 from PyIRC.signal import event
 from PyIRC.numerics import Numerics
-from PyIRC.extensions.ircd.base import BaseServer
+from PyIRC.extensions.ircd.base import BaseServer, BanEntry, OperEntry, uptime
 
 _logger = getLogger(__name__)
+
+
+_stats_ban_re = re.compile(
+    r"""^
+    (?:
+        # If there is a duration, this matches it.
+        # Beware the space at the end of the line!
+        Temporary\ (?P<type>.)-line\ (?P<duration>[0-9]+)\ min\.\ -\ 
+    )?
+    (?P<reason>.+?)
+    (?:
+        # Match the date and time of setting
+        \ \(
+            (?P<year>[0-9]{4})/(?P<month>[0-9]{1,2})/(?P<day>[0-9]{1,2})
+            \ (?P<hour>[0-9]{2})\.(?P<minute>[0-9]{2})
+        \)
+    )?
+    (?:
+        # Operator reason (and setter)
+        \|(?P<oreason>.+?)
+        (?:
+            # Setter format is (mask!of@setter{serv or nick})
+            \ \(
+                (?P<settermask>.+?)
+                \{
+                    (?P<setter>.+?)
+                \}
+            \)
+        )?
+    )?$""", re.X)
+
+
+# NOTE: below is not used by charybdis!
+_hybrid_oper_re = re.compile(
+    r"""^
+    \[
+        (?P<flag>[AO])
+    \]
+    (?:
+        # These may or may not occur, depending on if the oper is local or
+        # global
+        \[
+            (?P<privs>.+?)
+        \]
+    )?
+    \ (?P<nick>.+?)
+    \ \((?P<user>.+?)@(?P<host>.+?)\)
+    \ Idle: (?P<idle>[0-9]+)$
+    """, re.X)
+
+
+_charybdis_oper_re = re.compile(
+    r"""^
+    # Mind the trailing space!
+    (?P<nick>.+?) \ 
+    \(
+        (?P<user>.+?)@(?P<host>.+?)
+    \)$""", re.X)
+
+
+_uptime_re = re.compile(
+    r"""^
+    # Mind the trailing space
+    Server\ up\ (?P<days>[0-9]+)\ days,\ 
+    (?P<hours>[0-9]{1,2}):
+    (?P<minutes>[0-9]{1,2}):
+    (?P<seconds>[0-9]{1,2})$
+    """, re.X)
 
 
 class HybridServer(BaseServer):
@@ -39,7 +110,7 @@ class HybridServer(BaseServer):
 
     def generic_ban(self, ban, server, string, duration, reason):
         """Do a generic Hybrid-style ban.
-        
+
         :param ban:
             Ban type to send.
 
@@ -120,7 +191,7 @@ class HybridServer(BaseServer):
         """
         if hasattr(user, "host"):
             user = "{}@{}".format(user.user, user.host)
-        
+
         self.generic_ban("KLINE", server, user, duration, reason)
 
     def global_ip_ban(self, ip, duration, reason):
@@ -147,7 +218,7 @@ class HybridServer(BaseServer):
     def server_ip_ban(self, server, ip, duration, reason):
         """Ban an IP or CIDR range on an IRC server. This is often referred to
         as a "z:line" or (in hybrid derivatives) as a "d:line".
-        
+
         :param server:
             The name of the server to apply the ban to. ``None`` sets it to
             the current server.
@@ -160,7 +231,7 @@ class HybridServer(BaseServer):
 
         :param reason:
             The reason for the ban.
-        
+
         ..note::
             This command requires IRC operator privileges, and may require
             additional privileges such as privsets or ACL's. Such documentation
@@ -181,7 +252,7 @@ class HybridServer(BaseServer):
 
         :param reason:
             The reason for the ban.
-        
+
         ..note::
             This command requires IRC operator privileges, and may require
             additional privileges such as privsets or ACL's. Such documentation
@@ -206,7 +277,7 @@ class HybridServer(BaseServer):
 
         :param reason:
             The reason for the ban.
-        
+
         ..warning::
             This is not supported on InspIRCd, as all q:lines are global.
 
@@ -230,7 +301,7 @@ class HybridServer(BaseServer):
 
         :param reason:
             The reason for the ban.
-        
+
         ..warning::
             Not all servers support this. UnrealIRCd, notably, only supports
             permanent GECOS bans.
@@ -383,7 +454,7 @@ class HybridServer(BaseServer):
         """Get a list of IRC operators on the network. This may return either
         all the operators, or only the active ones, depending on the IRC
         daemon.
-        
+
         :param server:
             Server to get the list of opers on. ``None`` defaults to the
             current server. This usually does not matter.
@@ -408,6 +479,114 @@ class HybridServer(BaseServer):
             self.send("STATS", ["u", server])
         else:
             self.send("STATS", ["u"])
+
+    @staticmethod
+    def _parse_ban_lines(line):
+        """Parse a foo:line in Hybrid-derived servers, excluding RESV and
+        X:lines."""
+        params = line.params
+
+        match = _stats_ban_re.match(params[-1])
+        assert match, "Bug in the stats matching regex!"
+
+        t = match.group("type")
+        if t == "K" or t == "G":
+            # Don't use Hostmask, because this is for matching purposes.
+            mask = (params[3], params[4], params[2])
+        elif t == "D":
+            mask = params[2]
+        else:
+            _logger.warn("Unknown bantype, just guessing!")
+            mask = params[:-1]
+
+        duration = int(match.group("duration")) * 60
+
+        year = int(match.group("year"))
+        month = int(match.group("month"))
+        day = int(match.group("day"))
+        hour = int(match.group("hour"))
+        minute = int(match.group("minute"))
+        if all(x is not None for x in (year, month, day)):
+            setdate = datetime(year, month, day, hour, minute)
+        else:
+            setdate = None
+
+        oreason = m.group("oreason")
+        settermask = Hostmask.parse(m.group("settermask"))
+        setter = m.group("setter")
+
+        return BanEntry(mask, settermask, setter, setdate, duration, reason,
+                        oreason)
+
+    @event("commands", Numerics.RPL_STATSKLINE)
+    @event("commands", Numerics.RPL_STATSDLINE)
+    def parse_stats_ban(self, _, line):
+        """Evaluate a stats line for a ban."""
+        entry = self._parse_ban_lines(line)
+        if not entry:
+            return
+
+        if line.command == Numerics.RPL_STATSKLINE.value():
+            ban = "ban"
+        else:
+            ban = "ip_ban"
+
+        return self.call_event("stats", ban, entry)
+
+    @event("commands", Numerics.RPL_STATSQLINE)
+    def parse_stats_user(self, _, line):
+        """Evaluate a stats line for a RESV."""
+        duration = line.params[1]
+        mask = line.params[2]
+        reason = line.params[3]
+
+        entry = BanEntry(mask, None, None, None, duration, reason, None)
+        return self.call_event("stats", "nickchan_ban", entry)
+
+    @event("commands", Numerics.RPL_STATSXLINE)
+    def parse_stats_gecos(self, _, line):
+        """Evaluate a stats line for an X:line."""
+        duration = line.params[1]
+        mask = line.params[2]
+        reason = line.params[3]
+
+        entry = BanEntry(mask, None, None, None, duration, reason, None)
+        return self.call_event("stats", "gecos_ban", entry)
+
+    @event("commands", Numerics.RPL_STATSDEBUG)
+    def parse_stats_opers(self, _, line):
+        """Evaluate a stats line for an oper."""
+        if line.params[1] != 'p':
+            return
+
+        match = _hybrid_oper_re(line.params[-1])
+        if not match:
+            return
+
+        flag = match.group("flag")
+        privs = match.group("privs")
+
+        nick = match.group("nick")
+        user = match.group("user")
+        host = match.group("host")
+        hostmask = Hostmask(nick=nick, user=user, host=host)
+
+        idle = int(match.group("idle"))
+
+        entry = OperEntry(flag, privs, hostmask, idle)
+        return self.call_event("stats", "oper", entry)
+
+    @event("commands", Numerics.RPL_STATSUPTIME)
+    def parse_stats_uptime(self, _, line):
+        """Evaluate the server uptime."""
+        uptime = _uptime_re.match(line.params[-1])
+        days = int(uptime.group("days"))
+        hours = int(uptime.group("hours"))
+        minutes = int(uptime.group("minutes"))
+        seconds = int(uptime.group("seconds"))
+
+        uptime = Uptime(days, hours, minutes, seconds)
+        return self.call_event("stats", "uptime", uptime)
 
 
 class RatboxServer(HybridServer):
@@ -457,7 +636,7 @@ class CharybdisServer(RatboxServer):
         _, _, bans = isupport.get("EXTBAN").partition(",")
 
         if not ban in bans:
-            logger.warning("Unknown extban received: %s", string[1])
+            _logger.warn("Unknown extban received: %s", string[1])
 
         return [Extban(negative, ban, target)]
 
@@ -478,6 +657,25 @@ class CharybdisServer(RatboxServer):
         # k:lines, temp and permanent
         self.send("STATS", ["K", server])
         self.send("STATS", ["K", server])
+
+    @event("commands", Numerics.RPL_STATSDEBUG)
+    def parse_stats_opers(self, _, line):
+        """Evaluate a stats line for an oper."""
+        if line.params[1] != 'p':
+            return
+
+        match = _charybdis_oper_re.match(line.params[-1])
+        if not match:
+            return
+
+        nick = match.group("nick")
+        user = match.group("user")
+        host = match.group("host")
+        hostmask = Hostmask(nick=nick, user=user, host=host)
+
+        entry = OperEntry(None, None, hostmask, None)
+        return self.call_event("stats", "oper", entry)
+
 
 class IrcdSevenServer(CharybdisServer):
 

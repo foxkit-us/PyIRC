@@ -163,6 +163,9 @@ class UserTrack(BaseExtension):
         self.do_timeout = kwargs.get("do_timeout", True)
         self.timeout = kwargs.get("timeout", 30)
 
+        # Remove a user when they are out of all channels (used by MONITOR)
+        self.remove_no_channels = True
+
         # Create ourselves
         basicrfc = self.base.basic_rfc
         self.add_user(basicrfc.nick, user=self.username,
@@ -416,9 +419,10 @@ class UserTrack(BaseExtension):
                     continue
 
         elif not user.channels:
-            # No more channels and not us, delete
-            # TODO - possible MONITOR support?
-            self.remove_user(target.nick)
+            if self.do_timeout:
+                self.timeout_user(target.nick)
+            elif self.remove_no_channels:
+                self.remove_user(target.nick)
 
     @event("scope", "user_quit")
     def quit(self, _, scope):
@@ -828,3 +832,135 @@ class UserTrack(BaseExtension):
         user.operator = operator
         user.account = account
         user.ip = ip
+
+
+class MonitorUserTrack(BaseExtension):
+
+    """Support for the MONITOR extension.
+
+    This works in tandem with :py:class:`~PyIRC.extensions.usertrack.UserTrack`
+    to remove users as-needed.
+    """
+
+    requires = ["UserTrack", "ISupport"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        max_monitor = self.base.isupport.get("MONITOR")
+        if max_monitor is None:
+            _logger.warn("Could not use MonitorUserTrack extension on server "
+                         "because it is not supported.")
+            self._usable = False
+            return
+
+        self.max_monitor = max_monitor
+
+        self._usable = True
+
+        # Get max number of monitorable users
+
+        # Users we (the extension) are monitoring
+        self.monitoring = IRCSet()
+
+        # Users being monitored outside the extension
+        self.ext_monitoring = IRCSet()
+
+        # Unset
+        user_track = self.base.user_track
+        user_track.remove_no_channels = False
+
+    def monitor(self, nick, *args):
+        """Monitor the given nicknames.
+
+        ``*args`` is an additional list of nicknames.
+        """
+        self.ext_monitoring.add(nick)
+        for nick in args:
+            self.ext_monitoring.add(nick)
+
+    @event("commands_out", "MONITOR")
+    def monitor_out(self, _, line):
+        if len(line.params) < 2:
+            return
+
+        user_track = self.base.user_track
+        users = line.params[1].split(",")
+        if line.params[0] == "+":
+            for nick in users:
+                if nick in self.monitoring:
+                    continue
+
+                self.ext_monitoring.add(nick)
+        elif line.params[0] == "-":
+            for nick in users:
+                if nick in self.monitoring:
+                    # The user doesn't want them tracked, fine.
+                    user_track.user_remove(nick)
+                    self.monitoring.delete(nick)
+
+                self.ext_monitoring.discard(nick)
+
+    @event("commands", Numerics.RPL_MONONLINE)
+    def monitor_online(self, _, line):
+        """Add users who come online on MONITOR."""
+        if not self._usable:
+            return
+
+        monitor = [Hostmask.parse(h) for h in line.params[-1].split(",")]
+        if not monitor:
+            return
+
+        user_track = self.base.user_track
+        for user in monitor:
+            user_track.add_user(user.nick, username=user.username,
+                                host=user.host)
+
+    @event("commands", Numerics.RPL_MONOFFLINE)
+    def monitor_offline(self, _, line):
+        """Remove users who go offline on MONITOR."""
+        if not self._usable:
+            return
+
+        monitor = [Hostmask.parse(h) for h in line.params[-1].split(",")]
+        if not monitor:
+            return
+
+        user_track = self.base.user_track
+        for user in monitor:
+            if user_track.get_user(user.nick):
+                user_track.remove_user(user.nick)
+
+    @event("scope", "user_part", priority=10000)  # Ensure this comes last
+    @event("scope", "user_kick", priority=10000)
+    def part(self, _, scope):
+        """Handle a user parting, registering them for monitoring."""
+        if not self._usable:
+            return
+
+        target = scope.target
+        nick = target.nick
+        user_track = self.base.user_track
+
+        user = user_track.get_user(nick)
+        if not user or user.channels:
+            return
+
+        if len(self.monitoring + self.ext_monitoring) >= self.max_monitor:
+            # Delete the user, we're out of space!
+            user_track.remove_user(nick)
+            return
+
+        if nick in self.monitoring:
+            return
+
+        self.monitoring.add(nick)
+        self.send("MONITOR", ["+", nick])
+
+    @event("user", "user_delete")
+    def user_delete(self, user):
+        """Handle when a user is deleted."""
+        if user.nick in self.monitoring:
+            self.monitoring.delete(user.nick)
+            if user not in self.ext_monitoring:
+                self.send("MONITOR", ["-", user.nick])

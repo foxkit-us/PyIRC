@@ -14,8 +14,6 @@ import abc
 
 from logging import getLogger
 
-from PyIRC.signal import event
-from PyIRC.numerics import Numerics
 from PyIRC.extensions import BaseExtension
 
 

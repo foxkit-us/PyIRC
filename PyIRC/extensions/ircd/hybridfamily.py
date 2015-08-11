@@ -9,7 +9,6 @@
 This includes Charybdis and ircd-ratbox
 """
 
-import abc
 import re
 
 from datetime import datetime
@@ -18,7 +17,8 @@ from logging import getLogger
 from PyIRC.line import Hostmask
 from PyIRC.signal import event
 from PyIRC.numerics import Numerics
-from PyIRC.extensions.ircd.base import BaseServer, BanEntry, OperEntry, Uptime
+from PyIRC.extensions.ircd.base import (BaseServer, BanEntry, Extban,
+                                        OperEntry, Uptime)
 
 _logger = getLogger(__name__)
 
@@ -511,9 +511,10 @@ class HybridServer(BaseServer):
         else:
             setdate = None
 
-        oreason = m.group("oreason")
-        settermask = Hostmask.parse(m.group("settermask"))
-        setter = m.group("setter")
+        reason = match.group("reason")
+        oreason = match.group("oreason")
+        settermask = Hostmask.parse(match.group("settermask"))
+        setter = match.group("setter")
 
         return BanEntry(mask, settermask, setter, setdate, duration, reason,
                         oreason)

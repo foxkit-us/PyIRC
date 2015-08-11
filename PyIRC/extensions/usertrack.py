@@ -847,6 +847,7 @@ class MonitorUserTrack(BaseExtension):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        # Get max number of monitorable users
         max_monitor = self.base.isupport.get("MONITOR")
         if max_monitor is None:
             _logger.warn("Could not use MonitorUserTrack extension on server "
@@ -858,8 +859,6 @@ class MonitorUserTrack(BaseExtension):
 
         self._usable = True
 
-        # Get max number of monitorable users
-
         # Users we (the extension) are monitoring
         self.monitoring = IRCSet()
 
@@ -870,14 +869,43 @@ class MonitorUserTrack(BaseExtension):
         user_track = self.base.user_track
         user_track.remove_no_channels = False
 
-    def monitor(self, nick, *args):
+    def monitor(self, *args):
         """Monitor the given nicknames.
 
-        ``*args`` is an additional list of nicknames.
+        This is the preferred API for setting MONITORs.
         """
-        self.ext_monitoring.add(nick)
+        if not args:
+            raise ValueError("Must have at least one nickname to monitor")
+
+        nicks = []
+        monitors = self.monitoring + self.ext_monitoring
         for nick in args:
+            if nick not in monitors:
+                nicks.append(nick)
+
             self.ext_monitoring.add(nick)
+
+        if nicks:
+            self.send("MONITOR", ["+", ",".join(nicks)])
+
+    def unmonitor(self, *args):
+        """Unmonitor the given nicknames.
+
+        This is the preferred API for unsetting MONITORs.
+        """
+        if not args:
+            raise ValueError("Must have at least one nickname to unmonitor")
+
+        for nick in args:
+            if nick in self.monitoring:
+                # Don't remove nicks we are monitoring for in the extension.
+                continue
+            elif nick in self.ext_monitoring:
+                self.ext_monitoring.delete(nick)
+                nicks.append(nick)
+
+        if nicks:
+            self.send("MONITOR", ["-", ",".join(nicks)])
 
     @event("commands_out", "MONITOR")
     def monitor_out(self, _, line):

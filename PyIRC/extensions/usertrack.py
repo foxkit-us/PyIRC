@@ -159,6 +159,10 @@ class UserTrack(BaseExtension):
         # WHOX sent list
         self.whox_send = list()
 
+        # Whether or not to time users out
+        self.do_timeout = kwargs.get("do_timeout", True)
+        self.timeout = kwargs.get("timeout", 30)
+
         # Create ourselves
         basicrfc = self.base.basic_rfc
         self.add_user(basicrfc.nick, user=self.username,
@@ -244,11 +248,14 @@ class UserTrack(BaseExtension):
         doing.
 
         """
+        if not self.do_timeout:
+            return
+
         if nick in self.u_expire_timers:
             self.unschedule(self.u_expire_timers[nick])
 
         callback = partial(self.remove_user, nick)
-        self.u_expire_timers[nick] = self.schedule(30, callback)
+        self.u_expire_timers[nick] = self.schedule(self.timeout, callback)
 
     def update_username_host(self, hostmask_or_line):
         """Update a user's basic info, based on line hostmask info.
@@ -557,6 +564,9 @@ class UserTrack(BaseExtension):
                 self.timeout_user(hostmask.nick)
 
         if not self.get_user(hostmask.nick):
+            if not self.do_timeout:
+                return
+
             # Obtain more information about the user
             user = self.add_user(hostmask.nick, user=hostmask.username,
                                  host=hostmask.host)

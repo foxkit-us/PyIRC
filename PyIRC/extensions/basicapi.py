@@ -199,6 +199,21 @@ class BasicAPI(BaseExtension):
 
         self.mode_params(True, 'o', channel, *args)
 
+    def oper(self, password, username=None):
+        """Attempt to oper up.
+
+        :param password:
+            Password to oper up with.
+
+        :param username:
+            Username to oper up with. If blank, attempt to use the nick we
+            connected with (or attempted to).
+        """
+        if username is None:
+            username = self.base.nick
+
+        self.send("OPER", [username, password])
+
     def deop(self, channel, *args):
         r"""Deop a user (or users) on a given channel.
 

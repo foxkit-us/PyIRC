@@ -17,7 +17,7 @@ from datetime import datetime
 import os
 
 from PyIRC.base import IRCBase
-from PyIRC.formatting.formatters import ANSIFormatter, XTermFormatter
+from PyIRC.formatting.formatters import ANSIFormatter, XTerm256ColourFormatter
 from PyIRC.line import Hostmask
 from PyIRC.numerics import Numerics
 from PyIRC.signal import event
@@ -200,7 +200,7 @@ class PrettyPrintedIRCMixin(IRCBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if 'xterm' in os.environ.get('TERM', 'vt100').lower():
-            self._pp_formatter = XTermFormatter()
+            self._pp_formatter = XTerm256ColourFormatter()
         else:
             self._pp_formatter = ANSIFormatter()
         self._pp_in_str = self._pp_formatter.format("\x036,1-->\x0f ")

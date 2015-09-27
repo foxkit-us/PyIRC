@@ -382,8 +382,8 @@ class XTerm256ColourFormatter(ANSIFormatter):
     """Like the :py:class:`~PyIRC.formatting.formatters.ANSIFormatter`, but
     for XTerm. Numerous other terminals support this."""
 
-    format_bg = ('38', '5')
-    format_fg = ('48', '5')
+    format_bg = ('48', '5')
+    format_fg = ('38', '5')
 
     def do_colour(self):
         ret = []

@@ -47,7 +47,7 @@ class InspIRCdServer(BaseServer):
         :returns:
             An :py:class:`~PyIRC.extensions.ircd.Extban` instance.
         """
-        raise NotImplementedError("Extbans are not supported yes.")
+        raise NotImplementedError("Extbans are not supported yet.")
 
     def _abstract_ban(self, ban_type, mask, duration, reason):
         """Perform an oper ban.  This is NOT a normal channel ban.

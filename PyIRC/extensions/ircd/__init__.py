@@ -79,6 +79,9 @@ Uptime = namedtuple("Uptime", "days hours minutes seconds")
 from PyIRC.extensions.ircd import base, hybridfamily, inspircd
 
 
+_logger = getLogger(__name__)  # pylint: disable=invalid-name
+
+
 class IRCDaemonExtension(BaseExtension):
 
     """The extension for discovering IRC daemons and loading the correct
@@ -88,10 +91,22 @@ class IRCDaemonExtension(BaseExtension):
         super().__init__(*args, **kwargs)
 
         self.extension_name = None
+        self.spec_extension = None
 
     @event("commands", Numerics.RPL_VERSION, priority=1000)
     def probe(self, _, line):
         for subclass in get_all_subclasses(base.BaseServer):
             if subclass.provides(self.base):
+                self.spec_extension = subclass.__name__
                 self.load_extension(subclass)
                 return
+
+        # Load a stub extension. *sigh*
+        _logger.warn("No IRC daemon specific extension found!")
+        self.spec_extension = base.BaseServer
+        self.load_extension(base.BaseServer)
+
+    def close(self, _):
+        if self.spec_extension is not None:
+            self.unload_extension(self.spec_extension)
+            self.spec_extension = None

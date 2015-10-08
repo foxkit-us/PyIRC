@@ -129,8 +129,7 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
         """
         signal = self.signals.get_signal((hclass, event))
         event = Event(signal.name, self)
-        a = signal.call_async(event, *args, **kwargs)
-        ret = asyncio.async(a)  # FIXME hack, needs the result itself.
+        ret = signal.call(event, *args, **kwargs)  # FIXME should be coroutine
         return (event, ret)
 
     def schedule(self, time, callback):

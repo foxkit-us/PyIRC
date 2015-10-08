@@ -102,7 +102,7 @@ class IRCDaemonExtension(BaseExtension):
                 return
 
         # Load a stub extension. *sigh*
-        _logger.warn("No IRC daemon specific extension found!")
+        _logger.warning("No IRC daemon specific extension found!")
         self.spec_extension = base.BaseServer
         self.load_extension(base.BaseServer)
 

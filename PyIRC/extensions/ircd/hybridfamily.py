@@ -496,7 +496,7 @@ class HybridServer(BaseServer):
         elif t == "D":
             mask = params[2]
         else:
-            _logger.warn("Unknown bantype, just guessing!")
+            _logger.warning("Unknown bantype, just guessing!")
             mask = params[:-1]
 
         duration = int(match.group("duration")) * 60
@@ -637,7 +637,7 @@ class CharybdisServer(RatboxServer):
         _, _, bans = isupport.get("EXTBAN").partition(",")
 
         if not ban in bans:
-            _logger.warn("Unknown extban received: %s", string[1])
+            _logger.warning("Unknown extban received: %s", string[1])
 
         return [Extban(negative, ban, target)]
 

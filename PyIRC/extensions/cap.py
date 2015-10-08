@@ -258,7 +258,7 @@ class CapNegotiate(BaseExtension):
     def nak(self, _, data):
         """Log CAP rejection."""
         line = data[0]
-        _logger.warn("Rejected CAPs: %s", line.params[-1].lower())
+        _logger.warning("Rejected CAPs: %s", line.params[-1].lower())
 
     @event("commands_cap", "end")
     def _end_cap(self, _, data):

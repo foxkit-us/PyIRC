@@ -713,7 +713,7 @@ class UserTrack(BaseExtension):
         """Process a WHO response, updating the corresponding user object."""
         if len(line.params) < 8:
             # Some bizarre RFC breaking server
-            _logger.warn("Malformed WHO from server")
+            _logger.warning("Malformed WHO from server")
             return
 
         channel = line.params[1]
@@ -850,7 +850,7 @@ class MonitorUserTrack(BaseExtension):
         # Get max number of monitorable users
         max_monitor = self.base.isupport.get("MONITOR")
         if max_monitor is None:
-            _logger.warn("Could not use MonitorUserTrack extension on server "
+            _logger.warning("Could not use MonitorUserTrack extension on server "
                          "because it is not supported.")
             self._usable = False
             return

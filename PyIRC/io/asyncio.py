@@ -62,6 +62,11 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
                              "limitations")
 
     def connect(self):
+        """Create a connection.
+
+        :returns:
+            An asyncio coroutine representing the connection.
+        """
         loop = asyncio.get_event_loop()
         return loop.create_connection(lambda: self, self.server, self.port,
                                       ssl=self.ssl)
@@ -95,6 +100,8 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
                 self.send("QUIT", ["Exception received!"])
                 self.transport.close()
 
+                # This is fatal and needs to be reported so stop the event
+                # loop.
                 loop = asyncio.get_event_loop()
                 loop.stop()
 
@@ -122,8 +129,8 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
         """
         signal = self.signals.get_signal((hclass, event))
         event = Event(signal.name, self)
-        loop = asyncio.get_event_loop()
-        ret = loop.run_until_complete(signal.call_async(event, *args, **kwargs))
+        a = signal.call_async(event, *args, **kwargs)
+        ret = asyncio.async(a)  # FIXME hack, needs the result itself.
         return (event, ret)
 
     def schedule(self, time, callback):

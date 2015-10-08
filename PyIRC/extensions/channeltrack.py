@@ -160,7 +160,7 @@ class ChannelTrack(BaseExtension):
         """
 
         channel = self.get_channel(name)
-        if not channel:
+        if channel is None:
             return
 
         self.call_event("channel", "channel_delete", channel)
@@ -185,7 +185,7 @@ class ChannelTrack(BaseExtension):
     def prefix(self, _, setter, target, mode):
         # Parse into hostmask in case of usernames-in-host
         channel = self.get_channel(target)
-        if not channel:
+        if channel is None:
             _logger.warning("Got a PREFIX event for an unknown channel: %s",
                             target)
             return
@@ -202,7 +202,7 @@ class ChannelTrack(BaseExtension):
     def modes(self, _, setter, target, mode):
         """Update a channel's modes."""
         channel = self.get_channel(target)
-        if not channel:
+        if channel is None:
             return
 
         if mode.adding:
@@ -226,7 +226,7 @@ class ChannelTrack(BaseExtension):
         """Add the users being bursted to the channel."""
         # NAMES event
         channel = self.get_channel(scope.scope)
-        if not channel:
+        if channel is None:
             return
 
         user = scope.target.nick
@@ -276,12 +276,18 @@ class ChannelTrack(BaseExtension):
         """Update a channel's topic."""
         if line.command.lower() == "topic":
             channel = self.get_channel(line.params[0])
+            if channel is None:
+                _logger.debug("Topic for unknown channel: {}".format(
+                    line.params[0]))
 
             # TODO server/local time deltas for more accurate timestamps
             channel.topicwho = line.hostmask
             channel.topictime = int(time())
         else:
             channel = self.get_channel(line.params[1])
+            if channel is None:
+                _logger.debug("RPL_TOPIC for unknown channel: {}".format(
+                    line.params[1]))
 
         channel.topic = line.params[-1]
 
@@ -289,7 +295,9 @@ class ChannelTrack(BaseExtension):
     def no_topic(self, _, line):
         """Update the fact that a channel has no topic."""
         channel = self.get_channel(line.params[1])
-        if not channel:
+        if channel is None:
+            _logger.debug("RPL_NOTOPIC for unknown channel: {}".format(
+                line.params[1]))
             return
 
         channel.topic = ''
@@ -298,7 +306,9 @@ class ChannelTrack(BaseExtension):
     def topic_who_time(self, _, line):
         """Update the channel's topic metadata."""
         channel = self.get_channel(line.params[1])
-        if not channel:
+        if channel is None:
+            _logger.debug("Topic time for unknown channel: {}".format(
+                line.params[1]))
             return
 
         channel.topicwho = Hostmask.parse(line.params[2])
@@ -308,7 +318,9 @@ class ChannelTrack(BaseExtension):
     def url(self, _, line):
         """Update the channel's URL."""
         channel = self.get_channel(line.params[1])
-        if not channel:
+        if channel is None:
+            _logger.debug("URL for unknown channel: {}".format(
+                line.params[1]))
             return
 
         channel.url = line.params[-1]
@@ -317,7 +329,9 @@ class ChannelTrack(BaseExtension):
     def timestamp(self, _, line):
         """Update the channel's creation time."""
         channel = self.get_channel(line.params[1])
-        if not channel:
+        if channel is None:
+            _logger.debug("Creation time for unknown channel: {}".format(
+                line.params[1]))
             return
 
         channel.timestamp = int(line.params[-1])
@@ -334,7 +348,7 @@ class ChannelTrack(BaseExtension):
     def names_end(self, _, line):
         """Schedule a MODE timer since we are finished bursting this channel."""
         channel = self.get_channel(line.params[1])
-        if not channel:
+        if channel is None:
             return
 
         timer = self.schedule(5, partial(self.send, "MODE",

@@ -279,6 +279,7 @@ class ChannelTrack(BaseExtension):
             if channel is None:
                 _logger.debug("Topic for unknown channel: {}".format(
                     line.params[0]))
+                return
 
             # TODO server/local time deltas for more accurate timestamps
             channel.topicwho = line.hostmask
@@ -288,6 +289,7 @@ class ChannelTrack(BaseExtension):
             if channel is None:
                 _logger.debug("RPL_TOPIC for unknown channel: {}".format(
                     line.params[1]))
+                return
 
         channel.topic = line.params[-1]
 

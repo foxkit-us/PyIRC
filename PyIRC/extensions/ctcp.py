@@ -76,12 +76,12 @@ class CTCP(BaseExtension):
         command = ctcp.command
         self.call_event("commands_ctcp", command, ctcp, line)
 
-    @event("commands_ctcp", "ping")
+    @event("commands_ctcp", "PING")
     def c_ping(self, _, ctcp, line):
         """Respond to CTCP ping."""
         self.nctcp(ctcp.target, "PING", ctcp.param)
 
-    @event("commands_ctcp", "version")
+    @event("commands_ctcp", "VERSION")
     def c_version(self, _, ctcp, line):
         """Respond to CTCP version."""
         self.nctcp(ctcp.target, "VERSION", self.version)

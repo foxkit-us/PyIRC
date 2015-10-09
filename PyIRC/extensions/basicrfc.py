@@ -94,6 +94,20 @@ class BasicRFC(BaseExtension):
         self.prev_nick = self.nick
         self.nick = line.params[0]
 
+    @event("commands_out", "NICK")
+    def on_nick_out(self, _, line):
+        """Update our nick during registration.
+
+        Since nothing is sent back during registration, this needs to be a
+        special case.
+
+        ..note::
+            :py:attr:`~PyIRC.extensions.basicrfc.BasicRFC.prev_nick` is not
+            set by this hook.
+        """
+        if not self.registered:
+            self.nick = line.params[0]
+
     @event("commands", Numerics.RPL_WELCOME)
     def welcome(self, _, line):
         """Notate that we are successfully registered now."""

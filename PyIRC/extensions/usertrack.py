@@ -328,7 +328,11 @@ class UserTrack(BaseExtension):
         assert hostmask
 
         user = self.get_user(hostmask.nick)
-        assert user
+        if user is None:
+            # This can happen from override or ChanServ guard off
+            user = self.add_user(hostmsak.nick, username=hostmask.username,
+                                 host=hostmask.host)
+            self.timeout_user(hostmask.nick)
 
         channel = user.channels[target]
         if mode.adding:

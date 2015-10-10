@@ -279,7 +279,6 @@ class IRCDefaultDict(IRCDict):
 
         ret = self.default()
         self[key] = ret
-        print("KEY", self[key])
         return ret
 
     def __repr__(self):

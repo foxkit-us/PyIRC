@@ -330,7 +330,7 @@ class UserTrack(BaseExtension):
         user = self.get_user(hostmask.nick)
         if user is None:
             # This can happen from override or ChanServ guard off
-            user = self.add_user(hostmsak.nick, username=hostmask.username,
+            user = self.add_user(hostmask.nick, username=hostmask.username,
                                  host=hostmask.host)
             self.timeout_user(hostmask.nick)
 

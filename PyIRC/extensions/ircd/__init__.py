@@ -7,6 +7,7 @@
 
 
 from collections import namedtuple
+from logging import getLogger
 
 from PyIRC.extensions import BaseExtension
 from PyIRC.numerics import Numerics

@@ -15,6 +15,7 @@ import abc
 from logging import getLogger
 
 from PyIRC.extensions import BaseExtension
+from PyIRC.extensions.ircd import BanEntry, Extban, OperEntry, Uptime
 
 
 _logger = getLogger(__name__)

@@ -11,7 +11,7 @@ long_description = (
 )
 
 setup(name="PyIRC",
-      version="3.0a4",
+      version="3.0b1",
       description="A Python IRC library",
       long_description=long_description,
       keywords="IRC chat development",

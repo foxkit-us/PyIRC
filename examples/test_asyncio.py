@@ -28,14 +28,13 @@ class TestProtocol(IRCProtocol):
     flirtlines = (
         "not in here! message me",
         "oh I couldn't in public...",
-        "do I look like silverwoof to you?"
+        "do I look like silverwoof to you?",
         "come on, there's people here!",
         "I don't do it in channels, sorry...",
     )
 
     @event("commands", "PRIVMSG")
-    def respond(self, event):
-        line = event.line
+    def respond(self, event, line):
         params = line.params
 
         if len(params) < 2:

@@ -8,7 +8,8 @@
 """ IRC CAP negotation sub-protocol extensions
 
 For more information, see:
-http://ircv3.atheme.org/specification/capability-negotiation-3.1
+http://ircv3.net/specs/core/capability-negotiation-3.1.html
+http://ircv3.net/specs/core/capability-negotiation-3.2.html
 """
 
 

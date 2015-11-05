@@ -263,15 +263,15 @@ PyIRC is pretty simple to use:
 
 Yes, it's that easy. No fuss, no muss.
 
-.. _CAP: https://tools.ietf.org/html/draft-mitchell-irc-capabilities-01
+.. _CAP: http://ircv3.net/specs/core/capability-negotiation-3.1.html
 
 .. _CTCP: http://www.irchelp.org/irchelp/rfc/ctcpspec.html
 
 .. _DCC: http://www.irchelp.org/irchelp/rfc/dccspec.html
 
-.. _`IRCv3 workgroup`: https://github.com/ircv3/ircv3-specifications
+.. _`IRCv3 workgroup`: http://ircv3.net/
 
-.. _ISUPPORT: www.irc.org/tech_docs/005.html
+.. _ISUPPORT: http://www.irc.org/tech_docs/005.html
 
 .. _NAMESX: https://bugs.unrealircd.org/view.php?id=2833
 
@@ -281,7 +281,7 @@ Yes, it's that easy. No fuss, no muss.
 
 .. _PROTOCTL: https://www.unrealircd.org/files/docs/technical/protoctl.txt
 
-.. _UHNAMES: http://ircv3.atheme.org/extensions/userhost-in-names-3.2
+.. _UHNAMES: http://ircv3.net/specs/extensions/userhost-in-names-3.2.html
 
 .. _WHOX: http://faerion.sourceforge.net/doc/irc/whox.var
 

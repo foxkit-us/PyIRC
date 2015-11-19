@@ -117,7 +117,7 @@ class IRCBase(metaclass=ABCMeta):
 
         :param extension:
             The extension to load, either a string, or a
-            :py:class:`~PyIRC.extension.ExtensionBase` instance. If extension
+            :py:class:`~PyIRC.extensions.BaseExtension` instance. If extension
             is a string, the extension is looked up in the list of presently
             known extensions, favouring built-in PyIRC functions by default.
         """

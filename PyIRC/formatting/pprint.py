@@ -92,7 +92,7 @@ class PrettyPrintedIRCMixin(IRCBase):
     @event("commands", "PART")
     def part(self, _, line):
         """Handle a PART line."""
-        parter = self.nick_color(line.hostmask.nick)
+        parter = self.nick_colour(line.hostmask.nick)
 
         if len(line.params) > 0:
             reason = ' ({})'.format(line.params[-1])

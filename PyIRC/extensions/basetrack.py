@@ -270,7 +270,7 @@ class BaseTrack(BaseExtension):
     @event("commands", Numerics.RPL_AUTOOPLIST)
     @event("commands", Numerics.RPL_REOPLIST)
     def handle_list(self, caller, line):
-        modechar = self.mode_chars[caller.eventpair[1]]
+        modechar = self.mode_chars[caller.eventname[1]]
         params = line.params
 
         try:

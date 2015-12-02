@@ -31,8 +31,8 @@ class Event:
     :ivar cancelled:
         The present event is "soft cancelled". Other events may undo this.
     """
-    def __init__(self, eventpair, caller, cancelled=False):
-        self.eventpair = eventpair
+    def __init__(self, eventname, caller, cancelled=False):
+        self.eventname = eventname
         self.caller = caller
         self.cancelled = cancelled
 

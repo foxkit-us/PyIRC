@@ -143,7 +143,7 @@ class BanTrack(BaseExtension):
     @event("commands", Numerics.RPL_ENDOFAUTOOPLIST)
     def set_synced(self, caller, line):
         """Mark a list mode as synchronised."""
-        mode = self.mode_chars[caller.eventpair[1]]
+        mode = self.mode_chars[caller.eventname[1]]
 
         channeltrack = self.base.channel_track
         channel = channeltrack.get_channel(line.params[1])

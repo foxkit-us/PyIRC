@@ -130,7 +130,7 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
             ret = yield from co
             future.set_result(ret)
 
-    def _process_queue_exit(self):
+    def _process_queue_exit(self, future):
         _logger.critical("Process queue died!")
         self._call_task = None
         self._call_queue = asyncio.Queue()

@@ -48,6 +48,8 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
     _ScheduleItem = namedtuple("_ScheduleItem", "time callback sched")
 
     def __init__(self, *args, **kwargs):
+        self._call_lock = asyncio.Lock()
+
         super().__init__(*args, **kwargs)
 
         self.sched_events = set()
@@ -60,8 +62,6 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
         if self.unload_extension("StartTLS"):
             _logger.critical("Removing StartTLS extension due to asyncio " \
                              "limitations")
-
-        self._call_lock = asyncio.Lock()
 
     def connect(self):
         """Create a connection.
@@ -123,16 +123,20 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
         _logger.debug("OUT: %s", str(line).rstrip())
 
     @asyncio.coroutine
+    def _do_call_event(self, signal, event, args, kwargs):
+        with (yield from self._call_lock):
+            ret = yield from signal.call_async(event, *args, **kwargs)
+        return ret
+
     def call_event(self, hclass, event, *args, **kwargs):
         """Call an (hclass, event) signal.
 
         If no args are passed in, and the signal is in a deferred state, the
         arguments from the last call_event will be used.
         """
-        with self._call_lock:
-            signal = self.signals.get_signal((hclass, event))
-            event = Event(signal.name, self)
-            ret = asyncio.async(signal.call_async(event, *args, **kwargs))
+        signal = self.signals.get_signal((hclass, event))
+        event = Event(signal.name, self)
+        ret = asyncio.async(self._do_call_event(signal, event, args, kwargs))
         return (event, ret)
 
     def schedule(self, time, callback):

@@ -20,7 +20,7 @@ setup(name="PyIRC",
       url="https://foxkit-us.github.io/PyIRC",
       packages=["PyIRC", "PyIRC.formatting", "PyIRC.extensions", "PyIRC.util",
                 "PyIRC.io", "PyIRC.extensions.ircd"],
-      install_requires=["taillight >= 0.2b3"],
+      install_requires=["taillight >= 0.2b4"],
       classifiers=[
           "Development Status :: 3 - Alpha",
           "Intended Audience :: Developers",

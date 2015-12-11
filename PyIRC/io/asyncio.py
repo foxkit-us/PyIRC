@@ -122,17 +122,17 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
         self.transport.write(bytes(line))
         _logger.debug("OUT: %s", str(line).rstrip())
 
+    @asyncio.coroutine
     def call_event(self, hclass, event, *args, **kwargs):
         """Call an (hclass, event) signal.
 
         If no args are passed in, and the signal is in a deferred state, the
         arguments from the last call_event will be used.
-
         """
         with self._call_lock:
             signal = self.signals.get_signal((hclass, event))
             event = Event(signal.name, self)
-            ret = yield from signal.call_async(event, *args, **kwargs)
+            ret = asyncio.async(signal.call_async(event, *args, **kwargs))
         return (event, ret)
 
     def schedule(self, time, callback):

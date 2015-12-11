@@ -49,7 +49,6 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
 
     def __init__(self, *args, **kwargs):
         self._call_queue = asyncio.Queue()
-        self._call_task = None
 
         super().__init__(*args, **kwargs)
 
@@ -70,12 +69,19 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
         :returns:
             An asyncio coroutine representing the connection.
         """
+        # Start the task queue
+        self._call_task = asyncio.async(self._process_queue())
+        self._call_task.add_done_callback(self._process_queue_exit)
+
         loop = asyncio.get_event_loop()
         return loop.create_connection(lambda: self, self.server, self.port,
                                       ssl=self.ssl)
 
     def close(self):
         super().close()
+
+        # Clear the queue
+        self._call_queue = asyncio.Queue()
 
         # XXX it's in this order for backwards compat
         for sched in self.sched_events:
@@ -142,6 +148,10 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
         If no args are passed in, and the signal is in a deferred state, the
         arguments from the last call_event will be used.
         """
+        if self._call_task and self._call_task.exception():
+            # Exception raised, let's get out of here!
+            raise self._call_task.exception()
+
         signal = self.signals.get_signal((hclass, event))
         event = Event(signal.name, self)
 
@@ -149,10 +159,6 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
         future = asyncio.Future()
 
         self._call_queue.put_nowait((co, future))
-
-        if not self._call_task:
-            self._call_task = asyncio.async(self._process_queue())
-            self._call_task.add_done_callback(self._process_queue_exit)
 
         return (event, future)
 

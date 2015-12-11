@@ -61,6 +61,8 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
             _logger.critical("Removing StartTLS extension due to asyncio " \
                              "limitations")
 
+        self._call_lock = asyncio.Lock()
+
     def connect(self):
         """Create a connection.
 
@@ -127,9 +129,10 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
         arguments from the last call_event will be used.
 
         """
-        signal = self.signals.get_signal((hclass, event))
-        event = Event(signal.name, self)
-        ret = signal.call(event, *args, **kwargs)  # FIXME should be coroutine
+        with self._call_lock:
+            signal = self.signals.get_signal((hclass, event))
+            event = Event(signal.name, self)
+            ret = yield from signal.call_async(event, *args, **kwargs)
         return (event, ret)
 
     def schedule(self, time, callback):

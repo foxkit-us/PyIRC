@@ -49,6 +49,7 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
 
     def __init__(self, *args, **kwargs):
         self._call_queue = asyncio.Queue()
+        self._call_task = None
 
         super().__init__(*args, **kwargs)
 

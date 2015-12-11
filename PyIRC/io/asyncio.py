@@ -48,7 +48,8 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
     _ScheduleItem = namedtuple("_ScheduleItem", "time callback sched")
 
     def __init__(self, *args, **kwargs):
-        self._call_lock = asyncio.Lock()
+        self._call_queue = asyncio.Queue()
+        self._call_task = None
 
         super().__init__(*args, **kwargs)
 
@@ -123,10 +124,17 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
         _logger.debug("OUT: %s", str(line).rstrip())
 
     @asyncio.coroutine
-    def _do_call_event(self, signal, event, args, kwargs):
-        with (yield from self._call_lock):
-            ret = yield from signal.call_async(event, *args, **kwargs)
-        return ret
+    def _process_queue(self):
+        while True:
+            co, future = yield from self._call_queue.get()
+            ret = yield from co
+            future.set_result(ret)
+
+    def _process_queue_exit(self):
+        _logger.critical("Process queue died!")
+        self._call_task = None
+        self._call_queue = asyncio.Queue()
+        self.close()
 
     def call_event(self, hclass, event, *args, **kwargs):
         """Call an (hclass, event) signal.
@@ -136,8 +144,17 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
         """
         signal = self.signals.get_signal((hclass, event))
         event = Event(signal.name, self)
-        ret = asyncio.async(self._do_call_event(signal, event, args, kwargs))
-        return (event, ret)
+
+        co = signal.call_async(event, *args, **kwargs)
+        future = asyncio.Future()
+
+        self._call_queue.put_nowait((co, future))
+
+        if not self._call_task:
+            self._call_task = asyncio.async(self._process_queue())
+            self._call_task.add_done_callback(self._process_queue_exit)
+
+        return (event, future)
 
     def schedule(self, time, callback):
         def cb_cleanup(time, callback):

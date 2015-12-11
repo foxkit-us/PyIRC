@@ -75,7 +75,7 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
                                       ssl=self.ssl)
 
     def close(self):
-        super().close(self)
+        super(IRCBase, self).close()
 
         # XXX it's in this order for backwards compat
         for sched in self.sched_events:

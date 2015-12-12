@@ -58,6 +58,9 @@ class CapNegotiate(BaseExtension):
     """ Presently supported maximum CAP version. """
     version = "302"
 
+    # XXX this entire class is a mess and probably needs a revisit, but it
+    # seems to work for now...
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -219,8 +222,7 @@ class CapNegotiate(BaseExtension):
     @event("commands_cap", "ack", priority=-1000)
     def ack(self, _, data):
         """Perform CAP acknowledgement."""
-        # XXX - I forgot why this was low priority but I'm keeping it like
-        # this until I can get a better look
+        # Low priority so it can do the acknowledgement processing first
         line = data[0]
         caps = dict()
         for cap, params in self.extract_caps(line).items():

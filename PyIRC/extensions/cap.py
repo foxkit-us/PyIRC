@@ -245,7 +245,7 @@ class CapNegotiate(BaseExtension):
         else:
             self.call_event("cap_perform", "ack", line, caps)
 
-    @event("cap_perform", "ack", priority=10000)
+    @event("cap_perform", "ack", priority=1000)
     def end_ack(self, _, line, caps):
         """Either dispatch the next ACK, or finish."""
         # pylint: disable=unused-argument

@@ -120,7 +120,7 @@ class SASL(BaseExtension):
         self.mechanisms = []
         self.attempt = 0
 
-    @event("cap_perform", "ack", priority=100)
+    @event("cap_perform", "ack", priority=1000)
     def auth(self, _, line, caps):
         """Initiate authentication to the server."""
         # Lower priority to ensure STARTTLS comes before

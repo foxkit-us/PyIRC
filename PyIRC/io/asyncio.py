@@ -75,8 +75,7 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
         """
         loop = asyncio.get_event_loop()
         return loop.create_connection(lambda: self, self.server, self.port,
-                                      ssl=self.ssl)
-
+                                      ssl=self.ssl, local_addr=self.bindport)
     def close(self):
         super().close()
 

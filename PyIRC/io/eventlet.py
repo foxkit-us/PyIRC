@@ -71,6 +71,9 @@ class IRCEventlet(IRCBase):
         elif self.ssl is not (None, False):
             raise TypeError("ssl must be an SSLContext, bool, or None")
 
+        if self.bindport is not None:
+            self.socket.bind(self.bindport)
+
         self.socket.settimeout(self.kwargs.get("socket_timeout", 10))
         self.socket.connect((self.server, self.port))
 

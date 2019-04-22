@@ -535,7 +535,8 @@ class UserTrack(BaseExtension):
         self.users[newnick] = self.get_user(oldnick)
         self.users[newnick].nick = newnick
 
-        del self.users[oldnick]
+        if not self.casecmp(oldnick, newnick):
+            del self.users[oldnick]
 
     @event("commands", Numerics.ERR_NOSUCHNICK)
     def notfound(self, _, line):

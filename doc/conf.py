@@ -49,8 +49,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'PyIRC'
-copyright = '2015, Elizabeth Myers, Andrew Wilcox'
-author = 'Elizabeth Myers, Andrew Wilcox'
+copyright = '2015, Elizabeth Myers, A. Wilcox'
+author = 'Elizabeth Myers, A. Wilcox'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -225,7 +225,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   (master_doc, 'PyIRC.tex', 'PyIRC Documentation',
-   'Elizabeth Myers, Andrew Wilcox', 'manual'),
+   'Elizabeth Myers, A. Wilcox', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

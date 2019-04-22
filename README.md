@@ -73,7 +73,8 @@ Pull requests and patches are always welcomed. Features can be requested via
 the bug tracker.
 
 ## License and copyright
-Copyright © 2013-2015 Andrew Wilcox and Elizabeth Myers. All rights reserved.
+Copyright © 2013-2015 A. Wilcox and Elizabeth Myers. All rights reserved.
+Copyright © 2019 A. Wilcox.  All rights reserved.
 
 Non-third party files are licensed under the WTFPL; terms and conditions can be
 found at:

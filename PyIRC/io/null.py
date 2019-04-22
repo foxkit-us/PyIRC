@@ -1,4 +1,4 @@
-# Copyright © 2015 Andrew Wilcox.  All rights reserved.
+# Copyright © 2015 A. Wilcox.  All rights reserved.
 # This file is part of the PyIRC3 project. See LICENSE in the root directory
 # for licensing information.
 

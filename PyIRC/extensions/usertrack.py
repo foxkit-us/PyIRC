@@ -347,8 +347,10 @@ class UserTrack(BaseExtension):
         channel = scope.scope
         modes = {m[0] for m in scope.modes} if scope.modes else set()
 
-        # User no longer expiring
-        self.u_expire_timers.pop(target.nick, None)
+        if target.nick in self.u_expire_timers:
+            # They're back.  Cancel pending expiry.
+            self.unschedule(self.u_expire_timers[target.nick])
+            del self.u_expire_timers[target.nick]
 
         user = self.get_user(target.nick)
         if not user:

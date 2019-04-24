@@ -14,8 +14,6 @@ This contains an underscore-appending handler and a number-substituting
 
 from logging import getLogger
 
-from taillight.signal import SignalStop
-
 from PyIRC.signal import event
 from PyIRC.numerics import Numerics
 from PyIRC.extensions import BaseExtension
@@ -45,21 +43,25 @@ class UnderscoreAlt(BaseExtension):
         """Try to complete registration with a long _."""
         if self.registered:
             # Don't care!
-            raise SignalStop()
+            return
+
+        if self.attempts >= 5:
+            # Give up, but maybe something else can try...
+            return
 
         isupport = self.get_extension("ISupport")
-        if not isupport:
-            if self.attempts_count >= 5:
-                # Give up, but maybe something else can try...
-                return
-        elif len(self.attempt_nick) == isupport.get("NICKLEN"):
+        if isupport:
+            nicklen = isupport.get("NICKLEN")
+        else:
+            nicklen = 9  # RFC1459 default
+
+        if len(self.attempt_nick) > nicklen:
             # Nick is too long! This isn't gonna work.
             return
 
         self.attempt_nick += '_'
         self.attempts += 1
         self.send("NICK", [self.attempt_nick])
-        raise SignalStop()
 
 
 class NumberSubstitueAlt(BaseExtension):
@@ -104,7 +106,7 @@ class NumberSubstitueAlt(BaseExtension):
         """Try to complete registration by being a 1337 h4x0r."""
         if self.registered:
             # Don't care!
-            raise SignalStop()
+            return
 
         while self.index < len(self.attempt_nick):
             # Try to leetify a letter
@@ -123,4 +125,4 @@ class NumberSubstitueAlt(BaseExtension):
                                  self.attempt_nick[self.index + 1:])
             self.send("NICK", [self.attempt_nick])
             self.index += 1
-            raise SignalStop()
+            return

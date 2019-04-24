@@ -8,10 +8,11 @@ backport).
 """
 
 
+from sys import version_info
+
 try:
     import asyncio
 except ImportError as e:
-    from sys import version_info
     if version_info < (3, 3):
         raise ImportError("Must have Python 3.3 or greater to use this " \
                           "module") from e
@@ -38,9 +39,10 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
     The same methods as :py:class:`~PyIRC.base.IRCBase` are available.
 
     .. warning:
-        This module is incompatible with StartTLS, and will unload that
-        extension if found! This is a known `asyncio bug`_ and will be fixed
-        in the future.
+        This module will not work with StartTLS unless your Python version is
+        newer than 3.7, due to limitations in the asyncio module. If your
+        Python version is less than 3.7, this will unload StartTLS if found.
+        See the relevant `asyncio bug`_ for more information.
 
     .. _`asyncio bug`: https://bugs.python.org/issue23749
     """
@@ -60,12 +62,12 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
 
         self.data = None
 
-        # Sadly we are not compatible with StartTLS because of a deficiency in
-        # Python 3.4/3.5. See https://bugs.python.org/issue23749
-        # Once it's fixed, it's okay to remove this whole __init__ function.
-        if self.unload_extension("StartTLS"):
+        # Python versions before 3.7 are not compatible with StartTLS.
+        if version_info < (3, 7):
+            self.unload_extension("StartTLS")
             _logger.critical("Removing StartTLS extension due to asyncio " \
-                             "limitations")
+                             "limitations; please upgrade to Python 3.7 or \
+                             later.")
 
     def connect(self):
         """Create a connection.
@@ -178,6 +180,12 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
         sched.sched.cancel()
 
     def wrap_ssl(self):
-        raise NotImplementedError("Cannot wrap SSL after connect due to " \
-                                  "asyncio limitations (see " \
-                                  "https://bugs.python.org/issue23749)")
+        if version_info < (3, 7):
+            raise NotImplementedError("Cannot wrap SSL after connect due " \
+                                      "to asyncio limitations; please " \
+                                      "upgrade to Python 3.7 or later.")
+
+        loop = asyncio.get_event_loop()
+        co = loop.start_tls(self.transport, self, ssl.create_default_context())
+        future = asyncio.Future()
+        self._call_queue.put_nowait((co, future))

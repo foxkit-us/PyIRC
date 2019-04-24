@@ -124,7 +124,7 @@ class UserTrack(BaseExtension):
     tracking.
 
     This extension adds ``base.user_track`` as itself as an alias for
-    ``get_extension("UserlTrack").``.
+    ``get_extension("UserTrack").``.
 
     :ivar users:
         Mapping of users, where the keys are casemapped nicks, and values are

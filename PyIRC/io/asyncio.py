@@ -40,9 +40,9 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
 
     .. warning:
         This module will not work with StartTLS unless your Python version is
-        newer than 3.7, due to limitations in the asyncio module. If your
-        Python version is less than 3.7, this will unload StartTLS if found.
-        See the relevant `asyncio bug`_ for more information.
+        3.7 or newer, due to limitations in the asyncio module. If your Python
+        version is less than 3.7, this will unload StartTLS if found. See the
+        relevant `asyncio bug`_ for more information.
 
     .. _`asyncio bug`: https://bugs.python.org/issue23749
     """

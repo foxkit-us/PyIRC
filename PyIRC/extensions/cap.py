@@ -131,6 +131,7 @@ class CapNegotiate(BaseExtension):
         self.negotiating = True
 
         # Ensure no other connected events get fired
+        # XXX this is bogus
         raise SignalStop
 
     @event("link", "disconnected")

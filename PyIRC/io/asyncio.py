@@ -44,7 +44,7 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
         self._call_queue = asyncio.Queue()
 
         # Start the task queue
-        self._call_task = asyncio.async(self._process_queue())
+        self._call_task = asyncio.ensure_future(self._process_queue())
         self._call_task.add_done_callback(self._process_queue_exit)
 
         super().__init__(*args, **kwargs)

@@ -78,6 +78,9 @@ class IRCBase(metaclass=ABCMeta):
         :key server_password:
             Server password (PASS).
 
+        :key bindport:
+            (address, port) to bind to.
+
         .. note::
             Keyword arguments may be used by extensions. kwargs is passed
             as-is to all extensions.
@@ -91,6 +94,7 @@ class IRCBase(metaclass=ABCMeta):
         self.gecos = gecos
         self.ssl = kwargs.get("ssl", False)
         self.server_password = kwargs.get("server_password")
+        self.bindport = kwargs.get("bindport")
 
         self.kwargs = kwargs
 

@@ -245,7 +245,8 @@ class BaseTrack(BaseExtension):
             self.send("PROTOCTL", protoctl)
 
         self.sent_protoctl = True
-
+    
+    # pylint: disable=inconsistent-return-statements
     @event("commands", Numerics.RPL_QUIETLIST)
     def quiet_list(self, caller, line):
         isupport = self.base.isupport

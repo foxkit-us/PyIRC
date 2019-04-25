@@ -519,6 +519,7 @@ class HybridServer(BaseServer):
         return BanEntry(mask, settermask, setter, setdate, duration, reason,
                         oreason)
 
+    # pylint: disable=inconsistent-return-statements
     @event("commands", Numerics.RPL_STATSKLINE)
     @event("commands", Numerics.RPL_STATSDLINE)
     def parse_stats_ban(self, _, line):
@@ -553,7 +554,8 @@ class HybridServer(BaseServer):
 
         entry = BanEntry(mask, None, None, None, duration, reason, None)
         return self.call_event("stats", "gecos_ban", entry)
-
+    
+    # pylint: disable=inconsistent-return-statements
     @event("commands", Numerics.RPL_STATSDEBUG)
     def parse_stats_opers(self, _, line):
         """Evaluate a stats line for an oper."""
@@ -659,6 +661,7 @@ class CharybdisServer(RatboxServer):
         self.send("STATS", ["K", server])
         self.send("STATS", ["K", server])
 
+    # pylint: disable=inconsistent-return-statements
     @event("commands", Numerics.RPL_STATSDEBUG)
     def parse_stats_opers(self, _, line):
         """Evaluate a stats line for an oper."""

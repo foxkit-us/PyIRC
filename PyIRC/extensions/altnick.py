@@ -53,6 +53,7 @@ class BaseAlt(BaseExtension, metaclass=ABCMeta):
                 return True
 
         _logger.critical("BUG: Got somewhere we shouldn't have!")
+        raise AssertionError()
 
     @abstractmethod
     def try_nick(self):

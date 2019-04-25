@@ -174,7 +174,8 @@ class SASL(BaseExtension):
 
         if self.attempt + 1 >= len(self.mechanisms):
             _logger.critical("No SASL auth methods were successful.")
-            return self.resume_event("cap_perform", "ack")
+            self.resume_event("cap_perform", "ack")
+            return
 
         # We will try another mechanism
         self.attempt += 1
@@ -258,6 +259,7 @@ class SASLExternal(SASLAuthProviderBase):
         """Whether or not we can authenticate with this method."""
         return self.base.ssl and self.extension.password is None
 
+    # pylint: disable=inconsistent-return-statements
     def authenticate(self, line):
         """Implement the EXTERNAL (certfp) authentication method."""
         _logger.info("Logging in with EXTERNAL method as %s",
@@ -291,6 +293,7 @@ class SASLPlain(SASLAuthProviderBase):
         """Whether or not we can authenticate with this method."""
         return self.extension.username and self.extension.password
 
+    # pylint: disable=inconsistent-return-statements
     def authenticate(self, line):
         """Implement the plaintext authentication method."""
         _logger.info("Logging in with PLAIN method as %s",

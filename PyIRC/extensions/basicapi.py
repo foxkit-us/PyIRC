@@ -410,6 +410,7 @@ class BasicAPI(BaseExtension):
             return False
 
         self.mode_params(True, 'e', channel, *self.process_bantargs(*args))
+        return True
 
     def unbanexempt(self, channel, *args):
         r"""Un-exempt a user (or users) from being banned on a given channel.
@@ -439,6 +440,7 @@ class BasicAPI(BaseExtension):
             return False
 
         self.mode_params(False, 'e', channel, *self.process_bantargs(*args))
+        return True
 
     def inviteexempt(self, channel, *args):
         r"""Invite exempt a user (or users) on a given channel.
@@ -464,6 +466,7 @@ class BasicAPI(BaseExtension):
             return False
 
         self.mode_params(True, 'I', channel, *self.process_bantargs(*args))
+        return True
 
     def uninviteexempt(self, channel, *args):
         r"""Un-invite exempt a user (or users) on a given channel.
@@ -493,6 +496,7 @@ class BasicAPI(BaseExtension):
             return False
 
         self.mode_params(False, 'I', channel, *self.process_bantargs(*args))
+        return True
 
     def quiet(self, channel, *args):
         r"""Quiet a user (or users) on a given channel.
@@ -531,6 +535,7 @@ class BasicAPI(BaseExtension):
             return False
 
         self.mode_params(True, 'q', channel, *self.process_bantargs(*args))
+        return True
 
     def unquiet(self, channel, *args):
         r"""Unquiet a user (or users) on a given channel.
@@ -575,6 +580,7 @@ class BasicAPI(BaseExtension):
             return False
 
         self.mode_params(False, 'q', channel, *self.process_bantargs(*args))
+        return True
 
     def join(self, channel, key=None):
         r"""Attempt to join a channel.

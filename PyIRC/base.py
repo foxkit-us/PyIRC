@@ -264,6 +264,7 @@ class IRCBase(metaclass=ABCMeta):
 
         return (event, signal.call(event, *args, **kwargs))
 
+    # pylint: disable=inconsistent-return-statements
     def resume_event(self, hclass, event):
         """Resume a deferred event.
 

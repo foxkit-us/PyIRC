@@ -1,4 +1,4 @@
-# Copyright © 2013-2015 A. Wilcox and Elizabeth Myers.
+# Copyright © 2013-2019 A. Wilcox and Elizabeth Myers.
 # All rights reserved.
 # This file is part of the PyIRC3 project. See LICENSE in the root directory
 # for licensing information.

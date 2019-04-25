@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright © 2013-2015 A. Wilcox and Elizabeth Myers.
+# Copyright © 2013-2019 A. Wilcox and Elizabeth Myers.
 # All rights reserved.
 # This file is part of the PyIRC 3 project. See LICENSE in the root directory
 # for licensing information.

@@ -111,7 +111,7 @@ class Formatter:
         ret = list()
         index = 0
         slen = len(string)
-        while index < lslen:
+        while index < slen:
             char = string[index]
 
             # Check if char is a formatter
@@ -475,8 +475,8 @@ def select_formatter():
 
         curses.setupterm()
 
-        colors = curses.tigetnum("colors")
-        if colors >= 256:
+        colours = curses.tigetnum("colors")
+        if colours >= 256:
             tc_ = os.environ.get("TRUECOLOR", os.environ.get("TRUECOLOUR"),
                                  False)
             if tc_ and tc_ != '0':

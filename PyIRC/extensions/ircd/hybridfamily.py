@@ -98,7 +98,7 @@ class HybridServer(BaseServer):
 
     requires = ["ISupport"]
 
-    def provides(base):
+    def provides(self, base):
         """Returns whether or not this extension can provide for the server."""
         version = base.basic_rfc.server_version[0]
         if version is None:
@@ -529,7 +529,7 @@ class HybridServer(BaseServer):
         if not entry:
             return
 
-        if line.command == Numerics.RPL_STATSKLINE.value():
+        if line.command == Numerics.RPL_STATSKLINE.value:
             ban = "ban"
         else:
             ban = "ip_ban"
@@ -571,9 +571,9 @@ class HybridServer(BaseServer):
         privs = match.group("privs")
 
         nick = match.group("nick")
-        user = match.group("user")
+        username = match.group("user")
         host = match.group("host")
-        hostmask = Hostmask(nick=nick, user=user, host=host)
+        hostmask = Hostmask(nick=nick, username=username, host=host)
 
         idle = int(match.group("idle"))
 
@@ -597,7 +597,7 @@ class RatboxServer(HybridServer):
 
     """The ircd-ratbox provider."""
 
-    def provides(base):
+    def provides(self, base):
         """Returns whether or not this extension can provide for the server."""
         version = base.basic_rfc.server_version[0]
         if version is None:
@@ -613,7 +613,7 @@ class CharybdisServer(RatboxServer):
 
     """The Charybdis IRC daemon provider."""
 
-    def provides(base):
+    def provides(self, base):
         """Returns whether or not this extension can provide for the server."""
         version = base.basic_rfc.server_version[0]
         if version is None:
@@ -674,9 +674,9 @@ class CharybdisServer(RatboxServer):
             return
 
         nick = match.group("nick")
-        user = match.group("user")
+        username = match.group("user")
         host = match.group("host")
-        hostmask = Hostmask(nick=nick, user=user, host=host)
+        hostmask = Hostmask(nick=nick, username=username, host=host)
 
         entry = OperEntry(None, None, hostmask, None)
         return self.call_event("stats", "oper", entry)
@@ -686,7 +686,7 @@ class IrcdSevenServer(CharybdisServer):
 
     """The ircd-seven provider."""
 
-    def provides(base):
+    def provides(self, base):
         """Returns whether or not this extension can provide for the server."""
         version = base.basic_rfc.server_version[0]
         if version is None:

@@ -12,12 +12,11 @@ try:
 except ImportError:
     from time import time
 
-
-from PyIRC.signal import event
 from random import randint, choice
 from string import ascii_letters as letters, digits
 from logging import getLogger
 
+from PyIRC.signal import event
 from PyIRC.extensions import BaseExtension
 from PyIRC.numerics import Numerics
 

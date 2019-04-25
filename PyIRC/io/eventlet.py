@@ -13,10 +13,10 @@ of the scheduling is done with eventlet's `spawn_after`.
 """
 
 
+from logging import getLogger
+
 from eventlet.green import socket, ssl
 from eventlet import spawn_after, spawn_n
-
-from logging import getLogger
 
 from PyIRC.base import IRCBase
 from PyIRC.line import Line

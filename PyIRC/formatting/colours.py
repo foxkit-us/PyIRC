@@ -11,8 +11,8 @@ and ANSI escape translations of them.
 """
 
 
-from enum import Enum, IntEnum, unique
 from collections import namedtuple
+from enum import Enum, IntEnum, unique
 
 
 class ColourRGB(namedtuple("ColourRGB", "red green blue")):

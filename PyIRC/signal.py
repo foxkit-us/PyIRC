@@ -8,9 +8,9 @@
 
 
 from collections import defaultdict
+from enum import Enum
 from inspect import getmembers
 from logging import getLogger
-from enum import Enum
 
 from taillight.signal import UnsharedSignal
 from taillight import ANY

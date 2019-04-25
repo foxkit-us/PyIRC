@@ -52,14 +52,14 @@ class LagCheck(BaseExtension):
         self.timer = None
 
     @staticmethod
-    def timestr(time):
+    def timestr(curr_time):
         """Return a random string based on the current time."""
 
         length = randint(5, 10)
         chars = letters + digits
         randstr = ''.join(choice(chars) for x in range(length))
 
-        return "{}-{}".format(time, randstr)
+        return "{}-{}".format(curr_time, randstr)
 
     def ping(self):
         """Callback for ping."""

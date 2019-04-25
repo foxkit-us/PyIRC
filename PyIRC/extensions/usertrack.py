@@ -99,7 +99,7 @@ class User:
         self.secure = kwargs.get("secure", None)
         self.operator = kwargs.get("operator", None)
         self.signon = kwargs.get("signon", None)
-        self.ip = kwargs.get("ip", None)
+        self.ip = kwargs.get("ip", None)  # pylint: disable=invalid-name
         self.realhost = kwargs.get("realhost", None)
         self.channels = IRCDefaultDict(case, set)
 
@@ -650,10 +650,10 @@ class UserTrack(BaseExtension):
             return
 
         # Fucking unreal did this shit.
-        string, _, ip = line.params[-1].rpartition(' ')
+        string, _, ip_ = line.params[-1].rpartition(' ')
         string, _, realhost = string.rpartition(' ')
 
-        user.ip = ip
+        user.ip = ip_
         user.realhost = realhost
 
     @event("commands", Numerics.RPL_WHOISIDLE)
@@ -783,7 +783,7 @@ class UserTrack(BaseExtension):
         whoxid = line.params[1]
         channel = line.params[2]
         username = line.params[3]
-        ip = line.params[4]
+        ip_ = line.params[4]
         host = line.params[5]
         server = line.params[6]
         nick = line.params[7]
@@ -819,9 +819,9 @@ class UserTrack(BaseExtension):
             # Not logged in
             account = ''
 
-        if ip == '255.255.255.255':
+        if ip_ == '255.255.255.255':
             # Cloaked
-            ip = None
+            ip_ = None
 
         user.server = server
         user.idle = idle
@@ -832,4 +832,4 @@ class UserTrack(BaseExtension):
         user.away = away
         user.operator = operator
         user.account = account
-        user.ip = ip
+        user.ip = ip_

@@ -69,8 +69,8 @@ class LagCheck(BaseExtension):
             raise OSError("Connection timed out")
 
         self.last = time()
-        s = self.timestr(self.last)
-        self.send("PING", [s])
+        string = self.timestr(self.last)
+        self.send("PING", [string])
         self.timer = self.schedule(self.lagcheck, self.ping)
 
     @event("link", "disconnected")
@@ -98,11 +98,11 @@ class LagCheck(BaseExtension):
         if self.last is None:
             return
 
-        t, sep, s = line.params[-1].partition('-')
-        if not sep or not s:
+        time_, sep, string = line.params[-1].partition('-')
+        if not sep or not string:
             return
 
-        if t != str(self.last):
+        if time_ != str(self.last):
             return
 
         self.lag = round(time() - float(self.last), 3)

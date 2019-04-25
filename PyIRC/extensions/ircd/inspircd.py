@@ -18,10 +18,10 @@ from PyIRC.numerics import Numerics
 from PyIRC.signal import event
 
 
-_logger = getLogger(__name__)
+_logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 
-ban_regex = re.compile('^(\d+y)?(\d+w)?(\d+d)?(\d+h)?(\d+m)?(\d+s)?$')
+BAN_REGEX = re.compile('^(\d+y)?(\d+w)?(\d+d)?(\d+h)?(\d+m)?(\d+s)?$')
 
 
 class InspIRCdServer(BaseServer):
@@ -78,7 +78,7 @@ class InspIRCdServer(BaseServer):
             duration = str(duration)
         # if it is an int (seconds), we don't need to do anything
         elif not duration.isnumeric():
-            if ban_regex.match(duration) is None:
+            if BAN_REGEX.match(duration) is None:
                 error = "Invalid duration '{}' specified".format(duration)
                 raise ValueError(error)
 

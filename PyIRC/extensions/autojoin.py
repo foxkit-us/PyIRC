@@ -69,7 +69,7 @@ class AutoJoin(BaseExtension):
     @event("commands", Numerics.RPL_WELCOME)
     def autojoin(self, caller, line):
         # Should be sufficient for end of MOTD and such
-        t = self.wait_start
+        time = self.wait_start
 
         for channel, key in self.join_dict.items():
             if key is None:
@@ -77,10 +77,10 @@ class AutoJoin(BaseExtension):
             else:
                 params = [channel, key]
 
-            sched = self.schedule(t, partial(self.do_join, params))
+            sched = self.schedule(time, partial(self.do_join, params))
             self.sched.append(sched)
 
-            t += self.wait_interval
+            time += self.wait_interval
 
     @event("link", "disconnected")
     def close(self, caller):

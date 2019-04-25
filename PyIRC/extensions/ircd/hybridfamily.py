@@ -20,6 +20,7 @@ from PyIRC.numerics import Numerics
 from PyIRC.extensions.ircd.base import (BaseServer, BanEntry, Extban,
                                         OperEntry, Uptime)
 
+# pylint: disable=invalid-name
 _logger = getLogger(__name__)
 
 

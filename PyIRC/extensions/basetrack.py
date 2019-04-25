@@ -284,9 +284,9 @@ class BaseTrack(BaseExtension):
             else:
                 setter = line.hostmask
                 timestamp = None
-        except ValueError as e:
+        except ValueError as exc:
             _logger.warning("Bogus list mode received: %s (exception: %s)",
-                            modechar, e)
+                            modechar, exc)
             return
 
         mode = Mode(modechar, mask, True, timestamp)

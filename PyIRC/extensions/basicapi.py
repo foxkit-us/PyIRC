@@ -177,6 +177,7 @@ class BasicAPI(BaseExtension):
             params.extend(group)
             self.send("MODE", params)
 
+    # pylint: disable=invalid-name
     def op(self, channel, *args):
         r"""Op a user (or users) on a given channel.
 

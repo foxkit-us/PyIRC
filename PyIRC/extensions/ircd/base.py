@@ -17,7 +17,7 @@ from PyIRC.extensions import BaseExtension
 from PyIRC.extensions.ircd import BanEntry, Extban, OperEntry, Uptime
 
 
-_logger = getLogger(__name__)
+_logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 
 class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
@@ -91,6 +91,7 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
         """
         raise NotImplementedError
 
+    # pylint: disable=invalid-name
     @abc.abstractmethod
     def global_ip_ban(self, ip, duration, reason):
         """Ban an IP or CIDR range on the IRC network. This is often referred
@@ -112,7 +113,8 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
             or consult a network administrator, for more information.
         """
         raise NotImplementedError
-
+    
+    # pylint: disable=invalid-name
     @abc.abstractmethod
     def server_ip_ban(self, server, ip, duration, reason):
         """Ban an IP or CIDR range on an IRC server. This is often referred to

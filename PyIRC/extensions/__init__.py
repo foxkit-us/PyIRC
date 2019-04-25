@@ -28,7 +28,7 @@ __all__ = ["altnick", "autojoin", "bantrack", "basetrack", "basicapi",
            "lag", "sasl", "services", "starttls", "usertrack"]
 
 
-_builtin_extension_modules = {
+_BUILTIN_EXTENSION_MODULES = {
     "AutoJoin": "autojoin",
     "BanTrack": "bantrack",
     "BaseTrack": "basetrack",
@@ -63,7 +63,7 @@ def get_extension(name, prefer_builtin=True):
     if not extensions:
         # None found, try an import from the builtins.
         try:
-            module_name = _builtin_extension_modules[name]
+            module_name = _BUILTIN_EXTENSION_MODULES[name]
         except KeyError:
             return None
 
@@ -126,15 +126,18 @@ class BaseExtension:
             return setattr(self.base, attr, value)
 
 
+# pylint: disable=invalid-name
 base_recommended = ["AutoJoin", "BasicAPI", "BasicRFC", "CTCP", "ISupport",
                     "UnderscoreAlt"]
 """Basic recommended extensions that are compatible with most servers"""
 
 
+# pylint: disable=invalid-name
 ircv3_recommended = base_recommended + ["CapNegotiate", "SASL", "StartTLS"]
 """Recommended extensions for use with IRCv3 compliant servers """
 
 
+# pylint: disable=invalid-name
 bot_recommended = ircv3_recommended + ["BanTrack", "ChannelTrack", "LagCheck",
                                        "ServicesLogin", "UserTrack"]
 """Recommended extensions for bots"""

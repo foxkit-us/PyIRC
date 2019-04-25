@@ -13,7 +13,7 @@ from logging import getLogger
 from PyIRC.signal import event
 from PyIRC.extensions import BaseExtension
 from PyIRC.auxparse import CTCPMessage
-from PyIRC.util.version import versionstr
+from PyIRC.util.version import VERSIONSTR
 
 
 _logger = getLogger(__name__)  # pylint: disable=invalid-name
@@ -27,18 +27,18 @@ class CTCP(BaseExtension):
     mapping in your base class.
     """
 
-    default_version = "Powered by PyIRC v{}".format(versionstr)
+    DEFAULT_VERSION = "Powered by PyIRC v{}".format(VERSIONSTR)
     """ Default CTCP version string to use """
 
     def __init__(self, *args, **kwargs):
         """Initalise the CTCP extension.
 
         :key ctcp_version:
-            Version string to use, defaults to default_version.
+            Version string to use, defaults to DEFAULT_VERSION.
         """
         super().__init__(*args, **kwargs)
 
-        self.version = kwargs.get("ctcp_version", self.default_version)
+        self.version = kwargs.get("ctcp_version", self.DEFAULT_VERSION)
 
     def ctcp(self, target, command, param=None):
         """CTCP a target a given command."""

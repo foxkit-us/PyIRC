@@ -31,8 +31,8 @@ from PyIRC.line import Line, Hostmask
 _logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 
-prefix_match = re.compile(r"\(([A-Za-z0-9]+)\)(.+)")
-numletters = ascii_letters + digits
+prefix_match = re.compile(r"\(([A-Za-z0-9]+)\)(.+)")  # pylint: disable=invalid-name
+numletters = ascii_letters + digits  # pylint: disable=invalid-name
 
 
 @lru_cache(maxsize=16)
@@ -111,9 +111,9 @@ def prefix_parse(prefix):
     if len(modes) != len(values):
         raise ValueError("Unbalanced modes and prefixes")
 
-    for k, v in zip(modes, values):
-        ret.mode_to_prefix[k] = v
-        ret.prefix_to_mode[v] = k
+    for key, val in zip(modes, values):
+        ret.mode_to_prefix[key] = val
+        ret.prefix_to_mode[val] = key
 
     return ret
 
@@ -337,8 +337,8 @@ def isupport_parse(params):
         # For each CSV, parse into pairs of val : data
         ret_dict = {}
         ret_list = []
-        for v in value.split(','):
-            val, sep, data = v.rpartition(':')
+        for val in value.split(','):
+            val, sep, data = val.rpartition(':')
             if sep:
                 if not data:
                     data = None

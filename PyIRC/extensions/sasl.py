@@ -213,9 +213,9 @@ class SASL(BaseExtension):
             return
 
         sendstr = self.mechanisms[self.attempt].authenticate(line)
-        for t in (sendstr[i:i + 400] for i in range(0, len(sendstr), 400)):
+        for item in (sendstr[i:i + 400] for i in range(0, len(sendstr), 400)):
             # 400 is the max limit
-            self.send("AUTHENTICATE", [t])
+            self.send("AUTHENTICATE", [item])
 
         if len(sendstr) % 400 == 0:
             self.send("AUTHENTICATE", ["+"])

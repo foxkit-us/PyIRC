@@ -110,8 +110,8 @@ class Formatter:
         # pylint: disable=attribute-defined-outside-init
         ret = list()
         index = 0
-        l = len(string)
-        while index < l:
+        slen = len(string)
+        while index < lslen:
             char = string[index]
 
             # Check if char is a formatter
@@ -126,7 +126,7 @@ class Formatter:
                     ret.append(self.do_colour())
 
                 # Retrieve colour code
-                if index + 1 > l:
+                if index + 1 > slen:
                     # Not enough length for a colour
                     break
 
@@ -300,16 +300,16 @@ class ANSIFormatter(Formatter):
                 ret.append(self.fmt_bold[0])
         else:
             if self.foreground is not None:
-                fg = ColoursANSI[self.foreground.name].value
+                fgc = ColoursANSI[self.foreground.name].value
 
-                if self.bold and not fg.intense:
+                if self.bold and not fgc.intense:
                     # conflicts -_-
                     ret.append(self.fmt_bold[0])
-                elif not self.bold and fg.intense:
+                elif not self.bold and fgc.intense:
                     # intensify!
                     ret.append(self.fmt_bold[1])
 
-                ret.append(str(fg.foreground))
+                ret.append(str(fgc.foreground))
             else:
                 # Reset the foreground
                 ret.append(self.fmt_resetforeground)
@@ -318,9 +318,8 @@ class ANSIFormatter(Formatter):
                     ret.append(self.fmt_bold[1])
 
             if self.background is not None:
-                bg = ColoursANSI[self.background.name].value
-
-                ret.append(str(bg.background))
+                bgc = ColoursANSI[self.background.name].value
+                ret.append(str(bgc.background))
             else:
                 ret.append(self.fmt_resetbackground)
 
@@ -359,15 +358,15 @@ class XTerm16ColourFormatter(ANSIFormatter):
             ret.extend((self.fmt_resetforeground, self.fmt_resetbackground))
         else:
             if self.foreground is not None:
-                fg = ColoursANSI[self.foreground.name].value
-                ret.append(str(fg.foreground_16))
+                fgc = ColoursANSI[self.foreground.name].value
+                ret.append(str(fgc.foreground_16))
             else:
                 # Reset foreground just in case
                 ret.append(self.fmt_resetforeground)
 
             if self.background is not None:
-                bg = ColoursANSI[self.background.name].value
-                ret.append(str(fg.background_16))
+                bgc = ColoursANSI[self.background.name].value
+                ret.append(str(fgc.background_16))
             else:
                 # Reset background just in case
                 ret.append(self.fmt_resetbackground)
@@ -478,9 +477,9 @@ def select_formatter():
 
         colors = curses.tigetnum("colors")
         if colors >= 256:
-            t = os.environ.get("TRUECOLOR", os.environ.get("TRUECOLOUR"),
-                               False)
-            if t and t != '0':
+            tc_ = os.environ.get("TRUECOLOR", os.environ.get("TRUECOLOUR"),
+                                 False)
+            if tc_ and tc_ != '0':
                 return XTermTrueColourFormatter
 
             return XTerm256ColourFormatter

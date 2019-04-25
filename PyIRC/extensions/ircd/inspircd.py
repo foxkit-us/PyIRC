@@ -21,14 +21,14 @@ from PyIRC.signal import event
 _logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 
-BAN_REGEX = re.compile('^(\d+y)?(\d+w)?(\d+d)?(\d+h)?(\d+m)?(\d+s)?$')
+BAN_REGEX = re.compile(r'^(\d+y)?(\d+w)?(\d+d)?(\d+h)?(\d+m)?(\d+s)?$')
 
 
 class InspIRCdServer(BaseServer):
 
     """InspIRCd server-specific extension provider."""
 
-    def provides(base):
+    def provides(self, base):
         """Returns whether or not this extension can provide for the server."""
         version = base.basic_rfc.server_version[0]
         if version is None or not version.startswith("InspIRCd-2"):

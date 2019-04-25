@@ -25,7 +25,6 @@ class CTCP(BaseExtension):
 
     Hooks may be added by having a commands_ctcp or commands_nctcp
     mapping in your base class.
-
     """
 
     default_version = "Powered by PyIRC v{}".format(versionstr)
@@ -36,7 +35,6 @@ class CTCP(BaseExtension):
 
         :key ctcp_version:
             Version string to use, defaults to default_version.
-
         """
         super().__init__(*args, **kwargs)
 

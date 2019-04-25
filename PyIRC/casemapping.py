@@ -72,7 +72,6 @@ class IRCString(UserString):
 
         :param string:
             String to use
-
         """
         self.case = case
         super().__init__(string)

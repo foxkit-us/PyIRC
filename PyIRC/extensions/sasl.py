@@ -7,10 +7,10 @@
 
 """Identification to services.
 
-SASL is a mechanism used by IRCv3 to authenticate clients to services in a
-standard and user-friendly way. A variety of mechanisms are supported by most
-servers, but only PLAIN is supported by this module at the moment.
-
+SASL is a mechanism used by IRCv3 to authenticate clients to services in
+a standard and user-friendly way. A variety of mechanisms are supported
+by most servers, but only PLAIN is supported by this module at the
+moment.
 """
 
 
@@ -40,7 +40,6 @@ class SASL(BaseExtension):
 
     :ivar authenticated:
         Whether or not we are authenticated to services
-
     """
 
     requires = ["CapNegotiate"]
@@ -54,7 +53,6 @@ class SASL(BaseExtension):
         :key sasl_mechanisms:
             An iterable of authentication providers to use, as classes. By
             default, PLAIN and EXTERNAL are used.
-
         """
         super().__init__(*args, **kwargs)
 
@@ -246,11 +244,10 @@ class SASLExternal(SASLAuthProviderBase):
 
     """EXTERNAL authentication, usually CERTFP.
 
-    .. warning::
-        This is not recommended on servers that use SHA-1 as their certificate
-        hashing mechanism (almost all), as SHA-1 is considered weak, and it is
-        possible an adversary could collide your certificate in theory.
-
+    .. warning::     This is not recommended on servers that use SHA-1
+    as their certificate     hashing mechanism (almost all), as SHA-1 is
+    considered weak, and it is     possible an adversary could collide
+    your certificate in theory.
     """
 
     method = "EXTERNAL"
@@ -284,7 +281,6 @@ class SASLPlain(SASLAuthProviderBase):
 
     No security or encryption is performed on the string sent to the
     server, but still suitable for use over TLS.
-
     """
 
     method = "PLAIN"

@@ -4,8 +4,7 @@
 
 
 """Support for asyncio, available in Python 3.4 and later (and 3.3 via a
-backport).
-"""
+backport)."""
 
 
 from sys import version_info
@@ -146,8 +145,8 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
     def call_event(self, hclass, event, *args, **kwargs):
         """Call an (hclass, event) signal.
 
-        If no args are passed in, and the signal is in a deferred state, the
-        arguments from the last call_event will be used.
+        If no args are passed in, and the signal is in a deferred state,
+        the arguments from the last call_event will be used.
         """
         if self._call_task.done() and self._call_task.exception():
             # Exception raised, let's get out of here!

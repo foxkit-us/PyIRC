@@ -6,9 +6,8 @@
 
 """IRC daemon-specific routines for InspIRCd 2.x.
 
-This extension has not been tested on InspIRCd 1.2.  It requires 2.0, but has
-been tested on 2.2 (development) as well.
-
+This extension has not been tested on InspIRCd 1.2.  It requires 2.0,
+but has been tested on 2.2 (development) as well.
 """
 
 from logging import getLogger
@@ -30,8 +29,7 @@ class InspIRCdServer(BaseServer):
     """InspIRCd server-specific extension provider."""
 
     def provides(base):
-        """Returns whether or not this extension can provide for the
-        server."""
+        """Returns whether or not this extension can provide for the server."""
         version = base.basic_rfc.server_version[0]
         if version is None or not version.startswith("InspIRCd-2"):
             return False

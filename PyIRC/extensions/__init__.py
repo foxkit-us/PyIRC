@@ -15,7 +15,6 @@ The top-level module contains the :py:class:`~PyIRC.extensions.BaseExtension`
 class (the parent of all extensions), various constants containing recommended
 extensions for specific purposes, and internal machinery related to the event
 subsystem.
-
 """
 
 
@@ -55,7 +54,6 @@ def get_extension(name, prefer_builtin=True):
 
     :returns:
         The extension class if found, else None.
-
     """
 
     # Attempt autodiscovery first
@@ -95,7 +93,6 @@ class BaseExtension:
 
     Any unknown attributes in this class are redirected to the ``base``
     attribute.
-
     """
 
     requires = []
@@ -106,7 +103,6 @@ class BaseExtension:
 
         :param base:
             Base class for this method
-
         """
         self.base = base
 

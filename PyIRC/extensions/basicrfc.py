@@ -37,7 +37,6 @@ class BasicRFC(BaseExtension):
         will be stored here. Useful in case of services collisions that change
         our nick, SANICK/FORCENICK operator abuse, or another extension
         changes our nick.
-
     """
 
     def __init__(self, *args, **kwargs):
@@ -48,7 +47,7 @@ class BasicRFC(BaseExtension):
         self.prev_nick = None
         self.nick = self.base.nick
         self.registered = False
-        
+
         self.server_version = (None, [])
 
     @event("link", "connected")

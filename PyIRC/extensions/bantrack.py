@@ -9,7 +9,6 @@
 
 In order to be taught about new types, this extension must know the
 numerics used for ban listing.
-
 """
 
 
@@ -42,7 +41,6 @@ class BanTrack(BaseExtension):
     .. note::
         Unless you are opped, your view of modes such as +eI may be limited
         and incomplete.
-
     """
 
     requires = ["ISupport", "ChannelTrack", "BasicRFC"]

@@ -10,7 +10,6 @@
 It's a little like the ESMTP STARTTLS command, but the server does not
 forget all of the client state after it is issued. Therefore, it should
 be issued as quickly as possible.
-
 """
 
 
@@ -30,8 +29,8 @@ class StartTLS(BaseExtension):
 
     """Support for the STARTTLS extension.
 
-    Not all I/O backends support this, notably :py:class:`~PyIRC.io.asyncio`.
-
+    Not all I/O backends support this, notably
+    :py:class:`~PyIRC.io.asyncio`.
     """
 
     requires = ["CapNegotiate"]
@@ -81,8 +80,7 @@ class StartTLS(BaseExtension):
     def abort(self, _, line):
         """Report a problem with TLS communication.
 
-        .. warning::
-            This allows connection to continue anyway!
+        .. warning::     This allows connection to continue anyway!
         """
         # pylint: disable=unused-argument
         _logger.critical("STARTTLS initiation failed, connection not secure")

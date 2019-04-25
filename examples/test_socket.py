@@ -25,5 +25,6 @@ arguments = {
 class Socket(IRCSocket, PrettyPrintedIRCMixin):
     pass
 
+
 i = Socket(**arguments)
 i.loop()

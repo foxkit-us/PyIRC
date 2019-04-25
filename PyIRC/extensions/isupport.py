@@ -7,10 +7,9 @@
 
 """Enumeration of IRC server features and extensions.
 
-ISUPPORT is a non-standard but widely supported IRC extension that is used to
-advertise what a server supports to a client. Whilst non-standard, most
-servers follow a standard format for many parameters.
-
+ISUPPORT is a non-standard but widely supported IRC extension that is
+used to advertise what a server supports to a client. Whilst non-
+standard, most servers follow a standard format for many parameters.
 """
 
 from copy import deepcopy
@@ -41,7 +40,6 @@ class ISupport(BaseExtension):
         Parsed ISUPPORT data from the server. Do note that because ISUPPORT is
         technically non-standard, users should be prepared for data that does
         not conform to any implied standard.
-
     """
 
     defaults = {
@@ -80,7 +78,6 @@ class ISupport(BaseExtension):
 
         :param string:
             ISUPPORT string to look up.
-
         """
         if string not in self.supported:
             return False

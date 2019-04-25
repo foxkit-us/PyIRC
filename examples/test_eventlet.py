@@ -25,5 +25,6 @@ arguments = {
 class PrettyEventlet(IRCEventlet, PrettyPrintedIRCMixin):
     pass
 
+
 i = PrettyEventlet(**arguments)
 i.loop()

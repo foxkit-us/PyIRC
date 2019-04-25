@@ -33,7 +33,6 @@ class LagCheck(BaseExtension):
         Current lag measurements from the server, measured in seconds. It is
         not advisable to rely on less than a millisecond of precision on most
         systems and real-world networks.
-
     """
 
     def __init__(self, *args, **kwargs):
@@ -43,7 +42,6 @@ class LagCheck(BaseExtension):
             Time interval to do periodic lag checks to update the lag timer.
             Defaults to 15 seconds. Setting the value too low may result in
             being disconnected by the server.
-
         """
         super().__init__(*args, **kwargs)
 

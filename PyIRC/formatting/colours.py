@@ -6,9 +6,8 @@
 
 """Colour codes for IRC messages.
 
-This module contains the constants for IRC colour codes, including RGB and ANSI
-escape translations of them.
-
+This module contains the constants for IRC colour codes, including RGB
+and ANSI escape translations of them.
 """
 
 
@@ -32,7 +31,7 @@ class ColourRGB(namedtuple("ColourRGB", "red green blue")):
 
 class ColourEscape(namedtuple("ColourEscape", "intense base")):
 
-    """Defines a new ANSI/VT100-style colour escape sequence"""
+    """Defines a new ANSI/VT100-style colour escape sequence."""
 
     @property
     def foreground(self):
@@ -65,7 +64,6 @@ class Colours(IntEnum):
     mIRC maintains a list of `colour indexes to names`_.
 
     .. _colour indexes to names: http://www.mirc.com/colors.html
-
     """
 
     white = 0
@@ -94,7 +92,6 @@ class ColoursRGB(Enum):
     mIRC maintains a list_ of colour codes to values.
 
     .. _list: http://www.mirc.com/colors.html
-
     """
 
     white = ColourRGB(255, 255, 255)

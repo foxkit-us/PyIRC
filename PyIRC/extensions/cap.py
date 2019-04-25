@@ -5,7 +5,7 @@
 # for licensing information.
 
 
-""" IRC CAP negotation sub-protocol extensions
+"""IRC CAP negotation sub-protocol extensions.
 
 For more information, see:
 http://ircv3.net/specs/core/capability-negotiation-3.1.html
@@ -50,7 +50,6 @@ class CapNegotiate(BaseExtension):
 
     :ivar negotiating:
         Whether or not CAP negotiation is in progress.
-
     """
 
     requires = ["BasicRFC"]
@@ -210,15 +209,14 @@ class CapNegotiate(BaseExtension):
 
         self.list_replies.update(self.extract_caps(line))
         if not list_end:
-            return # Wait for the server to send the final CAP LIST reply line
-                   # before updating caps
+            return  # Wait for the server to send the final CAP LIST reply line
+            # before updating caps
 
         self.local = self.list_replies
         _logger.debug("CAPs active: %s", self.list_replies)
         # Clear the list provided by CAP LIST; the next CAP LIST reply
         # will be from a different CAP LIST query.
         self.list_replies = dict()
-
 
     @event("commands_cap", "ack", priority=-1000)
     def ack(self, _, data):
@@ -299,7 +297,6 @@ class CapNegotiate(BaseExtension):
 
         :param replace:
             Replace existing CAP report, if present
-
         """
         if params is None:
             params = []
@@ -314,6 +311,5 @@ class CapNegotiate(BaseExtension):
 
         :param cap:
             Capability to remove
-
         """
         self.supported.pop(cap, None)

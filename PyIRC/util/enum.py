@@ -21,7 +21,6 @@ class DynamicClassAttribute:
 
     This allows one to have properties active on an instance, and have virtual
     attributes on the class with the same name (see Enum for an example).
-
     """
 
     def __init__(self, fget=None, fset=None, fdel=None, doc=None):
@@ -114,7 +113,6 @@ class _EnumDict(dict):
 
     EnumMeta will use the names found in self._member_names as the
     enumeration member names.
-
     """
 
     def __init__(self):
@@ -128,7 +126,6 @@ class _EnumDict(dict):
         values are not checked for.
 
         Single underscore (sunder) names are reserved.
-
         """
         if _is_sunder(key):
             raise ValueError('_names_ are reserved for future Enum use')
@@ -290,7 +287,6 @@ class EnumMeta(type):
         not correct, unpickling will fail in some circumstances.
 
         `type`, if set, will be mixed in as the first base class.
-
         """
         if names is None:  # simple value lookup
             return cls.__new__(cls, value)
@@ -320,7 +316,6 @@ class EnumMeta(type):
         enum class' __dict__ in order to support `name` and `value`
         being both properties for enum members (which live in the class'
         __dict__) and enum members themselves.
-
         """
         if _is_dunder(name):
             raise AttributeError(name)
@@ -342,9 +337,8 @@ class EnumMeta(type):
     def __members__(cls):
         """Returns a mapping of member name->value.
 
-        This mapping lists all enum members, including aliases. Note that this
-        is a read-only view of the internal mapping.
-
+        This mapping lists all enum members, including aliases. Note
+        that this is a read-only view of the internal mapping.
         """
         return MappingProxyType(cls._member_map_)
 
@@ -360,7 +354,6 @@ class EnumMeta(type):
         A simple assignment to the class namespace only changes one of
         the several possible ways to get an Enum member from the Enum
         class, resulting in an inconsistent Enumeration.
-
         """
         member_map = cls.__dict__.get('_member_map_', {})
         if name in member_map:
@@ -378,7 +371,6 @@ class EnumMeta(type):
         * An iterable of member names.  Values are auto-numbered from 1.
         * An iterable of (member name, value) pairs.
         * A mapping of member name -> value.
-
         """
         metacls = cls.__class__
         bases = (cls, ) if type is None else (type, cls)
@@ -421,7 +413,6 @@ class EnumMeta(type):
         enum class.
 
         bases: the tuple of bases that was given to __new__
-
         """
         if not bases:
             return object, Enum
@@ -467,7 +458,6 @@ class EnumMeta(type):
         classdict: the class dictionary given to __new__
         member_type: the data type whose __new__ will be used by default
         first_enum: enumeration to check for an overriding __new__
-
         """
         # now find the correct __new__, checking to see of one was defined
         # by the user; also check earlier enum classes in case a __new__ was
@@ -512,7 +502,6 @@ class Enum(metaclass=EnumMeta):
     """Generic enumeration.
 
     Derive from this class to define new enumerations.
-
     """
     def __new__(cls, value):
         # all enum instances are actually created during class construction

@@ -40,7 +40,6 @@ def event(hclass, event_name, priority=UnsharedSignal.PRIORITY_NORMAL,
 
     :param listener:
         Listener of the signal.
-
     """
 
     if isinstance(event_name, Enum):
@@ -62,6 +61,7 @@ def event(hclass, event_name, priority=UnsharedSignal.PRIORITY_NORMAL,
 
 class SignalDict(dict):
     """A dictionary used for unshared Taillight signals."""
+
     def __missing__(self, key):
         value = self[key] = UnsharedSignal(key)
         return value
@@ -77,7 +77,6 @@ class SignalStorage:
     The idea is Signals are bound to dictionary values, stored in this class.
     This will use an existing dictionary if present; otherwise, it will simply
     create a new one.
-
     """
 
     @staticmethod

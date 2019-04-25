@@ -35,7 +35,6 @@ class ServicesLogin(BaseExtension):
 
     This extension adds ``base.services_login` as itself as an alias for
     ``get_extension("ServicesLogin").``.
-
     """
 
     def __init__(self, *args, **kwargs):
@@ -60,7 +59,6 @@ class ServicesLogin(BaseExtension):
             Command to use to authenticate. Defaults to PRIVMSG, but
             NS/NICKSERV are recommended for networks that support it for some
             improved security.
-
         """
         super().__init__(*args, **kwargs)
 

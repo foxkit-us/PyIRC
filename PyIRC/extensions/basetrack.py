@@ -9,7 +9,6 @@
 
 This is not really meant for direct use; it converts commands into
 events for ingestion into the other tracking components.
-
 """
 
 
@@ -60,7 +59,6 @@ class Scope:
 
     :param cause:
         The user that caused this change (for kicks, etc).
-
     """
 
     __slots__ = ["target", "scope", "leaving", "reason", "gecos", "account",
@@ -84,7 +82,6 @@ class BaseTrack(BaseExtension):
 
     This extension adds ``base.base_track`` as itself as an alias for
     ``get_extension("BaseTrack").``.
-
     """
 
     caps = {
@@ -194,7 +191,7 @@ class BaseTrack(BaseExtension):
     @event("commands", Numerics.RPL_CHANNELMODEIS)
     @event("commands", "MODE")
     def mode(self, _, line):
-        """Offer an easy to use interface for mode"""
+        """Offer an easy to use interface for mode."""
         isupport = self.base.isupport
         modegroups = isupport.get("CHANMODES")
         prefix = prefix_parse(isupport.get("PREFIX"))
@@ -231,7 +228,7 @@ class BaseTrack(BaseExtension):
     @event("commands", Numerics.RPL_ENDOFMOTD)
     @event("commands", Numerics.ERR_NOMOTD)
     def send_protoctl(self, _, line):
-        """Send the PROTOCTL NAMESX/UHNAMES stuff if we have to"""
+        """Send the PROTOCTL NAMESX/UHNAMES stuff if we have to."""
         if self.sent_protoctl:
             return
 

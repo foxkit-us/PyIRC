@@ -6,7 +6,6 @@
 """A null backend, used for testing purposes.
 
 No connections are made.
-
 """
 
 
@@ -78,7 +77,6 @@ class NullSocket(IRCBase):
         """Draw the earliest Line in the sendq from the client.
 
         Returns None if there are no lines currently in the sendq.
-
         """
         try:
             return self.sendq.get()
@@ -89,7 +87,6 @@ class NullSocket(IRCBase):
         """Emulate a server forcibly disconnecting the client.
 
         Maybe useful for ERROR or QUIT.
-
         """
         self.disconnect_on_next = True
 
@@ -103,7 +100,6 @@ class NullSocket(IRCBase):
         """Mock wrapping SSL.
 
         Not sure if this is even useful.
-
         """
         if self.ssl:
             # Wrapped already

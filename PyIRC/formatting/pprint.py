@@ -10,7 +10,6 @@ This module contains a mixin,
 :py:class:`~PyIRC.formatting.pprint.PrettyPrintedIRC`, that integrates with I/O
 backends to display messages flowing in and out in a way pleasing to the eye on
 most ANSI-compatible terminals.
-
 """
 
 from datetime import datetime
@@ -135,12 +134,12 @@ class PrettyPrintedIRCMixin(IRCBase):
     @event("commands", Numerics.RPL_MOTDSTART)
     @event("commands", Numerics.RPL_MOTD)
     def motd(self, _, line):
-        """Handle MOTD"""
+        """Handle MOTD."""
         self._printf("MOTD: {}".format(line.params[-1]))
 
     @event("commands", Numerics.RPL_ENDOFMOTD)
     def motd_end(self, _, line):
-        """Handle end of MOTD"""
+        """Handle end of MOTD."""
         # pylint: disable=unused-argument
         self._printf("End of MOTD")
 
@@ -231,7 +230,7 @@ class PrettyPrintedIRCMixin(IRCBase):
                         '354', '315',
                         # we don't care about the actual NAMES reply...
                         # we will use ENDOFNAMES if ChannelTrack is loaded.
-                        '353',}
+                        '353', }
 
     def recv(self, line):
         if line.command not in self.handled | self.ignored:

@@ -7,7 +7,6 @@
 """Track channels that we have joined and their associated data.
 
 This data includes ops, modes, the topic, and associated data.
-
 """
 
 
@@ -56,7 +55,6 @@ class Channel:
 
         :key url:
             URL of the channel, sent on some IRC servers.
-
         """
         if name is None:
             raise ValueError("name must not be None")
@@ -99,7 +97,6 @@ class ChannelTrack(BaseExtension):
 
     For more elaborate user tracking, see
     :py:module:`~PyIRC.extensions.usertrack`.
-
     """
 
     requires = ["BaseTrack", "BasicRFC", "ISupport"]
@@ -128,7 +125,6 @@ class ChannelTrack(BaseExtension):
 
         :param name:
             Name of the channel to retrieve.
-
         """
 
         return self.channels.get(name)
@@ -138,7 +134,6 @@ class ChannelTrack(BaseExtension):
 
         Avoid using this method directly unless you know what you are
         doing.
-
         """
         channel = self.get_channel(name)
         if channel is None:
@@ -156,7 +151,6 @@ class ChannelTrack(BaseExtension):
 
         Avoid using this method directly unless you know what you are
         doing.
-
         """
 
         channel = self.get_channel(name)
@@ -348,7 +342,8 @@ class ChannelTrack(BaseExtension):
 
     @event("commands", Numerics.RPL_ENDOFNAMES)
     def names_end(self, _, line):
-        """Schedule a MODE timer since we are finished bursting this channel."""
+        """Schedule a MODE timer since we are finished bursting this
+        channel."""
         channel = self.get_channel(line.params[1])
         if channel is None:
             return

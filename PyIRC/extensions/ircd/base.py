@@ -7,7 +7,6 @@
 """IRC daemon-specific routines.
 
 This is the abstract implementation from which all others derive.
-
 """
 
 import abc
@@ -24,8 +23,7 @@ _logger = getLogger(__name__)
 class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
 
     def provides(base):
-        """Returns whether or not this extension can provide for the
-        server."""
+        """Returns whether or not this extension can provide for the server."""
         return False
 
     def extban_parse(self, string):
@@ -119,7 +117,7 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
     def server_ip_ban(self, server, ip, duration, reason):
         """Ban an IP or CIDR range on an IRC server. This is often referred to
         as a "z:line" or (in hybrid derivatives) as a "d:line".
-        
+
         :param server:
             The name of the server to apply the ban to. ``None`` sets it to
             the current server.
@@ -132,7 +130,7 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
 
         :param reason:
             The reason for the ban.
-        
+
         ..note::
             This command requires IRC operator privileges, and may require
             additional privileges such as privsets or ACL's. Such documentation
@@ -154,7 +152,7 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
 
         :param reason:
             The reason for the ban.
-        
+
         ..note::
             This command requires IRC operator privileges, and may require
             additional privileges such as privsets or ACL's. Such documentation
@@ -180,7 +178,7 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
 
         :param reason:
             The reason for the ban.
-        
+
         ..warning::
             This is not supported on InspIRCd, as all q:lines are global.
 
@@ -204,7 +202,7 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
 
         :param reason:
             The reason for the ban.
-        
+
         ..warning::
             Not all servers support this. UnrealIRCd, notably, only supports
             permanent GECOS bans.
@@ -220,7 +218,7 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
     def server_gecos_ban(self, server, string, duration, reason):
         """Ban a GECOS on an IRC server. This is often referred to as an
         "sgline", "n:line", or (in hybrid derivatives) as an "x:line".
- 
+
         :param server:
             The name of the server to apply the ban to. ``None`` sets it to
             the current server.
@@ -312,7 +310,7 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
         raise NotImplementedError
 
     def stats_server_nickchan_ban(self, server):
-        """Get a list of all server nick/channel bans (often referred to as 
+        """Get a list of all server nick/channel bans (often referred to as
         "Q:lines", "q:lines" or "resvs").
 
         :param server:
@@ -354,7 +352,7 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
         """Get a list of IRC operators on the network. This may return either
         all the operators, or only the active ones, depending on the IRC
         daemon.
-        
+
         :param server:
             Server to get the list of opers on. ``None`` defaults to the
             current server. This usually does not matter.

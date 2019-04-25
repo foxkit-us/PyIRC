@@ -4,17 +4,17 @@
 
 
 """Numerics for IRC servers.
+
 This list was generated automatically using techniques that scraped the server
 software for them. This work was originally done for the IRCv3 project, but
-has been commandeered for this use.
-It is believed this covers over 99% of all numerics in actual real-world
-usage (no exaggeration :).
-There may be aliases as a result of the process. It is recommended to avoid
-these aliases, and to use the most common name for the numeric.
-Note that not all numerics may be documented, and it may be too difficult to
-ever fully document them all. The most common ones will have at least some
-attempt to document them.
-The following IRC servers or standards were checked:
+has been commandeered for this use. It is believed this covers over 99% of
+all numerics in actual real-world usage (no exaggeration :). There may be
+aliases as a result of the process. It is recommended to avoid these aliases,
+and to use the most common name for the numeric. Note that not all numerics may
+be documented, and it may be too difficult to ever fully document them all. The
+most common ones will have at least some attempt to document them. The
+following IRC servers or standards were checked:
+
 - Bahamut (2.0.7)
 - Charybdis (3.5.0)
 - ircd-hybrid (7.0)
@@ -46,10 +46,9 @@ class Numerics(Enum):
 
     """Numerics used by IRC servers.
 
-    If anything can illustrate IRC's severe fragmentation problem and long
-    history of dubious forks, politics, and not-invented-here syndrome, it is
-    this enum.
-
+    If anything can illustrate IRC's severe fragmentation problem and
+    long history of dubious forks, politics, and not-invented-here
+    syndrome, it is this enum.
     """
 
     RPL_WELCOME = "001"

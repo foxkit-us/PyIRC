@@ -24,7 +24,6 @@ class AutoJoin(BaseExtension):
 
     The initial delay to first join and delay between each successive
     channel is customisable.
-
     """
 
     def __init__(self, *args, **kwargs):
@@ -44,7 +43,6 @@ class AutoJoin(BaseExtension):
         :key autojoin_wait_interval:
             How much time, in seconds, to wait between each join.
             The default is 0.25 seconds.
-
         """
         super().__init__(*args, **kwargs)
 

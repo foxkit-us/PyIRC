@@ -98,8 +98,7 @@ class HybridServer(BaseServer):
     requires = ["ISupport"]
 
     def provides(base):
-        """Returns whether or not this extension can provide for the
-        server."""
+        """Returns whether or not this extension can provide for the server."""
         version = base.basic_rfc.server_version[0]
         if version is None:
             return False
@@ -317,7 +316,7 @@ class HybridServer(BaseServer):
     def server_gecos_ban(self, server, string, duration, reason):
         """Ban a GECOS on an IRC server. This is often referred to as an
         "sgline", "n:line", or (in hybrid derivatives) as an "x:line".
- 
+
         :param server:
             The name of the server to apply the ban to. ``None`` sets it to
             the current server.
@@ -410,7 +409,7 @@ class HybridServer(BaseServer):
         self.stats_server_nickchan_ban("*")
 
     def stats_server_nickchan_ban(self, server):
-        """Get a list of all server nick/channel bans (often referred to as 
+        """Get a list of all server nick/channel bans (often referred to as
         "Q:lines", "q:lines" or "resvs").
 
         :param server:
@@ -595,8 +594,7 @@ class RatboxServer(HybridServer):
     """The ircd-ratbox provider."""
 
     def provides(base):
-        """Returns whether or not this extension can provide for the
-        server."""
+        """Returns whether or not this extension can provide for the server."""
         version = base.basic_rfc.server_version[0]
         if version is None:
             return False
@@ -611,8 +609,7 @@ class CharybdisServer(RatboxServer):
     """The Charybdis IRC daemon provider."""
 
     def provides(base):
-        """Returns whether or not this extension can provide for the
-        server."""
+        """Returns whether or not this extension can provide for the server."""
         version = base.basic_rfc.server_version[0]
         if version is None:
             return False
@@ -683,8 +680,7 @@ class IrcdSevenServer(CharybdisServer):
     """The ircd-seven provider."""
 
     def provides(base):
-        """Returns whether or not this extension can provide for the
-        server."""
+        """Returns whether or not this extension can provide for the server."""
         version = base.basic_rfc.server_version[0]
         if version is None:
             return False

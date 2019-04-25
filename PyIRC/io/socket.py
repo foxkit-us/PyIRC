@@ -3,7 +3,7 @@
 # for licensing information.
 
 
-""" A basic socket/ssl/sched-based module implementation for IRC.
+"""A basic socket/ssl/sched-based module implementation for IRC.
 
 If you just want a simple bot for one network, this is what you want.
 
@@ -49,7 +49,6 @@ class IRCSocket(IRCBase):
     :key family:
         The family to use for the socket (default AF_INET, IPv4). Set to
         socket.AF_INET6 for IPv6 usage.
-
     """
 
     def __init__(self, *args, **kwargs):
@@ -116,7 +115,6 @@ class IRCSocket(IRCBase):
 
         Does not return, but raises exception when the connection is
         closed.
-
         """
         self.connect()
 

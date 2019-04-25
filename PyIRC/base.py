@@ -9,7 +9,6 @@
 
 Contains the most fundamental parts of PyIRC. This is the glue that
 binds everything together.
-
 """
 
 
@@ -32,6 +31,7 @@ class Event:
     :ivar cancelled:
         The present event is "soft cancelled". Other events may undo this.
     """
+
     def __init__(self, eventname, caller, cancelled=False):
         self.eventname = eventname
         self.caller = caller
@@ -49,7 +49,6 @@ class IRCBase(metaclass=ABCMeta):
     :ivar registered:
         If True, we have completed the server handshake and are ready
         to send commands.
-
     """
 
     def __init__(self, serverport, username, nick, gecos, extensions,
@@ -85,7 +84,6 @@ class IRCBase(metaclass=ABCMeta):
         .. note::
             Keyword arguments may be used by extensions. kwargs is passed
             as-is to all extensions.
-
         """
         super().__init__()
 
@@ -157,7 +155,6 @@ class IRCBase(metaclass=ABCMeta):
             Reverse dependencies are not yet checked! Be careful when
             unloading extensions. Also, since state is not saved in the
             default modules, this should never be reused for reloading.
-
         """
         if isinstance(extension, str):
             extname = extension
@@ -187,7 +184,6 @@ class IRCBase(metaclass=ABCMeta):
         :returns:
             A list of tuples containing the extension names and instances, in
             order of loading.
-
         """
         return [(n, e) for n, e in self.extensions.items() if
                 isinstance(, base_extension) and e.__class__ not in
@@ -197,7 +193,6 @@ class IRCBase(metaclass=ABCMeta):
         """Change server casemapping semantics.
 
         Do not call this unless you know what you're doing
-
         """
         if not hasattr(self, "isupport"):
             case = "RFC1459"
@@ -223,7 +218,6 @@ class IRCBase(metaclass=ABCMeta):
 
         :param string:
             The string to casefold according to the IRC server semantics.
-
         """
         return IRCString(self.case, string).casefold()
 
@@ -236,7 +230,6 @@ class IRCBase(metaclass=ABCMeta):
             String to compare
         :param other:
             String to compare
-
         """
         return self.casefold(string) == self.casefold(other)
 
@@ -245,7 +238,6 @@ class IRCBase(metaclass=ABCMeta):
 
         :returns:
             The extension requested.
-
         """
         return self.extensions[extension]
 
@@ -261,7 +253,6 @@ class IRCBase(metaclass=ABCMeta):
 
         .. warning::
             This does not preserve the Event instance for deferred calls.
-
         """
 
         signal_name = (hclass, event)
@@ -283,7 +274,6 @@ class IRCBase(metaclass=ABCMeta):
         :returns:
             An (:py:class:`~PyIRC.base.Event`, return values from events)
             tuple, if the event is deferred; else it returns None.
-
         """
         signal = self.signals.get_signal((hclass, event))
 
@@ -305,7 +295,6 @@ class IRCBase(metaclass=ABCMeta):
 
         :param line:
             A :class:`~PyIRC.line.Line` instance to recieve from the wire.
-
         """
         command = line.command
 
@@ -322,7 +311,6 @@ class IRCBase(metaclass=ABCMeta):
             A Sequence of parameters to send with the command. Only the last
             parameter may contain spaces due to IRC framing format
             limitations.
-
         """
         line = Line(command=command, params=params)
         event, results = self.call_event("commands_out", command, line)
@@ -343,7 +331,6 @@ class IRCBase(metaclass=ABCMeta):
         :param callback:
             Callback to perform. Use :meth:`functools.partial` to pass
             arguments.
-
         """
         raise NotImplementedError()
 
@@ -353,15 +340,12 @@ class IRCBase(metaclass=ABCMeta):
 
         :param sched:
             Event to unschedule returned by schedule.
-
         """
         raise NotImplementedError()
 
     def wrap_ssl(self):
         """Wrap the underlying connection with an SSL connection.
 
-        .. warning::
-            Not all backends support this!
-
+        .. warning::     Not all backends support this!
         """
         raise NotImplementedError()

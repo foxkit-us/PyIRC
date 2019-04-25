@@ -9,7 +9,6 @@
 This extension is also meant to serve as an example for extension
 authors.  It is heavily documented and designed to be very easy to
 follow.
-
 """
 
 
@@ -52,7 +51,6 @@ class KickRejoin(BaseExtension):
             most servers propogate REMOVE as KICK to clients so it won't always
             work (the sole exception in testing this extension was Freenode).
             Defaults to True, because REMOVE is silly anyway.
-
         """
         # When overriding __init__, ALWAYS call the superclass! This sets up
         # the hook tables correctly and future-proofs you from other
@@ -79,7 +77,6 @@ class KickRejoin(BaseExtension):
 
         This is used to ensure we know when we PART a channel, it's
         voluntary.
-
         """
         if not self.rejoin_on_remove:
             # No bookkeeping
@@ -113,8 +110,8 @@ class KickRejoin(BaseExtension):
         """Command handler for KICK and PART.
 
         This method receives a line as its parameter, and will use it to
-        determine if we were the ones kick/removed, and what action to take.
-
+        determine if we were the ones kick/removed, and what action to
+        take.
         """
         # Retrieve the BasicRFC extension handle.
         basicrfc = self.base.basic_rfc
@@ -167,7 +164,6 @@ class KickRejoin(BaseExtension):
         We must ensure that any pending rejoins are unscheduled, so that
         we don't do something silly like sending JOIN to a closed
         socket.
-
         """
 
         for future in self.scheduled.values():

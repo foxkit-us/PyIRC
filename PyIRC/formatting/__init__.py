@@ -10,7 +10,6 @@ This module contains IRC formatting-related data, and reformatting classes to
 deal with this formatting.
 
 Bold, italic, underline, reverse, and colours are handled.
-
 """
 
 __all__ = ['colours', 'formatters', 'pprint']

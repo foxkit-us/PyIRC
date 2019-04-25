@@ -5,10 +5,10 @@
 # for licensing information.
 
 
-"""A basic easy-to-use API
+"""A basic easy-to-use API.
 
-This provides simple interfaces to messaging, responses, topic setting, and
-basic channel access control.
+This provides simple interfaces to messaging, responses, topic setting,
+and basic channel access control.
 """
 
 
@@ -26,7 +26,6 @@ class BasicAPI(BaseExtension):
 
     This extension adds ``base.basicapi`` as itself as an alias for
     ``get_extension("basicapi").``.
-
     """
 
     requires = ["ISupport"]
@@ -52,7 +51,6 @@ class BasicAPI(BaseExtension):
 
         .. warning::
             Use notice judiciously, as many users find them irritating!
-
         """
         if hasattr(target, "name"):
             # channel
@@ -73,7 +71,6 @@ class BasicAPI(BaseExtension):
 
         :returns:
             Target to reply to
-
         """
         isupport = self.base.isupport
 
@@ -110,7 +107,6 @@ class BasicAPI(BaseExtension):
         :param topic:
             Topic to set in channel. Will unset the topic if set to None or
             the empty string.
-
         """
         if hasattr(channel, "name"):
             channel = channel.name
@@ -313,13 +309,12 @@ class BasicAPI(BaseExtension):
     def process_bantargs(self, *args):
         """Process ban targets (as used by ban modes).
 
-        .. note::
-            The default mask format is $a:account if an account is available
-            for the user. This only works on servers that support extended
-            bans. The fallback is ``*!*@host``. This may not be suitable for
-            all uses. It is recommended more advanced users use strings
-            instead of User instances.
-
+        .. note::     The default mask format is $a:account if an
+        account is available     for the user. This only works on
+        servers that support extended     bans. The fallback is
+        ``*!*@host``. This may not be suitable for     all uses. It is
+        recommended more advanced users use strings     instead of User
+        instances.
         """
         if not args:
             raise ValueError("args are needed for this function")
@@ -607,7 +602,6 @@ class BasicAPI(BaseExtension):
 
         :param reason:
             Freeform reason to leave the channel.
-
         """
         if hasattr(channel, "name"):
             channel = channel.name

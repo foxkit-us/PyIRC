@@ -10,7 +10,6 @@ sockets.
 
 :py:meth:`~PyIRC.io.IRCEventlet.connect` is a green thread, and all
 of the scheduling is done with eventlet's `spawn_after`.
-
 """
 
 
@@ -28,8 +27,8 @@ _logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 class IRCEventlet(IRCBase):
 
-    """The eventlet implementation of the IRC protocol. Everything is done
-    with green threads, as far as possible.
+    """The eventlet implementation of the IRC protocol. Everything is done with
+    green threads, as far as possible.
 
     Virtually everything can be done as a green thread.
 
@@ -48,7 +47,6 @@ class IRCEventlet(IRCBase):
     :key family:
         The family to use for the socket (default AF_INET, IPv4). Set to
         socket.AF_INET6 for IPv6 usage.
-
     """
 
     def __init__(self, *args, **kwargs):
@@ -105,7 +103,6 @@ class IRCEventlet(IRCBase):
 
         Does not return, but raises exception when the connection is
         closed.
-
         """
         self.connect()
 

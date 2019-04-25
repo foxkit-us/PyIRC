@@ -28,7 +28,6 @@ class Tags:
 
     Not presently tested a whole lot due to the lack of conforming
     servers.
-
     """
 
     __slots__ = ('tags', 'tagstr')
@@ -85,7 +84,6 @@ class Hostmask:
     Hostmask(nick=None, username=None, host='host.org')
     >>> Hostmask.parse('nickname')
     Hostmask(nick='nickname', username=None, host=None)
-
     """
 
     __slots__ = ('nick', 'username', 'host', 'maskstr')
@@ -106,7 +104,6 @@ class Hostmask:
 
         :param raw:
             The raw hostmask to parse.
-
         """
         if not raw:
             _logger.debug("No hostmask found")
@@ -227,7 +224,6 @@ class Line:
     >>> Line.parse(':nick!user@host PRIVMSG #testroom meow :testing')
     ... # doctest: +ELLIPSIS
     Line(..., command='PRIVMSG', params=['#testroom', 'meow', 'testing'])
-
     """
 
     __slots__ = ('tags', 'hostmask', 'command', 'params', 'linestr')
@@ -261,10 +257,10 @@ class Line:
     def parse(cls, line):
         """Parse a raw string into a Line.
 
-        Also should raise on any invalid line.  It will be quite liberal with
-        hostmasks (accepting such joys as '' and 'user1@user2@user3'), but
-        trying to enforce strict validity in hostmasks will be slow.
-
+        Also should raise on any invalid line.  It will be quite liberal
+        with hostmasks (accepting such joys as '' and
+        'user1@user2@user3'), but trying to enforce strict validity in
+        hostmasks will be slow.
         """
         if not line:
             _logger.warning("Blank line passed in!")

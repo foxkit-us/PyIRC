@@ -9,7 +9,6 @@
 This module contains reformatting classes to handle IRC formatting codes.
 
 Bold, italic, underline, reverse, and colours are handled.
-
 """
 
 
@@ -40,7 +39,6 @@ class FormattingCodes(Enum):
     A list is maintained by WikiChip_.
 
     .. _WikiChip: http://en.wikichip.org/wiki/irc/colors
-
     """
 
     bold = '\x02'
@@ -74,7 +72,6 @@ class Formatter:
 
     :ivar underline:
         Set when text should be underline.
-
     """
 
     # Used for matching colour codes
@@ -87,7 +84,6 @@ class Formatter:
         """Reset all colours.
 
         You should not need to override this.
-
         """
         self.bold = False
         self.foreground = None
@@ -108,7 +104,6 @@ class Formatter:
 
         :param string:
             String to reformat.
-
         """
         # We have to do this because reset is not __init__
         # (but they are still technically defined in __init__)
@@ -351,8 +346,11 @@ VT100Formatter = ANSIFormatter
 
 class XTerm16ColourFormatter(ANSIFormatter):
 
-    """Like the :py:class:`~PyIRC.formatting.formatters.ANSIFormatter`, but
-    for XTerm. Most other terminals support this, excluding Windows."""
+    """Like the :py:class:`~PyIRC.formatting.formatters.ANSIFormatter`, but for
+    XTerm.
+
+    Most other terminals support this, excluding Windows.
+    """
 
     def do_colour(self):
         ret = []
@@ -379,8 +377,11 @@ class XTerm16ColourFormatter(ANSIFormatter):
 
 class XTerm256ColourFormatter(ANSIFormatter):
 
-    """Like the :py:class:`~PyIRC.formatting.formatters.ANSIFormatter`, but
-    for XTerm. Numerous other terminals support this."""
+    """Like the :py:class:`~PyIRC.formatting.formatters.ANSIFormatter`, but for
+    XTerm.
+
+    Numerous other terminals support this.
+    """
 
     format_bg = ('48', '5')
     format_fg = ('38', '5')
@@ -412,11 +413,11 @@ class XTerm256ColourFormatter(ANSIFormatter):
 
 class XTermTrueColourFormatter(ANSIFormatter):
 
-    """Like the :py:class:`~PyIRC.formatting.formatters.ANSIFormatter`, but
-    for XTerm.
+    """Like the :py:class:`~PyIRC.formatting.formatters.ANSIFormatter`, but for
+    XTerm.
 
-    This features true-colour fidelity in many terminals (in XTerm, it will
-    use the nearest colour). This gives the best results.
+    This features true-colour fidelity in many terminals (in XTerm, it
+    will use the nearest colour). This gives the best results.
     """
 
     format_bg = ('48', '2')
@@ -465,7 +466,7 @@ def select_formatter():
 
     If your environment supports ≥ 256 colours, set the environmental
     variable ``TRUECOLOUR`` or ``TRUECOLOR`` to any value but 0 to try
-    full-colour support using the 
+    full-colour support using the
     :py:class:`~PyIRC.formatting.formatters.XTermTrueColourFormatter``.
     """
     if curses is not None:

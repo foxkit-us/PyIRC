@@ -52,6 +52,7 @@ class TestProtocol(IRCProtocol):
 
         self.send("PRIVMSG", params)
 
+
 basicConfig(level="DEBUG")
 
 args = {

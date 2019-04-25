@@ -4,7 +4,7 @@
 # for licensing information.
 
 
-"""Ensure proper handshake behaviour"""
+"""Ensure proper handshake behaviour."""
 
 
 import unittest

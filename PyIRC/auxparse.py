@@ -3,7 +3,7 @@
 # for licensing information.
 
 
-""" Parsing for various IRC mini-languages.
+"""Parsing for various IRC mini-languages.
 
 IRC has a mini-language/grammar fetish and uses them extensively to compensate
 for the fact that RFC1459 frames are deficient, to be excessively generous.
@@ -48,7 +48,7 @@ def extban_parse(string, supported_extban):
 
 
 def banmask_parse(string, supported_extban):
-    """Normalise a ban mask into either an extban or nick!user@host set"""
+    """Normalise a ban mask into either an extban or nick!user@host set."""
     ret = SimpleNamespace()
     ret.nick = ret.user = ret.host = None
 
@@ -152,7 +152,6 @@ def mode_parse(modes, params, modegroups, prefix):
     >>> prefixmodes = prefix_parse(prefixmodes)
     >>> f(mode_parse("+ov-v", ("a", "b", "c"), modegroups, prefixmodes))
     [('o', 'a', True), ('v', 'b', True), ('v', 'c', False)]
-
     """
     if isinstance(prefix, ParsedPrefix):
         prefix = prefix.mode_to_prefix
@@ -208,7 +207,6 @@ def status_prefix_parse(string, prefix):
     >>> modes, channel = status_prefix_parse("@+#", "(ov)@+")
     >>> sorted(modes), channel
     (['o', 'v'], '#')
-
     """
     if isinstance(prefix, ParsedPrefix):
         prefix = prefix.prefix_to_mode
@@ -241,7 +239,6 @@ def who_flag_parse(flags):
 
         :modes:
             A set of the user's present modes (prefixes).
-
     """
     ret = SimpleNamespace(operator=False, away=False, modes=set())
     ret.operator = False
@@ -277,7 +274,6 @@ def userhost_parse(mask):
 
         :away:
             Whether or not the user is away.
-
     """
     if not mask:
         raise ValueError("Need a mask to parse")
@@ -308,8 +304,8 @@ def userhost_parse(mask):
 
 
 def isupport_parse(params):
-    """Parse an ISUPPORT string into a dictionary. Uses the params derived
-    from line :py:attr:`~PyIRC.line.Line.params`.
+    """Parse an ISUPPORT string into a dictionary. Uses the params derived from
+    line :py:attr:`~PyIRC.line.Line.params`.
 
     >>> isupport_parse(["CHANTYPES=a,b,cdefg"])
     {'CHANTYPES': ('a', 'b', 'cdefg')}
@@ -405,7 +401,6 @@ class CTCPMessage:
 
         :param param:
             The param(s) of the CTCP message, with no parsing attempted.
-
         """
         self.msgtype = msgtype
         self.command = command
@@ -414,8 +409,9 @@ class CTCPMessage:
 
     @classmethod
     def parse(cls, line):
-        """Return a new :py:class:`~PyIRC.auxparse.CTCPMessage` from
-        the :py:class:`~PyIRC.line.Line` instance specified.
+        """Return a new :py:class:`~PyIRC.auxparse.CTCPMessage` from the.
+
+        :py:class:`~PyIRC.line.Line` instance specified.
         """
         message = line.params[1]
 
@@ -438,7 +434,7 @@ class CTCPMessage:
     @property
     def line(self):
         """Return a :py:class:`~PyIRC.line.Line` instance representing this
-        CTCP message"""
+        CTCP message."""
         message = '\x01{} {}\x01'.format(self.command, self.param)
         return Line(command=self.msgtype, params=[self.target, message])
 

@@ -8,7 +8,6 @@
 
 This contains an underscore-appending handler and a number-substituting
 (leetifying) handler.
-
 """
 
 
@@ -32,7 +31,6 @@ class BaseAlt(BaseExtension, metaclass=ABCMeta):
     :py:class:`~PyIRC.extensions.UnderscoreAlt`,
     :py:class:`~PyIRC.extensions.NumberSubstituteAlt`, or a custom
     implementation (that should inherit from this class!).
-
     """
 
     def __init__(self, *args, **kwargs):
@@ -84,10 +82,9 @@ class BaseAlt(BaseExtension, metaclass=ABCMeta):
 class UnderscoreAlt(BaseAlt):
     """This class attempts to append underscores to the nickname.
 
-    If :py:class:`~PyIRC.extensions.ISupport` is present, it will try until
-    the maximum nick length is reached; otherwise, it will try up until the
-    attempted nickname is 9 characters long.
-
+    If :py:class:`~PyIRC.extensions.ISupport` is present, it will try
+    until the maximum nick length is reached; otherwise, it will try up
+    until the attempted nickname is 9 characters long.
     """
 
     def try_nick(self):
@@ -108,9 +105,8 @@ class UnderscoreAlt(BaseAlt):
 class NumberSubstituteAlt(BaseAlt):
     """This class attempts to substitute letters for numbers and vis versa.
 
-    This extension will try until all opportunities for leetifying have been
-    exhausted.
-
+    This extension will try until all opportunities for leetifying have
+    been exhausted.
     """
 
     leetmap = {
@@ -167,7 +163,6 @@ class NumberSubstitueAlt(NumberSubstituteAlt):
 
     """Alias for :py:class:`~PyIRC.extensions.NumberSubstituteAlt`.
 
-    This is around for compatibility purposes. The new class fixes a rather
-    embarrassing typo.
-
+    This is around for compatibility purposes. The new class fixes a
+    rather embarrassing typo.
     """

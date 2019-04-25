@@ -9,7 +9,6 @@
 Tracks users we know about, whether on channels or through private
 messages. Maintains state such as nicknames, channel statuses, away
 status, and the like.
-
 """
 
 
@@ -41,7 +40,6 @@ class User:
 
     For more elaborate channel tracking, see
     :py:module:`~PyIRC.extensions.channeltrack`.
-
     """
 
     def __init__(self, case, nick, **kwargs):
@@ -88,7 +86,6 @@ class User:
 
         :key realhost:
             Real hostname for a user. Probably not present in most cases.
-
         """
         if nick is None:
             raise ValueError("nick may not be None")
@@ -131,7 +128,6 @@ class UserTrack(BaseExtension):
         User instances. You should probably prefer
         :py:class:`~PyIRC.extensions.usertrack.Usertrack.get_user` to direct
         lookups on this dictionary.
-
     """
 
     caps = {
@@ -181,7 +177,6 @@ class UserTrack(BaseExtension):
             Callback to call for user when authentication is discovered. The
             User instance is passed in as the first parameter, or None if the
             user is not found. Use functools.partial to pass other arguments.
-
         """
         user = self.get_user(nick)
         if not user:
@@ -207,7 +202,6 @@ class UserTrack(BaseExtension):
             Nickname of the user to retrieve.
 
         :returns: A :class:`User` instance, or None if user not found.
-
         """
         return self.users.get(nick)
 
@@ -216,7 +210,6 @@ class UserTrack(BaseExtension):
 
         Avoid using this method directly unless you know what you are
         doing.
-
         """
         user = self.get_user(nick)
         if not user:
@@ -232,7 +225,6 @@ class UserTrack(BaseExtension):
 
         Avoid using this method directly unless you know what you are
         doing.
-
         """
         if nick not in self.users:
             _logger.warning("Deleting nonexistent user: %s", nick)
@@ -249,7 +241,6 @@ class UserTrack(BaseExtension):
 
         Avoid using this method directly unless you know what you are
         doing.
-
         """
         if not self.do_timeout:
             return
@@ -268,7 +259,6 @@ class UserTrack(BaseExtension):
         .. note::
             This mostly exists for brain-dead networks that don't quit users
             when they get cloaked.
-
         """
         if hasattr(hostmask_or_line, 'hostmask'):
             hostmask = hostmask_or_line.hostmask
@@ -365,7 +355,10 @@ class UserTrack(BaseExtension):
 
     @event("scope", "user_join")
     def join(self, caller, scope):
-        """Handle a user join.  Schedule a WHO(X) for them."""
+        """Handle a user join.
+
+        Schedule a WHO(X) for them.
+        """
         self.burst(caller, scope)
 
         target = scope.target
@@ -839,4 +832,3 @@ class UserTrack(BaseExtension):
         user.operator = operator
         user.account = account
         user.ip = ip
-

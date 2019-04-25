@@ -276,12 +276,15 @@ class BaseTrack(BaseExtension):
             mask = params[2]
             if len(params) > 3:
                 setter = Hostmask.parse(params[3])
+                if setter is None:
+                    raise ValueError("Invalid hostmask")
+
                 if len(params) > 4:
                     timestamp = int(params[4])
             else:
                 setter = line.hostmask
                 timestamp = None
-        except Exception as e:
+        except ValueError as e:
             _logger.warning("Bogus list mode received: %s (exception: %s)",
                             modechar, e)
             return

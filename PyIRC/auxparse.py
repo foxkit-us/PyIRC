@@ -62,7 +62,7 @@ def banmask_parse(string, supported_extban):
 
     try:
         hostmask = Hostmask.parse(string)
-    except Exception:
+    except ValueError:
         return ret
 
     if not hostmask:

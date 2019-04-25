@@ -9,14 +9,7 @@ backport)."""
 
 from sys import version_info
 
-try:
-    import asyncio
-except ImportError as e:
-    if version_info < (3, 3):
-        raise ImportError("Must have Python 3.3 or greater to use this " \
-                          "module") from e
-    else:
-        raise ImportError("Must install asyncio module from PyPI") from e
+import asyncio
 
 from collections import namedtuple
 from functools import update_wrapper, partial
@@ -32,8 +25,7 @@ _logger = getLogger(__name__)  # pylint: disable=invalid-name
 class IRCProtocol(IRCBase, asyncio.Protocol):
 
     """The asyncio implementation of the IRC protocol. Available only with
-    Python 3.4 and above in the standard library, and 3.3 via an external
-    module.
+    Python 3.4 and above in the standard library.
 
     The same methods as :py:class:`~PyIRC.base.IRCBase` are available.
 

@@ -55,8 +55,7 @@ so long as it has a working socket implementation (SSL usage depends on your
 Python build having support for the `ssl` module - this should be almost all
 modern platforms).
 
-PyIRC 3 requires Python 3.3 or newer. asyncio support requires either 3.4, or
-for asyncio to be installed from PyPI. STARTTLS support with asyncio requires
+PyIRC 3 requires Python 3.4 or newer. STARTTLS support with asyncio requires
 Python 3.7 or newer.
 
 ## Documentation

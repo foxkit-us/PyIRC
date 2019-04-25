@@ -47,7 +47,8 @@ class BaseAlt(BaseExtension, metaclass=ABCMeta):
         for extension in self.get_extension_subclasses(BaseAlt):
             if not extension.exhausted:
                 return False
-            elif extension == self:
+
+            if extension == self:
                 self.our_turn = True
                 return True
 
@@ -65,7 +66,8 @@ class BaseAlt(BaseExtension, metaclass=ABCMeta):
         """Try to change our nickname to an alternative."""
         if self.registered:
             return
-        elif self.exhausted or not self.check_our_turn():
+
+        if self.exhausted or not self.check_our_turn():
             return
 
         try:

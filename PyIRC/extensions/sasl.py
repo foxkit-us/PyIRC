@@ -100,14 +100,15 @@ class SASL(BaseExtension):
         if "sasl" not in cap_negotiate.remote:
             # No SASL
             return None
-        elif not cap_negotiate.remote["sasl"]:
+
+        if not cap_negotiate.remote["sasl"]:
             # 3.1 style SASL
             _logger.debug("Registering old-style SASL capability")
             return {"sasl" : []}
-        else:
-            # 3.2 style SASL
-            _logger.debug("Registering new-style SASL capability")
-            return {"sasl": [m.method for m in self.mechanisms]}
+
+        # 3.2 style SASL
+        _logger.debug("Registering new-style SASL capability")
+        return {"sasl": [m.method for m in self.mechanisms]}
 
     @event("link", "disconnected")
     def close(self, _):
@@ -174,11 +175,11 @@ class SASL(BaseExtension):
         if self.attempt + 1 >= len(self.mechanisms):
             _logger.critical("No SASL auth methods were successful.")
             return self.resume_event("cap_perform", "ack")
-        else:
-            # We will try another mechanism
-            self.attempt += 1
-            mechanism = self.mechanisms[self.attempt]
-            self.send("AUTHENTICATE", [mechanism.method])
+
+        # We will try another mechanism
+        self.attempt += 1
+        mechanism = self.mechanisms[self.attempt]
+        self.send("AUTHENTICATE", [mechanism.method])
 
     @event("commands", Numerics.ERR_SASLTOOLONG)
     def fail_hard(self, _, line):

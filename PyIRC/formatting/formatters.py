@@ -253,8 +253,8 @@ class HTMLFormatter(Formatter):
         if self.reverse:
             return "<span style=\"filter: invert(100%);" \
                 "-webkit-filter: invert(100%);\">"
-        else:
-            return "</span>"
+        
+        return "</span>"
 
     def do_underline(self):
         return "<u>" if self.underline else "</u>"
@@ -484,14 +484,15 @@ def select_formatter():
                 return XTermTrueColourFormatter
 
             return XTerm256ColourFormatter
-        elif colours >= 16:
+
+        if colours >= 16:
             return XTerm16ColourFormatter
 
         # Better than nothing...
         return ANSIFormatter
-    else:
-        if sys.platform.startswith("win32"):
-            # XXX differentiate stdout from a file
-            return ANSIFormatter
 
-        return NullFormatter
+    if sys.platform.startswith("win32"):
+        # XXX differentiate stdout from a file
+        return ANSIFormatter
+
+    return NullFormatter

@@ -37,14 +37,17 @@ class Tags:
         self.tagstr = tagstr
 
         if not self.tags:
-            self = self.parse(self.tagstr)
+            parse = self.parse(self.tagstr)
+            self.tags = parse.tags
+            self.tagstr = parse.tagstr
 
     @classmethod
     def parse(cls, raw):
         """Parse a raw tag string into a Tags object."""
         if not raw:
             _logger.debug("No tags on this message")
-            return
+            # pylint: disable=inconsistent-return-statements
+            return None
 
         tags = dict()
 
@@ -107,24 +110,25 @@ class Hostmask:
         """
         if not raw:
             _logger.debug("No hostmask found")
-            return
+            # pylint: disable=inconsistent-return-statements
+            return None
 
         host_sep = raw.find('@')
         if host_sep == -1:
             if raw.find('.') != -1:
                 return cls(host=raw, mask=raw)
-            else:
-                return cls(nick=raw, mask=raw)
+
+            return cls(nick=raw, mask=raw)
 
         nick_sep = raw.find('!')
         has_username = (nick_sep != -1)
         if not has_username:
             return cls(nick=raw[:host_sep], host=raw[host_sep + 1:],
                        mask=raw)
-        else:
-            return cls(nick=raw[:nick_sep],
-                       username=raw[nick_sep + 1:host_sep],
-                       host=raw[host_sep + 1:], mask=raw)
+
+        return cls(nick=raw[:nick_sep],
+                   username=raw[nick_sep + 1:host_sep],
+                   host=raw[host_sep + 1:], mask=raw)
 
     @staticmethod
     @lru_cache(maxsize=128)
@@ -135,6 +139,7 @@ class Hostmask:
 
     def match(self, mask):
         """Check if a given mask matches this hostmask."""
+        # pylint: disable=too-many-return-statements
         # XXX this assumes an ASCII scheme for comparisons. It should be
         # correct for most cases, though.
 
@@ -264,7 +269,8 @@ class Line:
         """
         if not line:
             _logger.warning("Blank line passed in!")
-            return
+            # pylint: disable=inconsistent-return-statements
+            return None
 
         raw_line = line
         tags = None
@@ -286,11 +292,13 @@ class Line:
         # Grab command
         command = reduce(operator.concat,
                          takewhile(lambda char: char not in (' ', ':'), line))
+        # pylint: disable=len-as-condition
         assert len(command) > 0
 
         line = line[len(command):].lstrip().rstrip('\r\n')
 
         # Retrieve parameters
+        # pylint: disable=len-as-condition
         while len(line) > 0:
             next_param = ''
             line = line.lstrip()

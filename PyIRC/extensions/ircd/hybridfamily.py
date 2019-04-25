@@ -102,7 +102,8 @@ class HybridServer(BaseServer):
         version = base.basic_rfc.server_version[0]
         if version is None:
             return False
-        elif version.startswith("ircd-hybrid"):
+
+        if version.startswith("ircd-hybrid"):
             return True
 
         return False
@@ -598,7 +599,8 @@ class RatboxServer(HybridServer):
         version = base.basic_rfc.server_version[0]
         if version is None:
             return False
-        elif version.startswith("ircd-ratbox"):
+
+        if version.startswith("ircd-ratbox"):
             return True
 
         return False
@@ -613,7 +615,8 @@ class CharybdisServer(RatboxServer):
         version = base.basic_rfc.server_version[0]
         if version is None:
             return False
-        elif version.startswith("charybdis"):
+
+        if version.startswith("charybdis"):
             return True
 
         return False
@@ -684,7 +687,8 @@ class IrcdSevenServer(CharybdisServer):
         version = base.basic_rfc.server_version[0]
         if version is None:
             return False
-        elif version.startswith("ircd-seven"):
+
+        if version.startswith("ircd-seven"):
             return True
 
         return False

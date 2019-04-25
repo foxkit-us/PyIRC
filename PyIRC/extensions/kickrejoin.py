@@ -129,7 +129,8 @@ class KickRejoin(BaseExtension):
             # Do not rejoin if we are being 'nice'
             if not self.rejoin_on_remove:
                 return
-            elif channel in self.parts:
+
+            if channel in self.parts:
                 # We left on our own :P
                 self.parts.discard(channel)
                 return

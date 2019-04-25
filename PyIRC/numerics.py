@@ -31,6 +31,7 @@ following IRC servers or standards were checked:
 """
 
 
+# pylint: disable=too-many-lines
 # This file has been automatically generated with conflicts manually sorted
 # out
 # The comments show the place the numerics came from

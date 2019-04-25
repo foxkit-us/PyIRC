@@ -80,28 +80,31 @@ class IRCString(UserString):
         """Uppercase string into a real Python string."""
         if self.case == IRCString.ASCII:
             return self.ascii_upper()
-        elif self.case == IRCString.RFC1459:
+
+        if self.case == IRCString.RFC1459:
             return self.rfc1459_upper()
-        else:
-            return str.upper(self.data)
+
+        return str.upper(self.data)
 
     def str_lower(self):
         """Lowercase string into a real python string."""
         if self.case == IRCString.ASCII:
             return self.ascii_lower()
-        elif self.case == IRCString.RFC1459:
+
+        if self.case == IRCString.RFC1459:
             return self.rfc1459_lower()
-        else:
-            return str.lower(self.data)
+
+        return str.lower(self.data)
 
     def str_casefold(self):
         """Casefold string into a real Python string."""
         if self.case == IRCString.ASCII:
             return self.ascii_casefold()
-        elif self.case == IRCString.RFC1459:
+
+        if self.case == IRCString.RFC1459:
             return self.rfc1459_casefold()
-        else:
-            return str.casefold(self.data)
+
+        return str.casefold(self.data)
 
     def upper(self):
         """Uppercase string according to default semantics."""

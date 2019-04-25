@@ -33,8 +33,8 @@ class InspIRCdServer(BaseServer):
         version = base.basic_rfc.server_version[0]
         if version is None or not version.startswith("InspIRCd-2"):
             return False
-        else:
-            return True
+
+        return True
 
     def extban_parse(self, string):
         """Parse an extban.

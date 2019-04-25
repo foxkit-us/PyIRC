@@ -70,21 +70,22 @@ def get_extension(name, prefer_builtin=True):
         # The below shouldn't fail, ever.
         module = import_module("PyIRC.extensions.%s" % module_name)
         return getattr(module, name)
-    elif len(extensions) == 1:
+
+    if len(extensions) == 1:
         # We got only one. :p
         return extensions[0]
-    else:
-        extension_pref = None
-        for extension in reversed(extensions):
-            qualname = extension.__qualname__
 
-            if (extension_pref is None or prefer_builtin is
-                    qualname.startswith("PyIRC.extensions.")):
-                # prefer_builtins controls the behaviour of this condition.
-                # Yes, it's actually correct.
-                extension_pref = extension
+    extension_pref = None
+    for extension in reversed(extensions):
+        qualname = extension.__qualname__
 
-        return extension_pref
+        if (extension_pref is None or prefer_builtin is
+                qualname.startswith("PyIRC.extensions.")):
+            # prefer_builtins controls the behaviour of this condition.
+            # Yes, it's actually correct.
+            extension_pref = extension
+
+    return extension_pref
 
 
 class BaseExtension:

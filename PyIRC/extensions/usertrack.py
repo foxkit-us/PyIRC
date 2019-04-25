@@ -391,7 +391,8 @@ class UserTrack(BaseExtension):
             _logger.warning("Got a part/kick for a user not found: %s (in %s)",
                             target.nick, channel)
             return
-        elif channel not in user.channels:
+
+        if channel not in user.channels:
             _logger.warning("Got a part/kick for a user not in a channel: %s "
                             "(in %s)", target.nick, channel)
             return

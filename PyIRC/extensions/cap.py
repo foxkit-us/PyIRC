@@ -111,8 +111,8 @@ class CapNegotiate(BaseExtension):
 
         if params:
             return "{}={}".format(cap, ','.join(params))
-        else:
-            return cap
+
+        return cap
 
     @event("link", "connected", priority=-1000)
     def send_cap(self, _):

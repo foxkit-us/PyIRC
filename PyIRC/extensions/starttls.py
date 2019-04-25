@@ -30,7 +30,7 @@ class StartTLS(BaseExtension):
     """Support for the STARTTLS extension.
 
     Not all I/O backends support this, notably
-    :py:class:`~PyIRC.io.asyncio`.
+    :py:class:`~PyIRC.io.asyncio` before Python 3.7.
     """
 
     requires = ["CapNegotiate"]

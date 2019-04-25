@@ -253,7 +253,7 @@ class HTMLFormatter(Formatter):
         if self.reverse:
             return "<span style=\"filter: invert(100%);" \
                 "-webkit-filter: invert(100%);\">"
-        
+
         return "</span>"
 
     def do_underline(self):

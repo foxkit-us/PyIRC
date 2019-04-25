@@ -56,7 +56,8 @@ Python build having support for the `ssl` module - this should be almost all
 modern platforms).
 
 PyIRC 3 requires Python 3.3 or newer. asyncio support requires either 3.4, or
-for asyncio to be installed from PyPI.
+for asyncio to be installed from PyPI. STARTTLS support with asyncio requires
+Python 3.7 or newer.
 
 ## Documentation
 Documentation is automatically generated and placed
@@ -73,7 +74,7 @@ Pull requests and patches are always welcomed. Features can be requested via
 the bug tracker.
 
 ## License and copyright
-Copyright © 2013-2015 A. Wilcox and Elizabeth Myers. All rights reserved.
+Copyright © 2013-2019 A. Wilcox and Elizabeth Myers. All rights reserved.
 Copyright © 2019 A. Wilcox.  All rights reserved.
 
 Non-third party files are licensed under the WTFPL; terms and conditions can be

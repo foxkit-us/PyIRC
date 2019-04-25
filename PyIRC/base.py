@@ -14,6 +14,7 @@ binds everything together.
 
 
 from abc import ABCMeta, abstractmethod
+from collections import OrderedDict
 from logging import getLogger
 
 from PyIRC.signal import SignalStorage
@@ -109,7 +110,7 @@ class IRCBase(metaclass=ABCMeta):
         if not extensions:
             raise ValueError("Need at least one extension")
 
-        self.extensions = {}
+        self.extensions = OrderedDict()
         for extension in extensions:
             self.load_extension(extension)
 

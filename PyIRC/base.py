@@ -170,7 +170,7 @@ class IRCBase(metaclass=ABCMeta):
 
         self.signals.unbind(extension)
 
-    def get_extension_subclasses(self, base_extension):
+    def get_extension_subclasses(self, base_extension, filter_extensions=[]):
         """Find all subclasses of the given extension.
 
         For the given extension class, return all subclasses of that extension
@@ -179,19 +179,19 @@ class IRCBase(metaclass=ABCMeta):
         Extensions will be returned in order of loading.
 
         :param base_extension:
-            Extension base class to search for subclasses for.
+            Extension base class to search for subclasses.
+
+        :param filter_extensions:
+            A list of extensions to filter out with the given class.
 
         :returns:
             A list of tuples containing the extension names and instances, in
             order of loading.
 
         """
-        extensions = []
-        for name, extension in self.extensions.items():
-            if isinstance(extension, base_extension):
-                extensions.append((name, extension))
-
-        return extensions
+        return [(n, e) for n, e in self.extensions.items() if
+                isinstance(, base_extension) and e.__class__ not in
+                filter_extensions]
 
     def case_change(self):
         """Change server casemapping semantics.

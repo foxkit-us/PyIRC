@@ -435,7 +435,10 @@ class CTCPMessage:
     def line(self):
         """Return a :py:class:`~PyIRC.line.Line` instance representing this
         CTCP message."""
-        message = '\x01{} {}\x01'.format(self.command, self.param)
+        message = '\x01{}'.format(self.command)
+        if self.param is not None:
+            message = message + ' ' + self.param
+        message = message + '\x01'
         return Line(command=self.msgtype, params=[self.target, message])
 
     def __repr__(self):

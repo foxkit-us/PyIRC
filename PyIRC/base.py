@@ -151,7 +151,7 @@ class IRCBase(metaclass=ABCMeta):
 
         :param extension:
             The extension to unload, either a string, or a
-            :py:class:`~PyIRC.extension.ExtensionBase` instance.
+            :py:class:`~PyIRC.extension.BaseExtension` instance.
 
         .. warning::
             Reverse dependencies are not yet checked! Be careful when
@@ -169,6 +169,29 @@ class IRCBase(metaclass=ABCMeta):
             raise ValueError("Extension not found: {}".format(extname))
 
         self.signals.unbind(extension)
+
+    def get_extension_subclasses(self, base_extension):
+        """Find all subclasses of the given extension.
+
+        For the given extension class, return all subclasses of that extension
+        that are actually loaded right now.
+
+        Extensions will be returned in order of loading.
+
+        :param base_extension:
+            Extension base class to search for subclasses for.
+
+        :returns:
+            A list of tuples containing the extension names and instances, in
+            order of loading.
+
+        """
+        extensions = []
+        for name, extension in self.extensions.items():
+            if isinstance(extension, base_extension):
+                extensions.append((name, extension))
+
+        return extensions
 
     def case_change(self):
         """Change server casemapping semantics.

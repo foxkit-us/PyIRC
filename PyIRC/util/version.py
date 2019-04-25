@@ -27,8 +27,8 @@ def _gitversion():
 
 
 major = 3
-minor = 0
-status = "alpha"
+minor = 2 
+status = "beta"
 gitversion = _gitversion()
 
 Version = namedtuple("Version", "major minor status gitversion")

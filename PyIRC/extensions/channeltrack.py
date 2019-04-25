@@ -271,8 +271,7 @@ class ChannelTrack(BaseExtension):
         if line.command.lower() == "topic":
             channel = self.get_channel(line.params[0])
             if channel is None:
-                _logger.debug("Topic for unknown channel: {}".format(
-                    line.params[0]))
+                _logger.debug("Topic for unknown channel: %s", line.params[0])
                 return
 
             # TODO server/local time deltas for more accurate timestamps
@@ -281,8 +280,8 @@ class ChannelTrack(BaseExtension):
         else:
             channel = self.get_channel(line.params[1])
             if channel is None:
-                _logger.debug("RPL_TOPIC for unknown channel: {}".format(
-                    line.params[1]))
+                _logger.debug("RPL_TOPIC for unknown channel: %s",
+                              line.params[1])
                 return
 
         channel.topic = line.params[-1]
@@ -292,8 +291,8 @@ class ChannelTrack(BaseExtension):
         """Update the fact that a channel has no topic."""
         channel = self.get_channel(line.params[1])
         if channel is None:
-            _logger.debug("RPL_NOTOPIC for unknown channel: {}".format(
-                line.params[1]))
+            _logger.debug("RPL_NOTOPIC for unknown channel: %s",
+                          line.params[1])
             return
 
         channel.topic = ''
@@ -303,8 +302,8 @@ class ChannelTrack(BaseExtension):
         """Update the channel's topic metadata."""
         channel = self.get_channel(line.params[1])
         if channel is None:
-            _logger.debug("Topic time for unknown channel: {}".format(
-                line.params[1]))
+            _logger.debug("Topic time for unknown channel: %s",
+                          line.params[1])
             return
 
         channel.topicwho = Hostmask.parse(line.params[2])
@@ -315,8 +314,7 @@ class ChannelTrack(BaseExtension):
         """Update the channel's URL."""
         channel = self.get_channel(line.params[1])
         if channel is None:
-            _logger.debug("URL for unknown channel: {}".format(
-                line.params[1]))
+            _logger.debug("URL for unknown channel: %s", line.params[1])
             return
 
         channel.url = line.params[-1]
@@ -326,8 +324,8 @@ class ChannelTrack(BaseExtension):
         """Update the channel's creation time."""
         channel = self.get_channel(line.params[1])
         if channel is None:
-            _logger.debug("Creation time for unknown channel: {}".format(
-                line.params[1]))
+            _logger.debug("Creation time for unknown channel: %s",
+                          line.params[1])
             return
 
         channel.timestamp = int(line.params[-1])

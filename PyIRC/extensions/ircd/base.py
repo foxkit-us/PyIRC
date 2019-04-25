@@ -243,7 +243,7 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
             or consult a network administrator, for more information.
         """
         raise NotImplementedError("Server does not support GECOS bans.")
-    
+
     @abc.abstractmethod
     def stats_global_ban(self):
         """Get a list of all global bans (often referred to as "g:lines" or,
@@ -296,7 +296,7 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
             returned with a grain of salt.
         """
         raise NotImplementedError
-    
+
     @abc.abstractmethod
     def stats_global_nickchan_ban(self):
         """Get a list of all global nick/channel bans (often referred to as
@@ -322,7 +322,7 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
             returned with a grain of salt.
         """
         raise NotImplementedError
-    
+
     def stats_global_gecos_ban(self):
         """Get a list of all global GECOS bans (often referred to as "sglines",
         "n:lines", or "x:lines").
@@ -362,7 +362,8 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
             filtered. Unless you are an operator, take the information that is
             returned with a grain of salt.
         """
-        raise NotImplementedError("Server does not support listing operators.""")
+        raise NotImplementedError(
+            "Server does not support listing operators.""")
 
     @abc.abstractmethod
     def stats_uptime(self, server=None):

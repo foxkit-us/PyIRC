@@ -238,7 +238,7 @@ class HybridServer(BaseServer):
             or consult a network administrator, for more information.
         """
         self.generic_ban("DLINE", server, ip, duration, reason)
-    
+
     def global_nickchan_ban(self, string, duration, reason):
         """Ban a nick on the IRC network. This is often referred to as a
         "Q:line", "q:line", or (in hybrid derivatives) as a "resv".

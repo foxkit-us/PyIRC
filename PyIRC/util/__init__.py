@@ -3,4 +3,6 @@
 # for licensing information.
 
 
+"""Internal utilities for PyIRC."""
+
 __all__ = ["classutil", "enum", "version"]

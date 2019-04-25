@@ -27,7 +27,7 @@ def _gitversion():
 
 
 major = 3
-minor = 2 
+minor = 2
 status = "beta"
 gitversion = _gitversion()
 

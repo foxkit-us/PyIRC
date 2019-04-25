@@ -77,6 +77,7 @@ Uptime = namedtuple("Uptime", "days hours minutes seconds")
 
 # FIXME this sucks, importing them all here so the subclasses of BaseServer
 # are visible
+# pylint: disable=cyclic-import
 from PyIRC.extensions.ircd import base, hybridfamily, inspircd
 
 

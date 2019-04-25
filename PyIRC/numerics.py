@@ -37,10 +37,7 @@ following IRC servers or standards were checked:
 # The comments show the place the numerics came from
 # TODO: fix name duplication
 
-try:
-    from enum import Enum
-except ImportError:
-    from PyIRC.util.enum import Enum
+from enum import Enum
 
 
 class Numerics(Enum):

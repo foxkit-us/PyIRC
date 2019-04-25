@@ -10,14 +10,10 @@
 from collections import defaultdict
 from inspect import getmembers
 from logging import getLogger
+from enum import Enum
 
 from taillight.signal import UnsharedSignal
 from taillight import ANY
-
-try:
-    from enum import Enum
-except ImportError:
-    from PyIRC.util.enum import Enum
 
 
 _logger = getLogger(__name__)  # pylint: disable=invalid-name

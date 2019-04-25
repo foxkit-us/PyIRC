@@ -11,11 +11,7 @@ and ANSI escape translations of them.
 """
 
 
-try:
-    from enum import Enum, IntEnum, unique
-except ImportError:
-    from PyIRC.util.enum import Enum, IntEnum, unique
-
+from enum import Enum, IntEnum, unique
 from collections import namedtuple
 
 

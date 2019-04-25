@@ -5,4 +5,4 @@
 
 """Internal utilities for PyIRC."""
 
-__all__ = ["classutil", "enum", "version"]
+__all__ = ["classutil", "version"]

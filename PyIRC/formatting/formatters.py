@@ -12,20 +12,16 @@ Bold, italic, underline, reverse, and colours are handled.
 """
 
 
-try:
-    from enum import Enum, unique
-except ImportError:
-    from PyIRC.util.enum import Enum, unique
-
 import os
 import sys
+import re
 
 try:
     import curses
 except ImportError:
     curses = None
 
-import re
+from enum import Enum, unique
 
 from PyIRC.formatting.colours import (Colours, ColoursRGB, ColoursANSI,
                                       ColoursXTerm256)

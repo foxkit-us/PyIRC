@@ -91,7 +91,7 @@ class UnderscoreAlt(BaseAlt):
     """
 
     def try_nick(self):
-        """Try to complete registration with a long _."""
+        """Try to find a new nickname with a short skirt and a long _."""
         isupport = self.get_extension("ISupport")
         if isupport:
             nicklen = isupport.get("NICKLEN")
@@ -169,4 +169,5 @@ class NumberSubstitueAlt(NumberSubstituteAlt):
 
     This is around for compatibility purposes. The new class fixes a rather
     embarrassing typo.
+
     """

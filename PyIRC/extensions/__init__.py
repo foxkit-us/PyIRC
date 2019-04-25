@@ -41,7 +41,7 @@ _builtin_extension_modules = {
     "ISupport": "isupport",
     "KickRejoin": "kickrejoin",
     "LagCheck": "lag",
-    "NumberSubstitueAlt": "altnick",
+    "NumberSubstituteAlt": "altnick",
     "SASL": "sasl",
     "ServicesLogin": "services",
     "StartTLS": "starttls",

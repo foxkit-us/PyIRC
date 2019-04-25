@@ -13,6 +13,7 @@ This contains an underscore-appending handler and a number-substituting
 
 
 from logging import getLogger
+from abc import ABCMeta, abstractmethod
 
 from PyIRC.signal import event
 from PyIRC.numerics import Numerics
@@ -22,49 +23,89 @@ from PyIRC.extensions import BaseExtension
 _logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 
-class UnderscoreAlt(BaseExtension):
-    """This class attempts to append underscores to the nickname.
+class BaseAlt(BaseExtension, metaclass=ABCMeta):
+    """Base class inherited for altnick extensions.
 
-    If :py:class:`~PyIRC.extensions.ISupport` is present, it will try until
-    the maximum nick length is reached; otherwise, it will try 5 times.
+    This provides a basic framework for all alt nickname classes to use.
+
+    This class does nothing on its own, you want either
+    :py:class:`~PyIRC.extensions.UnderscoreAlt`,
+    :py:class:`~PyIRC.extensions.NumberSubstituteAlt`, or a custom
+    implementation (that should inherit from this class!).
 
     """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.attempt_nick = self.nick  # from base
-        self.attempts = 0
+        self.attempt_nick = self.nick  # From base
+        self.exhausted = False  # Whether or not to throw in the towel
+        self.our_turn = False
+
+    def check_our_turn(self):
+        if self.our_turn:
+            return True
+
+        for extension in self.get_extension_subclasses(BaseAlt):
+            if not extension.exhausted:
+                return False
+            elif extension == self:
+                self.our_turn = True
+                return True
+
+        _logger.critical("BUG: Got somewhere we shouldn't have!")
+
+    @abstractmethod
+    def try_nick(self):
+        """Return a nickname to try."""
+        raise NotImplementedError
 
     @event("commands", Numerics.ERR_NICKNAMEINUSE, priority=-1000)
     @event("commands", Numerics.ERR_ERRONEOUSNICKNAME, priority=-1000)
     @event("commands", Numerics.ERR_NONICKNAMEGIVEN, priority=-1000)
     def change_nick(self, _, line):
-        """Try to complete registration with a long _."""
+        """Try to change our nickname to an alternative."""
         if self.registered:
-            # Don't care!
+            return
+        elif self.exhausted or not self.check_our_turn():
             return
 
-        if self.attempts >= 5:
-            # Give up, but maybe something else can try...
+        try:
+            self.attempt_nick = self.try_nick()
+        except ValueError:
+            _logger.debug("altnick: module %s exhausted",
+                          self.__class__.__name__)
+            self.exhausted = True
             return
 
+        self.send("NICK", [self.attempt_nick])
+
+
+class UnderscoreAlt(BaseAlt):
+    """This class attempts to append underscores to the nickname.
+
+    If :py:class:`~PyIRC.extensions.ISupport` is present, it will try until
+    the maximum nick length is reached; otherwise, it will try up until the
+    attempted nickname is 9 characters long.
+
+    """
+
+    def try_nick(self):
+        """Try to complete registration with a long _."""
         isupport = self.get_extension("ISupport")
         if isupport:
             nicklen = isupport.get("NICKLEN")
         else:
             nicklen = 9  # RFC1459 default
 
-        if len(self.attempt_nick) > nicklen:
+        if len(self.attempt_nick) >= nicklen:
             # Nick is too long! This isn't gonna work.
-            return
+            raise ValueError("Can't add more underscores")
 
-        self.attempt_nick += '_'
-        self.attempts += 1
-        self.send("NICK", [self.attempt_nick])
+        return self.attempt_nick + "_"
 
 
-class NumberSubstitueAlt(BaseExtension):
+class NumberSubstituteAlt(BaseAlt):
     """This class attempts to substitute letters for numbers and vis versa.
 
     This extension will try until all opportunities for leetifying have been
@@ -96,18 +137,10 @@ class NumberSubstitueAlt(BaseExtension):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.attempt_nick = self.nick  # from base
         self.index = 0  # The present nick index
 
-    @event("commands", Numerics.ERR_NICKNAMEINUSE, priority=-1000)
-    @event("commands", Numerics.ERR_ERRONEOUSNICKNAME, priority=-1000)
-    @event("commands", Numerics.ERR_NONICKNAMEGIVEN, priority=-1000)
-    def change_nick(self, _, line):
-        """Try to complete registration by being a 1337 h4x0r."""
-        if self.registered:
-            # Don't care!
-            return
-
+    def try_nick(self):
+        """Try to find a new nickname by being a 1337 h4x0r."""
         while self.index < len(self.attempt_nick):
             # Try to leetify a letter
             char = self.attempt_nick[self.index]
@@ -121,8 +154,19 @@ class NumberSubstitueAlt(BaseExtension):
                 continue
 
             # Munge!
-            self.attempt_nick = (self.attempt_nick[:self.index] + char +
-                                 self.attempt_nick[self.index + 1:])
-            self.send("NICK", [self.attempt_nick])
+            val = (self.attempt_nick[:self.index] + char +
+                   self.attempt_nick[self.index + 1:])
             self.index += 1
-            return
+            return val
+
+        # If we get here, we've exhausted all other options
+        raise ValueError("Cannot become more 1337; alt nicks exhausted.")
+
+
+class NumberSubstitueAlt(NumberSubstituteAlt):
+
+    """Alias for :py:class:`~PyIRC.extensions.NumberSubstituteAlt`.
+
+    This is around for compatibility purposes. The new class fixes a rather
+    embarrassing typo.
+    """

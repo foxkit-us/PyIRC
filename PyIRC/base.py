@@ -186,7 +186,7 @@ class IRCBase(metaclass=ABCMeta):
             order of loading.
         """
         return [(n, e) for n, e in self.extensions.items() if
-                isinstance(, base_extension) and e.__class__ not in
+                isinstance(e, base_extension) and e.__class__ not in
                 filter_extensions]
 
     def case_change(self):

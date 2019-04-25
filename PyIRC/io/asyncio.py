@@ -10,6 +10,7 @@ backport)."""
 from sys import version_info
 
 import asyncio
+import ssl
 
 from collections import namedtuple
 from functools import update_wrapper, partial

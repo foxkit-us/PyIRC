@@ -167,7 +167,7 @@ class IRCBase(metaclass=ABCMeta):
 
         self.signals.unbind(extension)
 
-    def get_extension_subclasses(self, base_extension, filter_extensions=list()):
+    def get_extension_subclasses(self, base_extension, filter_extensions=None):
         """Find all subclasses of the given extension.
 
         For the given extension class, return all subclasses of that extension
@@ -185,6 +185,9 @@ class IRCBase(metaclass=ABCMeta):
             A list of tuples containing the extension names and instances, in
             order of loading.
         """
+        if filter_extensions is None:
+            filter_extensions = ()
+
         return [(n, e) for n, e in self.extensions.items() if
                 isinstance(e, base_extension) and e.__class__ not in
                 filter_extensions]

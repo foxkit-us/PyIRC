@@ -93,7 +93,7 @@ class PrettyPrintedIRCMixin(IRCBase):
         """Handle a PART line."""
         parter = self.nick_colour(line.hostmask.nick)
 
-        if len(line.params) > 0:
+        if line.params:
             reason = ' ({})'.format(line.params[-1])
         else:
             reason = ''
@@ -122,7 +122,7 @@ class PrettyPrintedIRCMixin(IRCBase):
     @event("commands", "QUIT")
     def quit(self, _, line):
         """Handle a QUIT line."""
-        if len(line.params) > 0:
+        if line.params:
             okbye = ' ({})'.format(line.params[-1])
         else:
             okbye = ''

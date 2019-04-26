@@ -14,8 +14,6 @@ from logging import getLogger
 import re
 
 from PyIRC.extensions.ircd.base import BaseServer
-from PyIRC.numerics import Numerics
-from PyIRC.signal import event
 
 
 _logger = getLogger(__name__)  # pylint: disable=invalid-name
@@ -45,6 +43,7 @@ class InspIRCdServer(BaseServer):
         :returns:
             An :py:class:`~PyIRC.extensions.ircd.Extban` instance.
         """
+        # TODO: implement this
         raise NotImplementedError("Extbans are not supported yet.")
 
     def _abstract_ban(self, ban_type, mask, duration, reason):

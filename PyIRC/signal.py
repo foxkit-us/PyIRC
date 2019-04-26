@@ -46,8 +46,10 @@ def event(hclass, event_name, priority=UnsharedSignal.PRIORITY_NORMAL,
 
     def wrapped(function):
         if not hasattr(function, '_signal'):
+            # pylint: disable=protected-access
             function._signal = list()
 
+        # pylint: disable=protected-access
         function._signal.append((name, priority, listener))
 
         return function
@@ -87,6 +89,7 @@ class SignalStorage:
         """Bind slots from `inst` to their respective signals."""
         slots = self.signal_slots[id(inst)]
         for (_, function) in getmembers(inst, self._signal_pred):
+            # pylint: disable=protected-access
             for param in function._signal:
                 signal = self.get_signal(param[0])
                 slots.append(signal.add(function, *param[1:]))

@@ -92,6 +92,8 @@ _uptime_re = re.compile(
     """, re.X)
 
 
+# *sigh* It gets mad because we don't override extban_parse
+# pylint: disable=abstract-method
 class HybridServer(BaseServer):
 
     """The ircd-hybrid provider."""
@@ -593,6 +595,8 @@ class HybridServer(BaseServer):
         return self.call_event("stats", "uptime", uptime)
 
 
+# *sigh* It gets mad because we don't override extban_parse
+# pylint: disable=abstract-method
 class RatboxServer(HybridServer):
 
     """The ircd-ratbox provider."""

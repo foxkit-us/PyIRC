@@ -213,11 +213,11 @@ class BaseTrack(BaseExtension):
             if mode in prefix:
                 mode_call = "mode_prefix"
             elif mode in modegroups[0]:
-                mode_call = "mode_list",
+                mode_call = "mode_list"
             elif mode in modegroups[1]:
-                mode_call = "mode_key",
+                mode_call = "mode_key"
             elif mode in modegroups[2]:
-                mode_call = "mode_param",
+                mode_call = "mode_param"
             else:
                 mode_call = "mode_normal"
 

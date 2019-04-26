@@ -26,6 +26,7 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
         """Returns whether or not this extension can provide for the server."""
         return False
 
+    # pylint: disable=abstract-method
     def extban_parse(self, string):
         """Parse an extban.
 
@@ -37,7 +38,7 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
         :returns:
             An :py:class:`~PyIRC.extensions.ircd.Extban` instance.
         """
-        raise NotImplementedError("Extbans are not supported.")
+        raise NotImplementedError("Extbans are not supported by this ircd.")
 
     @abc.abstractmethod
     def global_ban(self, user, duration, reason):

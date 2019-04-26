@@ -256,6 +256,7 @@ class CapNegotiate(BaseExtension):
         else:
             self.end(None, None)
 
+    # pylint: disable=no-self-use
     @event("commands_cap", "nak")
     def nak(self, _, data):
         """Log CAP rejection."""

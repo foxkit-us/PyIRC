@@ -40,6 +40,13 @@ class BaseAlt(BaseExtension, metaclass=ABCMeta):
         self.exhausted = False  # Whether or not to throw in the towel
         self.our_turn = False
 
+    @event("connection", "close")
+    def close(self):
+        """Reset all our state."""
+        self.attempt_nick = self.nick
+        self.exhausted = False
+        self.our_turn = False
+
     def check_our_turn(self):
         if self.our_turn:
             return True
@@ -138,6 +145,11 @@ class NumberSubstituteAlt(BaseAlt):
         super().__init__(*args, **kwargs)
 
         self.index = 0  # The present nick index
+
+    @event("connection", "close")
+    def reset_index(self):
+        """Reset the index when closed."""
+        self.index = 0
 
     def try_nick(self):
         """Try to find a new nickname by being a 1337 h4x0r."""

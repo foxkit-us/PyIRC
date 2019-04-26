@@ -362,7 +362,7 @@ class XTerm16ColourFormatter(ANSIFormatter):
 
             if self.background is not None:
                 bgc = ColoursANSI[self.background.name].value
-                ret.append(str(fgc.background_16))
+                ret.append(str(bgc.background_16))
             else:
                 # Reset background just in case
                 ret.append(self.fmt_resetbackground)

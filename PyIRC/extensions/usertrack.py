@@ -724,6 +724,8 @@ class UserTrack(BaseExtension):
         nick = line.params[5]
         flags = who_flag_parse(line.params[6])
         other = line.params[7]
+        # TODO: find something to do with this stuff
+        # pylint: disable=unused-variable
         hopcount, _, other = other.partition(' ')
 
         user = self.get_user(nick)

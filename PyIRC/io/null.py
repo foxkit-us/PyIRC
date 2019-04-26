@@ -42,8 +42,6 @@ class NullSocket(IRCBase):
         _logger.debug("IN: %s", str(line).rstrip())
         super().recv(line)
 
-        return
-
     def inject_line(self, line):
         """Inject a Line into the recvq for the client."""
         assert isinstance(line, Line)

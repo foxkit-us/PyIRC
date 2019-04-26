@@ -35,6 +35,7 @@ prefix_match = re.compile(r"\(([A-Za-z0-9]+)\)(.+)")  # pylint: disable=invalid-
 numletters = ascii_letters + digits  # pylint: disable=invalid-name
 
 
+# pylint: disable=unused-argument
 @lru_cache(maxsize=16)
 def _extban_compile(char, extbans):
     # TODO - inspircd chained extbans (BLEH)

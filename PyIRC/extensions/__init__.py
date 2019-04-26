@@ -99,6 +99,8 @@ class BaseExtension:
     requires = []
     """Required extensions (must be a name)"""
 
+    # kwargs are reserved
+    # pylint: disable=unused-arguments
     def __init__(self, base, **kwargs):
         """Initalise the BaseExtension instance.
 

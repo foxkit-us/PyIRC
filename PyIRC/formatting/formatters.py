@@ -447,6 +447,7 @@ class XTermTrueColourFormatter(ANSIFormatter):
         return self.sgr.format(';'.join(ret))
 
 
+# pylint: disable=too-many-return-statements
 def select_formatter():
     """Heuristically choose the best formatter. It may not be correct in all
     cases; this is for simple applications such as a bot.
@@ -483,10 +484,7 @@ def select_formatter():
         if colours >= 16:
             return XTerm16ColourFormatter
 
-        # Better than nothing...
-        return ANSIFormatter
-
-    if sys.platform.startswith("win32"):
+    if curses is not None and sys.platform.startswith("win32"):
         # XXX differentiate stdout from a file
         return ANSIFormatter
 

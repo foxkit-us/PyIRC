@@ -29,7 +29,7 @@ _stats_ban_re = re.compile(
     (?:
         # If there is a duration, this matches it.
         # Beware the space at the end of the line!
-        Temporary\ (?P<type>.)-line\ (?P<duration>[0-9]+)\ min\.\ -\ 
+        Temporary\ (?P<type>.)-line\ (?P<duration>[0-9]+)\ min\.\ -\
     )?
     (?P<reason>.+?)
     (?:
@@ -76,7 +76,7 @@ _hybrid_oper_re = re.compile(
 _charybdis_oper_re = re.compile(
     r"""^
     # Mind the trailing space!
-    (?P<nick>.+?) \ 
+    (?P<nick>.+?) \
     \(
         (?P<user>.+?)@(?P<host>.+?)
     \)$""", re.X)
@@ -85,7 +85,7 @@ _charybdis_oper_re = re.compile(
 _uptime_re = re.compile(
     r"""^
     # Mind the trailing space
-    Server\ up\ (?P<days>[0-9]+)\ days,\ 
+    Server\ up\ (?P<days>[0-9]+)\ days,\
     (?P<hours>[0-9]{1,2}):
     (?P<minutes>[0-9]{1,2}):
     (?P<seconds>[0-9]{1,2})$
@@ -557,7 +557,7 @@ class HybridServer(BaseServer):
 
         entry = BanEntry(mask, None, None, None, duration, reason, None)
         return self.call_event("stats", "gecos_ban", entry)
-    
+
     # pylint: disable=inconsistent-return-statements
     @event("commands", Numerics.RPL_STATSDEBUG)
     def parse_stats_opers(self, _, line):

@@ -114,7 +114,7 @@ class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
             or consult a network administrator, for more information.
         """
         raise NotImplementedError
-    
+
     # pylint: disable=invalid-name
     @abc.abstractmethod
     def server_ip_ban(self, server, ip, duration, reason):

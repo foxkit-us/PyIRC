@@ -99,8 +99,8 @@ class ServicesLogin(BaseExtension):
             self.send(self.services_command, [self.services_bot,
                                               self.identify])
         else:
-            # XXX assuming self.services_bot is unused is probably not wise.
-            # Seems okay for now though.
+            # Assuming self.services_bot is unused is probably not wise.
+            # Seems okay for everything I've tested it with. --Elizafox
             self.send(self.services_command, [self.identify])
 
         # And STAY out! ;)

@@ -79,7 +79,6 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
         # Clear the queue
         self._call_queue = asyncio.Queue()
 
-        # XXX it's in this order for backwards compat
         for sched in self.sched_events:
             self.unschedule(sched)
 

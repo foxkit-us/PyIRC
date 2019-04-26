@@ -88,7 +88,8 @@ class TimeDelta(BaseExtension):
         self.timer = None
 
     # pylint: disable=unused-argument
-    @event("commands", "PONG")
+    # This should come after LagCheck hooks this, but it's not essential
+    @event("commands", "PONG", priority=100)
     def start(self, _, line):
         """Begin sending delta requests after our first PONG reply."""
         self.time_callback()

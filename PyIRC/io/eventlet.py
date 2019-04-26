@@ -66,7 +66,7 @@ class IRCEventlet(IRCBase):
             self.socket = ssl.wrap_socket(self.socket)
         elif isinstance(self.ssl, ssl.SSLContext):
             self.socket = self.ssl.wrap_socket(self.socket)
-        elif self.ssl is not (None, False):
+        elif self.ssl not in (None, False):
             raise TypeError("ssl must be an SSLContext, bool, or None")
 
         if self.bindport is not None:

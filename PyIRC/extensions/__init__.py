@@ -25,7 +25,7 @@ from PyIRC.util.classutil import get_all_subclasses
 
 __all__ = ["altnick", "autojoin", "bantrack", "basetrack", "basicapi",
            "basicrfc", "cap", "channeltrack", "ctcp", "isupport", "kickrejoin",
-           "lag", "sasl", "services", "starttls", "usertrack"]
+           "lag", "sasl", "services", "starttls", "timedelta", "usertrack"]
 
 
 _BUILTIN_EXTENSION_MODULES = {
@@ -44,6 +44,7 @@ _BUILTIN_EXTENSION_MODULES = {
     "SASL": "sasl",
     "ServicesLogin": "services",
     "StartTLS": "starttls",
+    "TimeDelta": "timedelta",
     "UserTrack": "usertrack",
     "UnderscoreAlt": "altnick",
 }

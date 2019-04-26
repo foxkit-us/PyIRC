@@ -119,7 +119,7 @@ class TimeDelta(BaseExtension):
         delta = (our_ts - server_ts).seconds
 
         # Correction for lag
-        lag = self.extensions.get("LagCheck")
+        lag = self.get_extension("LagCheck")
         if lag.lag:
             delta -= lag.lag
 

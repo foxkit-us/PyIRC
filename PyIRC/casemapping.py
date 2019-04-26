@@ -33,6 +33,8 @@ ASCII_TOLOWER = str.maketrans(ascii_uppercase, ascii_lowercase)
 ASCII_TOUPPER = str.maketrans(ascii_lowercase, ascii_uppercase)
 
 
+# This warning isn't really our fault.
+# pylint: disable=too-many-ancestors
 class IRCString(UserString):
 
     r"""An IRC string.
@@ -207,6 +209,8 @@ class IRCString(UserString):
         return "IRCString({})".format(super().__repr__())
 
 
+# This warning isn't really our fault.
+# pylint: disable=too-many-ancestors
 class IRCDict(UserDict):
 
     """An IRC dictionary class, with caseless key lookup."""
@@ -264,6 +268,8 @@ class IRCDict(UserDict):
         return "IRCDict({}, {})".format(self.case, super().__repr__())
 
 
+# This warning isn't really our fault.
+# pylint: disable=too-many-ancestors
 class IRCDefaultDict(IRCDict):
 
     """Similar to the built in :py:class:`defaultdict`, but with the semantics

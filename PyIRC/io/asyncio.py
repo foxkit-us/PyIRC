@@ -151,10 +151,10 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
         signal = self.signals.get_signal((hclass, event))
         event = Event(signal.name, self)
 
-        co = signal.call_async(event, *args, **kwargs)
+        cor = signal.call_async(event, *args, **kwargs)
         future = asyncio.Future()
 
-        self._call_queue.put_nowait((co, future))
+        self._call_queue.put_nowait((cor, future))
 
         return (event, future)
 
@@ -181,6 +181,7 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
                                       "upgrade to Python 3.7 or later.")
 
         loop = asyncio.get_event_loop()
-        co = loop.start_tls(self.transport, self, ssl.create_default_context())
+        cor = loop.start_tls(self.transport, self,
+                             ssl.create_default_context())
         future = asyncio.Future()
-        self._call_queue.put_nowait((co, future))
+        self._call_queue.put_nowait((cor, future))

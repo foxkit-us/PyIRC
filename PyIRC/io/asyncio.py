@@ -54,6 +54,8 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
 
         self.data = None
 
+        self.transport = None
+
         # Python versions before 3.7 are not compatible with StartTLS.
         if version_info < (3, 7):
             self.unload_extension("StartTLS")
@@ -126,8 +128,8 @@ class IRCProtocol(IRCBase, asyncio.Protocol):
     @asyncio.coroutine
     def _process_queue(self):
         while True:
-            co, future = yield from self._call_queue.get()
-            ret = yield from co
+            cor, future = yield from self._call_queue.get()
+            ret = yield from cor
             future.set_result(ret)
 
     # pylint: disable=unused-argument

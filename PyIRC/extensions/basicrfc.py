@@ -47,6 +47,7 @@ class BasicRFC(BaseExtension):
         self.prev_nick = None
         self.nick = self.base.nick
         self.registered = False
+        self.connected = None
 
         self.server_version = (None, [])
 

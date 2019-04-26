@@ -66,6 +66,7 @@ class AutoJoin(BaseExtension):
         self.send("JOIN", params)
         self.sched.pop(0)
 
+    # pylint: disable=unused-argument
     @event("commands", Numerics.RPL_WELCOME)
     def autojoin(self, caller, line):
         # Should be sufficient for end of MOTD and such
@@ -82,6 +83,7 @@ class AutoJoin(BaseExtension):
 
             time += self.wait_interval
 
+    # pylint: disable=unused-argument
     @event("link", "disconnected")
     def close(self, caller):
         for sched in self.sched:

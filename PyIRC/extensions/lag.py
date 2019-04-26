@@ -84,6 +84,7 @@ class LagCheck(BaseExtension):
             except ValueError:
                 pass
 
+    # pylint: disable=unused-argument
     @event("commands", Numerics.RPL_WELCOME)
     def start(self, _, line):
         """Begin sending PING requests as soon as possible."""

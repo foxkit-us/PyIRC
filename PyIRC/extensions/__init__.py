@@ -100,7 +100,7 @@ class BaseExtension:
     """Required extensions (must be a name)"""
 
     # kwargs are reserved
-    # pylint: disable=unused-arguments
+    # pylint: disable=unused-argument
     def __init__(self, base, **kwargs):
         """Initalise the BaseExtension instance.
 

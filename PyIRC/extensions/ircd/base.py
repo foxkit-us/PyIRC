@@ -21,6 +21,7 @@ _logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 class BaseServer(BaseExtension, metaclass=abc.ABCMeta):
 
+    # pylint: disable=unused-argument
     def provides(self, base):
         """Returns whether or not this extension can provide for the server."""
         return False

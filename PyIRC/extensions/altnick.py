@@ -60,6 +60,7 @@ class BaseAlt(BaseExtension, metaclass=ABCMeta):
         """Return a nickname to try."""
         raise NotImplementedError
 
+    # pylint: disable=unused-argument
     @event("commands", Numerics.ERR_NICKNAMEINUSE, priority=-1000)
     @event("commands", Numerics.ERR_ERRONEOUSNICKNAME, priority=-1000)
     @event("commands", Numerics.ERR_NONICKNAMEGIVEN, priority=-1000)

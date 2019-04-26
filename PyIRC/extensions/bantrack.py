@@ -105,6 +105,7 @@ class BanTrack(BaseExtension):
         _logger.debug("Adding entry: %r", entry)
         modes.append(entry)
 
+    # pylint: disable=unused-argument
     @event("modes", "mode_prefix")
     def mode_prefix(self, _, setter, target, mode):
         if mode.mode == 'v':

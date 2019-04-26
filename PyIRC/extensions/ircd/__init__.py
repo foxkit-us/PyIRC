@@ -95,6 +95,7 @@ class IRCDaemonExtension(BaseExtension):
         self.extension_name = None
         self.spec_extension = None
 
+    # pylint: disable=unused-argument
     @event("commands", Numerics.RPL_VERSION, priority=1000)
     def probe(self, _, line):
         for subclass in get_all_subclasses(base.BaseServer):

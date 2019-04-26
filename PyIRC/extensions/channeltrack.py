@@ -175,6 +175,7 @@ class ChannelTrack(BaseExtension):
             except ValueError:
                 pass
 
+    # pylint: disable=unused-argument
     @event("modes", "mode_prefix")
     def prefix(self, _, setter, target, mode):
         # Parse into hostmask in case of usernames-in-host

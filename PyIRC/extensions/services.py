@@ -80,6 +80,7 @@ class ServicesLogin(BaseExtension):
 
         self.authenticated = False
 
+    # pylint: disable=unused-argument
     @event("commands", "NOTICE")
     @event("commands", "PRIVMSG")
     def authenticate(self, _, line):

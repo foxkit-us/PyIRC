@@ -74,11 +74,13 @@ class CTCP(BaseExtension):
         command = ctcp.command
         self.call_event("commands_ctcp", command, ctcp, line)
 
+    # pylint: disable=unused-argument
     @event("commands_ctcp", "PING")
     def c_ping(self, _, ctcp, line):
         """Respond to CTCP ping."""
         self.nctcp(ctcp.target, "PING", ctcp.param)
 
+    # pylint: disable=unused-argument
     @event("commands_ctcp", "VERSION")
     def c_version(self, _, ctcp, line):
         """Respond to CTCP version."""

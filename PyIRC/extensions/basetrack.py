@@ -225,6 +225,7 @@ class BaseTrack(BaseExtension):
             mode = Mode(mode, param, adding, None)
             self.call_event("modes", mode_call, line.hostmask, target, mode)
 
+    # pylint: disable=unused-argument
     @event("commands", Numerics.RPL_ENDOFMOTD)
     @event("commands", Numerics.ERR_NOMOTD)
     def send_protoctl(self, _, line):

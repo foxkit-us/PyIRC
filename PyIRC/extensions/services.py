@@ -18,6 +18,7 @@ from PyIRC.extensions import BaseExtension
 _logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 
+# pylint: disable=too-few-public-methods
 class ServicesLogin(BaseExtension):
 
     """Support services login.

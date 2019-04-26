@@ -25,6 +25,8 @@ from PyIRC.extensions import get_extension
 _logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 
+# This is a data class so pylint can stfu
+# pylint: disable=too-few-public-methods
 class Event:
     """A basic event passed around extensions, wherein state can be set.
 
@@ -38,6 +40,7 @@ class Event:
         self.cancelled = cancelled
 
 
+# pylint: disable=too-many-instance-attributes
 class IRCBase(metaclass=ABCMeta):
 
     """The base IRC class meant to be used as a base for more concrete
@@ -51,6 +54,7 @@ class IRCBase(metaclass=ABCMeta):
         to send commands.
     """
 
+    # pylint: disable=too-many-arguments
     def __init__(self, serverport, username, nick, gecos, extensions,
                  **kwargs):
         """Initialise the IRC base.

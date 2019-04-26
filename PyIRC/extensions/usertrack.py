@@ -30,6 +30,8 @@ from PyIRC.numerics import Numerics
 _logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 
+# This is a data class
+# pylint: disable=too-many-instance-attributes,too-few-public-methods
 class User:
 
     """A user entity.
@@ -115,6 +117,7 @@ class User:
         return rep.format(self)
 
 
+# pylint: disable=too-many-instance-attributes,too-many-public-methods
 class UserTrack(BaseExtension):
 
     """Track various user metrics, such as account info, and some channel
@@ -709,6 +712,7 @@ class UserTrack(BaseExtension):
 
             del self.auth_cb[nick]
 
+    # pylint: disable=too-many-locals
     @event("commands", Numerics.RPL_WHOREPLY)
     def who(self, _, line):
         """Process a WHO response, updating the corresponding user object."""
@@ -769,6 +773,7 @@ class UserTrack(BaseExtension):
         user.away = away
         user.operator = operator
 
+    # pylint: disable=too-many-locals
     @event("commands", Numerics.RPL_WHOSPCRPL)
     def whox(self, _, line):
         """Process a WHOX response, updating the corresponding user object."""

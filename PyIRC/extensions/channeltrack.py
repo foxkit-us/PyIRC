@@ -25,6 +25,8 @@ from PyIRC.numerics import Numerics
 _logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 
+# This is a data class
+# pylint: disable=too-many-instance-attributes,too-few-public-methods
 class Channel:
 
     """A channel entity."""

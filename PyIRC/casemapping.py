@@ -313,7 +313,7 @@ class IRCSet(MutableSet):
             value = IRCString(self.case, value.convert(self.case))
 
         self.store.add(value)
-    
+
     def discard(self, value):
         if isinstance(value, str):
             value = IRCString(self.case, value)

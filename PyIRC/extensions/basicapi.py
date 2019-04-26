@@ -20,6 +20,7 @@ from PyIRC.extensions import BaseExtension
 _logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 
+# pylint: disable=too-many-public-methods
 class BasicAPI(BaseExtension):
 
     """Basic API functions, designed to make things easier to use.

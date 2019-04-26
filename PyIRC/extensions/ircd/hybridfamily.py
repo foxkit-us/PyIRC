@@ -93,7 +93,7 @@ _uptime_re = re.compile(
 
 
 # *sigh* It gets mad because we don't override extban_parse
-# pylint: disable=abstract-method
+# pylint: disable=abstract-method,too-many-public-methods
 class HybridServer(BaseServer):
 
     """The ircd-hybrid provider."""
@@ -111,6 +111,7 @@ class HybridServer(BaseServer):
 
         return False
 
+    # pylint: disable=too-many-arguments
     def generic_ban(self, ban, server, string, duration, reason):
         """Do a generic Hybrid-style ban.
 
@@ -483,6 +484,7 @@ class HybridServer(BaseServer):
         else:
             self.send("STATS", ["u"])
 
+    # pylint: disable=too-many-locals
     @staticmethod
     def _parse_ban_lines(line):
         """Parse a foo:line in Hybrid-derived servers, excluding RESV and

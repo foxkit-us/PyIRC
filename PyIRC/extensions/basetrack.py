@@ -30,6 +30,8 @@ Mode = namedtuple("Mode", "mode param adding timestamp")
 """A mode being added or removed"""
 
 
+# This is a data class
+# pylint: disable=too-many-instance-attributes,too-few-public-methods
 class Scope:
 
     """A scope object passed to receivers of scope events.
@@ -64,6 +66,7 @@ class Scope:
     __slots__ = ["target", "scope", "leaving", "reason", "gecos", "account",
                  "modes", "cause"]
 
+    # pylint: disable=too-many-arguments
     def __init__(self, target, scope=None, leaving=None, reason=None,
                  gecos=None, account=None, modes=None, cause=None):
         self.target = target

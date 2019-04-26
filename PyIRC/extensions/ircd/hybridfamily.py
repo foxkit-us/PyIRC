@@ -17,8 +17,8 @@ from logging import getLogger
 from PyIRC.line import Hostmask
 from PyIRC.signal import event
 from PyIRC.numerics import Numerics
-from PyIRC.extensions.ircd import (BaseServer, BanEntry, Extban,
-                                   OperEntry, Uptime)
+from PyIRC.extensions.ircd import BanEntry, Extban, OperEntry, Uptime
+from PyIRC.extensions.ircd.base import BaseServer
 
 # pylint: disable=invalid-name
 _logger = getLogger(__name__)

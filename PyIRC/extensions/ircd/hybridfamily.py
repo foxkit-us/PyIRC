@@ -493,7 +493,7 @@ class HybridServer(BaseServer):
         assert match, "Bug in the stats matching regex!"
 
         t = match.group("type")
-        if t == "K" or t == "G":
+        if t in ("K", "G"):
             # Don't use Hostmask, because this is for matching purposes.
             mask = (params[3], params[4], params[2])
         elif t == "D":

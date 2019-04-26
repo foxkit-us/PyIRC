@@ -300,21 +300,21 @@ class IRCSet(MutableSet):
         for item in iterable:
             self.add(item)
 
-    def add(self, item):
-        if isinstance(item, str):
-            item = IRCString(self.case, item)
-        elif hasattr(item, 'convert'):
-            item = IRCString(self.case, item.convert(self.case))
+    def add(self, value):
+        if isinstance(value, str):
+            value = IRCString(self.case, value)
+        elif hasattr(value, 'convert'):
+            value = IRCString(self.case, value.convert(self.case))
 
-        self.store.add(item)
+        self.store.add(value)
+    
+    def discard(self, value):
+        if isinstance(value, str):
+            value = IRCString(self.case, value)
+        elif hasattr(value, 'convert'):
+            value = IRCString(self.case, value.convert(self.case))
 
-    def discard(self, item):
-        if isinstance(item, str):
-            item = IRCString(self.case, item)
-        elif hasattr(item, 'convert'):
-            item = IRCString(self.case, item.convert(self.case))
-
-        self.store.discard(item)
+        self.store.discard(value)
 
     def convert(self, case):
         """Convert all members of this set to the specified case."""

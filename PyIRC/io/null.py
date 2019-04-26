@@ -34,7 +34,7 @@ class NullSocket(IRCBase):
 
         self.disconnect_on_next = False
 
-    def recv(self):
+    def recv(self, line=None):  # Dummy parameter to silence PyLint
         if self.disconnect_on_next:
             raise OSError('Connection reset by test.')
 

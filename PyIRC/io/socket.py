@@ -70,7 +70,7 @@ class IRCSocket(IRCBase):
         elif isinstance(self.ssl, ssl.SSLContext):
             # pylint: disable=no-member
             self.socket = self.ssl.wrap_socket(self.socket)
-        elif self.ssl is not (None, False):
+        elif self.ssl is not in (None, False):
             raise TypeError("ssl must be an SSLContext, bool, or None")
 
         if self.bindport is not None:

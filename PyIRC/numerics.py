@@ -146,15 +146,10 @@ class Numerics(Enum):
     - UnrealIRCD
     """
 
-    RPL_ENDMAP_UNREAL = "007"
-    """
-    This numeric can be found in:
-    - Inspircd
-    """
-
     RPL_MAPEND_UNREAL = "007"
     """
     This numeric can be found in:
+    - Inspircd (as RPL_ENDMAP_UNREAL)
     - UnrealIRCD
     """
 
@@ -1245,18 +1240,13 @@ class Numerics(Enum):
     - Bahamut
     - Charybdis
     - ircd-hybrid
-    - ircd-seven
-    - plexus
     - ircd-ratbox
-    """
-
-    RPL_TRACEEND = "262"
-    """
-    This numeric can be found in:
-    - IRCNet ircd
-    - ircu
-    - RFC2812
-    - snircd
+    - ircd-seven
+    - IRCNet ircd (as RPL_TRACEEND)
+    - ircu (as RPL_TRACEEND)
+    - plexus
+    - RFC2812 (as RPL_TRACEEND)
+    - snircd (as RPL_TRACEEND)
     """
 
     RPL_LOAD2HI = "263"
@@ -1629,13 +1619,8 @@ class Numerics(Enum):
     RPL_ENDOFRULES = "309"
     """
     This numeric can be found in:
+    - Inspircd (as RPL_RULESEND)
     - UnrealIRCD
-    """
-
-    RPL_RULESEND = "309"
-    """
-    This numeric can be found in:
-    - Inspircd
     """
 
     RPL_WHOISSADMIN = "309"
@@ -1911,17 +1896,12 @@ class Numerics(Enum):
     - ircd-seven
     """
 
-    RPL_CHANNELCREATED = "329"
-    """
-    This numeric can be found in:
-    - Inspircd
-    """
-
     RPL_CREATIONTIME = "329"
     """
     This numeric can be found in:
     - Bahamut
     - Charybdis
+    - Inspircd (as RPL_CHANNELCREATED)
     - ircd-hybrid
     - ircd-seven
     - ircu
@@ -1931,20 +1911,15 @@ class Numerics(Enum):
     - UnrealIRCD
     """
 
-    RPL_WHOISACCOUNT = "330"
-    """
-    This numeric can be found in:
-    - ircd-hybrid
-    - ircu
-    - snircd
-    """
-
     RPL_WHOISLOGGEDIN = "330"
     """
     This numeric can be found in:
     - Charybdis
-    - ircd-seven
+    - ircd-hybrid (as RPL_WHOISACCOUNT)
     - ircd-ratbox
+    - ircd-seven
+    - ircu (as RPL_WHOISACCOUNT)
+    - snircd (as RPL_WHOISACCOUNT)
     - UnrealIRCD
     """
 
@@ -1954,7 +1929,7 @@ class Numerics(Enum):
     - Bahamut
     - Charybdis
     - ircd-hybrid
-    - Inspircd
+    - Inspircd (also as RPL_NOTOPICSET)
     - IRCNet ircd
     - ircd-seven
     - ircu
@@ -1964,12 +1939,6 @@ class Numerics(Enum):
     - RFC2812
     - snircd
     - UnrealIRCD
-    """
-
-    RPL_NOTOPICSET = "331"
-    """
-    This numeric can be found in:
-    - Inspircd
     """
 
     RPL_TOPIC = "332"
@@ -2105,15 +2074,10 @@ class Numerics(Enum):
     - IRCNet ircd
     """
 
-    RPL_INVITED = "345"
-    """
-    This numeric can be found in:
-    - Inspircd
-    """
-
     RPL_ISSUEDINVITE = "345"
     """
     This numeric can be found in:
+    - Inspircd (as RPL_INVITED)
     - ircu
     - snircd
     """
@@ -2233,15 +2197,10 @@ class Numerics(Enum):
     - UnrealIRCD
     """
 
-    RPL_RWHOREPLY = "354"
-    """
-    This numeric can be found in:
-    - Bahamut (as RPL_RWHOREPLY)
-    """
-
     RPL_WHOSPCRPL = "354"
     """
     This numeric can be found in:
+    - Bahamut (as RPL_RWHOREPLY)
     - Charybdis
     - ircd-seven
     - ircu
@@ -2715,22 +2674,12 @@ class Numerics(Enum):
     """
     This numeric can be found in:
     - Charybdis
+    - Inspircd (as RPL_YOURDISPLAYEDHOST)
     - ircd-hybrid
     - ircd-seven
     - ircu
+    - plexus (as RPL_VISIBLEHOST)
     - snircd
-    """
-
-    RPL_VISIBLEHOST = "396"
-    """
-    This numeric can be found in:
-    - plexus
-    """
-
-    RPL_YOURDISPLAYEDHOST = "396"
-    """
-    This numeric can be found in:
-    - Inspircd
     """
 
     RPL_STATSSLINE_SNIRCD = "398"
@@ -2916,15 +2865,10 @@ class Numerics(Enum):
     - ircd-hybrid
     - ircd-ratbox
     - ircd-seven
+    - ircu (as ERR_UNKNOWNCAPCMD)
     - plexus
+    - snircd (as ERR_UNKNOWNCAPCMD)
     - UnrealIRCD
-    """
-
-    ERR_UNKNOWNCAPCMD = "410"
-    """
-    This numeric can be found in:
-    - ircu
-    - snircd
     """
 
     ERR_NORECIPIENT = "411"
@@ -3873,12 +3817,6 @@ class Numerics(Enum):
     - IRCNet ircd (misspelled as ERR_UNIQOPRIVSNEEDED)
     """
 
-    ERR_ACCOUNTONLY = "486"
-    """
-    This numeric can be found in:
-    - snircd
-    """
-
     ERR_NONONREG = "486"
     """
     This numeric can be found in:
@@ -3887,6 +3825,7 @@ class Numerics(Enum):
     - ircd-hybrid
     - ircd-seven
     - plexus
+    - snircd (as ERR_ACCOUNTONLY)
     - UnrealIRCD
     """
 
@@ -4137,19 +4076,6 @@ class Numerics(Enum):
     - UnrealIRCD
     """
 
-    ERR_BADPING = "513"
-    """
-    This numeric can be found in:
-    - ircu
-    - snircd
-    """
-
-    ERR_NEEDPONG = "513"
-    """
-    This numeric can be found in:
-    - UnrealIRCD
-    """
-
     ERR_WRONGPONG = "513"
     """
     This numeric can be found in:
@@ -4158,6 +4084,9 @@ class Numerics(Enum):
     - ircd-seven
     - plexus
     - ircd-ratbox
+    - ircu (as ERR_BADPING)
+    - snircd (as ERR_BADPING)
+    - UnrealIRCD (as ERR_NEEDPONG)
     """
 
     ERR_NOSUCHJUPE = "514"
@@ -4533,13 +4462,8 @@ class Numerics(Enum):
     - ircd-hybrid
     - ircd-seven
     - ircd-ratbox
+    - plexus (as RPL_WHOISSSL)
     - UnrealIRCD
-    """
-
-    RPL_WHOISSSL = "671"
-    """
-    This numeric can be found in:
-    - plexus
     """
 
     RPL_WHOISCGI = "672"

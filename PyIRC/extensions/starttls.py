@@ -50,10 +50,10 @@ class StartTLS(BaseExtension):
         """Reset state because we are disconnected."""
         self.tls_event = None
 
+    # pylint: disable=unused-argument
     @event("cap_perform", "ack", priority=-1000)
     def starttls(self, _, line, caps):
         """Respond to TLS CAP acknowledgement."""
-        # pylint: disable=unused-argument
         # This must come before anything else in the chain
         if self.ssl:
             # Unnecessary
@@ -67,22 +67,22 @@ class StartTLS(BaseExtension):
             self.send("STARTTLS", None)
             raise SignalDefer()
 
+    # pylint: disable=unused-argument
     @event("commands", Numerics.RPL_STARTTLS)
     def wrap(self, _, line):
         """Actually start TLS communication."""
-        # pylint: disable=unused-argument
         _logger.info("Performing STARTTLS initiation...")
         self.wrap_ssl()
 
         self.resume_event("cap_perform", "ack")
 
+    # pylint: disable=unused-argument
     @event("commands", Numerics.ERR_STARTTLS)
     def abort(self, _, line):
         """Report a problem with TLS communication.
 
         .. warning::     This allows connection to continue anyway!
         """
-        # pylint: disable=unused-argument
         _logger.critical("STARTTLS initiation failed, connection not secure")
 
         self.resume_event("cap_perform", "ack")
